@@ -1,0 +1,48 @@
+{% set name = "anybadge" %}
+{% set version = "1.14.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 47f06e0a6320d3e5eac55c712dc0bab71b9ed85353c591d448653c5a0740783f
+
+build:
+  number: 0
+  entry_points:
+    - anybadge=anybadge.cli:main
+    - anybadge-server=anybadge.server.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - packaging
+    - pip
+    - python
+  run:
+    - packaging
+    - python
+
+test:
+  imports:
+    - anybadge
+    - anybadge.server
+    - anybadge.templates
+  commands:
+    - anybadge --help
+    - anybadge-server --help
+
+about:
+  home: "https://github.com/jongracecox/anybadge"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Simple, flexible badge generator for project badges."
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here
