@@ -25,7 +25,10 @@ So there are 2 easy ways to use the container:
 
 The container will contain a `create-badge.py` script that will create the arc quality badge:
 
-- Execute `create-badge.py` In the working directory of the container
-- Use the created `arc-quality.svg` as a badge e.g. for a readme like this:
+- the script will parse `arc-validate-results.xml` in the working directory
+- the script will create a badge displaying passed/failed tests in the working directory as `arc-quality.svg`, e.g: ![](./test/arc-quality.svg)
 
-![](./arc-quality.svg)
+So there are 2 easy ways to use the script in the container:
+- mount a local directory with `arc-validate-results.xml` (e.g. after runnning `arc-validate.sh` as specified above) into the container and run `create-badge.py`, e.g.: `docker run -d --mount type=bind,source={YOUR_ARC_FOLDER_HERE},target=/arc arc-validate create-badge.py`
+- use it as a base image and use `create-badge.py` directly.
+

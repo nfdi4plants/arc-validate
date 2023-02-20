@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 import anybadge
 from junitparser import TestCase, Failure, Error, JUnitXml
 
