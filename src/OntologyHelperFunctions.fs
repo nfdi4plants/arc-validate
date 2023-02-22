@@ -1,4 +1,4 @@
-﻿module ontologyHelperFunctions
+﻿module OntologyHelperFunctions
 
 open Expecto
 open FSharpAux
