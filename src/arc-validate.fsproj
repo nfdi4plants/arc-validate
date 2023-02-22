@@ -10,6 +10,7 @@
     <Compile Include="FilesystemRepresentation.fs" />
     <Compile Include="CheckFilesystemStructure.fs" />
     <Compile Include="CheckIsaStructure.fs" />
+    <Compile Include="ValidateArc.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />    
   </ItemGroup>
