@@ -95,9 +95,10 @@ module Study =
     let isMetadataSectionPresent studyPath = checkForMetadataSection studyPath "Study"
 
     /// 
-    let isMetadataPresent studyPath =
-        try StudyFile.Study.fromFile studyPath |> Some
-        with _ -> None
+    let isMetadataPresent study = ()
+
+    let isSourceNameColumnPresent (study : Study) =
+        study.ProcessSequence.Value.Head.
 
 /// Functions for checking the ISA structure of Assays.
 module Assay =
@@ -125,3 +126,4 @@ module Assay =
 
     /// Checks if an existing Assay has a metadata section present.
     let isMetadataSectionPresent assayPaths = checkForMetadataSection assayPaths "Assay"
+
