@@ -6,14 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />    
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="9.0.4" />
-    <PackageReference Include="FSharpAux" Version="1.1.0" />
   </ItemGroup>
 
 </Project>
