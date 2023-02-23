@@ -6,12 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="OntologyHelperFunctions.fs" />
+    <Compile Include="FilesystemRepresentation.fs" />
+    <Compile Include="CheckFilesystemStructure.fs" />
+    <Compile Include="CheckIsaStructure.fs" />
+    <Compile Include="ValidateArc.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />    
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="9.0.4" />
+    <PackageReference Include="FSharpAux" Version="1.1.0" />
+    <PackageReference Include="FSharpSpreadsheetML" Version="0.0.8" />
+    <PackageReference Include="ISADotNet" Version="0.6.1" />
+    <PackageReference Include="ISADotNet.XLSX" Version="0.6.1" />
   </ItemGroup>
 
 </Project>
