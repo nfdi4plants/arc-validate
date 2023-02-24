@@ -70,5 +70,5 @@ module Checks =
     let hasRunsFolder           = Directory.Exists runsPath
     let hasWorkflowsFolder      = Directory.Exists workflowsPath
     let hasInvestigationFile    = File.Exists investigationPath
-    let studiesFolderStructure  = 
-        if hasStudiesFolder then getElementInElementsFolder 
+    let studiesFolderStructure  = getElementInElementsFolder studiesPath
+    let allStudies              = checkStudiesFolderStructure studiesFolderStructure

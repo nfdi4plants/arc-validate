@@ -66,9 +66,8 @@ let createRunFolderStructure name path hasRunFile hasOutputFiles = {
 
 /// Takes a possible Elements folder path (`string option`) and returns the possible collection of all Elements folders' paths in it. This applies to Studies, Assays, Workflows, and Runs as Elements.
 let getElementInElementsFolder elementsFolder =
-    match elementsFolder with
-    | None -> None
-    | Some ef -> Directory.GetDirectories ef |> Some
+    if Directory.Exists elementsFolder then Directory.GetDirectories elementsFolder |> Some
+    else None
 
 /// Takes a function specified to transform an input `string` into an Element folder structure and a possible collection of Elements' paths (`string [] option`) and returns the possible folder structure for each Element.
 let private checkElementsFolderStructure elemFunction (elementsInElementsfolder : string [] option) =
