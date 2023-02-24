@@ -32,15 +32,30 @@ let getNotMetaDataSheets kind spreadsheet =
     |> Seq.filter ((<>) kind)
 
 // private machen
-/// Checks if the Source Name column is present in the Worksheet with the given name in the given Spreadsheet. Returns the result and the name of the Sheet. Also returns false if the Worksheet or the Table does not exist but without the name of the Sheet.
-let isSourceNameColumnPresentInSheet sheetName spreadsheet = 
+let isNodeColumn nodeType sheetName spreadsheet =
     match Spreadsheet.tryGetWorksheetPartBySheetName sheetName spreadsheet with
     | Some wsp ->
         match AssayFile.Table.tryGetByDisplayNameBy (String.startsWith "annotationTable") wsp with
         | Some table -> 
-            Table.getColumnHeaders table |> Seq.contains "Source Name", sheetName
-        | None -> false, ""
-    | None -> false, ""
+            // TO DO: cell line and pos are hardcoded atm. and will be provided later™
+            // TO DO: quadruple is ugly. Add Record type and create function
+            Table.getColumnHeaders table |> Seq.contains nodeType, sheetName, "1", "1"      // nodeType shall be "Source Name" or "Sample Name" etc.
+        | None -> false, "", "1", "1"
+    | None -> false, "", "1", "1"
 
-let isSourceNameColumnPresent kind spreadsheet = 
+// private machen
+/// Checks if the Source Name column is present in the Worksheet with the given name in the given Spreadsheet. Returns the result and the name of the Sheet. Also returns false if the Worksheet or the Table does not exist but without the name of the Sheet.
+let isSourceNameColumnPresentInSheet sheetName spreadsheet = isNodeColumn "Source Name" sheetName spreadsheet
+
+let isSourceNameColumnPresent spreadsheet = 
+    let nmds = getNotMetaDataSheets "Study" spreadsheet
+    nmds
+    |> Seq.map (fun sheet -> isSourceNameColumnPresentInSheet sheet spreadsheet)
     
+
+sss.Close()
+sss2.Close()
+
+let areTermsValid kind spreadsheet = 
+    let nmds = getNotMetaDataSheets kind spreadsheet
+    Table.toSparseValueMatrix
