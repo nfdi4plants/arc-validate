@@ -63,15 +63,40 @@ module List =
 
 
 /// Checks for the existence of a metadata section of a given kind of ISA structure in an XLSX file.
-let private checkForMetadataSection xlsxPath kind =
-    Spreadsheet.fromFile xlsxPath false
-    |> Spreadsheet.tryGetSheetBySheetName kind
-    |> fun s -> s.IsSome
+let private checkForMetadataSection spreadsheet kind = (Spreadsheet.tryGetSheetBySheetName kind spreadsheet).IsSome
 
 /// Checks for the whole metadata of a given kind of ISA structure in an XLSX file.
-let private checkForMetadata xlsxPath kindFunction =
-    try kindFunction xlsxPath |> Some
+let private checkForMetadata spreadsheet kindFunction =
+    try kindFunction spreadsheet |> Some
     with _ -> None
+
+/// Returns the Worksheets' names from the Spreadsheet.
+let private getSheetNames spreadsheet =
+    Spreadsheet.getWorkbookPart spreadsheet
+    |> Workbook.get
+    |> Sheet.Sheets.get
+    |> Sheet.Sheets.getSheets
+    |> Seq.map Sheet.getName
+
+/// Retrieves all Worksheets but those with metadata of a given kind.
+let private getNotMetaDataSheets kind spreadsheet =
+    getSheetNames spreadsheet
+    |> Seq.filter ((<>) kind)
+
+let private isNodeColumn nodeType sheetName spreadsheet =
+    match Spreadsheet.tryGetWorksheetPartBySheetName sheetName spreadsheet with
+    | Some wsp ->
+        match AssayFile.Table.tryGetByDisplayNameBy (String.startsWith "annotationTable") wsp with
+        | Some table -> 
+            // TO DO: cell line and pos are hardcoded atm. and will be provided later™
+            // TO DO: quadruple is ugly. Add Record type and create function
+            Table.getColumnHeaders table |> Seq.contains nodeType, sheetName, "1", "1"      // nodeType shall be "Source Name" or "Sample Name" etc.
+        | None -> false, "", "1", "1"
+    | None -> false, "", "1", "1"
+
+/// Checks if the Source Name column is present in the Worksheet with the given name in the given Spreadsheet. Returns the result and the name of the Sheet. Also returns false if the Worksheet or the Table does not exist but without the name of the Sheet.
+let private isSourceNameColumnPresentInSheet sheetName spreadsheet = isNodeColumn "Source Name" sheetName spreadsheet
+
 
 /// Functions for checking the ISA structure of Studies.
 module Study =
@@ -91,14 +116,18 @@ module Study =
             MissingStudies          = studiesOutersect |> List.filter (fun so -> List.contains so studiesFromInves)
         |}
 
-    /// Checks if an existing Studiy has a metadata section present.
-    let isMetadataSectionPresent studyPath = checkForMetadataSection studyPath "Study"
+    /// Checks if an existing Study has a metadata section present.
+    let isMetadataSectionPresent spreadsheet = checkForMetadataSection spreadsheet "Study"
 
     /// 
     let isMetadataPresent study = ()
 
-    let isSourceNameColumnPresent (study : Study) =
-        study.ProcessSequence.Value.Head.
+    let isSourceNameColumnPresent studyPath = 
+        let spreadsheet = Spreadsheet.fromFile studyPath false
+        let nmds = getNotMetaDataSheets "Study" spreadsheet
+        nmds
+        |> Seq.map (fun sheet -> isSourceNameColumnPresentInSheet sheet spreadsheet)
+
 
 /// Functions for checking the ISA structure of Assays.
 module Assay =
