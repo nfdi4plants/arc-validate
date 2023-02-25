@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="SummaryFileWriter.fs" />
     <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="FilesystemRepresentation.fs" />
     <Compile Include="CheckFilesystemStructure.fs" />
