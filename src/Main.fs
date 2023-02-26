@@ -1,5 +1,4 @@
-﻿module arc_validate
-open Expecto
+﻿open Expecto
 
 [<EntryPoint>]
 let main argv =

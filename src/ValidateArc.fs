@@ -7,6 +7,7 @@ open CheckFilesystemStructure.Checks
 open CheckIsaStructure
 open Expecto
 
+[<Tests>]
 let filesystem =
     testList "Filesystem" [
         testCase ".arc" <| fun () -> isPresent hasArcFolder (createMessage arcFolderPath None None None FilesystemEntry)
@@ -40,7 +41,7 @@ let filesystem =
 //        ]
 //    ]
 
-
+[<Tests>]
 let isaTests =
     testList "ISA" [
         testList "Schema" [
@@ -73,15 +74,15 @@ let isaTests =
                         )
                     | None -> Seq.empty
             ]
-        ]
-        testList "Semantic" [
-            testList "Study" [
+        //]
+        //testList "Semantic" [
+        //    testList "Study" [
                 
-            ]
-        ]
-        testList "Plausibility" [
-            testList "Study" [
+        //    ]
+        //]
+        //testList "Plausibility" [
+        //    testList "Study" [
                 
-            ]
+        //    ]
         ]
     ]
