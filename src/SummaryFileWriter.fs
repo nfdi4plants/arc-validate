@@ -4,6 +4,7 @@ open FSharpAux
 open Expecto
 open Impl
 open System
+open System.Globalization
 open System.IO
 open System.Xml
 open System.Xml.Linq
@@ -80,7 +81,7 @@ let writeJUnitSummary file (summary: Impl.TestRunSummary) =
                 [|
                     yield XAttribute(XName.Get "name", fullnameString) :> XObject
                     yield XAttribute(XName.Get "time",
-                        System.String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                        System.String.Format(CultureInfo.InvariantCulture,
                             "{0:0.000}", test.duration.TotalSeconds)) :> XObject
                     yield! content
                 |]) :> XObject)
