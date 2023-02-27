@@ -6,7 +6,8 @@ open System.IO
 
 module Paths =
 
-    let inputPath           = Directory.GetCurrentDirectory()
+    //let inputPath           = Directory.GetCurrentDirectory()
+    let inputPath           = System.Environment.GetEnvironmentVariable("ARC_PATH")
 
     let arcFolderPath       = Path.Combine(inputPath, ".arc")
     let gitFolderPath       = Path.Combine(inputPath, ".git")

@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 import anybadge
+import os
 from junitparser import TestCase, Failure, Error, JUnitXml
 
-xml = JUnitXml.fromfile('./arc-validate-results.xml')
+base_path = os.getenv('ARC_PATH')
+xml_path = os.path.join(base_path,'arc-validate-result.xml')
+output_path = os.path.join(base_path,'arc-quality.svg')
+xml = JUnitXml.fromfile(xml_path)
 
 passed = 0
 failed = 0
@@ -33,4 +37,4 @@ badge = anybadge.Badge(
     thresholds=thresholds
 )
 
-badge.write_badge('arc-quality.svg')
+badge.write_badge(output_path)

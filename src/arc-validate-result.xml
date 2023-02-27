@@ -1,0 +1,78 @@
+<test-run id="2" duration="0.075" testcasecount="5" total="5" passed="0" failed="5" inconclusive="0" skipped="0" result="Failed" start-time="2023-02-27T 12:20:57Z" end-time="2023-02-27T 12:20:59Z">
+  <test-suite type="Assembly" name="arc-validate.dll" fullname="C:\Repos\nfdi4plants\arc-validate\src\bin\Debug\net6.0\arc-validate.dll" total="5" passed="0" failed="5" inconclusive="0" skipped="0" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.075">
+    <test-suite type="TestSuite" name="Filesystem" fullname="Filesystem" total="4" passed="0" failed="4" inconclusive="0" skipped="0" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.06">
+      <test-suite type="TestFixture" name="Git" fullname="Filesystem.Git" classname="Filesystem.Git" total="4" passed="0" failed="4" inconclusive="0" skipped="0" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.06">
+        <test-case name="Filesystem.Git.git folder" fullname="Filesystem.Git.git folder" methodname="git folder" classname="Git" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015" asserts="0">
+          <failure>
+            <message>
+Actual entity is not present: C:\Repos\nfdi4plants\arc-validate\src\bin\Debug\net6.0\.git
+   at OntologyHelperFunctions.isPresent@58.Invoke(String msg)
+   at OntologyHelperFunctions.isPresent(Boolean actual, Message message) in C:\Repos\nfdi4plants\arc-validate\src\OntologyHelperFunctions.fs:line 58
+   at ValidateArc.filesystem@15-1.Invoke(Unit unitVar0) in C:\Repos\nfdi4plants\arc-validate\src\ValidateArc.fs:line 15
+   at Expecto.Impl.execTestAsync@569-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in D:\a\_work\1\s\src\FSharp.Core\async.fs:line 510
+</message>
+            <stack-trace />
+          </failure>
+        </test-case>
+        <test-case name="Filesystem.Git.refs folder" fullname="Filesystem.Git.refs folder" methodname="refs folder" classname="Git" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015" asserts="0">
+          <failure>
+            <message>
+Actual entity is not present: C:\Repos\nfdi4plants\arc-validate\src\bin\Debug\net6.0\.git\refs
+   at OntologyHelperFunctions.isPresent@58.Invoke(String msg)
+   at OntologyHelperFunctions.isPresent(Boolean actual, Message message) in C:\Repos\nfdi4plants\arc-validate\src\OntologyHelperFunctions.fs:line 58
+   at ValidateArc.filesystem@18-4.Invoke(Unit unitVar0) in C:\Repos\nfdi4plants\arc-validate\src\ValidateArc.fs:line 18
+   at Expecto.Impl.execTestAsync@569-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in D:\a\_work\1\s\src\FSharp.Core\async.fs:line 510
+</message>
+            <stack-trace />
+          </failure>
+        </test-case>
+        <test-case name="Filesystem.Git.hooks folder" fullname="Filesystem.Git.hooks folder" methodname="hooks folder" classname="Git" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015" asserts="0">
+          <failure>
+            <message>
+Actual entity is not present: C:\Repos\nfdi4plants\arc-validate\src\bin\Debug\net6.0\.git\hooks
+   at OntologyHelperFunctions.isPresent@58.Invoke(String msg)
+   at OntologyHelperFunctions.isPresent(Boolean actual, Message message) in C:\Repos\nfdi4plants\arc-validate\src\OntologyHelperFunctions.fs:line 58
+   at ValidateArc.filesystem@16-2.Invoke(Unit unitVar0) in C:\Repos\nfdi4plants\arc-validate\src\ValidateArc.fs:line 16
+   at Expecto.Impl.execTestAsync@569-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in D:\a\_work\1\s\src\FSharp.Core\async.fs:line 510
+</message>
+            <stack-trace />
+          </failure>
+        </test-case>
+        <test-case name="Filesystem.Git.objects folder" fullname="Filesystem.Git.objects folder" methodname="objects folder" classname="Git" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015" asserts="0">
+          <failure>
+            <message>
+Actual entity is not present: C:\Repos\nfdi4plants\arc-validate\src\bin\Debug\net6.0\.git\objects
+   at OntologyHelperFunctions.isPresent@58.Invoke(String msg)
+   at OntologyHelperFunctions.isPresent(Boolean actual, Message message) in C:\Repos\nfdi4plants\arc-validate\src\OntologyHelperFunctions.fs:line 58
+   at ValidateArc.filesystem@17-3.Invoke(Unit unitVar0) in C:\Repos\nfdi4plants\arc-validate\src\ValidateArc.fs:line 17
+   at Expecto.Impl.execTestAsync@569-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in D:\a\_work\1\s\src\FSharp.Core\async.fs:line 510
+</message>
+            <stack-trace />
+          </failure>
+        </test-case>
+      </test-suite>
+    </test-suite>
+    <test-suite type="TestSuite" name="UnknownNamespace" fullname="UnknownNamespace" total="1" passed="0" failed="1" inconclusive="0" skipped="0" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015">
+      <test-suite type="TestFixture" name="UnknownType" fullname="UnknownNamespace.UnknownType" classname="UnknownNamespace.UnknownType" total="1" passed="0" failed="1" inconclusive="0" skipped="0" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015">
+        <test-case name="Filesystem.arcFolder" fullname="UnknownNamespace.UnknownType.Filesystem.arcFolder" methodname="Filesystem.arcFolder" classname="UnknownType" result="Failed" start-time="2023-02-27T 12:20:58Z" end-time="2023-02-27T 12:20:59Z" duration="0.015" asserts="0">
+          <failure>
+            <message>
+Actual entity is not present: C:\Repos\nfdi4plants\arc-validate\src\bin\Debug\net6.0\.arc
+   at OntologyHelperFunctions.isPresent@58.Invoke(String msg)
+   at OntologyHelperFunctions.isPresent(Boolean actual, Message message) in C:\Repos\nfdi4plants\arc-validate\src\OntologyHelperFunctions.fs:line 58
+   at ValidateArc.filesystem@13.Invoke(Unit unitVar0) in C:\Repos\nfdi4plants\arc-validate\src\ValidateArc.fs:line 13
+   at Expecto.Impl.execTestAsync@569-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in D:\a\_work\1\s\src\FSharp.Core\async.fs:line 510
+</message>
+            <stack-trace />
+          </failure>
+        </test-case>
+      </test-suite>
+    </test-suite>
+    <errors />
+  </test-suite>
+</test-run>

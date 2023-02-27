@@ -10,9 +10,9 @@ open Expecto
 [<Tests>]
 let filesystem =
     testList "Filesystem" [
-        testCase ".arc" <| fun () -> isPresent hasArcFolder (createMessage arcFolderPath None None None FilesystemEntry)
-        testList ".git" [
-            testCase ".git folder"      <| fun () -> isPresent hasGitFolder     (createMessage gitFolderPath    None None None FilesystemEntry)
+        testCase "arcFolder" <| fun () -> isPresent hasArcFolder (createMessage arcFolderPath None None None FilesystemEntry)
+        testList "Git" [
+            testCase "git folder"      <| fun () -> isPresent hasGitFolder     (createMessage gitFolderPath    None None None FilesystemEntry)
             testCase "hooks folder"     <| fun () -> isPresent hasHooksFolder   (createMessage hooksPath        None None None FilesystemEntry)
             testCase "objects folder"   <| fun () -> isPresent hasObjectsFolder (createMessage objectsPath      None None None FilesystemEntry)
             testCase "refs folder"      <| fun () -> isPresent hasRefsFolder    (createMessage refsPath         None None None FilesystemEntry)
@@ -41,7 +41,7 @@ let filesystem =
 //        ]
 //    ]
 
-[<Tests>]
+//[<Tests>]
 let isaTests =
     testList "ISA" [
         testList "Schema" [

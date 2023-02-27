@@ -116,8 +116,6 @@ let writeNUnitSummary (file : string option) (summary : TestRunSummary) =
             let element = XElement(XName.Get "test-case", XAttribute(XName.Get "name", fullnameString))
             let addAttribute name (content : string) = element.Add(XAttribute(XName.Get name, content))
 
-            //printfn $"test.result.order is {test.result.order}\ntest.result.tag is {test.result.tag}"
-
             match test.result with
             | Ignored _ -> "False"
             | _ -> "True"
