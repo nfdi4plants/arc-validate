@@ -44,6 +44,7 @@ let filesystem =
 //[<Tests>]
 let isaTests =
     testList "ISA" [
+        // kann man alles mit JSON Schema testen, auch ISA (ist das ISA-Format korrekt?)
         testList "Schema" [
             testList "Study" [
                 // TO DO: By god, make this abomination of uglyness somehow pretty!
@@ -75,11 +76,13 @@ let isaTests =
                     | None -> Seq.empty
             ]
         //]
+        //// z. B. haben alle Terme Identifier? Ist es CWL-complient?
         //testList "Semantic" [
         //    testList "Study" [
                 
         //    ]
         //]
+        //// z. B. gibt es überhaupt einen Faktor? Macht das ISA Objekt wissenschaftlich Sinn?
         //testList "Plausibility" [
         //    testList "Study" [
                 
