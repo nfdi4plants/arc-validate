@@ -6,6 +6,8 @@ open CheckFilesystemStructure.Paths
 open CheckFilesystemStructure.Checks
 open CheckIsaStructure
 open Expecto
+open ArcGraphModel
+open FsSpreadsheet
 
 [<Tests>]
 let filesystem =
@@ -17,6 +19,84 @@ let filesystem =
             testCase "objects folder"   <| fun () -> isPresent hasObjectsFolder (createMessage objectsPath      None None None FilesystemEntry)
             testCase "refs folder"      <| fun () -> isPresent hasRefsFolder    (createMessage refsPath         None None None FilesystemEntry)
         ]
+        testList "DataPathNames" [
+            //testCase "ProtocolREFs" <| fun () -> protocolRefFilepaths |> isPresent
+            //testCase "Data" <| fun () -> protocolRefFilepaths |> isPresent
+            //testCase "StudyFileName" <| fun () -> protocolRefFilepaths |> isPresent
+            //testCase "AssayFileName" <| fun () -> protocolRefFilepaths |> isPresent
+        ]
+    ]
+
+
+let studies = None
+
+[<Tests>]
+let isaTests =
+    testList "ISA" [
+        //testList "Schema" [
+        //    testList "Study" [
+        //        match studies with
+        //        | None -> ()
+        //        | Some ss ->
+        //            ss
+        //            |> List.iter (
+        //                fun s ->
+                            
+        //            )
+        //    ]
+        //]
+    ]
+
+let lukasFunktion = fun str -> [CvParam("","","",ParamValue.Value "")]      // dummy
+let investigationPersons : #ICvBase list = lukasFunktion investigationPath
+
+//[<Tests>]
+let isaTests =
+    testList "ISA" [
+//        // kann man alles mit JSON Schema testen, auch ISA (ist das ISA-Format korrekt?)
+//        testList "Schema" [
+//            testList "Study" [
+//                // TO DO: By god, make this abomination of uglyness somehow pretty!
+//                yield!
+//                    match allStudies with
+//                    | Some multipleS -> 
+//                        multipleS 
+//                        |> Seq.choose (
+//                            fun s ->
+//                                if s.HasIsaFile then
+//                                    let sPath = Path.Combine(s.Path, "isa.study.xlsx")
+//                                    let hasStudySourceNameColumn = Study.isSourceNameColumnPresent sPath 
+//                                    testList "Worksheet" [
+//                                        yield!
+//                                            hasStudySourceNameColumn
+//                                            |> Seq.choose (
+//                                                fun (hsnc, sheetName, line, pos) -> 
+//                                                    if sheetName = "" then None
+//                                                    else 
+//                                                        testCase 
+//                                                            "SourceNameColumn"
+//                                                            (fun () -> isPresent hsnc (createMessage sPath (Some line) (Some pos) (Some sheetName) XLSXFile))
+//                                                        |> Some
+//                                            )
+//                                    ]
+//                                    |> Some
+//                                else None
+//                        )
+//                    | None -> Seq.empty
+//            ]
+//        //]
+//        //// z. B. haben alle Terme Identifier? Ist es CWL-complient?
+        testList "Semantic" [
+            testList "Investigation" [
+                testCase "Person" <| fun () -> Validate.person
+            ]
+        ]
+//        //// z. B. gibt es überhaupt einen Faktor? Macht das ISA Objekt wissenschaftlich Sinn?
+//        //testList "Plausibility" [
+//        //    testList "Study" [
+                
+//        //    ]
+//        ]
     ]
 
 //let isaTests =
@@ -40,52 +120,3 @@ let filesystem =
 //            ]
 //        ]
 //    ]
-
-//[<Tests>]
-let isaTests =
-    testList "ISA" [
-        // kann man alles mit JSON Schema testen, auch ISA (ist das ISA-Format korrekt?)
-        testList "Schema" [
-            testList "Study" [
-                // TO DO: By god, make this abomination of uglyness somehow pretty!
-                yield!
-                    match allStudies with
-                    | Some multipleS -> 
-                        multipleS 
-                        |> Seq.choose (
-                            fun s ->
-                                if s.HasIsaFile then
-                                    let sPath = Path.Combine(s.Path, "isa.study.xlsx")
-                                    let hasStudySourceNameColumn = Study.isSourceNameColumnPresent sPath 
-                                    testList "Worksheet" [
-                                        yield!
-                                            hasStudySourceNameColumn
-                                            |> Seq.choose (
-                                                fun (hsnc, sheetName, line, pos) -> 
-                                                    if sheetName = "" then None
-                                                    else 
-                                                        testCase 
-                                                            "SourceNameColumn"
-                                                            (fun () -> isPresent hsnc (createMessage sPath (Some line) (Some pos) (Some sheetName) XLSXFile))
-                                                        |> Some
-                                            )
-                                    ]
-                                    |> Some
-                                else None
-                        )
-                    | None -> Seq.empty
-            ]
-        //]
-        //// z. B. haben alle Terme Identifier? Ist es CWL-complient?
-        //testList "Semantic" [
-        //    testList "Study" [
-                
-        //    ]
-        //]
-        //// z. B. gibt es überhaupt einen Faktor? Macht das ISA Objekt wissenschaftlich Sinn?
-        //testList "Plausibility" [
-        //    testList "Study" [
-                
-        //    ]
-        ]
-    ]

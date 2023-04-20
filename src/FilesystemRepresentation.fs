@@ -2,6 +2,9 @@
 
 open System.IO
 
+
+// DEPRECATED! Use ArcGraphModel instead.
+
 /// Type representation of a Study folder.
 type StudyFolderStructure = {
     Name                : string

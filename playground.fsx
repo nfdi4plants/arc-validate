@@ -1,6 +1,7 @@
 #r "nuget: FSharpAux"
 #r @"C:\Repos\nfdi4plants\ArcGraphModel\src\ArcGraphModel\bin\Debug\net6.0\ArcGraphModel.dll"
-//#r @""
+#r @"C:\Repos\CSBiology\FsSpreadsheet\src\FsSpreadsheet\bin\Debug\netstandard2.0\FsSpreadsheet.dll"
+//#r @
 
 // TO DO: write validation tests that WORK ON CVPARAMS (list/array) instead of graph!
 
@@ -10,6 +11,7 @@
 open ArcGraphModel
 open ArcGraphModel.ArcType
 open FSharpAux
+open FsSpreadsheet
 
 let address = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!A2")]
 let address2 = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!B2")]
@@ -38,6 +40,9 @@ let returnCellAddressWhen predicate columnType (cvParam : CvParam) =
         if isEmpty then Some (cvParam["Address"] :> IParamBase |> ParamBase.getValue |> string)
         else None
     | _ -> None
+
+let containsFilePath cvParam =
+    returnCellAddressWhen (Ont)
 
 /// Returns all Source Name cells with an empty value.
 let returnEmptyInputCells cvParams = 

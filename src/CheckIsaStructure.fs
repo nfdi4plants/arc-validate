@@ -6,6 +6,9 @@ open ISADotNet
 open ISADotNet.XLSX
 open System.Collections.Generic
 
+
+// DEPRECATED! Use ArcGraphModel instead
+
 // ‼ remove as soon as this is released on F#Aux ‼
 module Seq =
     /// Computes the intersection of two sequences.
