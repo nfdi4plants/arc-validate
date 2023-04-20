@@ -3,20 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "arc-validate", "src\arc-validate.fsproj", "{2A0CCB27-FEB3-4CF7-82D4-C8436D67866C}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "arc-validate", "src\arc-validate.fsproj", "{2A0CCB27-FEB3-4CF7-82D4-C8436D67866C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-2108-4C43-843A-9F503044FDB7}"
+	ProjectSection(SolutionItems) = preProject
+		playground.fsx = playground.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2A0CCB27-FEB3-4CF7-82D4-C8436D67866C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2A0CCB27-FEB3-4CF7-82D4-C8436D67866C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A0CCB27-FEB3-4CF7-82D4-C8436D67866C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A0CCB27-FEB3-4CF7-82D4-C8436D67866C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}
 	EndGlobalSection
 EndGlobal
