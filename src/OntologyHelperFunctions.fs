@@ -156,9 +156,12 @@ module Validate =
                 |> CvBase.getCvName
                 |> splitAddress
             let path = 
-                person["path"] 
+                person["Path"] 
                 |> Seq.head 
-                |> CvBase.getCvName
+                //|> CvBase.getCvName
+                :?> CvParam
+                |> ParamBase.getValue
+                |> string
             createMessage path (Some line) (Some pos) (Some sheet) XLSXFile
         match firstName, lastName with
         | None, _ -> Error message
