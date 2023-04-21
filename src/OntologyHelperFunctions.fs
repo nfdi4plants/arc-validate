@@ -5,6 +5,7 @@ open FSharpSpreadsheetML
 open Expecto
 open ArcGraphModel
 open FsSpreadsheet
+open FsSpreadsheet.CellReference
 
 
 /// Representation of a CWL version as a record type.
@@ -38,7 +39,7 @@ type MessageKind =
 type Message = {
     Path        : string
     Line        : int option
-    Position    : string option
+    Position    : int option
     Sheet       : string option
     Kind        : MessageKind
 }
@@ -59,8 +60,8 @@ let isPresent actual message =
     else 
         match message.Kind with 
         | FilesystemEntry -> failtestf "Actual entity is not present: %s" message.Path     // <- string hier ist expliziter Fehler (ohne Ort, Ort wird über message realisiert), also Fehlermeldung zum Name der Funktion
-        | Textfile -> failtestf "Actual entity is not present: %s at Line: %i, Position: %s" message.Path message.Line.Value message.Position.Value
-        | XLSXFile -> failtestf "Actual entity is not present: %s in Worksheet %s at Cell: %s%i" message.Path message.Sheet.Value message.Position.Value message.Line.Value
+        | Textfile -> failtestf "Actual entity is not present: %s at Line: %i, Position: %i" message.Path message.Line.Value message.Position.Value
+        | XLSXFile -> failtestf "Actual entity is not present: %s in Worksheet %s at Cell: %s%i" message.Path message.Sheet.Value (uint message.Position.Value |> indexToColAdress) message.Line.Value
 
 /// Checks if a given ISA value is registered in the ISA Investigation file.
 let isRegistered actual message =
@@ -94,7 +95,7 @@ let isValidTerm actual message =
             "Actual entity is not valid: %s in Worksheet %s at Cell%s%i" 
             message.Path 
             message.Sheet.Value 
-            (CellReference.indexToColAdress <| uint message.Position.Value)
+            (indexToColAdress <| uint message.Position.Value)
             message.Line.Value
 
 //let isValidPerson actual nessage =
@@ -106,17 +107,61 @@ module FailStrings =
 
     module FilesystemEntry =
 
-        let isPresent = "Actual entity is not present"
+        /// Takes a Message and returns a string containing the information that a FilesystemEntry is not present.
+        let isPresent message = $"Actual entity is not present: {message.Path}"
 
-        let isEitherPresent = "Neither of the actual entities are present"
+        /// Takes 2 Messages and returns a string containing the information that neither FilesystemEntry is present.
+        let isEitherPresent message1 message2 = $"Neither of the actual entities are present: {message1.Path}, {message2.Path}"
 
-        let isRegistered = "Actual value is not registered"
+        /// Takes a Message and returns a string containing the information that a FilesystemEntry is not registered.
+        let isRegistered message = $"Actual value is not registered: {message.Path}"
 
-        let isValidTerm = "Actual term is not valid"
+        //let isValidTerm message = $"Actual term is not valid: {message.Path}"
 
-        let isValidVersion = "Actual CWL version is below required version 1.2"
+        //let isValidVersion message = $"Actual CWL version is below required version 1.2: {message.Path}"
 
-        let isReproducible = "Actual entity is not reproducible"
+        /// Takes a Message and returns a string containing the information that a FilesystemEntry is not reproducible.
+        let isReproducible message = $"Actual entity is not reproducible: {message.Path}"
+
+
+    module Textfile =
+
+        /// Takes a Message and returns a string containing the information that an information in a Textfile is not present.
+        let isPresent message = $"Actual entity is not present: {message.Path} at Line: {message.Line.Value}, Position: {message.Position.Value}"
+
+        /// Takes 2 Messages and returns a string containing the information that an information in neither Textfiles is present.
+        let isEitherPresent message1 message2 = $"Neither of the actual entities are present: {message1.Path} at Line: {message1.Line.Value}, Position: {message1.Position.Value}, {message2.Path} at Line: {message2.Line.Value}, Position: {message2.Position.Value}"
+
+        /// Takes a Message and returns a string containing the information that an information in a Textfile is not registered.
+        let isRegistered message = $"Actual value is not registered: {message.Path} at Line: {message.Line.Value}, Position: {message.Position.Value}"
+
+        /// Takes a Message and returns a string containing the information that an information in a Textfile is not a valid term.
+        let isValidTerm message = $"Actual term is not valid: {message.Path} at Line: {message.Line.Value}, Position: {message.Position.Value}"
+
+        /// Takes a Message and returns a string containing the information that an information in a Textfile is not a valid CWL version.
+        let isValidVersion message = $"Actual CWL version is below required version 1.2: {message.Path} at Line: {message.Line.Value}, Position: {message.Position.Value}"
+
+        ///// Takes a Message and returns a string containing the information that a FilesystemEntry is not reproducible.
+        //let isReproducible message = $"Actual entity is not reproducible: {message.Path}"
+
+
+    module XLSXFile =
+
+        /// Takes a Message and returns a string containing the information that an information in an XLSXFile is not present.
+        let isPresent message = $"Actual entity is not present: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
+
+        /// Takes 2 Messages and returns a string containing the information that neither FilesystemEntry is present.
+        let isEitherPresent message1 message2 = $"Neither of the actual entities are present: {message1.Path} in Worksheet {message1.Sheet} at Cell: {uint message1.Position.Value |> indexToColAdress}{message1.Line.Value}, {message2.Path} in Worksheet {message2.Sheet} at Cell: {uint message2.Position.Value |> indexToColAdress}{message2.Line.Value}"
+
+        /// Takes a Message and returns a string containing the information that a FilesystemEntry is not registered.
+        let isRegistered message = $"Actual value is not registered: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
+
+        let isValidTerm message = $"Actual term is not valid: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
+
+        //let isValidVersion message = $"Actual CWL version is below required version 1.2: {message.Path}"
+
+        /// Takes a Message and returns a string containing the information that a FilesystemEntry is not reproducible.
+        let isReproducible message = $"Actual entity is not reproducible: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
 
 
 /// Represents the result of a validation process.
@@ -129,56 +174,5 @@ let throwError result =
     | Success -> ()
     | Error m -> failtestf
 
-/// Checks if a string is a filepath.
-let isFilepath str =
-    (String.contains "/" str || String.contains "\\" str) &&
-    System.IO.Path.GetExtension str <> ""
 
-/// Splits an address string into a triple inf the form of `sheetName * rowNumber * columnNumber`.
-let splitAddress str =
-    let sheetName, res = String.split '!' str |> fun arr -> arr[0], arr[1]
-    let adr = FsAddress res
-    sheetName, adr.RowNumber, adr.ColumnNumber |> uint |> CellReference.indexToColAdress
 
-/// Functions to validate #ICvBase entities.
-module Validate =
-
-    let person<'T when 'T :> CvContainer> (person : 'T) =
-    //let person (person : CvContainer) =
-        let firstName = person |> Dictionary.tryFind "FirstName"
-        //let firstName = person |> Dictionary.tryFind "FirstName"
-        let lastName = person |> Dictionary.tryFind "LastName"
-        //let lastName = person |> Dictionary.tryFind "LastName"
-        let message = 
-            let sheet, line, pos =
-                person["Address"] 
-                |> Seq.head 
-                |> CvBase.getCvName
-                |> splitAddress
-            let path = 
-                person["Path"] 
-                |> Seq.head 
-                //|> CvBase.getCvName
-                :?> CvParam
-                |> ParamBase.getValue
-                |> string
-            createMessage path (Some line) (Some pos) (Some sheet) XLSXFile
-        match firstName, lastName with
-        | None, _ -> Error message
-        | _, None -> Error message
-        | Some fn, Some ln ->
-            match Seq.isEmpty fn, Seq.isEmpty ln with
-            | false, true -> Error message
-            | true, false -> Error message
-            | _ ->
-                match Seq.head fn |> CvBase.getCvName, Seq.head ln |> CvBase.getCvName with
-                | "", _ -> Error message
-                | _, "" -> Error message
-                | _ -> Success
-
-    //let persons (persons : CvContainer list) =
-    //    persons
-    //    |> List.map (person >> 
-
-    let filepath<'T when 'T :> CvParam> (filepath : 'T) message =
-        
