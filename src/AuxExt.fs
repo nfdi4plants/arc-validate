@@ -4,19 +4,20 @@ module AuxExt
 open System
 open FSharpAux
 open FsSpreadsheet
+open ArcGraphModel
 
 
 
 module String =
 
+    /// Checks if a given string is null, empty, or consisting solely of whitespaces.
     let isNullOrWhiteSpace (str : string) =
         System.String.IsNullOrWhiteSpace str
 
-    /// Checks if an input string option is None or, if it is Some, null, empty or consisting only of whitespaces.
+    /// Checks if an input string option is None or, if it is Some, null, empty or consisting solely of whitespaces.
     let isNoneOrWhiteSpace str =
-        match str with
-        | None -> true
-        | Some s -> String.IsNullOrWhiteSpace s
+        Option.map isNullOrWhiteSpace str
+        |> Option.defaultValue true
 
     /// Checks if a string is a filepath.
     let isFilepath str =
@@ -27,4 +28,4 @@ module String =
     let splitAddress str =
         let sheetName, res = String.split '!' str |> fun arr -> arr[0], arr[1]
         let adr = FsAddress res
-        sheetName, adr.RowNumber, adr.ColumnNumber |> uint |> CellReference.indexToColAdress
+        sheetName, adr.RowNumber, adr.ColumnNumber
