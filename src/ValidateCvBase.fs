@@ -1,36 +1,44 @@
 ﻿module ValidateCvBase
 
 open ArcGraphModel
-open ArcGraphModel.ArcType
 open FSharpAux
+open OntologyHelperFunctions
+open FsSpreadsheet
+open AuxExt
 
-/// Returns a CvParam's cell address (in the form of `<sheetname>!<column letter><row number>`, e.g. `sheet1!A1`) for a given column
-/// type if `predicate` returns true. Else returns None.
-let returnCellAddressWhen predicate columnType (cvParam : CvParam) =
-    match BuildingBlockType.tryOfString (cvParam :> ICvBase).Name with
-    | Some x when columnType x ->
-        let isEmpty = 
-            cvParam
-            :> IParamBase 
-            |> ParamBase.getValue 
-            |> string
-            |> predicate
-        if isEmpty then Some (cvParam["Address"] :> IParamBase |> ParamBase.getValue |> string)
-        else None
-    | _ -> None
 
-let containsFilePath cvParam =
-    returnCellAddressWhen (Ont)
+/// Functions to validate #ICvBase entities.
+module Validate =
 
-/// Returns all Source Name cells with an empty value.
-let returnEmptyInputCells cvParams = 
-    cvParams |> List.choose (returnCellAddressWhen String.isNullOrEmpty (fun c -> c.IsInputColumn))
+    //let f (v : ICvBase) =
+    //    match v with
+    //    | :? CvParam as cvp -> cvp |> ParamBase.getValue |> string |> Some
+    //    | _ -> None
 
-/// Returns all Sample Name / Raw Data File / Derived Data File cells with an empty value.
-let returnEmptyOutputCells cvParams = 
-    cvParams |> List.choose (returnCellAddressWhen String.isNullOrEmpty (fun c -> c.IsOutputColumn))
+    let person<'T when 'T :> CvContainer> (person : 'T) =
+        //let firstName : string option = CvContainer.tryGetSingleAs "FirstName" person |> Option.bind f
+        let firstName = CvContainer.tryGetSingleAsValue "FirstName" person |> Option.map string
+        let lastName = CvContainer.tryGetSingleAsValue "LastName" person |> Option.map string
+        //let lastName = CvContainer.tryGetSingleAs "LastName" person |> Option.bind  f
+        let message = 
+            let sheet, line, pos =
+                //CvContainer.tryGetSingleAs "Address" person
+                CvContainer.tryGetSingleAsValue "Address" person
+                //|> Option.bind f
+                |> Option.get
+                |> string
+                |> String.splitAddress
+            //let path = CvContainer.tryGetSingleAs "Filepath" person |> Option.bind f |> Option.get
+            let path = CvContainer.tryGetSingleAsValue "Filepath" person |> Option.map string |> Option.get
+            createMessage path (Some line) (Some pos) (Some sheet) XLSXFile
+        match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
+        | false, false -> Success
+        | _ -> Error message
+        //0
 
-/// Returns all RawDataFile names, DerivedDataFile names and ProtocolREF filenames that do not exist in the ARC.
-let returnNonExistentFileNames cvParams =
-    // root path to ARC folder must be part of the string at this point already
-    cvParams |> List.choose (returnCellAddressWhen (System.IO.File.Exists >> not) (fun c -> c = RawDataFile || c = DerivedDataFile || c = ProtocolREF))
+    let persons (persons : CvContainer list) =
+        persons
+        |> List.exists (person >> (=) Success)
+
+    //let filepath<'T when 'T :> CvParam> (filepath : 'T) message =
+        
