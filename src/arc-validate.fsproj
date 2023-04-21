@@ -12,6 +12,7 @@
     <Compile Include="FilesystemRepresentation.fs" />
     <Compile Include="CheckFilesystemStructure.fs" />
     <Compile Include="CheckIsaStructure.fs" />
+    <Compile Include="ValidateCvBase.fs" />
     <Compile Include="ValidateArc.fs" />
     <Compile Include="Main.fs" />    
   </ItemGroup>
