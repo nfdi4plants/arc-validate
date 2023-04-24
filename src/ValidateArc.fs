@@ -8,6 +8,7 @@ open CheckIsaStructure
 open Expecto
 open ArcGraphModel
 open FsSpreadsheet
+open ValidateCvBase
 
 [<Tests>]
 let filesystem =
@@ -88,7 +89,7 @@ let isaTests =
 //        //// z. B. haben alle Terme Identifier? Ist es CWL-complient?
         testList "Semantic" [
             testList "Investigation" [
-                testCase "Person" <| fun () -> Validate.person
+                testCase "Person" <| fun () -> Validate.persons investigationPersons |> List.iter throwError
             ]
         ]
 //        //// z. B. gibt es überhaupt einen Faktor? Macht das ISA Objekt wissenschaftlich Sinn?

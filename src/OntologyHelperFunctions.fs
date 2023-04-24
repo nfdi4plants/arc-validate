@@ -171,7 +171,7 @@ type ValidationResult =
 
 let throwError result = 
     match result with
-    | Success -> ()
+    | Success -> id
     | Error m -> failtestf
 
 

@@ -10,26 +10,21 @@ open AuxExt
 /// Functions to validate #ICvBase entities.
 module Validate =
 
-    //let f (v : ICvBase) =
-    //    match v with
-    //    | :? CvParam as cvp -> cvp |> ParamBase.getValue |> string |> Some
-    //    | _ -> None
-
     let person<'T when 'T :> CvContainer> (person : 'T) =
         //let firstName : string option = CvContainer.tryGetSingleAs "FirstName" person |> Option.bind f
-        let firstName = CvContainer.tryGetSingleAsValue "FirstName" person |> Option.map string
-        let lastName = CvContainer.tryGetSingleAsValue "LastName" person |> Option.map string
+        let firstName = CvContainer.tryGetSingleParam "FirstName" person |> Option.map Param.getValueAsString
+        let lastName = CvContainer.tryGetSingleParam "LastName" person |> Option.map Param.getValueAsString
         //let lastName = CvContainer.tryGetSingleAs "LastName" person |> Option.bind  f
         let message = 
             let sheet, line, pos =
                 //CvContainer.tryGetSingleAs "Address" person
-                CvContainer.tryGetSingleAsValue "Address" person
+                CvContainer.tryGetSingleParam "Address" person
                 //|> Option.bind f
                 |> Option.get
-                |> string
+                |> Param.getValueAsString
                 |> String.splitAddress
             //let path = CvContainer.tryGetSingleAs "Filepath" person |> Option.bind f |> Option.get
-            let path = CvContainer.tryGetSingleAsValue "Filepath" person |> Option.map string |> Option.get
+            let path = CvContainer.tryGetSingleParam "Filepath" person |> Option.map Param.getValueAsString |> Option.get
             createMessage path (Some line) (Some pos) (Some sheet) XLSXFile
         match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
         | false, false -> Success
@@ -38,7 +33,7 @@ module Validate =
 
     let persons (persons : CvContainer list) =
         persons
-        |> List.exists (person >> (=) Success)
+        |> List.map (person >> (=) Success)
 
     //let filepath<'T when 'T :> CvParam> (filepath : 'T) message =
         
