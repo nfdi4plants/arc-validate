@@ -1,6 +1,17 @@
 # arc-validate
 Test project and docker container for the ARC validation workflow.
 
+## ISA test description
+
+- **Schema**: Tests about the ISA schema format correctness E.g.:
+  - _Is there an investigation?_
+- **Semantic**: Tests about semantic compliance to ARC specification E.g.:
+  - _Do all terms have identifiers?_
+  - _Is the ARC CWL-compliant?_
+- **Plausibility**: Tests about scientific plausibility E.g.:
+  - _Is there a Factor?_
+  - _Does the ISA object make sense from a scientific point of view?_
+
 ## Build Docker container 
 
 In the repo root, run `docker build -t arc-validate .`
