@@ -2,24 +2,27 @@
 
 open System.IO
 open OntologyHelperFunctions
-open CheckFilesystemStructure.Paths
-open CheckFilesystemStructure.Checks
+open FilesystemStructure.Paths
 open CheckIsaStructure
 open Expecto
 open ArcGraphModel
 open FsSpreadsheet
+open FsSpreadsheet.ExcelIO
 open ValidateCvBase
+open FailStrings
+
+
 
 [<Tests>]
 let filesystem =
     testList "Filesystem" [
-        testCase "arcFolder" <| fun () -> isPresent hasArcFolder (createMessage arcFolderPath None None None FilesystemEntry)
-        testList "Git" [
-            testCase "git folder"      <| fun () -> isPresent hasGitFolder     (createMessage gitFolderPath    None None None FilesystemEntry)
-            testCase "hooks folder"     <| fun () -> isPresent hasHooksFolder   (createMessage hooksPath        None None None FilesystemEntry)
-            testCase "objects folder"   <| fun () -> isPresent hasObjectsFolder (createMessage objectsPath      None None None FilesystemEntry)
-            testCase "refs folder"      <| fun () -> isPresent hasRefsFolder    (createMessage refsPath         None None None FilesystemEntry)
-        ]
+        //testCase "arcFolder" <| fun () -> isPresent hasArcFolder (createMessage arcFolderPath None None None FilesystemEntry)
+        //testList "Git" [
+        //    testCase "git folder"      <| fun () -> isPresent hasGitFolder     (createMessage gitFolderPath    None None None FilesystemEntry)
+        //    testCase "hooks folder"     <| fun () -> isPresent hasHooksFolder   (createMessage hooksPath        None None None FilesystemEntry)
+        //    testCase "objects folder"   <| fun () -> isPresent hasObjectsFolder (createMessage objectsPath      None None None FilesystemEntry)
+        //    testCase "refs folder"      <| fun () -> isPresent hasRefsFolder    (createMessage refsPath         None None None FilesystemEntry)
+        //]
         testList "DataPathNames" [
             //testCase "ProtocolREFs" <| fun () -> protocolRefFilepaths |> isPresent
             //testCase "Data" <| fun () -> protocolRefFilepaths |> isPresent
@@ -30,6 +33,24 @@ let filesystem =
 
 
 let studies = None
+
+let lukasFunktion = fun str -> [CvParam("","","",ParamValue.Value "")]      // dummy
+let inv = FsWorkbook.fromXlsxFile investigationPath
+let worksheet = 
+    let ws = 
+        inv.GetWorksheets()
+        |> List.find (fun ws -> ws.Name = "isa_investigation")
+    ws.RescanRows()
+    ws
+let investigationPersons : #ICvBase list = lukasFunktion investigationPath
+
+let tokens = 
+    worksheet
+    |> Worksheet.parseRows
+
+let containers = 
+    tokens
+    |> TokenAggregation.aggregateTokens 
 
 [<Tests>]
 let isaTests =
@@ -46,15 +67,17 @@ let isaTests =
         //            )
         //    ]
         //]
+        testList "Semantic" [
+            testList "Investigation" [
+                testCase "Person" <| fun () -> 
+                    ValidateCvBase.persons investigationPersons |> List.iter (throwError XLSXFile.isRegistered)
+            ]
+        ]
     ]
 
-let lukasFunktion = fun str -> [CvParam("","","",ParamValue.Value "")]      // dummy
-let investigationPersons : #ICvBase list = lukasFunktion investigationPath
-
 //[<Tests>]
-let isaTests =
-    testList "ISA" [
-//        // kann man alles mit JSON Schema testen, auch ISA (ist das ISA-Format korrekt?)
+//let isaTests =
+//    testList "ISA" [
 //        testList "Schema" [
 //            testList "Study" [
 //                // TO DO: By god, make this abomination of uglyness somehow pretty!
@@ -86,19 +109,17 @@ let isaTests =
 //                    | None -> Seq.empty
 //            ]
 //        //]
-//        //// z. B. haben alle Terme Identifier? Ist es CWL-complient?
-        testList "Semantic" [
-            testList "Investigation" [
-                testCase "Person" <| fun () -> Validate.persons investigationPersons |> List.iter throwError
-            ]
-        ]
-//        //// z. B. gibt es überhaupt einen Faktor? Macht das ISA Objekt wissenschaftlich Sinn?
+        //testList "Semantic" [
+        //    testList "Investigation" [
+        //        testCase "Person" <| fun () -> Validate.persons investigationPersons |> List.iter (throwError FailStrings.XLSXFile.isPresent)
+        //    ]
+        //]
 //        //testList "Plausibility" [
 //        //    testList "Study" [
                 
 //        //    ]
 //        ]
-    ]
+    //]
 
 //let isaTests =
 //    isa [

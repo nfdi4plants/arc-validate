@@ -13,10 +13,10 @@ open ArcGraphModel.ArcType
 open FSharpAux
 open FsSpreadsheet
 
-let address = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!A2")]
-let address2 = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!B2")]
-let address3 = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!D5")]
-let testCvP3' = CvParam("ISA:0001", "Sample Name", "ISA", ParamValue.Value "", address3)
+let address = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!A2") |> fun c -> c :> IParam]
+let address2 = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!B2") |> fun c -> c :> IParam]
+let address3 = [CvParam("", "Address", "", ParamValue.Value "annotationTable1!D5") |> fun c -> c :> IParam]
+let testCvP3' = CvParam("ISA:0001", "Sample Name", "ISA", ParamValue.Value "", address3 |> List.map (fun c -> c :> IParam))
 address.Head :> IParamBase |> ParamBase.getValue |> string
 //address.Head :> IParamBase |> ParamBase.getValue :?> string
 
