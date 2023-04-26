@@ -5,17 +5,17 @@ open ArcGraphModel
 
 
 type MessageKind =
-    | FilesystemEntry
-    | Textfile
-    | XLSXFile
+    | FilesystemEntryKind
+    | TextfileKind
+    | XLSXFileKind
 
 /// Representation of a Message. Path is mandatory, Line and Position are optional. 
 ///
-/// For mere binary files and folders and all files listed below when their content does not matter, Line, Position, and Sheet shall always be None. MessageKind is `FilesystemEntry`.
+/// For mere binary files and folders and all files listed below when their content does not matter, Line, Position, and Sheet shall always be None. MessageKind is `FilesystemEntryKind`.
 ///
-/// For textfiles when content matters, Line and Position shall lead to the first character in question. Sheet shall be None. MessageKind is `Textfile`.
+/// For textfiles when content matters, Line and Position shall lead to the first character in question. Sheet shall be None. MessageKind is `TextfileKind`.
 ///
-/// For XLSX files when content matters, Line and Position together shall lead to the cell in question. Sheet shall be the name of the concerning Worksheet. MessageKind is XLSXFile.
+/// For XLSX files when content matters, Line and Position together shall lead to the cell in question. Sheet shall be the name of the concerning Worksheet. MessageKind is `XLSXFileKind`.
 type Message = {
     Path        : string
     Line        : int option
@@ -25,15 +25,13 @@ type Message = {
     }
     with
 
-
-
     /// Creates a message with the given path, and, optionally, line and position. 
     /// 
-    /// For mere binary files and folders and all files listed below when their content does not matter, Line, Position, and Sheet shall always be None. MessageKind is `FilesystemEntry`.
+    /// For mere binary files and folders and all files listed below when their content does not matter, Line, Position, and Sheet shall always be None. MessageKind is `FilesystemEntryKind`.
     ///
-    /// For textfiles when content matters, Line and Position shall lead to the first character in question. Sheet shall be None. MessageKind is `Textfile`.
+    /// For textfiles when content matters, Line and Position shall lead to the first character in question. Sheet shall be None. MessageKind is `TextfileKind`.
     ///
-    /// For XLSX files when content matters, Line and Position together shall lead to the cell in question. Sheet shall be the name of the concerning Worksheet. MessageKind is XLSXFile.
+    /// For XLSX files when content matters, Line and Position together shall lead to the cell in question. Sheet shall be the name of the concerning Worksheet. MessageKind is `XLSXFileKind`.
     static member create path line pos sheet kind = {Path = path; Line = line; Position = pos; Sheet = sheet; Kind = kind}
 
 
@@ -42,7 +40,7 @@ module FilesystemEntry =
     /// Creates a Message for a FilesystemEntry from the given CvParam.
     let createFromCvParam cvParam =
         let path = CvParam.tryGetAttribute "Filepath" cvParam |> Option.get |> Param.getValueAsString
-        Message.create path None None None FilesystemEntry
+        Message.create path None None None FilesystemEntryKind
 
 
 module Textfile =
@@ -55,8 +53,21 @@ module Textfile =
         {defaultMsg with
             Line        = Some line
             Position    = Some pos
-            Kind        = Textfile
+            Kind        = TextfileKind
         }
+
+    //let createFromCvContainer cvContainer =
+    //    let defaul = 0
+    //    let line = 
+    //        cvParam.Properties.Values 
+    //        |> Seq.concat 
+    //        |> Seq.toList 
+    //        |> List.choose CvBase.tryAs<CvParam>
+    //        |> List.map (fun c ->
+    //            match CvAttributeCollection.tryGetAttribute (CvTerm.getName Address.row) c with
+    //            | Some row -> Param.getValueAsInt row
+    //            | None -> failwith "fuuuuuck"
+    //        )
 
 
 module XlsxFile =
@@ -64,10 +75,10 @@ module XlsxFile =
     /// Creates a Message for an XLSX file from the given CvParam.
     let createXlsxMessageFromCvParam cvParam =
         let defaultMsg = Textfile.createFromCvParam cvParam
-        let sheet = CvParam.tryGetAttribute "Sheetname" cvParam |> Option.get |> Param.getValueAsString
+        let sheet = CvParam.tryGetAttribute "Worksheet" cvParam |> Option.get |> Param.getValueAsString
         {defaultMsg with
             Sheet   = Some sheet
-            Kind    = XLSXFile
+            Kind    = XLSXFileKind
         }
 
 

@@ -40,7 +40,7 @@ module FilesystemEntry =
 
     /// Generalized function: Validates a folderpath.
     let private folder folderpath =
-        let message = Message.create folderpath None None None MessageKind.FilesystemEntry
+        let message = Message.create folderpath None None None MessageKind.FilesystemEntryKind
         if Directory.Exists folderpath then Success
         else Error message
 

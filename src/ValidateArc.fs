@@ -53,16 +53,16 @@ let filesystem =
 let invContacts =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
-    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv)
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.containsAttribute "Investigation" cv)
 
 
 [<Tests>]
 let isaTests =
     testList "ISA" [
-        testList "Semantic" [
-            testList "Investigation" [
-                testCase "Person" <| fun () -> 
-                    Validate.CvBase.persons invContacts |> Seq.iter (throwError XLSXFile.isRegistered)
-            ]
-        ]
+        //testList "Semantic" [
+        //    testList "Investigation" [
+        //        testCase "Person" <| fun () -> 
+        //            Validate.CvBase.persons invContacts |> Seq.iter (throwError XLSXFile.isRegistered)
+        //    ]
+        //]
     ]

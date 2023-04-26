@@ -2,6 +2,8 @@
 #r "nuget: FsSpreadsheet.ExcelIO"
 #r "nuget: ArcGraphModel, 0.1.0-preview.1"
 #r "nuget: ArcGraphModel.IO, 0.1.0-preview.1"
+#I "src/bin/Debug/net6.0"
+#r "arc-validate.dll"
 
 //#I @"src\ArcGraphModel\bin\Release\net6.0"
 //#I @"../ArcGraphModel/src\ArcGraphModel.IO\bin\Release\net6.0"
@@ -14,6 +16,8 @@ open ArcGraphModel
 open ArcGraphModel.IO
 open FSharpAux
 open FsSpreadsheet.ExcelIO
+open CvTokens
+open OntologyHelperFunctions
 
 //fsi.AddPrinter (fun (cvp : CvParam) -> 
 //    cvp.ToString()
@@ -21,6 +25,34 @@ open FsSpreadsheet.ExcelIO
 //fsi.AddPrinter (fun (cvp : CvContainer) -> 
 //    cvp.ToString()
 //)
+
+// ~~~~~~~~~~~~~
+// INTERNALUTILS
+// ~~~~~~~~~~~~~
+
+module String =
+
+    /// Checks if a given string is null, empty, or consisting solely of whitespaces.
+    let isNullOrWhiteSpace (str : string) =
+        System.String.IsNullOrWhiteSpace str
+
+    /// Checks if an input string option is None or, if it is Some, null, empty or consisting solely of whitespaces.
+    let isNoneOrWhiteSpace str =
+        Option.map isNullOrWhiteSpace str
+        |> Option.defaultValue true
+
+    /// Checks if a string is a filepath.
+    let isFilepath str =
+        (String.contains "/" str || String.contains "\\" str) &&
+        System.IO.Path.GetExtension str <> ""
+
+    /// Splits an file address string into a triple in the form of `sheetName * rowNumber * columnNumber`.
+    let splitAddress str =
+        let sheetName, res = String.split '!' str |> fun arr -> arr[0], arr[1]
+        let adr = FsAddress res
+        sheetName, adr.RowNumber, adr.ColumnNumber
+
+// ~~~~~~~~~~~~~
 
 fsi.AddPrinter (fun (cvp : ICvBase) -> 
     match cvp with
@@ -54,15 +86,52 @@ invContainers
 |> CvContainer.getSingleParam "File Name"
 |> Param.getValue
 
-let inv =
+let invContacts =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
-    |> Seq.find (fun cv -> CvBase.equalsTerm Terms.person cv)
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.containsAttribute "Investigation" cv)
 
-inv
-|> CvBase.equalsTerm Terms.name
+/// Validates a person.
+let person<'T when 'T :> CvContainer> (person : 'T) =
+    let firstName = CvContainer.tryGetPropertyStringValue "given name" person
+    printfn "1"
+    let lastName = CvContainer.tryGetPropertyStringValue "family name" person
+    printfn "2"
+    let message = ErrorMessage.XlsxFile.createXlsxMessageFromCvParam person
+    printfn "3"
+    match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
+    | false, false -> Success
+    | _ -> Error message
 
-inv
+person << Seq.head <| invContacts
+let p1 = Seq.head invContacts
+p1.Properties
+let l = p1.Properties.Values |> Seq.concat |> Seq.toList |> List.choose CvBase.tryAs<CvParam>
+l |> List.map (fun c ->
+    match CvAttributeCollection.tryGetAttribute (CvTerm.getName Address.row) c with
+    | Some row -> Param.getValueAsInt row
+    | None -> failwith "fuuuuuck"
+    )
+
+let p1Attributes = p1.Attributes
+p1Attributes.Head |> CvAttributeCollection.tryGetAttribute ""
+ErrorMessage.FilesystemEntry.createFromCvParam p1
+
+module ThisName =
+    let myFunction () = "Function in module"
+
+type ThisName =
+    | MyCase
+
+let result1 = ThisName.myFunction() // Accessing the function from the module using qualified access
+
+let result2 = ThisName.MyCase // Accessing the union case
+
+invContacts
+|> Seq.map (CvBase.equalsTerm Terms.name)
+
+invContacts
+|> Seq.head
 //|> CvContainer.KeyCollection
 //|> CvContainer.ValueCollection
 //|> fun i -> i.Properties
@@ -70,10 +139,6 @@ inv
 |> Param.tryParam
 |> Option.get
 |> Param.getValue
-
-let invCntcts = 
-    inv 
-    |> CvContainer.getMany "Contacts"
 
 let invStudies =
     invContainers
@@ -88,30 +153,6 @@ let assay1 =
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
     |> Seq.head
 
-let invesContacts = 
-    invContainers
-    |> List.ofSeq
-    //|> List.find (fun up -> (up :> IParam).Name = "INVESTIGATION CONTACTS")
-    //|> List.find (fun up -> (up :> IParam).Name = "Investigation Person First Name")
-    //|> List.find (fun up -> up.Name = "Investigation Person First Name")
-    |> List.find (fun c -> c.Name = "Investigation")
-    |> CvContainer.tryCvContainer
-    |> Option.get
-    //|> List.map (fun c -> c.ToString())
-    //|> fun c -> c.ToString()
-
-
-let fn1 =
-    CvContainer.tryGetSingle "family name" invesContacts
-    |> Option.get
-    |> CvParam.tryCvParam
-    |> Option.get
-
-fn1
-|> Param.getValue
-|> string
-
-fn1.Attributes
 
 //match invesContacts[0] with
 //| p when (Param.tryParam p).IsSome -> 

@@ -32,3 +32,7 @@ module CvBase =
     /// Validates several filepaths.
     let filepaths (filepaths : CvParam seq) =
         Seq.map filepath filepaths
+
+    ///// Validates if CvContainer contains persons.
+    //let contacts (container : CvContainer) =
+    //    if container |> CvBase.equalsTerm Terms.person
