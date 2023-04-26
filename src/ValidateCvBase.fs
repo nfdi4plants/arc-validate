@@ -1,30 +1,34 @@
-﻿/// Functions to validate #ICvBase entities.
-module ValidateCvBase
+﻿namespace Validate
 
 open ArcGraphModel
 open FSharpAux
 open OntologyHelperFunctions
-open FsSpreadsheet
-open AuxExt
+open CvTokens
 
 
-let person<'T when 'T :> CvParam> (person : 'T) =
-    //let firstName : string option = CvContainer.tryGetSingleAs "FirstName" person |> Option.bind f
-    let firstName = CvParam.tryGetAttribute "given name" person |> Option.map Param.getValueAsString
-    let lastName = CvParam.tryGetAttribute "family name" person |> Option.map Param.getValueAsString
-    //let lastName = CvContainer.tryGetSingleAs "LastName" person |> Option.bind  f
-    let message = 
-        let line = CvParam.tryGetAttribute "Row" person |> Option.get |> Param.getValueAsInt
-        let sheet = CvParam.tryGetAttribute "Sheetname" person |> Option.get |> Param.getValueAsString
-        let pos = CvParam.tryGetAttribute "Column" person |> Option.get |> Param.getValueAsInt
-        let path = CvParam.tryGetAttribute "Filepath" person |> Option.get |> Param.getValueAsString
-        createMessage path (Some line) (Some pos) (Some sheet) XLSXFile
-    match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
-    | false, false -> Success
-    | _ -> Error message
+/// Functions to validate #ICvBase entities.
+module CvBase =
 
-let persons (persons : CvParam list) =
-    List.map person persons
+    /// Validates a person.
+    let person<'T when 'T :> CvContainer> (person : 'T) =
+        let firstName = CvContainer.tryGetPropertyStringValue "given name" person
+        let lastName = CvContainer.tryGetPropertyStringValue "family name" person
+        let message = ErrorMessage.XlsxFile.createXlsxMessageFromCvParam person
+        match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
+        | false, false -> Success
+        | _ -> Error message
 
-//let filepath<'T when 'T :> CvParam> (filepath : 'T) message =
-        
+    /// Validates several persons.
+    let persons (persons : CvContainer seq) =
+        Seq.map person persons
+
+    /// Validates a filepath.
+    let filepath<'T when 'T :> CvParam> (filepath : 'T) =
+        let message = ErrorMessage.XlsxFile.createXlsxMessageFromCvParam filepath
+        match CvParam.tryGetAttribute "Filepath" filepath |> Option.map Param.getValueAsString with
+        | Some fp -> Success
+        | None -> Error message
+
+    /// Validates several filepaths.
+    let filepaths (filepaths : CvParam seq) =
+        Seq.map filepath filepaths

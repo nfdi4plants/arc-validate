@@ -7,13 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="AuxExt.fs" />
-    <Compile Include="SummaryFileWriter.fs" />
+    <Compile Include="InternalUtils.fs" />
     <Compile Include="CvTokens.fs" />
     <Compile Include="ErrorMessage.fs" />
     <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="FilesystemRepresentation.fs" />
-    <Compile Include="FilesystemStructure.fs" />
+    <Compile Include="ArcPaths.fs" />
     <Compile Include="CheckIsaStructure.fs" />
     <Compile Include="ValidateFilesystemEntries.fs" />
     <Compile Include="ValidateCvBase.fs" />

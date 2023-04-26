@@ -4,19 +4,6 @@ open ArcGraphModel
 open ArcGraphModel.ArcType
 
 
-//// temporary
-//open FSharpAux
-//type CvParam with
-
-//    member this.TryGetAttributeValueAsString (attributeName : string) =
-//        match this.TryGetAttribute attributeName with
-//        | Some att -> Param.getValueAsString att |> Some
-//        | None -> None
-
-//    static member tryGetAttributeValueAsString attributeName (cvParam : CvParam) =
-//        cvParam.TryGetAttributeValueAsString attributeName
-
-
 module CvParam =
 
     /// Returns a CvParam's cell address (in the form of `<sheetname>!<column letter><row number>`, e.g. `sheet1!A1`) for a given column

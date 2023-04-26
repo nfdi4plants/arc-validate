@@ -22,10 +22,10 @@ type Message = {
     Position    : int option
     Sheet       : string option
     Kind        : MessageKind
-}
+    }
+    with
 
 
-module Message =
 
     /// Creates a message with the given path, and, optionally, line and position. 
     /// 
@@ -34,41 +34,41 @@ module Message =
     /// For textfiles when content matters, Line and Position shall lead to the first character in question. Sheet shall be None. MessageKind is `Textfile`.
     ///
     /// For XLSX files when content matters, Line and Position together shall lead to the cell in question. Sheet shall be the name of the concerning Worksheet. MessageKind is XLSXFile.
-    let create path line pos sheet kind = {Path = path; Line = line; Position = pos; Sheet = sheet; Kind = kind}
+    static member create path line pos sheet kind = {Path = path; Line = line; Position = pos; Sheet = sheet; Kind = kind}
 
 
-    module FilesystemEntry =
+module FilesystemEntry =
 
-        /// Creates a Message for a FilesystemEntry from the given CvParam.
-        let createFromCvParam cvParam =
-            let path = CvParam.tryGetAttribute "Filepath" cvParam |> Option.get |> Param.getValueAsString
-            create path None None None FilesystemEntry
-
-
-    module Textfile =
-
-        /// Creates a Message for a Textfile from the given CvParam.
-        let createFromCvParam cvParam =
-            let defaultMsg = FilesystemEntry.createFromCvParam cvParam
-            let line = CvParam.tryGetAttribute "Row" cvParam |> Option.get |> Param.getValueAsInt
-            let pos = CvParam.tryGetAttribute "Column" cvParam |> Option.get |> Param.getValueAsInt
-            {defaultMsg with
-                Line        = Some line
-                Position    = Some pos
-                Kind        = Textfile
-            }
+    /// Creates a Message for a FilesystemEntry from the given CvParam.
+    let createFromCvParam cvParam =
+        let path = CvParam.tryGetAttribute "Filepath" cvParam |> Option.get |> Param.getValueAsString
+        Message.create path None None None FilesystemEntry
 
 
-    module XlsxFile =
+module Textfile =
 
-        /// Creates a Message for an XLSX file from the given CvParam.
-        let createXlsxMessageFromCvParam cvParam =
-            let defaultMsg = Textfile.createFromCvParam cvParam
-            let sheet = CvParam.tryGetAttribute "Sheetname" cvParam |> Option.get |> Param.getValueAsString
-            {defaultMsg with
-                Sheet   = Some sheet
-                Kind    = XLSXFile
-            }
+    /// Creates a Message for a Textfile from the given CvParam.
+    let createFromCvParam cvParam =
+        let defaultMsg = FilesystemEntry.createFromCvParam cvParam
+        let line = CvParam.tryGetAttribute "Row" cvParam |> Option.get |> Param.getValueAsInt
+        let pos = CvParam.tryGetAttribute "Column" cvParam |> Option.get |> Param.getValueAsInt
+        {defaultMsg with
+            Line        = Some line
+            Position    = Some pos
+            Kind        = Textfile
+        }
+
+
+module XlsxFile =
+
+    /// Creates a Message for an XLSX file from the given CvParam.
+    let createXlsxMessageFromCvParam cvParam =
+        let defaultMsg = Textfile.createFromCvParam cvParam
+        let sheet = CvParam.tryGetAttribute "Sheetname" cvParam |> Option.get |> Param.getValueAsString
+        {defaultMsg with
+            Sheet   = Some sheet
+            Kind    = XLSXFile
+        }
 
 
 /// First part of an Error message: Describes why something did not match the requirements.

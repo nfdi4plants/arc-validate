@@ -8,6 +8,7 @@ open System.Collections.Generic
 
 
 // DEPRECATED! Use ArcGraphModel instead
+// temporarily stays here to remember which cases to cover & how
 
 // ‼ remove as soon as this is released on F#Aux ‼
 module Seq =
@@ -41,7 +42,7 @@ module Array =
 
     /// Computes the outersection (known as "symmetric difference" in mathematics) of two arrays.
     let outersect arr1 (arr2 : 'T []) =
-        let hsS1 = HashSet<'T>(HashIdentity.Structural<'T>)
+        let hsS1 = HashSet<'T>(HashIdentity.Structural<'T> )
         arr1 |> Array.iter (hsS1.Add >> ignore)
         hsS1.SymmetricExceptWith arr2
         Array.ofSeq hsS1

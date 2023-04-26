@@ -1,15 +1,16 @@
-module ValidateFilesystemEntries
+namespace Validate
 
-open FilesystemRepresentation
-open FilesystemStructure
 open System.IO
+open ErrorMessage
+open OntologyHelperFunctions
 
 
+// [DEPRECATED]
+// temporarily stays here to remember which cases to cover
 module Checks =
 
-    open Paths
+    open ArcPaths
 
-    let hasArcFolder            = Directory.Exists arcFolderPath
     let hasGitFolder            = Directory.Exists gitFolderPath
     let hasHooksFolder          = Directory.Exists hooksPath
     let hasApplyPatchFile       = File.Exists applyPatchPath
@@ -28,13 +29,37 @@ module Checks =
     let hasInfoFolder           = Directory.Exists infoPath
     let hasObjectsFolder        = Directory.Exists objectsPath
     let hasRefsFolder           = Directory.Exists refsPath
-    let hasStudiesFolder        = Directory.Exists studiesPath
-    let hasAssaysFolder         = Directory.Exists assaysPath
     let hasRunsFolder           = Directory.Exists runsPath
     let hasWorkflowsFolder      = Directory.Exists workflowsPath
     let hasInvestigationFile    = File.Exists investigationPath
-    let studiesFolderStructure  = getElementInElementsFolder studiesPath
-    let allStudies              = checkStudiesFolderStructure studiesFolderStructure
+    //let studiesFolderStructure  = getElementInElementsFolder studiesPath
+    //let allStudies              = checkStudiesFolderStructure studiesFolderStructure
 
 
-let arcFolder = 0
+module FilesystemEntry =
+
+    /// Generalized function: Validates a folderpath.
+    let private folder folderpath =
+        let message = Message.create folderpath None None None MessageKind.FilesystemEntry
+        if Directory.Exists folderpath then Success
+        else Error message
+
+    /// Validates a .arc folderpath.
+    let dotArcFolder dotArcPath = 
+        folder dotArcPath
+
+    /// Validates a studies folderpath.
+    let studiesFolder studiesFolderpath =
+        folder studiesFolderpath
+
+    /// Validates a study's folderpath.
+    let studyFolder studyFolderpath =
+        folder studyFolderpath
+
+    /// Validates an assays folderpath.
+    let assaysFolder assaysFolderpath =
+        folder assaysFolderpath
+
+    /// Validates an assay's folderpath.
+    let assayFolder assayFolderpath =
+        folder assayFolderpath

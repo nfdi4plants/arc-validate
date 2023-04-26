@@ -32,10 +32,10 @@ fsi.AddPrinter (fun (cvp : ICvBase) ->
 
 //let p = @"C:\Users\HLWei\Downloads\testArc\isa.investigation.xlsx"
 let p = @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\isa.investigation.xlsx"
-let inv = FsWorkbook.fromXlsxFile p
+let invWb = FsWorkbook.fromXlsxFile p
 
 let worksheet = 
-    let ws = inv.GetWorksheets().Head
+    let ws = invWb.GetWorksheets().Head
     ws.RescanRows()
     ws
 
@@ -43,25 +43,53 @@ let tokens =
     worksheet
     |> Worksheet.parseRows
 
-let containers = 
+let invContainers = 
     tokens
     |> TokenAggregation.aggregateTokens 
 
-containers
+invContainers
 |> Seq.choose CvContainer.tryCvContainer
 |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
 |> Seq.head
 |> CvContainer.getSingleParam "File Name"
 |> Param.getValue
 
+let inv =
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.find (fun cv -> CvBase.equalsTerm Terms.person cv)
+
+inv
+|> CvBase.equalsTerm Terms.name
+
+inv
+//|> CvContainer.KeyCollection
+//|> CvContainer.ValueCollection
+//|> fun i -> i.Properties
+|> CvContainer.getSingle "family name"
+|> Param.tryParam
+|> Option.get
+|> Param.getValue
+
+let invCntcts = 
+    inv 
+    |> CvContainer.getMany "Contacts"
+
+let invStudies =
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
+
+invStudies |> List.ofSeq |> List.head |> CvContainer.tryGetSingleAs<IParam> "File Name" |> Option.map Param.getValueAsString
+
 let assay1 = 
-    containers
+    invContainers
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
     |> Seq.head
 
 let invesContacts = 
-    containers
+    invContainers
     |> List.ofSeq
     //|> List.find (fun up -> (up :> IParam).Name = "INVESTIGATION CONTACTS")
     //|> List.find (fun up -> (up :> IParam).Name = "Investigation Person First Name")
