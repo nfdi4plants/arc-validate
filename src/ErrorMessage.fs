@@ -2,6 +2,8 @@
 
 open FsSpreadsheet.CellReference
 open ArcGraphModel
+open ArcGraphModel.IO
+open CvTokens
 
 
 type MessageKind =
@@ -39,7 +41,12 @@ module FilesystemEntry =
 
     /// Creates a Message for a FilesystemEntry from the given CvParam.
     let createFromCvParam cvParam =
-        let path = CvParam.tryGetAttribute "Filepath" cvParam |> Option.get |> Param.getValueAsString
+        let path = CvParam.tryGetAttribute (CvTerm.getName Terms.filepath) cvParam |> Option.get |> Param.getValueAsString
+        Message.create path None None None FilesystemEntryKind
+
+    /// Creates a Message for a FilesystemEntry from the given CvContainer.
+    let createFromCvContainer cvContainer =
+        let path = CvContainer.tryGetAttribute (CvTerm.getName Terms.filepath) cvContainer |> Option.get |> Param.getValueAsString
         Message.create path None None None FilesystemEntryKind
 
 
@@ -48,34 +55,41 @@ module Textfile =
     /// Creates a Message for a Textfile from the given CvParam.
     let createFromCvParam cvParam =
         let defaultMsg = FilesystemEntry.createFromCvParam cvParam
-        let line = CvParam.tryGetAttribute "Row" cvParam |> Option.get |> Param.getValueAsInt
-        let pos = CvParam.tryGetAttribute "Column" cvParam |> Option.get |> Param.getValueAsInt
+        let line = CvParam.tryGetAttribute (CvTerm.getName Address.row) cvParam |> Option.get |> Param.getValueAsInt
+        let pos = CvParam.tryGetAttribute (CvTerm.getName Address.column) cvParam |> Option.get |> Param.getValueAsInt
         {defaultMsg with
             Line        = Some line
             Position    = Some pos
             Kind        = TextfileKind
         }
 
-    //let createFromCvContainer cvContainer =
-    //    let defaul = 0
-    //    let line = 
-    //        cvParam.Properties.Values 
-    //        |> Seq.concat 
-    //        |> Seq.toList 
-    //        |> List.choose CvBase.tryAs<CvParam>
-    //        |> List.map (fun c ->
-    //            match CvAttributeCollection.tryGetAttribute (CvTerm.getName Address.row) c with
-    //            | Some row -> Param.getValueAsInt row
-    //            | None -> failwith "fuuuuuck"
-    //        )
+    /// Creates a Message for a Textfile from the given CvContainer.
+    let createFromCvContainer cvContainer =
+        let defaultMsg = FilesystemEntry.createFromCvContainer cvContainer
+        let line = CvContainer.getAttributeValueAsIntFromProperties (CvTerm.getName Address.row) cvContainer
+        let pos = CvContainer.getAttributeValueAsIntFromProperties (CvTerm.getName Address.column) cvContainer
+        {defaultMsg with
+            Line        = Some line
+            Position    = Some pos
+            Kind        = TextfileKind
+        }
 
 
 module XlsxFile =
 
     /// Creates a Message for an XLSX file from the given CvParam.
-    let createXlsxMessageFromCvParam cvParam =
+    let createFromCvParam cvParam =
         let defaultMsg = Textfile.createFromCvParam cvParam
-        let sheet = CvParam.tryGetAttribute "Worksheet" cvParam |> Option.get |> Param.getValueAsString
+        let sheet = CvParam.tryGetAttribute (CvTerm.getName Address.worksheet) cvParam |> Option.get |> Param.getValueAsString
+        {defaultMsg with
+            Sheet   = Some sheet
+            Kind    = XLSXFileKind
+        }
+
+    /// Creates a Message for an XLSX file from the given CvContainer.
+    let createFromCvContainer cvContainer =
+        let defaultMsg = Textfile.createFromCvContainer cvContainer
+        let sheet = CvContainer.tryGetAttribute (CvTerm.getName Address.worksheet) cvContainer |> Option.get |> Param.getValueAsString
         {defaultMsg with
             Sheet   = Some sheet
             Kind    = XLSXFileKind

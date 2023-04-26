@@ -63,21 +63,22 @@ fsi.AddPrinter (fun (cvp : ICvBase) ->
 )
 
 //let p = @"C:\Users\HLWei\Downloads\testArc\isa.investigation.xlsx"
-let p = @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\isa.investigation.xlsx"
-let invWb = FsWorkbook.fromXlsxFile p
+let investigationPath = @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\isa.investigation.xlsx"
+let invWb = FsWorkbook.fromXlsxFile investigationPath
 
-let worksheet = 
+let invWorksheet = 
     let ws = invWb.GetWorksheets().Head
     ws.RescanRows()
     ws
 
-let tokens = 
-    worksheet
-    |> Worksheet.parseRows
+let invPathCvP = CvParam(Terms.filepath, ParamValue.Value investigationPath)
 
-let invContainers = 
-    tokens
-    |> TokenAggregation.aggregateTokens 
+let invTokens = 
+    let it = Worksheet.parseRows invWorksheet
+    List.iter (fun cvb -> CvAttributeCollection.tryAddAttribute invPathCvP cvb |> ignore) it
+    it
+
+let invContainers = TokenAggregation.aggregateTokens invTokens
 
 invContainers
 |> Seq.choose CvContainer.tryCvContainer
@@ -86,32 +87,45 @@ invContainers
 |> CvContainer.getSingleParam "File Name"
 |> Param.getValue
 
+let omgCondition (cvc : CvContainer) =
+    cvc.Properties.Values
+    |> Seq.exists (
+        Seq.exists (
+            CvParam.tryCvParam
+            >> Option.get
+            >> fun cvp -> cvp.Attributes
+            >> List.exists (
+                fun ip -> CvBase.getCvName ip = CvTerm.getName Terms.investigation
+            )
+        )
+    )
+
 let invContacts =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
-    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.containsAttribute "Investigation" cv)
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && omgCondition cv)
+
+invContacts |> Seq.head |> fun c -> c.Attributes
+invContacts |> Seq.toList |> List.map (fun c -> c.Attributes)
+
+let tryGetPropertyStringValue property cvContainer =
+    CvContainer.tryGetSingle property cvContainer 
+    |> Option.map (Param.tryParam >> Option.map Param.getValueAsString) 
+    |> Option.flatten
 
 /// Validates a person.
 let person<'T when 'T :> CvContainer> (person : 'T) =
     let firstName = CvContainer.tryGetPropertyStringValue "given name" person
-    printfn "1"
     let lastName = CvContainer.tryGetPropertyStringValue "family name" person
-    printfn "2"
-    let message = ErrorMessage.XlsxFile.createXlsxMessageFromCvParam person
-    printfn "3"
+    let message = ErrorMessage.XlsxFile.createFromCvContainer person
     match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
     | false, false -> Success
     | _ -> Error message
 
-person << Seq.head <| invContacts
 let p1 = Seq.head invContacts
 p1.Properties
-let l = p1.Properties.Values |> Seq.concat |> Seq.toList |> List.choose CvBase.tryAs<CvParam>
-l |> List.map (fun c ->
-    match CvAttributeCollection.tryGetAttribute (CvTerm.getName Address.row) c with
-    | Some row -> Param.getValueAsInt row
-    | None -> failwith "fuuuuuck"
-    )
+person p1
+ErrorMessage.XlsxFile.createFromCvContainer p1
 
 let p1Attributes = p1.Attributes
 p1Attributes.Head |> CvAttributeCollection.tryGetAttribute ""

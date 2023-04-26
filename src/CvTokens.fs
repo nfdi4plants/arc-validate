@@ -1,6 +1,7 @@
 ﻿module CvTokens
 
 open ArcGraphModel
+open ArcGraphModel.IO
 open ArcGraphModel.ArcType
 
 
@@ -47,3 +48,23 @@ module CvContainer =
         CvContainer.tryGetSingle property cvContainer 
         |> Option.map (Param.tryParam >> Option.map Param.getValueAsString) 
         |> Option.flatten
+
+    /// Returns the value of the first attribute with the given name in the properties of a given CvContainer.
+    let getAttributeValueFromProperties attribute (cvContainer : CvContainer) =
+        cvContainer.Properties.Values 
+        |> Seq.concat 
+        |> Seq.toList 
+        |> List.choose CvBase.tryAs<CvParam>
+        |> List.pick (fun c ->
+            // you can use `CvTerm.getName attribute` if you want `attribute` to be of `CvTerm`
+            CvAttributeCollection.tryGetAttribute attribute c
+            |> Option.map Param.getValue
+        )
+
+    /// Returns the value as string of the first attribute with the given name in the properties of a given CvContainer.
+    let getAttributeValueAsStringFromProperties attribute cvContainer =
+        getAttributeValueFromProperties attribute cvContainer |> string
+
+    /// Returns the value as int of the first attribute with the given name in the properties of a given CvContainer.
+    let getAttributeValueAsIntFromProperties attribute cvContainer =
+        getAttributeValueFromProperties attribute cvContainer :?> int
