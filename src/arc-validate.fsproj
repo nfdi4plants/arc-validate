@@ -9,7 +9,7 @@
   <ItemGroup>
     <Compile Include="AuxExt.fs" />
     <Compile Include="SummaryFileWriter.fs" />
-    <Compile Include="CvParam.fs" />
+    <Compile Include="CvTokens.fs" />
     <Compile Include="ErrorMessage.fs" />
     <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="FilesystemRepresentation.fs" />
