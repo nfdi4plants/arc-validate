@@ -9,12 +9,12 @@
   <ItemGroup>
     <Compile Include="AuxExt.fs" />
     <Compile Include="SummaryFileWriter.fs" />
+    <Compile Include="CvParam.fs" />
     <Compile Include="ErrorMessage.fs" />
     <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="FilesystemRepresentation.fs" />
     <Compile Include="FilesystemStructure.fs" />
     <Compile Include="CheckIsaStructure.fs" />
-    <Compile Include="CvParam.fs" />
     <Compile Include="ValidateFilesystemEntries.fs" />
     <Compile Include="ValidateCvBase.fs" />
     <Compile Include="ValidateArc.fs" />
