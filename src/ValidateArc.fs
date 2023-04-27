@@ -11,6 +11,7 @@ open FsSpreadsheet.ExcelIO
 open ErrorMessage.FailStrings
 open System.IO
 open FSharpAux
+open CvTokens
 
 
 let invWb = FsWorkbook.fromXlsxFile investigationPath
@@ -37,27 +38,11 @@ let invStudies =
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
 
-let omgCondition (cvc : CvContainer) =
-    cvc.Properties.Values
-    |> Seq.exists (
-        Seq.exists (
-            CvParam.tryCvParam
-            >> Option.get
-            >> fun cvp -> cvp.Attributes
-            >> List.exists (
-                fun ip -> CvBase.getCvName ip = CvTerm.getName Terms.investigation
-            )
-        )
-    )
-
 let invContacts =
-    let res1 = 
-        invContainers
-        |> Seq.choose CvContainer.tryCvContainer
-    let res2 =
-        res1
-        |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && omgCondition cv)
-    res2
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.isPartOfInvestigation cv)
+    //|> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.tryGetAttribute (CvTerm.getName Terms.investigation) cv |> Option.isSome)
 
 let invStudiesPathsAndIds =
     invStudies
@@ -76,10 +61,31 @@ let invStudiesPathsAndIds =
 [<Tests>]
 let filesystem =
     testList "Filesystem" [
-        testCase "arcFolder"            <| fun () -> Validate.FilesystemEntry.dotArcFolder dotArcFolderPath         |> throwError FilesystemEntry.isPresent
-        testCase "InvestigationFile"    <| fun () -> Validate.FilesystemEntry.investigationFile investigationPath   |> throwError FilesystemEntry.isPresent
-        testCase "StudiesFolder"        <| fun () -> Validate.FilesystemEntry.studiesFolder studiesPath             |> throwError FilesystemEntry.isPresent
-        testCase "AssaysFolder"         <| fun () -> Validate.FilesystemEntry.assaysFolder assaysPath               |> throwError FilesystemEntry.isPresent
+        testCase "arcFolder"            <| fun () -> Validate.FilesystemEntry.folder dotArcFolderPath   |> throwError FilesystemEntry.isPresent
+        testCase "InvestigationFile"    <| fun () -> Validate.FilesystemEntry.file investigationPath    |> throwError FilesystemEntry.isPresent
+        testCase "StudiesFolder"        <| fun () -> Validate.FilesystemEntry.folder studiesPath        |> throwError FilesystemEntry.isPresent
+        testCase "AssaysFolder"         <| fun () -> Validate.FilesystemEntry.folder assaysPath         |> throwError FilesystemEntry.isPresent
+        testCase "gitFolder"            <| fun () -> Validate.FilesystemEntry.folder gitFolderPath      |> throwError FilesystemEntry.isPresent
+        testCase "hooksFolder"          <| fun () -> Validate.FilesystemEntry.folder hooksPath          |> throwError FilesystemEntry.isPresent
+        testCase "applyPatchFile"       <| fun () -> Validate.FilesystemEntry.file applyPatchPath       |> throwError FilesystemEntry.isPresent
+        testCase "commitSampleFile"     <| fun () -> Validate.FilesystemEntry.file commitSamplePath     |> throwError FilesystemEntry.isPresent
+        testCase "fsmonitorFile"        <| fun () -> Validate.FilesystemEntry.file fsmonitorPath        |> throwError FilesystemEntry.isPresent
+        testCase "postUpdateFile"       <| fun () -> Validate.FilesystemEntry.file postUpdatePath       |> throwError FilesystemEntry.isPresent
+        testCase "preApplyPatchFile"    <| fun () -> Validate.FilesystemEntry.file preApplyPatchPath    |> throwError FilesystemEntry.isPresent
+        testCase "preCommitFile"        <| fun () -> Validate.FilesystemEntry.file preCommitPath        |> throwError FilesystemEntry.isPresent
+        testCase "preMergeCommitFile"   <| fun () -> Validate.FilesystemEntry.file preMergeCommitPath   |> throwError FilesystemEntry.isPresent
+        testCase "prePushFile"          <| fun () -> Validate.FilesystemEntry.file prePushPath          |> throwError FilesystemEntry.isPresent
+        testCase "preRebaseFile"        <| fun () -> Validate.FilesystemEntry.file preRebasePath        |> throwError FilesystemEntry.isPresent
+        testCase "preReceiveFile"       <| fun () -> Validate.FilesystemEntry.file preReceivePath       |> throwError FilesystemEntry.isPresent
+        testCase "prepareCommitFile"    <| fun () -> Validate.FilesystemEntry.file prepareCommitPath    |> throwError FilesystemEntry.isPresent
+        testCase "pushToCheckoutFile"   <| fun () -> Validate.FilesystemEntry.file pushToCheckoutPath   |> throwError FilesystemEntry.isPresent
+        testCase "updateFile"           <| fun () -> Validate.FilesystemEntry.file updatePath           |> throwError FilesystemEntry.isPresent
+        testCase "infoFolder"           <| fun () -> Validate.FilesystemEntry.folder infoPath           |> throwError FilesystemEntry.isPresent
+        testCase "excludeFile"          <| fun () -> Validate.FilesystemEntry.file excludePath          |> throwError FilesystemEntry.isPresent
+        testCase "objectsPackFolder"    <| fun () -> Validate.FilesystemEntry.folder objectsPackPath    |> throwError FilesystemEntry.isPresent
+        testCase "refsFolder"           <| fun () -> Validate.FilesystemEntry.folder refsPath           |> throwError FilesystemEntry.isPresent
+        testCase "refsHeadsFolder"      <| fun () -> Validate.FilesystemEntry.folder refsHeadsPath      |> throwError FilesystemEntry.isPresent
+        testCase "refsTagsFolder"       <| fun () -> Validate.FilesystemEntry.folder refsTagsPath       |> throwError FilesystemEntry.isPresent
         //testList "Studies" [
         //    for (p,id) in invStudiesPathsAndIds do
         //        if p.IsSome then

@@ -68,3 +68,17 @@ module CvContainer =
     /// Returns the value as int of the first attribute with the given name in the properties of a given CvContainer.
     let getAttributeValueAsIntFromProperties attribute cvContainer =
         getAttributeValueFromProperties attribute cvContainer :?> int
+
+    /// Checks if a given CvContainer has an Investigation CvTerm.
+    let isPartOfInvestigation (cvc : CvContainer) =
+        cvc.Properties.Values
+        |> Seq.exists (
+            Seq.exists (
+                CvParam.tryCvParam
+                >> Option.get
+                >> fun cvp -> cvp.Attributes
+                >> List.exists (
+                    fun ip -> CvBase.getCvName ip = CvTerm.getName Terms.investigation
+                )
+            )
+        )
