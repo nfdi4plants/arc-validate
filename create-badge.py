@@ -4,7 +4,7 @@ import os
 from junitparser import TestCase, Failure, Error, JUnitXml
 
 base_path = os.getenv('ARC_PATH')
-xml_path = os.path.join(base_path,'arc-validate-result.xml')
+xml_path = os.path.join(base_path,'arc-validate-results.xml')
 output_path = os.path.join(base_path,'arc-quality.svg')
 xml = JUnitXml.fromfile(xml_path)
 
