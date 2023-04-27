@@ -7,5 +7,7 @@ let outputPath = System.IO.Path.Combine(ArcPaths.inputPath, "arc-validate-result
 
 [<EntryPoint>]
 let main argv =
-    performTest (testList "ARCTests" [ValidateArc.filesystem; ValidateArc.isaTests]) |> Expecto.writeJUnitSummary outputPath
-    0
+    let testRunSummary = performTest (testList "ARCTests" [ValidateArc.filesystem; ValidateArc.isaTests]) 
+    Expecto.writeJUnitSummary outputPath testRunSummary
+    //match testRunSummary with
+    //| x when x.failed

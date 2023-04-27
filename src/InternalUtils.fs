@@ -108,7 +108,9 @@ module Expecto =
                         let message = makeMessageNode "error" e.Message
                         //message.Add(XCData(e.ToString()))     // commented out to tackle unnecessary error stack trace in error message
                         [|message|]
-                    | Failed msg -> [|makeMessageNode "failure" msg|]
+                    | Failed msg -> 
+                        
+                        [|makeMessageNode "failure" msg|]
                     | Ignored msg -> [|makeMessageNode "skipped" msg|]
 
                 XElement(XName.Get "testcase",
