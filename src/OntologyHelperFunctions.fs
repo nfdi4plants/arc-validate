@@ -31,4 +31,6 @@ type ValidationResult =
 let throwError failStringFunction result = 
     match result with
     | Success -> ()
-    | Error m -> failtestf (failStringFunction m |> Printf.StringFormat<unit>)
+    | Error m -> failtestf "%s" (failStringFunction m)
+        //let res = Printf.StringFormat<unit,string> (failStringFunction m)
+        //failtestf res
