@@ -7,7 +7,7 @@ RUN apt-get update \
 RUN pip3 install anybadge --no-cache
 RUN pip3 install junitparser --no-cache
 
-ENV ARC_PATH=/arc
+ENV ARC_PATH=/builds/weil/inveniotestarc
 
 COPY ./ /opt/arc-validate
 WORKDIR /opt/arc-validate
