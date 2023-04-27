@@ -13,10 +13,9 @@ module CvBase =
     let person<'T when 'T :> CvContainer> (person : 'T) =
         let firstName = CvContainer.tryGetPropertyStringValue "given name" person
         let lastName = CvContainer.tryGetPropertyStringValue "family name" person
-        let message = ErrorMessage.XlsxFile.createFromCvParam person
         match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
         | false, false -> Success
-        | _ -> Error message
+        | _ -> Error (ErrorMessage.XlsxFile.createFromCvParam person)
 
     /// Validates several persons.
     let persons (persons : CvContainer seq) =
@@ -24,10 +23,9 @@ module CvBase =
 
     /// Validates a filepath.
     let filepath<'T when 'T :> CvParam> (filepath : 'T) =
-        let message = ErrorMessage.XlsxFile.createFromCvParam filepath
         match CvParam.tryGetAttribute "Filepath" filepath |> Option.map Param.getValueAsString with
         | Some fp -> Success
-        | None -> Error message
+        | None -> Error (ErrorMessage.XlsxFile.createFromCvParam filepath)
 
     /// Validates several filepaths.
     let filepaths (filepaths : CvParam seq) =
@@ -35,6 +33,5 @@ module CvBase =
 
     /// Validates if CvContainer contains persons.
     let contacts (container : CvContainer) =
-        let message = ErrorMessage.XlsxFile.createFromCvContainer container
         if container |> CvBase.equalsTerm Terms.person then Success
-        else Error message
+        else Error (ErrorMessage.XlsxFile.createFromCvContainer container)

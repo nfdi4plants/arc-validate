@@ -18,6 +18,7 @@ open FSharpAux
 open FsSpreadsheet.ExcelIO
 open CvTokens
 open OntologyHelperFunctions
+open System.IO
 
 //fsi.AddPrinter (fun (cvp : CvParam) -> 
 //    cvp.ToString()
@@ -62,8 +63,15 @@ fsi.AddPrinter (fun (cvp : ICvBase) ->
     | _ -> $"ICvBase [{CvBase.getCvName cvp}]"    
 )
 
-//let p = @"C:\Users\HLWei\Downloads\testArc\isa.investigation.xlsx"
-let investigationPath = @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\isa.investigation.xlsx"
+
+// GET & TOKENIZE
+
+let arcPath =
+    match System.Environment.MachineName with
+    | "DT-P-2021-12-OM" -> @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\"
+    | "NB-W-2020-11-OM" -> @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\"
+    | _ -> @"C:\Users\HLWei\Downloads\testArc\"
+let investigationPath = arcPath + "isa.investigation.xlsx"
 let invWb = FsWorkbook.fromXlsxFile investigationPath
 
 let invWorksheet = 
@@ -87,6 +95,9 @@ invContainers
 |> CvContainer.getSingleParam "File Name"
 |> Param.getValue
 
+
+// CONTACTS
+
 let omgCondition (cvc : CvContainer) =
     cvc.Properties.Values
     |> Seq.exists (
@@ -107,6 +118,39 @@ let invContacts =
 
 invContacts |> Seq.head |> fun c -> c.Attributes
 invContacts |> Seq.toList |> List.map (fun c -> c.Attributes)
+
+
+// STUDIES
+
+module ArcPaths = let studiesPath = Path.Combine(arcPath, "studies")
+
+let invStudies =
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
+    |> List.ofSeq
+
+let x : CvParam list = invStudies.Head.Properties["identifier"] |> Seq.head |> CvParam.tryCvParam |> Option.get |> CvParam.getAttributes |> List.ofSeq
+
+
+let invStudiesPaths =
+    invStudies
+    |> Seq.map (
+        CvContainer.tryGetSingleAs<IParam> "File Name" 
+        >> Option.map (
+            Param.getValueAsString 
+            >> fun s -> Path.Combine(ArcPaths.studiesPath,s)
+        )
+    )
+
+let invStudiesIds =
+    invStudies
+    |> Seq.map (
+        CvContainer.tryGetSingleAs<IParam> "identifier"
+        >> Option.map Param.getValueAsString
+    )
+
+invStudiesIds |> Seq.toList
 
 let tryGetPropertyStringValue property cvContainer =
     CvContainer.tryGetSingle property cvContainer 

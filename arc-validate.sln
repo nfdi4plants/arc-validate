@@ -7,11 +7,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "arc-validate", "src\arc-val
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-2108-4C43-843A-9F503044FDB7}"
 	ProjectSection(SolutionItems) = preProject
-		arc-validate.sh = arc-validate.sh
-		create-badge.py = create-badge.py
-		Dockerfile = Dockerfile
+		graphModelIOTest.fsx = graphModelIOTest.fsx
 		playground.fsx = playground.fsx
-		README.md = README.md
 	EndProjectSection
 EndProject
 Global
