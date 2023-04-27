@@ -20,9 +20,12 @@ let invWorksheet =
     ws.RescanRows()
     ws
 
+let invPathCvP = CvParam(Terms.filepath, ParamValue.Value investigationPath)
+
 let invTokens = 
-    invWorksheet
-    |> Worksheet.parseRows
+    let it = Worksheet.parseRows invWorksheet
+    List.iter (fun cvb -> CvAttributeCollection.tryAddAttribute invPathCvP cvb |> ignore) it
+    it
 
 let invContainers = 
     invTokens
@@ -33,16 +36,17 @@ let invStudies =
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
 
-//let invStudiesPaths =
-//    invStudies
-//    |> Seq.map (CvContainer.tryGetSingleAs<IParam> "File Name" >> Option.map Param.getValueAsString)
-//    |> Option.map 
+let invStudiesPaths =
+    invStudies
+    |> Seq.map (CvContainer.tryGetSingleAs<IParam> "File Name" >> Option.map Param.getValueAsString)
+    //|> Option.map 
 
 
 [<Tests>]
 let filesystem =
     testList "Filesystem" [
         testCase "arcFolder" <| fun () -> Validate.FilesystemEntry.dotArcFolder dotArcFolderPath |> throwError FilesystemEntry.isPresent
+        testCase "InvestigationFile" <| fun () -> Validate.FilesystemEntry.investigationFile investigationPath |> throwError FilesystemEntry.isPresent
         testCase "StudiesFolder" <| fun () -> Validate.FilesystemEntry.studiesFolder studiesPath |> throwError FilesystemEntry.isPresent
         testCase "AssaysFolder" <| fun () -> Validate.FilesystemEntry.assaysFolder assaysPath |> throwError FilesystemEntry.isPresent
         testList "DataPathNames" [
@@ -59,10 +63,10 @@ let invContacts =
 [<Tests>]
 let isaTests =
     testList "ISA" [
-        //testList "Semantic" [
-        //    testList "Investigation" [
-        //        testCase "Person" <| fun () -> 
-        //            Validate.CvBase.persons invContacts |> Seq.iter (throwError XLSXFile.isRegistered)
-        //    ]
-        //]
+        testList "Semantic" [
+            testList "Investigation" [
+                testCase "Person" <| fun () -> 
+                    Validate.CvBase.persons invContacts |> Seq.iter (throwError XLSXFile.isRegistered)
+            ]
+        ]
     ]

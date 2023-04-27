@@ -44,6 +44,12 @@ module FilesystemEntry =
         if Directory.Exists folderpath then Success
         else Error message
 
+    /// Generalized function: Validates a filepath.
+    let private file filepath =
+        let message = Message.create filepath None None None MessageKind.FilesystemEntryKind
+        if File.Exists filepath then Success
+        else Error message
+
     /// Validates a .arc folderpath.
     let dotArcFolder dotArcPath = 
         folder dotArcPath
@@ -52,7 +58,7 @@ module FilesystemEntry =
     let studiesFolder studiesFolderpath =
         folder studiesFolderpath
 
-    /// Validates a study's folderpath.
+    /// Validates a Study's folderpath.
     let studyFolder studyFolderpath =
         folder studyFolderpath
 
@@ -60,6 +66,10 @@ module FilesystemEntry =
     let assaysFolder assaysFolderpath =
         folder assaysFolderpath
 
-    /// Validates an assay's folderpath.
+    /// Validates an Assay's folderpath.
     let assayFolder assayFolderpath =
         folder assayFolderpath
+
+    /// Validates an Investigation folderpath.
+    let investigationFile investigationFilepath =
+        file investigationFilepath
