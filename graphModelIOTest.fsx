@@ -64,27 +64,55 @@ fsi.AddPrinter (fun (cvp : ICvBase) ->
 )
 
 
-// GET & TOKENIZE
-
 let arcPath =
     match System.Environment.MachineName with
     | "DT-P-2021-12-OM" -> @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\"
     | "NB-W-2020-11-OM" -> @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\"
     | _ -> @"C:\Users\HLWei\Downloads\testArc\"
-let investigationPath = arcPath + "isa.investigation.xlsx"
-let invWb = FsWorkbook.fromXlsxFile investigationPath
+
+
+// GET & TOKENIZE STUDY/ASSAY
+
+let assPath = Path.Combine(arcPath, "assays", "aid", "isa.assay.xlsx")
+let ass = FsWorkbook.fromXlsxFile assPath
+
+let assWorksheets =
+    let wss = 
+        FsWorkbook.getWorksheets ass
+        |> List.filter (fun ws -> ws.Name <> "Assay")
+    wss |> List.iter (fun ws -> ws.RescanRows())
+    wss
+
+let assTables = 
+    assWorksheets
+    |> List.map (
+        fun ws -> ws.Tables
+    )
+
+let assPathCvP = CvParam(Terms.filepath, ParamValue.Value assPath)
+
+let assTokens =
+    let at = Worksheet.parseRows // parseColumns is missing
+
+
+// GET & TOKENIZE INVESTIGATION
+
+let invPath = arcPath + "isa.investigation.xlsx"
+let invWb = FsWorkbook.fromXlsxFile invPath
 
 let invWorksheet = 
     let ws = invWb.GetWorksheets().Head
     ws.RescanRows()
     ws
 
-let invPathCvP = CvParam(Terms.filepath, ParamValue.Value investigationPath)
+let invPathCvP = CvParam(Terms.filepath, ParamValue.Value invPath)
 
 let invTokens = 
     let it = Worksheet.parseRows invWorksheet
     List.iter (fun cvb -> CvAttributeCollection.tryAddAttribute invPathCvP cvb |> ignore) it
     it
+
+invTokens[5] :?> CvContainer |> fun x -> x.Attributes
 
 let invContainers = TokenAggregation.aggregateTokens invTokens
 
@@ -198,7 +226,7 @@ invContacts
 |> Option.get
 |> Param.getValue
 
-let invStudies =
+let invStudies2 =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
