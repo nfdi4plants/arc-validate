@@ -11,3 +11,4 @@ let main argv =
     Expecto.writeJUnitSummary outputPath testRunSummary
     //match testRunSummary with
     //| x when x.failed
+    0

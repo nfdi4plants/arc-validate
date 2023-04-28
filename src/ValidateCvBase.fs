@@ -3,7 +3,7 @@
 open ArcGraphModel
 open FSharpAux
 open OntologyHelperFunctions
-open CvTokens
+open CvTokenHelperFunctions
 
 
 /// Functions to validate #ICvBase entities.

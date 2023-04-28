@@ -16,7 +16,7 @@ open ArcGraphModel
 open ArcGraphModel.IO
 open FSharpAux
 open FsSpreadsheet.ExcelIO
-open CvTokens
+open CvTokenHelperFunctions
 open OntologyHelperFunctions
 open System.IO
 
@@ -83,21 +83,35 @@ let assWorksheets =
     wss |> List.iter (fun ws -> ws.RescanRows())
     wss
 
-let assTables = 
-    assWorksheets
-    |> List.map (
-        fun ws -> ws.Tables
-    )
+//let assWorksheetsWithAnnoTables = 
+//    assWorksheets
+//    |> List.map (
+//        fun ws -> ws, ws.Tables |> List.find (fun t -> String.contains "annotationTable" t.Name )
+//    )
 
 let assPathCvP = CvParam(Terms.filepath, ParamValue.Value assPath)
 
+//let assWs1, assAt1 = assWorksheetsWithAnnoTables.Head
+let assWs1 = assWorksheets.Head
+
 let assTokens =
-    let at = Worksheet.parseRows // parseColumns is missing
+    //let atRange = assAt1.RangeAddress
+    //let oldFsCs = assWs1.CellCollection.GetCells(atRange.FirstAddress, atRange.LastAddress)
+    //let newFcc = FsCellsCollection()
+    //newFcc.Add oldFsCs
+    //let newWs = FsWorksheet("dummy", [], [], newFcc)
+    //newWs.RescanRows()
+    //Worksheet.parseColumns newWs
+    Worksheet.parseColumns assWs1
+
+let dataFiles =
+    assTokens
+    |> List.filter (fun cvb -> cvb.Name = "Data File Name")
 
 
 // GET & TOKENIZE INVESTIGATION
 
-let invPath = arcPath + "isa.investigation.xlsx"
+let invPath = Path.Combine(arcPath, "isa.investigation.xlsx")
 let invWb = FsWorkbook.fromXlsxFile invPath
 
 let invWorksheet = 
