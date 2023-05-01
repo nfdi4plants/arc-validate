@@ -5,7 +5,13 @@ open System.IO
 
 
 //let inputPath           = Directory.GetCurrentDirectory()
-let inputPath           = System.Environment.GetEnvironmentVariable("ARC_PATH")
+//let inputPath           = System.Environment.GetEnvironmentVariable("ARC_PATH")
+let inputPath = 
+    let envVar = System.Environment.GetEnvironmentVariable "ARC_PATH"
+    if String.isNullOrWhiteSpace envVar then
+        System.Environment.GetCommandLineArgs()
+        |> Array.item 1
+    else envVar
 
 let dotArcFolderPath    = Path.Combine(inputPath, ".arc")
 let gitFolderPath       = Path.Combine(inputPath, ".git")
