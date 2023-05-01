@@ -45,7 +45,7 @@ let filesystem =
         //    for (p,id) in invStudiesPathsAndIds do
         //        if p.IsSome then
         //            let defId = Option.defaultValue "(no Study identifier)" id
-        //            testCase $"{defId}" <| fun () -> Validate.FilesystemEntry.studyFolder p.Value |> throwError FilesystemEntry.isPresent
+        //            testCase $"{defId}" <| fun () -> Validate.FilesystemEntry.folder p.Value |> throwError FilesystemEntry.isPresent
         //]
         testList "DataPathNames" [
             
@@ -58,13 +58,16 @@ let isaTests =
     testList "ISA" [
         testList "Semantic" [
             testList "Investigation" [
+                testCase "Contacts" <| fun () -> Validate.CvBase.contacts "" invContactsContainer |> throwError FilesystemEntry.isPresent
                 testList "Person" (
-                    invContacts
+                    invContactsContainer
                     |> List.ofSeq
                     |> List.mapi (
                         fun i p ->
                             printfn $"{i}, {p}"
-                            testCase $"Person{i + 1}" (fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm)
+                            // commented out until CvParam filling is done
+                            //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
+                            testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError FilesystemEntry.isValidTerm
                     )
                 )
             ]

@@ -140,26 +140,48 @@ invContainers
 
 // CONTACTS
 
-let omgCondition (cvc : CvContainer) =
-    cvc.Properties.Values
-    |> Seq.exists (
-        Seq.exists (
-            CvParam.tryCvParam
-            >> Option.get
-            >> fun cvp -> cvp.Attributes
-            >> List.exists (
-                fun ip -> CvBase.getCvName ip = CvTerm.getName Terms.investigation
-            )
-        )
-    )
+let invWb = FsWorkbook.fromXlsxFile invPath
+let invWorksheet = 
+    let ws = 
+        invWb.GetWorksheets()
+        |> List.find (fun ws -> ws.Name = "isa_investigation")
+    ws.RescanRows()
+    ws
 
-let invContacts =
+let invPathCvP = CvParam(Terms.filepath, ParamValue.Value invPath)
+
+let invTokens = 
+    let it = Worksheet.parseRows invWorksheet
+    List.iter (fun cvb -> CvAttributeCollection.tryAddAttribute invPathCvP cvb |> ignore) it
+    it
+
+let invContainers = 
+    invTokens
+    |> TokenAggregation.aggregateTokens 
+
+let invStudies =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
-    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && omgCondition cv)
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
 
-invContacts |> Seq.head |> fun c -> c.Attributes
-invContacts |> Seq.toList |> List.map (fun c -> c.Attributes)
+let invContactsContainer =
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.isPartOfInvestigation cv)
+
+let person3 = Seq.item 2 invContactsContainer
+Validate.CvBase.person person3
+let firstName = CvContainer.tryGetPropertyStringValue "given name" person3
+let lastName = CvContainer.tryGetPropertyStringValue "family name" person3
+match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
+| false, false -> Success
+| _ -> Error (ErrorMessage.FilesystemEntry.createFromCvParam person3)
+ErrorMessage.FilesystemEntry.createFromCvParam person3
+ErrorMessage.Textfile.createFromCvParam person3
+person3 |> fun cvParam -> CvParam.tryGetAttribute (CvTerm.getName Address.row) cvParam |> Option.get |> Param.getValueAsInt
+person3.Attributes
+let person2 = Seq.item 1 invContactsContainer
+person2.Attributes
 
 
 // STUDIES
