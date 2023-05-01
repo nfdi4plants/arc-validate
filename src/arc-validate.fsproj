@@ -16,6 +16,7 @@
     <Compile Include="CheckIsaStructure.fs" />
     <Compile Include="ValidateFilesystemEntries.fs" />
     <Compile Include="ValidateCvBase.fs" />
+    <Compile Include="ValidateParam.fs" />
     <Compile Include="InformationExtraction.fs" />
     <Compile Include="ValidateArc.fs" />
     <Compile Include="Main.fs" />    

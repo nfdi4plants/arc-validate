@@ -68,3 +68,40 @@ let foundStudyFilesAndIds =
             |> String.takeWhile (fun c -> c <> '\\' && c <> '/')
             |> String.rev
     )
+
+let foundStudyAnnoTables = 
+    foundStudyFilesAndIds
+    |> Array.choose fst
+    |> Array.map (
+        fun sp ->
+            printfn "%A" sp
+            //let std = try FsWorkbook.fromXlsxFile sp with _ -> new FsWorkbook()
+            let std = try FsWorkbook.fromXlsxFile sp |> fun r -> printfn "try worked"; r with _ -> printfn "try failed"; new FsWorkbook()
+            FsWorkbook.fromXlsxFile @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\studies\sid\isa.study.xlsx"
+            let stdWorksheets = 
+                let wss = 
+                    FsWorkbook.getWorksheets std
+                    |> List.filter (fun ws -> ws.Name <> "Study")
+                wss |> List.iter (fun ws -> ws.RescanRows())
+                wss
+            let stdPathCvP = CvParam(Terms.filepath, ParamValue.Value sp)
+            stdWorksheets 
+            |> List.map (
+                Worksheet.parseColumns
+                >> List.map (
+                    fun cvb ->
+                        CvAttributeCollection.tryAddAttribute stdPathCvP cvb |> ignore
+                        cvb
+                )
+            )
+    )
+
+let studyRawOrDerivedDataPaths =
+    foundStudyAnnoTables
+    |> Seq.collect (        // single study
+        Seq.collect (       // single annoTable
+            Seq.filter (
+                CvBase.getCvName >> (=) "Data"
+            )
+        )
+    )
