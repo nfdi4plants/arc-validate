@@ -33,7 +33,8 @@
     <PackageReference Include="JUnitXML.TestLogger" Version="3.0.124" />
     <PackageReference Include="NUnitXML.TestLogger" Version="3.0.131" />
     <PackageReference Include="FsSpreadsheet" Version="[1.3.0-preview]" />
-    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.2.0-preview]" />
+    <!--<PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.2.0-preview]" />-->
+    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
     <PackageReference Include="ArcGraphModel" Version="[0.1.0-preview.2]" />
     <PackageReference Include="ArcGraphModel.IO" Version="[0.1.0-preview.2]" />
   </ItemGroup>

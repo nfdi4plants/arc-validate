@@ -75,9 +75,7 @@ let foundStudyAnnoTables =
     |> Array.map (
         fun sp ->
             printfn "%A" sp
-            //let std = try FsWorkbook.fromXlsxFile sp with _ -> new FsWorkbook()
-            let std = try FsWorkbook.fromXlsxFile sp |> fun r -> printfn "try worked"; r with _ -> printfn "try failed"; new FsWorkbook()
-            FsWorkbook.fromXlsxFile @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\studies\sid\isa.study.xlsx"
+            let std = try FsWorkbook.fromXlsxFile sp with _ -> new FsWorkbook()
             let stdWorksheets = 
                 let wss = 
                     FsWorkbook.getWorksheets std
