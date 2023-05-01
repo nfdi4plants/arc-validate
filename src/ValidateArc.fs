@@ -9,6 +9,7 @@ open ArcGraphModel.IO
 open ErrorMessage.FailStrings
 open FSharpAux
 open InformationExtraction
+open System.IO
 
 
 [<Tests>]
@@ -41,12 +42,12 @@ let filesystem =
             testCase "refsHeadsFolder"      <| fun () -> Validate.FilesystemEntry.folder refsHeadsPath      |> throwError FilesystemEntry.isPresent
             testCase "refsTagsFolder"       <| fun () -> Validate.FilesystemEntry.folder refsTagsPath       |> throwError FilesystemEntry.isPresent
         ]
-        //testList "Studies" [
-        //    for (p,id) in invStudiesPathsAndIds do
-        //        if p.IsSome then
-        //            let defId = Option.defaultValue "(no Study identifier)" id
-        //            testCase $"{defId}" <| fun () -> Validate.FilesystemEntry.folder p.Value |> throwError FilesystemEntry.isPresent
-        //]
+        testList "Studies" [
+            for (p,id) in invStudiesPathsAndIds do
+                if p.IsSome then
+                    let defId = Option.defaultValue "(no Study identifier)" id
+                    testCase $"{defId}" <| fun () -> Validate.FilesystemEntry.file p.Value |> throwError FilesystemEntry.isPresent
+        ]
         testList "DataPathNames" [
             
         ]
@@ -64,12 +65,24 @@ let isaTests =
                     |> List.ofSeq
                     |> List.mapi (
                         fun i p ->
-                            printfn $"{i}, {p}"
                             // commented out until CvParam filling is done
                             //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
                             testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError FilesystemEntry.isValidTerm
                     )
                 )
+                testList "Studies" [
+                    for (p,id) in invStudiesPathsAndIds do
+                        if p.IsNone && id.IsSome then
+                            let assumedFilename = Path.Combine(ArcPaths.studiesPath, $"{id.Value}\\isa.study.xlsx")
+                            let errorMessage = ErrorMessage.FilesystemEntry.createFromFile assumedFilename |> Error
+                            testCase $"{id.Value}" <| fun () -> throwError FilesystemEntry.isPresent errorMessage
+                        if p.IsNone && id.IsNone then
+                            // commented out until CvParam filling is done
+                            //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
+                            //testCase "(no Study identifier)" <| fun () -> throwError XLSXFile.isRegistered investigationPath
+                            let errorMessage = ErrorMessage.FilesystemEntry.createFromFile investigationPath |> Error
+                            testCase "(no Study identifier)" <| fun () -> throwError FilesystemEntry.isRegistered errorMessage
+                ]
             ]
         ]
     ]

@@ -7,6 +7,7 @@ open ArcGraphModel
 open ArcGraphModel.IO
 open CvTokenHelperFunctions
 open System.IO
+open FSharpAux
 
 
 let invWb = FsWorkbook.fromXlsxFile investigationPath
@@ -46,7 +47,9 @@ let invStudiesPathsAndIds =
             CvContainer.tryGetSingleAs<IParam> "File Name" cvc
             |> Option.map (
                 Param.getValueAsString 
-                >> fun s -> Path.Combine(ArcPaths.studiesPath,s)
+                >> fun s -> 
+                    let s = String.replace "\\" "/" s
+                    Path.Combine(ArcPaths.studiesPath,s)
             ),
             CvContainer.tryGetSingleAs<IParam> "identifier" cvc
             |> Option.map Param.getValueAsString

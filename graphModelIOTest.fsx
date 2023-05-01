@@ -195,11 +195,13 @@ let invStudies =
     |> List.ofSeq
 
 let x : CvParam list = invStudies.Head.Properties["identifier"] |> Seq.head |> CvParam.tryCvParam |> Option.get |> CvParam.getAttributes |> List.ofSeq
+invStudies.Head.Properties.Item "identifier" |> Seq.head |> Param.tryParam |> Option.get |> Param.getValueAsString
 
 
 let invStudiesPaths =
     invStudies
-    |> Seq.map (
+    |> List.ofSeq
+    |> List.map (
         CvContainer.tryGetSingleAs<IParam> "File Name" 
         >> Option.map (
             Param.getValueAsString 
