@@ -16,9 +16,10 @@ open ArcGraphModel
 open ArcGraphModel.IO
 open FSharpAux
 open FsSpreadsheet.ExcelIO
-open CvTokens
+open CvTokenHelperFunctions
 open OntologyHelperFunctions
 open System.IO
+open ErrorMessage
 
 //fsi.AddPrinter (fun (cvp : CvParam) -> 
 //    cvp.ToString()
@@ -53,6 +54,42 @@ module String =
         let adr = FsAddress res
         sheetName, adr.RowNumber, adr.ColumnNumber
 
+
+type Directory with
+
+    /// Returns the names of files (including their paths) in the specified directory if they exist. Else returns None.
+    static member TryGetFiles path =
+        try Directory.GetFiles path |> Some
+        with :? System.ArgumentException -> None
+
+    /// Returns the names of files (including their paths) that match the specified search pattern in the specified directory if they
+    /// exist. Else returns None.
+    static member TryGetFiles(path, searchPattern) =
+        try Directory.GetFiles(path, searchPattern) |> Some
+        with :? System.ArgumentException -> None
+
+
+module Worksheet =
+
+    let parseColumns (worksheet : FsWorksheet) = 
+        let sheetName = Address.createWorksheetParam worksheet.Name
+        let annoTable = worksheet.Tables |> List.tryFind (fun t -> String.contains "annotationTable" t.Name)
+        match annoTable with
+        | Some t ->
+            t.Columns(worksheet.CellCollection)
+            |> Seq.toList
+            |> List.choose (fun r -> 
+                match r |> Tokenization.parseLine |> Seq.toList with
+                | [] -> None
+                | l -> Some l
+            )
+            |> List.concat
+            |> List.map (fun token ->        
+                CvAttributeCollection.tryAddAttribute sheetName token |> ignore
+                token
+            )
+        | None -> []
+
 // ~~~~~~~~~~~~~
 
 fsi.AddPrinter (fun (cvp : ICvBase) -> 
@@ -64,27 +101,108 @@ fsi.AddPrinter (fun (cvp : ICvBase) ->
 )
 
 
-// GET & TOKENIZE
-
 let arcPath =
     match System.Environment.MachineName with
     | "DT-P-2021-12-OM" -> @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\"
     | "NB-W-2020-11-OM" -> @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\"
     | _ -> @"C:\Users\HLWei\Downloads\testArc\"
-let investigationPath = arcPath + "isa.investigation.xlsx"
-let invWb = FsWorkbook.fromXlsxFile investigationPath
+
+
+// GET & TOKENIZE STUDY/ASSAY
+
+let assPath = Path.Combine(arcPath, "assays", "aid2", "isa.assay.xlsx")
+let ass = FsWorkbook.fromXlsxFile assPath
+
+let assWorksheets =
+    let wss = 
+        FsWorkbook.getWorksheets ass
+        |> List.filter (fun ws -> ws.Name <> "Assay")
+    wss |> List.iter (fun ws -> ws.RescanRows())
+    wss
+
+//let assWorksheetsWithAnnoTables = 
+//    assWorksheets
+//    |> List.map (
+//        fun ws -> ws, ws.Tables |> List.find (fun t -> String.contains "annotationTable" t.Name )
+//    )
+
+let assPathCvP = CvParam(Terms.filepath, ParamValue.Value assPath)
+
+//let assWs1, assAt1 = assWorksheetsWithAnnoTables.Head
+let assWs1 = assWorksheets.Head
+let assWs2 = assWorksheets[1]
+let assWs3 = assWorksheets[2]
+let assWs4 = assWorksheets[3]
+
+let assTokens1 =    // contains
+    //let atRange = assAt1.RangeAddress
+    //let oldFsCs = assWs1.CellCollection.GetCells(atRange.FirstAddress, atRange.LastAddress)
+    //let newFcc = FsCellsCollection()
+    //newFcc.Add oldFsCs
+    //let newWs = FsWorksheet("dummy", [], [], newFcc)
+    //newWs.RescanRows()
+    //Worksheet.parseColumns newWs
+    Worksheet.parseColumns assWs1
+
+let assTokens2 = Worksheet.parseColumns assWs2
+let assTokens3 = Worksheet.parseColumns assWs3
+let assTokens4 = Worksheet.parseColumns assWs4
+
+let rawDataFiles =
+    assTokens3
+    |> List.filter (fun cvb -> cvb.Name = "Data")
+
+let derivedDataFiles =
+    assTokens4
+    |> List.filter (fun cvb -> cvb.Name = "Data")
+
+let protocolRefs =
+    assTokens1
+    |> List.filter (fun cvb -> cvb.Name = "Protocol REF")
+
+let rawDataFilepaths =
+    rawDataFiles
+    |> List.map (
+        Param.tryParam 
+        >> Option.get 
+        >> Param.getValueAsString
+    )
+
+let derivedDataFilepaths =
+    derivedDataFiles
+    |> List.map (
+        Param.tryParam 
+        >> Option.get 
+        >> Param.getValueAsString
+    )
+
+let protocolFilepaths =
+    protocolRefs
+    |> List.map (
+        Param.tryParam 
+        >> Option.get 
+        >> Param.getValueAsString
+    )
+
+
+// GET & TOKENIZE INVESTIGATION
+
+let invPath = Path.Combine(arcPath, "isa.investigation.xlsx")
+let invWb = FsWorkbook.fromXlsxFile invPath
 
 let invWorksheet = 
     let ws = invWb.GetWorksheets().Head
     ws.RescanRows()
     ws
 
-let invPathCvP = CvParam(Terms.filepath, ParamValue.Value investigationPath)
+let invPathCvP = CvParam(Terms.filepath, ParamValue.Value invPath)
 
 let invTokens = 
     let it = Worksheet.parseRows invWorksheet
     List.iter (fun cvb -> CvAttributeCollection.tryAddAttribute invPathCvP cvb |> ignore) it
     it
+
+invTokens[5] :?> CvContainer |> fun x -> x.Attributes
 
 let invContainers = TokenAggregation.aggregateTokens invTokens
 
@@ -98,59 +216,161 @@ invContainers
 
 // CONTACTS
 
-let omgCondition (cvc : CvContainer) =
-    cvc.Properties.Values
-    |> Seq.exists (
-        Seq.exists (
-            CvParam.tryCvParam
-            >> Option.get
-            >> fun cvp -> cvp.Attributes
-            >> List.exists (
-                fun ip -> CvBase.getCvName ip = CvTerm.getName Terms.investigation
-            )
-        )
-    )
-
-let invContacts =
+let invStudies =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
-    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && omgCondition cv)
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
 
-invContacts |> Seq.head |> fun c -> c.Attributes
-invContacts |> Seq.toList |> List.map (fun c -> c.Attributes)
+let invContactsContainer =
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.isPartOfInvestigation cv)
+
+let person3 = Seq.item 2 invContactsContainer
+Validate.CvBase.person person3
+let firstName = CvContainer.tryGetPropertyStringValue "given name" person3
+let lastName = CvContainer.tryGetPropertyStringValue "family name" person3
+match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
+| false, false -> Success
+| _ -> Error (ErrorMessage.FilesystemEntry.createFromCvParam person3)
+ErrorMessage.FilesystemEntry.createFromCvParam person3
+ErrorMessage.Textfile.createFromCvParam person3
+person3 |> fun cvParam -> CvParam.tryGetAttribute (CvTerm.getName Address.row) cvParam |> Option.get |> Param.getValueAsInt
+person3.Attributes
+let person2 = Seq.item 1 invContactsContainer
+person2.Attributes
 
 
 // STUDIES
 
 module ArcPaths = let studiesPath = Path.Combine(arcPath, "studies")
 
-let invStudies =
-    invContainers
-    |> Seq.choose CvContainer.tryCvContainer
-    |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)
-    |> List.ofSeq
+//let x : CvParam list = invStudies.Head.Properties["identifier"] |> Seq.head |> CvParam.tryCvParam |> Option.get |> CvParam.getAttributes |> List.ofSeq
+//invStudies.Head.Properties.Item "identifier" |> Seq.head |> Param.tryParam |> Option.get |> Param.getValueAsString
 
-let x : CvParam list = invStudies.Head.Properties["identifier"] |> Seq.head |> CvParam.tryCvParam |> Option.get |> CvParam.getAttributes |> List.ofSeq
-
-
-let invStudiesPaths =
+let invStudiesPathsAndIds =
     invStudies
     |> Seq.map (
-        CvContainer.tryGetSingleAs<IParam> "File Name" 
-        >> Option.map (
-            Param.getValueAsString 
-            >> fun s -> Path.Combine(ArcPaths.studiesPath,s)
+        fun cvc ->
+            CvContainer.tryGetSingleAs<IParam> "File Name" cvc
+            |> Option.map (
+                Param.getValueAsString 
+                >> fun s -> 
+                    let sLinux = String.replace "\\" "/" s
+                    Path.Combine(ArcPaths.studiesPath, sLinux)
+            ),
+            CvContainer.tryGetSingleAs<IParam> "identifier" cvc
+            |> Option.map Param.getValueAsString
+    )
+
+let foundStudyFolders = 
+    Directory.GetDirectories ArcPaths.studiesPath
+
+let foundStudyFilesAndIds = 
+    foundStudyFolders
+    |> Array.map (
+        fun sp ->
+            Directory.TryGetFiles(sp, "isa.study.xlsx") 
+            |> Option.bind Array.tryHead,
+            String.rev sp
+            |> String.replace "\\" "/"
+            |> String.takeWhile ((<>) '/')
+            |> String.rev
+    )
+
+/// Validates a Study file's registration in the Investigation.
+let registrationInInvestigation (investigationStudiesPathsAndIds : seq<string option * string option>) studyFilepath =
+    let studyFilepathLinux = String.replace "/" "\\" studyFilepath
+    let cond = 
+        investigationStudiesPathsAndIds
+        |> Seq.exists (
+            fun (p,id) -> 
+                let pLinux = Option.map (String.replace "/" "\\") p
+                pLinux = Some studyFilepathLinux
+        ) 
+    if cond then Success
+    else Error (Message.create studyFilepath None None None MessageKind.FilesystemEntryKind)
+
+registrationInInvestigation invStudiesPathsAndIds (foundStudyFilesAndIds |> Array.head |> fst |> Option.get)
+
+let foundStudyAnnoTables = 
+    foundStudyFilesAndIds
+    |> Array.choose fst
+    |> Array.map (
+        fun sp ->
+            let std = try FsWorkbook.fromXlsxFile sp with :? IOException -> new FsWorkbook()
+            let stdWorksheets = 
+                let wss = 
+                    FsWorkbook.getWorksheets std
+                    |> List.filter (fun ws -> ws.Name <> "Study")
+                wss |> List.iter (fun ws -> ws.RescanRows())
+                wss
+            printfn "%A" stdWorksheets
+            let stdPathCvP = CvParam(Terms.filepath, ParamValue.Value sp)
+            stdWorksheets 
+            |> List.map (
+                Worksheet.parseColumns
+                >> List.map (
+                    fun cvb ->
+                        CvAttributeCollection.tryAddAttribute stdPathCvP cvb |> ignore
+                        cvb
+                )
+            )
+    )
+
+let studyRawOrDerivedDataPaths =
+    foundStudyAnnoTables
+    |> Seq.collect (      // single study
+        Seq.collect (      // single annoTable
+            Seq.filter (
+                CvBase.getCvName >> (=) "Data"
+            )
         )
     )
 
-let invStudiesIds =
-    invStudies
-    |> Seq.map (
-        CvContainer.tryGetSingleAs<IParam> "identifier"
-        >> Option.map Param.getValueAsString
-    )
+studyRawOrDerivedDataPaths
+|> Seq.map (
+    Param.tryParam >> Option.get >> Param.getValueAsString
+)
 
-invStudiesIds |> Seq.toList
+let filepathParam = Seq.head studyRawOrDerivedDataPaths |> Param.tryParam |> Option.get
+CvParam.tryGetAttribute "Pathname" filepathParam
+(filepathParam :?> CvParam).GetAttribute "Pathname" |> Param.getValueAsString
+let relFilepath = Param.getValueAsString filepathParam
+let fullpath =
+    // if relative path from ARC root is provided
+    if String.contains  "/" relFilepath || String.contains "\\" relFilepath then
+        Path.Combine(ArcPaths.inputPath, relFilepath)
+    // if only filename is provided, storage in dataset folder is assumed
+    else
+        let sfp = (filepathParam :?> CvParam).GetAttribute "Pathname" |> Param.getValueAsString |> String.replace "/" "\\"
+        let sfpTrunc =
+            let i = String.findIndexBack '\\' sfp
+            sfp[.. i]
+        Path.Combine(sfpTrunc, "dataset", relFilepath)
+if File.Exists fullpath then Success
+else Error (XlsxFile.createFromCvParam filepathParam)
+
+/// Validates a filepath.
+let filepath<'T when 'T :> IParam> (filepathParam : 'T) =
+    let relFilepath = Param.getValueAsString filepathParam
+    let fullpath =
+        // if relative path from ARC root is provided
+        if String.contains  "/" relFilepath || String.contains "\\" relFilepath then
+            Path.Combine(ArcPaths.inputPath, relFilepath)
+        // if only filename is provided, storage in dataset folder is assumed
+        else
+            let sfp = CvParam.tryGetAttribute "Pathname" filepathParam |> Option.get |> Param.getValueAsString |> String.replace "/" "\\"
+            let sfpTrunc =
+                let i = String.findIndexBack '\\' sfp
+                sfp[.. i]
+            Path.Combine(sfpTrunc, "dataset", relFilepath)
+    if File.Exists fullpath then Success
+    else Error (XlsxFile.createFromCvParam filepathParam)
+
+filepath filepathParam
+
+
 
 let tryGetPropertyStringValue property cvContainer =
     CvContainer.tryGetSingle property cvContainer 
@@ -166,39 +386,7 @@ let person<'T when 'T :> CvContainer> (person : 'T) =
     | false, false -> Success
     | _ -> Error message
 
-let p1 = Seq.head invContacts
-p1.Properties
-person p1
-ErrorMessage.XlsxFile.createFromCvContainer p1
-
-let p1Attributes = p1.Attributes
-p1Attributes.Head |> CvAttributeCollection.tryGetAttribute ""
-ErrorMessage.FilesystemEntry.createFromCvParam p1
-
-module ThisName =
-    let myFunction () = "Function in module"
-
-type ThisName =
-    | MyCase
-
-let result1 = ThisName.myFunction() // Accessing the function from the module using qualified access
-
-let result2 = ThisName.MyCase // Accessing the union case
-
-invContacts
-|> Seq.map (CvBase.equalsTerm Terms.name)
-
-invContacts
-|> Seq.head
-//|> CvContainer.KeyCollection
-//|> CvContainer.ValueCollection
-//|> fun i -> i.Properties
-|> CvContainer.getSingle "family name"
-|> Param.tryParam
-|> Option.get
-|> Param.getValue
-
-let invStudies =
+let invStudies2 =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.study cv)

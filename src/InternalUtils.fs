@@ -5,6 +5,7 @@ open System
 open FSharpAux
 open FsSpreadsheet
 open ArcGraphModel
+open ArcGraphModel.IO
 open Expecto
 open Expecto.Impl
 open System.Globalization
@@ -35,6 +36,46 @@ module String =
         let sheetName, res = String.split '!' str |> fun arr -> arr[0], arr[1]
         let adr = FsAddress res
         sheetName, adr.RowNumber, adr.ColumnNumber
+
+
+type Directory with
+
+    /// Returns the names of files (including their paths) in the specified directory if they exist. Else returns None.
+    static member TryGetFiles path =
+        try Directory.GetFiles path |> Some
+        with :? System.ArgumentException -> None
+
+    /// Returns the names of files (including their paths) that match the specified search pattern in the specified directory if they
+    /// exist. Else returns None.
+    static member TryGetFiles(path, searchPattern) =
+        try Directory.GetFiles(path, searchPattern) |> Some
+        with :? System.ArgumentException -> None
+
+
+module ArcGraphModel =
+
+    module IO =
+
+        module Worksheet =
+
+            let parseColumns (worksheet : FsWorksheet) = 
+                let sheetName = Address.createWorksheetParam worksheet.Name
+                let annoTable = worksheet.Tables |> List.tryFind (fun t -> String.contains "annotationTable" t.Name)
+                match annoTable with
+                | Some t ->
+                    t.Columns(worksheet.CellCollection)
+                    |> Seq.toList
+                    |> List.choose (fun r -> 
+                        match r |> Tokenization.parseLine |> Seq.toList with
+                        | [] -> None
+                        | l -> Some l
+                    )
+                    |> List.concat
+                    |> List.map (fun token ->        
+                        CvAttributeCollection.tryAddAttribute sheetName token |> ignore
+                        token
+                    )
+                | None -> []
 
 
 module Expecto =
@@ -108,7 +149,9 @@ module Expecto =
                         let message = makeMessageNode "error" e.Message
                         //message.Add(XCData(e.ToString()))     // commented out to tackle unnecessary error stack trace in error message
                         [|message|]
-                    | Failed msg -> [|makeMessageNode "failure" msg|]
+                    | Failed msg -> 
+                        
+                        [|makeMessageNode "failure" msg|]
                     | Ignored msg -> [|makeMessageNode "skipped" msg|]
 
                 XElement(XName.Get "testcase",

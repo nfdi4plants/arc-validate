@@ -1,4 +1,4 @@
-﻿module CvTokens
+﻿module CvTokenHelperFunctions
 
 open ArcGraphModel
 open ArcGraphModel.IO

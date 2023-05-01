@@ -3,7 +3,7 @@
 open FsSpreadsheet.CellReference
 open ArcGraphModel
 open ArcGraphModel.IO
-open CvTokens
+open CvTokenHelperFunctions
 
 
 type MessageKind =
@@ -48,6 +48,10 @@ module FilesystemEntry =
     let createFromCvContainer cvContainer =
         let path = CvContainer.tryGetAttribute (CvTerm.getName Terms.filepath) cvContainer |> Option.get |> Param.getValueAsString
         Message.create path None None None FilesystemEntryKind
+
+    /// Creates a Message for a FilesystemEntry from the given filepath.
+    let createFromFile filepath =
+        Message.create filepath None None None FilesystemEntryKind
 
 
 module Textfile =
@@ -110,7 +114,8 @@ module FailStrings =
         /// Takes a Message and returns a string containing the information that a FilesystemEntry is not registered.
         let isRegistered message = $"Actual value is not registered: {message.Path}"
 
-        //let isValidTerm message = $"Actual term is not valid: {message.Path}"
+        /// Takes a Message and returns a string containing the information that a term in a FilesystemEntry is not valid.
+        let isValidTerm message = $"Actual term is not valid: {message.Path}"
 
         //let isValidVersion message = $"Actual CWL version is below required version 1.2: {message.Path}"
 
@@ -150,6 +155,7 @@ module FailStrings =
         /// Takes a Message and returns a string containing the information that a FilesystemEntry is not registered.
         let isRegistered message = $"Actual value is not registered: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
 
+        /// Takes a Message and returns a string containing the information that a term in an XLSXFile is not valid.
         let isValidTerm message = $"Actual term is not valid: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
 
         //let isValidVersion message = $"Actual CWL version is below required version 1.2: {message.Path}"
