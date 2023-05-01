@@ -3,6 +3,7 @@ namespace Validate
 open System.IO
 open ErrorMessage
 open OntologyHelperFunctions
+open FSharpAux
 
 
 // [DEPRECATED]
@@ -32,3 +33,19 @@ module FilesystemEntry =
     let file filepath =
         if File.Exists filepath then Success
         else Error (Message.create filepath None None None MessageKind.FilesystemEntryKind)
+
+
+    module StudyFile =
+
+        /// Validates a Study file's registration in the Investigation.
+        let registrationInInvestigation (investigationStudiesPathsAndIds : seq<string option * string option>) studyFilepath =
+            let studyFilepathLinux = String.replace "/" "\\" studyFilepath
+            let cond = 
+                investigationStudiesPathsAndIds
+                |> Seq.exists (
+                    fun (p,id) -> 
+                        let pLinux = Option.map (String.replace "/" "\\") p
+                        pLinux = Some studyFilepathLinux
+                ) 
+            if cond then Success
+            else Error (Message.create studyFilepath None None None MessageKind.FilesystemEntryKind)

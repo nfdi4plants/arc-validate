@@ -44,9 +44,15 @@ let filesystem =
         ]
         testList "Studies" [
             for (p,id) in invStudiesPathsAndIds do
+                // Validate every present Study filepath in Investigation for presence in the ARC filesystem:
                 if p.IsSome then
                     let defId = Option.defaultValue "(no Study identifier)" id
                     testCase $"{defId}" <| fun () -> Validate.FilesystemEntry.file p.Value |> throwError FilesystemEntry.isPresent
+            for (p,id) in foundStudyFilesAndIds do
+                // Validate every Study in the ARC filesystem that has no Study file: (outcome will always be Error)
+                if p.IsNone then
+                    let assumedFilepath = Path.Combine(ArcPaths.studiesPath, id, "isa.study.xlsx")
+                    testCase $"{id}" <| fun () -> Validate.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
         ]
         testList "DataPathNames" [
             
@@ -59,15 +65,17 @@ let isaTests =
     testList "ISA" [
         testList "Semantic" [
             testList "Investigation" [
+                // Validate the existence of any Person in Investigation Contacts section:
                 testCase "Contacts" <| fun () -> Validate.CvBase.contacts "" invContactsContainer |> throwError FilesystemEntry.isPresent
                 testList "Person" (
                     invContactsContainer
                     |> List.ofSeq
                     |> List.mapi (
                         fun i p ->
+                            // Validate the sufficiency of a Person in Investigation Contacts section (a Person is sufficient when both first and last name are present):
+                            testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError FilesystemEntry.isValidTerm
                             // commented out until CvParam filling is done
                             //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
-                            testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError FilesystemEntry.isValidTerm
                     )
                 )
                 testList "Studies" [
@@ -75,13 +83,21 @@ let isaTests =
                         if p.IsNone && id.IsSome then
                             let assumedFilename = Path.Combine(ArcPaths.studiesPath, $"{id.Value}\\isa.study.xlsx")
                             let errorMessage = ErrorMessage.FilesystemEntry.createFromFile assumedFilename |> Error
+                            // Validate every Study in the Investigation that has no Study filename: (outcome will always be Error)
                             testCase $"{id.Value}" <| fun () -> throwError FilesystemEntry.isPresent errorMessage
                         if p.IsNone && id.IsNone then
+                            let errorMessage = ErrorMessage.FilesystemEntry.createFromFile investigationPath |> Error
+                            // Validate every Study in the Investigation that neither has an Identifier nor a filename: (outcome will always be Error)
+                            testCase "(no Study identifier)" <| fun () -> throwError FilesystemEntry.isRegistered errorMessage
                             // commented out until CvParam filling is done
                             //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
                             //testCase "(no Study identifier)" <| fun () -> throwError XLSXFile.isRegistered investigationPath
-                            let errorMessage = ErrorMessage.FilesystemEntry.createFromFile investigationPath |> Error
-                            testCase "(no Study identifier)" <| fun () -> throwError FilesystemEntry.isRegistered errorMessage
+
+                    for (p,id) in foundStudyFilesAndIds do
+                        if p.IsSome then
+                            // Validate every Study in the ARC filesystem for registration in the Investigation:
+                            testCase $"{id}" <| fun () -> 
+                                Validate.FilesystemEntry.StudyFile.registrationInInvestigation invStudiesPathsAndIds p.Value |> throwError FilesystemEntry.isRegistered
                 ]
             ]
         ]

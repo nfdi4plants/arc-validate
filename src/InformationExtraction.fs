@@ -48,9 +48,23 @@ let invStudiesPathsAndIds =
             |> Option.map (
                 Param.getValueAsString 
                 >> fun s -> 
-                    let s = String.replace "\\" "/" s
-                    Path.Combine(ArcPaths.studiesPath,s)
+                    let sLinux = String.replace "\\" "/" s
+                    Path.Combine(ArcPaths.studiesPath, sLinux)
             ),
             CvContainer.tryGetSingleAs<IParam> "identifier" cvc
             |> Option.map Param.getValueAsString
+    )
+
+let foundStudyFolders = 
+    Directory.GetDirectories ArcPaths.studiesPath
+
+let foundStudyFilesAndIds = 
+    foundStudyFolders
+    |> Array.map (
+        fun sp ->
+            Directory.TryGetFiles(sp, "isa.study.xlsx") 
+            |> Option.bind Array.tryHead,
+            String.rev sp
+            |> String.takeWhile (fun c -> c <> '\\' && c <> '/')
+            |> String.rev
     )

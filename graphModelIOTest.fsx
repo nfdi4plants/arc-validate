@@ -19,6 +19,7 @@ open FsSpreadsheet.ExcelIO
 open CvTokenHelperFunctions
 open OntologyHelperFunctions
 open System.IO
+open ErrorMessage
 
 //fsi.AddPrinter (fun (cvp : CvParam) -> 
 //    cvp.ToString()
@@ -52,6 +53,19 @@ module String =
         let sheetName, res = String.split '!' str |> fun arr -> arr[0], arr[1]
         let adr = FsAddress res
         sheetName, adr.RowNumber, adr.ColumnNumber
+
+type Directory with
+
+    /// Returns the names of files (including their paths) in the specified directory if they exist. Else returns None.
+    static member TryGetFiles path =
+        try Directory.GetFiles path |> Some
+        with :? System.ArgumentException -> None
+
+    /// Returns the names of files (including their paths) that match the specified search pattern in the specified directory if they
+    /// exist. Else returns None.
+    static member TryGetFiles(path, searchPattern) =
+        try Directory.GetFiles(path, searchPattern) |> Some
+        with :? System.ArgumentException -> None
 
 // ~~~~~~~~~~~~~
 
@@ -140,25 +154,6 @@ invContainers
 
 // CONTACTS
 
-let invWb = FsWorkbook.fromXlsxFile invPath
-let invWorksheet = 
-    let ws = 
-        invWb.GetWorksheets()
-        |> List.find (fun ws -> ws.Name = "isa_investigation")
-    ws.RescanRows()
-    ws
-
-let invPathCvP = CvParam(Terms.filepath, ParamValue.Value invPath)
-
-let invTokens = 
-    let it = Worksheet.parseRows invWorksheet
-    List.iter (fun cvb -> CvAttributeCollection.tryAddAttribute invPathCvP cvb |> ignore) it
-    it
-
-let invContainers = 
-    invTokens
-    |> TokenAggregation.aggregateTokens 
-
 let invStudies =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
@@ -197,26 +192,53 @@ let invStudies =
 let x : CvParam list = invStudies.Head.Properties["identifier"] |> Seq.head |> CvParam.tryCvParam |> Option.get |> CvParam.getAttributes |> List.ofSeq
 invStudies.Head.Properties.Item "identifier" |> Seq.head |> Param.tryParam |> Option.get |> Param.getValueAsString
 
-
-let invStudiesPaths =
-    invStudies
-    |> List.ofSeq
-    |> List.map (
-        CvContainer.tryGetSingleAs<IParam> "File Name" 
-        >> Option.map (
-            Param.getValueAsString 
-            >> fun s -> Path.Combine(ArcPaths.studiesPath,s)
-        )
-    )
-
-let invStudiesIds =
+let invStudiesPathsAndIds =
     invStudies
     |> Seq.map (
-        CvContainer.tryGetSingleAs<IParam> "identifier"
-        >> Option.map Param.getValueAsString
+        fun cvc ->
+            CvContainer.tryGetSingleAs<IParam> "File Name" cvc
+            |> Option.map (
+                Param.getValueAsString 
+                >> fun s -> 
+                    let sLinux = String.replace "\\" "/" s
+                    Path.Combine(ArcPaths.studiesPath, sLinux)
+            ),
+            CvContainer.tryGetSingleAs<IParam> "identifier" cvc
+            |> Option.map Param.getValueAsString
     )
 
-invStudiesIds |> Seq.toList
+let foundStudyFolders = 
+    Directory.GetDirectories ArcPaths.studiesPath
+
+let foundStudyFilesAndIds = 
+    foundStudyFolders
+    |> Array.map (
+        fun sp ->
+            Directory.TryGetFiles(sp, "isa.study.xlsx") 
+            |> Option.bind Array.tryHead,
+            String.rev sp
+            |> String.replace "\\" "/"
+            |> String.takeWhile ((<>) '/')
+            |> String.rev
+    )
+
+/// Validates a Study file's registration in the Investigation.
+let registrationInInvestigation (investigationStudiesPathsAndIds : seq<string option * string option>) studyFilepath =
+    let studyFilepathLinux = String.replace "/" "\\" studyFilepath
+    let cond = 
+        investigationStudiesPathsAndIds
+        |> Seq.exists (
+            fun (p,id) -> 
+                let pLinux = Option.map (String.replace "/" "\\") p
+                pLinux = Some studyFilepathLinux
+        ) 
+    if cond then Success
+    else Error (Message.create studyFilepath None None None MessageKind.FilesystemEntryKind)
+
+registrationInInvestigation invStudiesPathsAndIds (foundStudyFilesAndIds |> Array.head |> fst |> Option.get)
+
+"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\studies\sid\isa.study.xlsx" = "C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\studies\sid\isa.study.xlsx"
+
 
 let tryGetPropertyStringValue property cvContainer =
     CvContainer.tryGetSingle property cvContainer 

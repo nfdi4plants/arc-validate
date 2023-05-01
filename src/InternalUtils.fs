@@ -37,6 +37,20 @@ module String =
         sheetName, adr.RowNumber, adr.ColumnNumber
 
 
+type Directory with
+
+    /// Returns the names of files (including their paths) in the specified directory if they exist. Else returns None.
+    static member TryGetFiles path =
+        try Directory.GetFiles path |> Some
+        with :? System.ArgumentException -> None
+
+    /// Returns the names of files (including their paths) that match the specified search pattern in the specified directory if they
+    /// exist. Else returns None.
+    static member TryGetFiles(path, searchPattern) =
+        try Directory.GetFiles(path, searchPattern) |> Some
+        with :? System.ArgumentException -> None
+
+
 module Expecto =
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
