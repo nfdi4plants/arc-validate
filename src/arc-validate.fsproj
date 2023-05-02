@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CLIArgs.fs" />
     <Compile Include="InternalUtils.fs" />
     <Compile Include="CvTokenHelperFunctions.fs" />
     <Compile Include="ErrorMessage.fs" />
