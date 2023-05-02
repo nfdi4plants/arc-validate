@@ -74,7 +74,7 @@ let foundStudyAnnoTables =
     |> Array.choose fst
     |> Array.map (
         fun sp ->
-            let std = try FsWorkbook.fromXlsxFile sp with _ -> new FsWorkbook()
+            let std = try FsWorkbook.fromXlsxFile sp with :? IOException -> new FsWorkbook()
             let stdWorksheets = 
                 let wss = 
                     FsWorkbook.getWorksheets std
@@ -93,10 +93,48 @@ let foundStudyAnnoTables =
             )
     )
 
+let foundAssayFolders = 
+    Directory.GetDirectories ArcPaths.assaysPath
+
+let foundAssayFilesAndIds = 
+    foundAssayFolders
+    |> Array.map (
+        fun sp ->
+            Directory.TryGetFiles(sp, "isa.assay.xlsx") 
+            |> Option.bind Array.tryHead,
+            String.rev sp
+            |> String.replace "\\" "/"
+            |> String.takeWhile ((<>) '/')
+            |> String.rev
+    )
+
+let foundAssayAnnoTables = 
+    foundAssayFilesAndIds
+    |> Array.choose fst
+    |> Array.map (
+        fun ap ->
+            let atd = try FsWorkbook.fromXlsxFile ap with :? IOException -> new FsWorkbook()
+            let atdWorksheets = 
+                let wss = 
+                    FsWorkbook.getWorksheets atd
+                    |> List.filter (fun ws -> ws.Name <> "Assay")
+                wss |> List.iter (fun ws -> ws.RescanRows())
+                wss
+            let atdPathCvP = CvParam(Terms.filepath, ParamValue.Value ap)
+            atdWorksheets 
+            |> List.map (
+                Worksheet.parseColumns
+                >> List.map (
+                    fun cvb ->
+                        CvAttributeCollection.tryAddAttribute atdPathCvP cvb |> ignore
+                        cvb
+                )
+            )
+    )
+
 let dataPaths =
-    //Seq.append foundStudyAnnoTables foundAssayAnnoTables
-    foundStudyAnnoTables
-    |> Seq.collect (        // single study
+    Seq.append foundStudyAnnoTables foundAssayAnnoTables
+    |> Seq.collect (        // single study/assay
         Seq.collect (       // single annoTable
             Seq.filter (
                 CvBase.getCvName >> (fun n -> n = "Data" || n = "Protocol REF")

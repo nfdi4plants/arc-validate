@@ -422,11 +422,66 @@ let invStudies2 =
 
 invStudies |> List.ofSeq |> List.head |> CvContainer.tryGetSingleAs<IParam> "File Name" |> Option.map Param.getValueAsString
 
+
+// ASSAYS
+
 let assay1 = 
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
     |> Seq.head
+
+let foundAssayFolders = 
+    Directory.GetDirectories ArcPaths.assaysPath
+
+let foundAssayFilesAndIds = 
+    foundAssayFolders
+    |> Array.map (
+        fun sp ->
+            Directory.TryGetFiles(sp, "isa.assay.xlsx") 
+            |> Option.bind Array.tryHead,
+            String.rev sp
+            |> String.replace "\\" "/"
+            |> String.takeWhile ((<>) '/')
+            |> String.rev
+    )
+
+let foundAssayAnnoTables = 
+    foundAssayFilesAndIds
+    |> Array.choose fst
+    |> Array.map (
+        fun sp ->
+            let std = try FsWorkbook.fromXlsxFile sp |> fun r -> printfn "try worked"; r with :? IOException -> printfn "try failed"; new FsWorkbook()
+            let stdWorksheets = 
+                let wss = 
+                    FsWorkbook.getWorksheets std
+                    |> List.filter (fun ws -> ws.Name <> "Study")
+                wss |> List.iter (fun ws -> ws.RescanRows())
+                wss
+            let stdPathCvP = CvParam(Terms.filepath, ParamValue.Value sp)
+            stdWorksheets 
+            |> List.map (
+                Worksheet.parseColumns
+                >> List.map (
+                    fun cvb ->
+                        CvAttributeCollection.tryAddAttribute stdPathCvP cvb |> ignore
+                        cvb
+                )
+            )
+    )
+
+let dataPaths =
+    //Seq.append foundStudyAnnoTables foundAssayAnnoTables
+    foundAssayAnnoTables
+    |> Seq.collect (      // single study/assay
+        Seq.collect (      // single annoTable
+            Seq.filter (
+                CvBase.getCvName >> (fun n -> n = "Data" || n = "Protocol REF")
+            )
+        )
+    )
+
+dataPaths |> Seq.toList |> List.map (Param.tryParam >> Option.get (*>> Param.getValueAsString*) >> filepath)
 
 
 //match invesContacts[0] with
