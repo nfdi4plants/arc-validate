@@ -54,6 +54,13 @@ let filesystem =
                     let assumedFilepath = Path.Combine(ArcPaths.studiesPath, id, "isa.study.xlsx")
                     testCase $"{id}" <| fun () -> Validate.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
         ]
+        testList "Assays" [
+            for (p,id) in foundAssayFilesAndIds do
+                // Validate every Assay in the ARC filesystem that has no Assay file: (outcome will always be Error)
+                if p.IsNone then
+                    let assumedFilepath = Path.Combine(ArcPaths.studiesPath, id, "isa.assay.xlsx")
+                    testCase $"{id}" <| fun () -> Validate.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
+        ]
         testList "DataPathNames" [
             for fp in dataPaths do
                 let fpParam = Param.tryParam fp |> Option.get
@@ -101,6 +108,15 @@ let isaTests =
                             // Validate every Study in the ARC filesystem for registration in the Investigation:
                             testCase $"{id}" <| fun () -> 
                                 Validate.FilesystemEntry.StudyFile.registrationInInvestigation invStudiesPathsAndIds p.Value |> throwError FilesystemEntry.isRegistered
+                ]
+                testList "Assays" [
+                    //for (p,id) in invAssaysPathsAndIds do
+
+                    for (p,id) in foundAssayFilesAndIds do
+                        if p.IsSome then
+                            // Validate every Assay in the ARC filesystem for registration in the Investigation:
+                            testCase $"{id}" <| fun () ->
+                                Validate.FilesystemEntry.A
                 ]
             ]
         ]
