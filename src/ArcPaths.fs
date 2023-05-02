@@ -3,45 +3,48 @@ module ArcPaths
 
 open System.IO
 
+type ArcPaths(arcRootPath: string) = 
+    //
+    member this.studiesPath         = Path.Combine(arcRootPath, "studies")
+    member this.assaysPath          = Path.Combine(arcRootPath, "assays")
+    member this.runsPath            = Path.Combine(arcRootPath, "runs")
+    member this.workflowsPath       = Path.Combine(arcRootPath, "workflows")
+    member this.investigationPath   = Path.Combine(arcRootPath, "isa.investigation.xlsx")
+    //
+    member this.dotArcFolderPath    = Path.Combine(arcRootPath, ".arc")
 
-//let inputPath           = Directory.GetCurrentDirectory()
-//let inputPath           = System.Environment.GetEnvironmentVariable("ARC_PATH")
-let inputPath = 
-    let envVar = System.Environment.GetEnvironmentVariable "ARC_PATH"
-    if String.isNullOrWhiteSpace envVar then
-        System.Environment.GetCommandLineArgs()
-        |> Array.item 1
-    else envVar
+    //
+    member this.gitFolderPath       = Path.Combine(arcRootPath, ".git")
+    member this.configPath          = Path.Combine(this.gitFolderPath, "config")
+    member this.descriptionPath     = Path.Combine(this.gitFolderPath, "description")
+    member this.headPath            = Path.Combine(this.gitFolderPath, "HEAD")
 
-let dotArcFolderPath    = Path.Combine(inputPath, ".arc")
-let gitFolderPath       = Path.Combine(inputPath, ".git")
-let hooksPath           = Path.Combine(gitFolderPath, "hooks")
-let applyPatchPath      = Path.Combine(hooksPath, "applypatch-msg.sample")
-let commitSamplePath    = Path.Combine(hooksPath, "commit-msg.sample")
-let fsmonitorPath       = Path.Combine(hooksPath, "fsmonitor-watchman.sample")
-let postUpdatePath      = Path.Combine(hooksPath, "post-update.sample")
-let preApplyPatchPath   = Path.Combine(hooksPath, "pre-applypatch.sample")
-let preCommitPath       = Path.Combine(hooksPath, "pre-commit.sample")
-let preMergeCommitPath  = Path.Combine(hooksPath, "pre-merge-commit.sample")
-let prePushPath         = Path.Combine(hooksPath, "pre-push.sample")
-let preRebasePath       = Path.Combine(hooksPath, "pre-rebase.sample")
-let preReceivePath      = Path.Combine(hooksPath, "pre-receive.sample")
-let prepareCommitPath   = Path.Combine(hooksPath, "prepare-commit-msg.sample")
-let pushToCheckoutPath  = Path.Combine(hooksPath, "push-to-checkout.sample")
-let updatePath          = Path.Combine(hooksPath, "update.sample")
-let infoPath            = Path.Combine(gitFolderPath, "info")
-let excludePath         = Path.Combine(infoPath, "exclude")
-let objectsPath         = Path.Combine(gitFolderPath, "objects")
-let objectsInfoPath     = Path.Combine(objectsPath, "info")
-let objectsPackPath     = Path.Combine(objectsPath, "pack")
-let refsPath            = Path.Combine(gitFolderPath, "refs")
-let refsHeadsPath       = Path.Combine(refsPath, "heads")
-let refsTagsPath        = Path.Combine(refsPath, "tags")
-let configPath          = Path.Combine(gitFolderPath, "config")
-let descriptionPath     = Path.Combine(gitFolderPath, "description")
-let headPath            = Path.Combine(gitFolderPath, "HEAD")
-let studiesPath         = Path.Combine(inputPath, "studies")
-let assaysPath          = Path.Combine(inputPath, "assays")
-let runsPath            = Path.Combine(inputPath, "runs")
-let workflowsPath       = Path.Combine(inputPath, "workflows")
-let investigationPath   = Path.Combine(inputPath, "isa.investigation.xlsx")
+    //
+    member this.objectsPath         = Path.Combine(this.gitFolderPath, "objects")
+    member this.objectsInfoPath     = Path.Combine(this.objectsPath, "info")
+    member this.objectsPackPath     = Path.Combine(this.objectsPath, "pack")
+
+    //
+    member this.infoPath            = Path.Combine(this.gitFolderPath, "info")
+    member this.excludePath         = Path.Combine(this.infoPath, "exclude")
+
+    //
+    member this.refsPath            = Path.Combine(this.gitFolderPath, "refs")
+    member this.refsHeadsPath       = Path.Combine(this.refsPath, "heads")
+    member this.refsTagsPath        = Path.Combine(this.refsPath, "tags")
+
+    //
+    member this.hooksPath           = Path.Combine(this.gitFolderPath, "hooks")
+    member this.applyPatchPath      = Path.Combine(this.hooksPath, "applypatch-msg.sample")
+    member this.commitSamplePath    = Path.Combine(this.hooksPath, "commit-msg.sample")
+    member this.fsmonitorPath       = Path.Combine(this.hooksPath, "fsmonitor-watchman.sample")
+    member this.postUpdatePath      = Path.Combine(this.hooksPath, "post-update.sample")
+    member this.preApplyPatchPath   = Path.Combine(this.hooksPath, "pre-applypatch.sample")
+    member this.preCommitPath       = Path.Combine(this.hooksPath, "pre-commit.sample")
+    member this.preMergeCommitPath  = Path.Combine(this.hooksPath, "pre-merge-commit.sample")
+    member this.prePushPath         = Path.Combine(this.hooksPath, "pre-push.sample")
+    member this.preRebasePath       = Path.Combine(this.hooksPath, "pre-rebase.sample")
+    member this.preReceivePath      = Path.Combine(this.hooksPath, "pre-receive.sample")
+    member this.prepareCommitPath   = Path.Combine(this.hooksPath, "prepare-commit-msg.sample")
+    member this.pushToCheckoutPath  = Path.Combine(this.hooksPath, "push-to-checkout.sample")
+    member this.updatePath          = Path.Combine(this.hooksPath, "update.sample")
