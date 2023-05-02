@@ -74,7 +74,6 @@ let foundStudyAnnoTables =
     |> Array.choose fst
     |> Array.map (
         fun sp ->
-            printfn "%A" sp
             let std = try FsWorkbook.fromXlsxFile sp with _ -> new FsWorkbook()
             let stdWorksheets = 
                 let wss = 
@@ -94,12 +93,13 @@ let foundStudyAnnoTables =
             )
     )
 
-let studyRawOrDerivedDataPaths =
+let dataPaths =
+    //Seq.append foundStudyAnnoTables foundAssayAnnoTables
     foundStudyAnnoTables
     |> Seq.collect (        // single study
         Seq.collect (       // single annoTable
             Seq.filter (
-                CvBase.getCvName >> (=) "Data"
+                CvBase.getCvName >> (fun n -> n = "Data" || n = "Protocol REF")
             )
         )
     )

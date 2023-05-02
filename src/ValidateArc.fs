@@ -55,7 +55,7 @@ let filesystem =
                     testCase $"{id}" <| fun () -> Validate.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
         ]
         testList "DataPathNames" [
-            for fp in studyRawOrDerivedDataPaths do
+            for fp in dataPaths do
                 let fpParam = Param.tryParam fp |> Option.get
                 let fpValue = Param.getValueAsString fpParam
                 testCase $"{fpValue}" <| fun () -> Validate.Param.filepath fpParam |> throwError XLSXFile.isPresent

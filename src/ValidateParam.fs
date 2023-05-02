@@ -16,12 +16,25 @@ module Param =
             // if relative path from ARC root is provided
             if String.contains  "/" relFilepath || String.contains "\\" relFilepath then
                 Path.Combine(ArcPaths.inputPath, relFilepath)
-            // if only filename is provided, storage in dataset folder is assumed
+            // if only filename is provided, storage in element-specific subfolder is assumed
             else
-                let sfp = CvParam.tryGetAttribute "Pathname" filepathParam |> Option.get |> Param.getValueAsString |> String.replace "/" "\\"
-                let sfpTrunc =
-                    let i = String.findIndexBack '\\' sfp
-                    sfp[.. i]
-                Path.Combine(sfpTrunc, "dataset", relFilepath)
+                let fileKind = filepathParam |> CvBase.getCvName
+                let elementFullpath = 
+                    CvParam.tryGetAttribute "Pathname" filepathParam 
+                    |> Option.get 
+                    |> Param.getValueAsString 
+                    |> String.replace "/" "\\"
+                let subFolder =
+                    match fileKind with
+                    | "Protocol REF" -> "protocols"
+                    | "Data" ->
+                        if elementFullpath |> String.contains "\\assays\\" then "dataset"
+                        elif elementFullpath |> String.contains "\\studies\\" then "resources"
+                        else ""     // empty string is not an elegant way though `Path.Combine` ignores it
+                    | _ -> ""
+                let efpTrunc =
+                    let i = String.findIndexBack '\\' elementFullpath
+                    elementFullpath[.. i]
+                Path.Combine(efpTrunc, subFolder, relFilepath)
         if File.Exists fullpath then Success
         else Error (ErrorMessage.XlsxFile.createFromCvParam filepathParam)
