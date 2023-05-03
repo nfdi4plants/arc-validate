@@ -6,23 +6,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="CLIArgs.fs" />
     <Compile Include="InternalUtils.fs" />
+    <Compile Include="ArcPaths.fs" />
+    <Compile Include="Defaults.fs" />
     <Compile Include="CvTokenHelperFunctions.fs" />
     <Compile Include="ErrorMessage.fs" />
     <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="FilesystemRepresentation.fs" />
-    <Compile Include="ArcPaths.fs" />
     <Compile Include="CheckIsaStructure.fs" />
     <Compile Include="ValidateFilesystemEntries.fs" />
     <Compile Include="ValidateCvBase.fs" />
     <Compile Include="ValidateParam.fs" />
     <Compile Include="InformationExtraction.fs" />
     <Compile Include="ValidateArc.fs" />
-    <Compile Include="Main.fs" />    
+    <Compile Include="CLIArgs.fs" />
+    <Compile Include="Program.fs" />    
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Argu" Version="[6.1.1]" />
     <PackageReference Include="Expecto" Version="9.0.4" />
     <PackageReference Include="FSharpAux" Version="1.1.0" />
     <PackageReference Include="FSharpSpreadsheetML" Version="0.0.8" />
