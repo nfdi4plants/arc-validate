@@ -4,7 +4,7 @@ open ArcGraphModel
 open FSharpAux
 open System.IO
 open OntologyHelperFunctions
-
+open Defaults
 
 /// Functions to validate #IParam entities.
 module Param =
@@ -15,8 +15,8 @@ module Param =
         let fullpath =
             // if relative path from ARC root is provided
             if String.contains  "/" relFilepath || String.contains "\\" relFilepath then
-                Path.Combine(ArcPaths.inputPath, relFilepath)
-            // if only filename is provided, storage in element-specific subfolder is assumed
+                Path.Combine(arcPaths.ArcRootPath, relFilepath)
+            // if only filename is provided, storage in dataset folder is assumed
             else
                 let fileKind = filepathParam |> CvBase.getCvName
                 let elementFullpath = 

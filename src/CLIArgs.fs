@@ -4,7 +4,7 @@ open Argu
 open System.IO
 
 type CliArguments =
-    | [<Mandatory>][<AltCommandLine("-p")>] ARC_Directory of path:string
+    | [<AltCommandLine("-p")>] ARC_Directory of path:string
     | [<AltCommandLine("-o")>] Out_Directory of path:string
 
     interface IArgParserTemplate with

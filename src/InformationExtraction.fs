@@ -2,7 +2,7 @@
 
 open FsSpreadsheet
 open FsSpreadsheet.ExcelIO
-open ArcPaths
+open Defaults
 open ArcGraphModel
 open ArcGraphModel.IO
 open CvTokenHelperFunctions
@@ -10,7 +10,7 @@ open System.IO
 open FSharpAux
 
 
-let invWb = FsWorkbook.fromXlsxFile investigationPath
+let invWb = FsWorkbook.fromXlsxFile arcPaths.InvestigationPath
 let invWorksheet = 
     let ws = 
         invWb.GetWorksheets()
@@ -18,7 +18,7 @@ let invWorksheet =
     ws.RescanRows()
     ws
 
-let invPathCvP = CvParam(Terms.filepath, ParamValue.Value investigationPath)
+let invPathCvP = CvParam(Terms.filepath, ParamValue.Value arcPaths.InvestigationPath)
 
 let invTokens = 
     let it = Worksheet.parseRows invWorksheet
@@ -49,14 +49,14 @@ let invStudiesPathsAndIds =
                 Param.getValueAsString 
                 >> fun s -> 
                     let sLinux = String.replace "\\" "/" s
-                    Path.Combine(ArcPaths.studiesPath, sLinux)
+                    Path.Combine(arcPaths.StudiesPath, sLinux)
             ),
             CvContainer.tryGetSingleAs<IParam> "identifier" cvc
             |> Option.map Param.getValueAsString
     )
 
 let foundStudyFolders = 
-    Directory.GetDirectories ArcPaths.studiesPath
+    Directory.GetDirectories arcPaths.StudiesPath
 
 let foundStudyFilesAndIds = 
     foundStudyFolders
