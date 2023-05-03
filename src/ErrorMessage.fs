@@ -147,7 +147,7 @@ module FailStrings =
     module XLSXFile =
 
         /// Takes a Message and returns a string containing the information that an information in an XLSXFile is not present.
-        let isPresent message = $"Actual entity is not present: {message.Path} in Worksheet {message.Sheet} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
+        let isPresent message = $"Actual entity is not present: {message.Path} in Worksheet {message.Sheet.Value} at Cell: {uint message.Position.Value |> indexToColAdress}{message.Line.Value}"
 
         /// Takes 2 Messages and returns a string containing the information that neither FilesystemEntry is present.
         let isEitherPresent message1 message2 = $"Neither of the actual entities are present: {message1.Path} in Worksheet {message1.Sheet} at Cell: {uint message1.Position.Value |> indexToColAdress}{message1.Line.Value}, {message2.Path} in Worksheet {message2.Sheet} at Cell: {uint message2.Position.Value |> indexToColAdress}{message2.Line.Value}"

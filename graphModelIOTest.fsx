@@ -298,14 +298,13 @@ let foundStudyAnnoTables =
     |> Array.choose fst
     |> Array.map (
         fun sp ->
-            let std = try FsWorkbook.fromXlsxFile sp with :? IOException -> new FsWorkbook()
+            let std = try FsWorkbook.fromXlsxFile sp |> fun r -> printfn "try worked"; r with :? IOException -> printfn "try failed"; new FsWorkbook()
             let stdWorksheets = 
                 let wss = 
                     FsWorkbook.getWorksheets std
                     |> List.filter (fun ws -> ws.Name <> "Study")
                 wss |> List.iter (fun ws -> ws.RescanRows())
                 wss
-            printfn "%A" stdWorksheets
             let stdPathCvP = CvParam(Terms.filepath, ParamValue.Value sp)
             stdWorksheets 
             |> List.map (
@@ -329,6 +328,21 @@ let studyRawOrDerivedDataPaths =
     )
 
 studyRawOrDerivedDataPaths
+|> Seq.map (
+    Param.tryParam >> Option.get >> Param.getValueAsString
+)
+
+let studyProtocolRefPaths =
+    foundStudyAnnoTables
+    |> Seq.collect (      // single study
+        Seq.collect (      // single annoTable
+            Seq.filter (
+                CvBase.getCvName >> (=) "Protocol REF"
+            )
+        )
+    )
+
+studyProtocolRefPaths
 |> Seq.map (
     Param.tryParam >> Option.get >> Param.getValueAsString
 )
@@ -360,16 +374,31 @@ let filepath<'T when 'T :> IParam> (filepathParam : 'T) =
             Path.Combine(ArcPaths.inputPath, relFilepath)
         // if only filename is provided, storage in dataset folder is assumed
         else
-            let sfp = CvParam.tryGetAttribute "Pathname" filepathParam |> Option.get |> Param.getValueAsString |> String.replace "/" "\\"
-            let sfpTrunc =
-                let i = String.findIndexBack '\\' sfp
-                sfp[.. i]
-            Path.Combine(sfpTrunc, "dataset", relFilepath)
+            let elementFullpath = 
+                CvParam.tryGetAttribute "Pathname" filepathParam 
+                |> Option.get 
+                |> Param.getValueAsString 
+                |> String.replace "/" "\\"
+            let fileKind = filepathParam |> CvBase.getCvName
+            let subFolder =
+                match fileKind with
+                | "Protocol REF" -> "protocols"
+                | "Data" ->
+                    if elementFullpath |> String.contains "\\assays\\" then "dataset"
+                    elif elementFullpath |> String.contains "\\studies\\" then "resources"
+                    else ""
+                | _ -> ""
+            let efpTrunc =
+                let i = String.findIndexBack '\\' elementFullpath
+                elementFullpath[.. i]
+            Path.Combine(efpTrunc, subFolder, relFilepath)
     if File.Exists fullpath then Success
-    else Error (XlsxFile.createFromCvParam filepathParam)
+    else Error (ErrorMessage.XlsxFile.createFromCvParam filepathParam)
 
 filepath filepathParam
 
+let filepathParam2 = Seq.head studyProtocolRefPaths |> Param.tryParam |> Option.get
+filepath filepathParam2
 
 
 let tryGetPropertyStringValue property cvContainer =
@@ -393,11 +422,66 @@ let invStudies2 =
 
 invStudies |> List.ofSeq |> List.head |> CvContainer.tryGetSingleAs<IParam> "File Name" |> Option.map Param.getValueAsString
 
+
+// ASSAYS
+
 let assay1 = 
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
     |> Seq.head
+
+let foundAssayFolders = 
+    Directory.GetDirectories ArcPaths.assaysPath
+
+let foundAssayFilesAndIds = 
+    foundAssayFolders
+    |> Array.map (
+        fun sp ->
+            Directory.TryGetFiles(sp, "isa.assay.xlsx") 
+            |> Option.bind Array.tryHead,
+            String.rev sp
+            |> String.replace "\\" "/"
+            |> String.takeWhile ((<>) '/')
+            |> String.rev
+    )
+
+let foundAssayAnnoTables = 
+    foundAssayFilesAndIds
+    |> Array.choose fst
+    |> Array.map (
+        fun sp ->
+            let std = try FsWorkbook.fromXlsxFile sp |> fun r -> printfn "try worked"; r with :? IOException -> printfn "try failed"; new FsWorkbook()
+            let stdWorksheets = 
+                let wss = 
+                    FsWorkbook.getWorksheets std
+                    |> List.filter (fun ws -> ws.Name <> "Study")
+                wss |> List.iter (fun ws -> ws.RescanRows())
+                wss
+            let stdPathCvP = CvParam(Terms.filepath, ParamValue.Value sp)
+            stdWorksheets 
+            |> List.map (
+                Worksheet.parseColumns
+                >> List.map (
+                    fun cvb ->
+                        CvAttributeCollection.tryAddAttribute stdPathCvP cvb |> ignore
+                        cvb
+                )
+            )
+    )
+
+let dataPaths =
+    //Seq.append foundStudyAnnoTables foundAssayAnnoTables
+    foundAssayAnnoTables
+    |> Seq.collect (      // single study/assay
+        Seq.collect (      // single annoTable
+            Seq.filter (
+                CvBase.getCvName >> (fun n -> n = "Data" || n = "Protocol REF")
+            )
+        )
+    )
+
+dataPaths |> Seq.toList |> List.map (Param.tryParam >> Option.get (*>> Param.getValueAsString*) >> filepath)
 
 
 //match invesContacts[0] with

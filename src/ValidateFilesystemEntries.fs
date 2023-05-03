@@ -49,3 +49,19 @@ module FilesystemEntry =
                 ) 
             if cond then Success
             else Error (Message.create studyFilepath None None None MessageKind.FilesystemEntryKind)
+
+
+    module AssayFile =
+
+        /// Validates a Study file's registration in the Investigation.
+        let registrationInInvestigation (investigationStudiesPathsAndIds : seq<string option * string option>) studyFilepath =
+            let studyFilepathLinux = String.replace "/" "\\" studyFilepath
+            let cond = 
+                investigationStudiesPathsAndIds
+                |> Seq.exists (
+                    fun (p,id) -> 
+                        let pLinux = Option.map (String.replace "/" "\\") p
+                        pLinux = Some studyFilepathLinux
+                ) 
+            if cond then Success
+            else Error (Message.create studyFilepath None None None MessageKind.FilesystemEntryKind)
