@@ -1,9 +1,9 @@
 ﻿/// Paths to folders and files that must/should exist in an ARC.
-module ArcPaths
+namespace ArcValidation.Configs
 
 open System.IO
 
-type ArcPaths(arcRootPath: string) = 
+type PathConfig(arcRootPath: string) = 
 
     // settable root path. All other properties are explicit properties meaning that they get evaluated everytime they are accessed -> they are always changed accordingly to the root path. 
     // Useful for setting correct root path via CLI args or defaulting to another value.

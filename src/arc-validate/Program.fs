@@ -3,22 +3,28 @@
 open Expecto
 open Argu
 open System.IO
+open ArcValidation
+open ArcValidation.Configs
 
 try
     let args = CLIArgs.cliArgParser.ParseCommandLine()
 
-    let arcPath = 
+    let arcConfig = 
         args.TryGetResult(CLIArgs.ARC_Directory)
         |> Option.defaultValue (System.Environment.GetEnvironmentVariable("ARC_PATH")) // default to ARC_PATH if argument is not provided
-        |> fun s -> if String.isNullOrWhiteSpace s then System.Environment.CurrentDirectory else s // default to ./ if ARC_PATH is not set
+        |> fun s -> if System.String.IsNullOrWhiteSpace(s) then System.Environment.CurrentDirectory else s // default to ./ if ARC_PATH is not set
+        |> fun s -> ArcConfig(s)
 
     let outPath = 
         args.TryGetResult(CLIArgs.Out_Directory)
-        |> Option.defaultValue arcPath
+        |> Option.defaultValue arcConfig.PathConfig.ArcRootPath
+
+    printfn "arc root path: %s" arcConfig.PathConfig.ArcRootPath
+    printfn "outpath: %s" outPath
 
     testList "ARCTests" [
-        ValidateArc.filesystem
-        ValidateArc.isaTests
+        TestGeneration.Arc.FileSystem.generateArcFileSystemTests arcConfig
+        TestGeneration.Arc.ISA.generateISATests arcConfig
     ]
     |> Expecto.performTest
     |> Expecto.writeJUnitSummary (Path.Combine(outPath, "arc-validate-results.xml"))
@@ -31,3 +37,4 @@ with
     | ex ->
         printfn "Internal Error:"
         printfn "%s" ex.Message
+        printfn "%A" ex.StackTrace

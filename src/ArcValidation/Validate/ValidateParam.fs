@@ -1,22 +1,24 @@
-﻿namespace Validate
+﻿namespace ArcValidation.Validate
+
+open ArcValidation
 
 open ArcGraphModel
 open FSharpAux
 open System.IO
 open OntologyHelperFunctions
-open Defaults
+
 
 /// Functions to validate #IParam entities.
 module Param =
 
     /// Validates a filepath.
-    let filepath<'T when 'T :> IParam> (filepathParam : 'T) =
+    let filepath<'T when 'T :> IParam> (arcRootPath:string) (filepathParam : 'T) =
         let relFilepath = Param.getValueAsString filepathParam
         let fullpath =
             // if relative path from ARC root is provided
             if String.contains  "/" relFilepath || String.contains "\\" relFilepath then
-                Path.Combine(arcPaths.ArcRootPath, relFilepath)
-            // if only filename is provided, storage in dataset folder is assumed
+                Path.Combine(arcRootPath, relFilepath)
+            // if only filename is provided, storage in element-specific subfolder is assumed
             else
                 let fileKind = filepathParam |> CvBase.getCvName
                 let elementFullpath = 

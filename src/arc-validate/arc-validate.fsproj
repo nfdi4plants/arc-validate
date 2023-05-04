@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="CLIArgs.fs" />
+    <Compile Include="Program.fs" />    
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="[6.1.1]" />
+    <PackageReference Include="Expecto" Version="[9.0.4]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ArcValidation\ArcValidation.fsproj" />
+  </ItemGroup>
+
+</Project>
