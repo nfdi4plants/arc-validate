@@ -19,9 +19,6 @@ try
         args.TryGetResult(CLIArgs.Out_Directory)
         |> Option.defaultValue arcConfig.PathConfig.ArcRootPath
 
-    printfn "arc root path: %s" arcConfig.PathConfig.ArcRootPath
-    printfn "outpath: %s" outPath
-
     testList "ARCTests" [
         TestGeneration.Arc.FileSystem.generateArcFileSystemTests arcConfig
         TestGeneration.Arc.ISA.generateISATests arcConfig

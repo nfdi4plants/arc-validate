@@ -54,4 +54,3 @@ type PathConfig(arcRootPath: string) =
     member this.PrepareCommitPath   = Path.Combine(this.HooksPath, "prepare-commit-msg.sample")
     member this.PushToCheckoutPath  = Path.Combine(this.HooksPath, "push-to-checkout.sample")
     member this.UpdatePath          = Path.Combine(this.HooksPath, "update.sample")
-

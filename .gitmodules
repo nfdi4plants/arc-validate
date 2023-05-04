@@ -1,3 +1,0 @@
-[submodule "tests/fixtures/arcs/invenio-test-arc"]
-	path = tests/fixtures/arcs/invenio-test-arc
-	url = https://github.com/nfdi4plants/invenio-test-arc.git
