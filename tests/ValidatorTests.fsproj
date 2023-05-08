@@ -7,9 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <Compile Include="ReferenceObjects.fs" />
-    <Compile Include="CLITests.fs" />
+    <Compile Include="APITests\PathConfig.fs" />
+    <Compile Include="CLITests\CLITests.fs" />
+    <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
