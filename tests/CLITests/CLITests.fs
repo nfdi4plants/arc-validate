@@ -7,6 +7,8 @@ open Expecto.Logging
 open System.IO
 open System.Diagnostics
 
+open JUnit
+
 type CLIContext() =
     static member create 
         (
@@ -17,7 +19,7 @@ type CLIContext() =
                 let tool = $"arc-validate"
                 let args = 
                     [
-                        p |> Option.map (fun o -> $"-p {p} ") |> Option.defaultValue ""
+                        p |> Option.map (fun p -> $"-p {p} ") |> Option.defaultValue ""
                         o |> Option.map (fun o -> $"-o {o} ") |> Option.defaultValue ""
                     ]
                     |> String.concat ""
@@ -36,16 +38,16 @@ type CLIContext() =
                 let procStartInfo = 
                     ProcessStartInfo(
                         UseShellExecute = false,
-                        FileName = tool,
+                        FileName = "arc-validate",
                         Arguments = args
                     )
+                printfn "%A" System.Environment.CurrentDirectory
+                printfn "%A" procStartInfo
+
                 let proc = Process.Start(procStartInfo)
-                let result = 
-                    try 
-                        proc.WaitForExit()
-                        File.ReadAllText outFile
-                    with e as _ -> 
-                        $"{tool} failed running in {System.Environment.CurrentDirectory} {args} failed:{System.Environment.NewLine}{e.Message}"
+                proc.WaitForExit()
+                let result = ValidationResults.fromJUnitFile outFile
+                  
                 f result
 
 [<Tests>]
@@ -53,7 +55,30 @@ let ``CLI Tests`` =
     testList "CLI tests" [
         testList "fixtures/arcs/inveniotestarc" [
             yield! testFixture (CLIContext.create(p = "fixtures/arcs/inveniotestarc")) [
-                "arc-validate -p fixtures/arcs/inveniotestarc", (fun xml -> fun () -> Expect.equal xml ReferenceObjects.IO.``invenio test arc validation results`` "xml test results created by cli command were incorrect")
+                "total test amount", (fun testResults -> fun () -> 
+                    Expect.equal  
+                        (ValidationResults.getTotalTestCount testResults)
+                        (ValidationResults.getTotalTestCount ReferenceObjects.``invenio test arc validation results``)
+                        "incorrect total amount of tests"
+                )
+                "passed tests", (fun testResults -> fun () -> 
+                    Expect.equal  
+                        testResults.PassedTests
+                        ReferenceObjects.``invenio test arc validation results``.PassedTests
+                        "incorrect test results"
+                )
+                "failed tests", (fun testResults -> fun () -> 
+                    Expect.equal  
+                        testResults.FailedTests
+                        ReferenceObjects.``invenio test arc validation results``.FailedTests
+                        "incorrect test results"
+                )
+                "errored tests", (fun testResults -> fun () -> 
+                    Expect.equal  
+                        testResults.ErroredTests
+                        ReferenceObjects.``invenio test arc validation results``.ErroredTests
+                        "incorrect test results"
+                )
             ]
         ]
     ]

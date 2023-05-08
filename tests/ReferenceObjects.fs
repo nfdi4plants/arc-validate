@@ -1,6 +1,6 @@
 ﻿module ReferenceObjects
 
 open System.IO
+open JUnit
 
-module IO =
-    let ``invenio test arc validation results`` = File.ReadAllText("fixtures/xml/inveniotestarc/arc-validate-results.xml").ReplaceLineEndings()
+let ``invenio test arc validation results`` = ValidationResults.fromJUnitFile "fixtures/xml/inveniotestarc/arc-validate-results.xml"

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="JUnit.fs" />
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="APITests\PathConfig.fs" />
     <Compile Include="CLITests\CLITests.fs" />
