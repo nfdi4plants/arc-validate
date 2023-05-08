@@ -17,6 +17,8 @@
     <PackageReference Include="Expecto" Version="9.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <ProjectReference Include="..\src\arc-validate\arc-validate.fsproj" />
+    <ProjectReference Include="..\src\ArcValidation\ArcValidation.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.*" />
   </ItemGroup>
 </Project>

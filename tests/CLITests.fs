@@ -23,9 +23,15 @@ type CLIContext() =
                     |> String.concat ""
 
                 let outFile = 
-                    o 
-                    |> Option.map (fun o -> Path.Combine(o, "arc-validate-results.xml"))
-                    |> Option.defaultValue (Path.Combine(System.Environment.CurrentDirectory, "arc-validate-results.xml"))
+                    o
+                    |> Option.defaultValue (System.Environment.GetEnvironmentVariable("ARC_PATH")) // default to ARC_PATH if argument is not provided
+                    |> fun s -> 
+                        if p.IsSome then 
+                            p.Value else 
+                        if System.String.IsNullOrWhiteSpace(s) then 
+                            System.Environment.CurrentDirectory 
+                        else s // default to ./ if ARC_PATH is not set
+                    |> fun s -> Path.Combine(s, "arc-validate-results.xml")
 
                 let procStartInfo = 
                     ProcessStartInfo(
@@ -45,9 +51,9 @@ type CLIContext() =
 [<Tests>]
 let ``CLI Tests`` =
     testList "CLI tests" [
-        testList "fixtures/test-arc" [
-            yield! testFixture (CLIContext.create(p = "fixtures/test-arc")) [
-                "arc-validate -p fixtures/arcs/test-arc", (fun xml -> fun () -> Expect.equal xml ReferenceObjects.IO.``test arc 1 validation results`` "xml test results created by cli command were incorrect")
+        testList "fixtures/arcs/inveniotestarc" [
+            yield! testFixture (CLIContext.create(p = "fixtures/arcs/inveniotestarc")) [
+                "arc-validate -p fixtures/arcs/inveniotestarc", (fun xml -> fun () -> Expect.equal xml ReferenceObjects.IO.``invenio test arc validation results`` "xml test results created by cli command were incorrect")
             ]
         ]
     ]
