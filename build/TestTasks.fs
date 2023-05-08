@@ -16,6 +16,7 @@ let ensureArcFixtures = BuildTask.create "EnsureArcFixtures" [] {
     |> List.iter (fun arcPath ->
         if not (Directory.Exists(arcPath)) then 
             printfn $"cloning {arcPath}"
+            Directory.CreateDirectory(arcPath) |> ignore
             Repository.clone "tests/fixtures/arcs" "https://github.com/nfdi4plants/invenio-test-arc" "inveniotestarc"
     )
 }
