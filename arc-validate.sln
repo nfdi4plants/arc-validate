@@ -29,6 +29,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "git", "git", "{42647E99-86C
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{40D49078-F3AE-448F-A730-77063694830D}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		Dockerfile = Dockerfile
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "build", "build\build.fsproj", "{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +56,10 @@ Global
 		{B46EA5BD-195E-4328-9B71-FE20F54C76F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B46EA5BD-195E-4328-9B71-FE20F54C76F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B46EA5BD-195E-4328-9B71-FE20F54C76F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +68,7 @@ Global
 		{797794D0-0AA1-4D91-B34A-563EE19E2BED} = {5C204780-A94B-46A2-B768-B12C7D81DDFC}
 		{0FF2245E-AFDA-4C93-9E38-44CA66C6DEB9} = {6275F297-567B-421B-B055-4F88B2785765}
 		{B46EA5BD-195E-4328-9B71-FE20F54C76F1} = {6275F297-567B-421B-B055-4F88B2785765}
+		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F} = {40D49078-F3AE-448F-A730-77063694830D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}

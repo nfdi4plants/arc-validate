@@ -45,7 +45,7 @@ type CLIContext() =
                         proc.WaitForExit()
                         File.ReadAllText outFile
                     with e as _ -> 
-                        $"{tool} {args} failed:{System.Environment.NewLine}{e.Message}"
+                        $"{tool} failed running in {System.Environment.CurrentDirectory} {args} failed:{System.Environment.NewLine}{e.Message}"
                 f result
 
 [<Tests>]
