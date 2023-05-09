@@ -1,4 +1,6 @@
-﻿namespace Validate
+﻿namespace ArcValidation.Validate
+
+open ArcValidation
 
 open ArcGraphModel
 open FSharpAux

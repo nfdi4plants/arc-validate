@@ -1,15 +1,51 @@
-name: Create and publish a Docker image
+name: Build, Test, and publish Docker image
 
 on:
   push:
     branches: ['main']
+    paths:
+# this ensures that docker image is only published when source code or Dockerfile is changed
+      - 'src/**'
+      - 'Dockerfile'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  build-and-test-linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.x.x
+    - name: make script executable
+      run: chmod u+x build.sh
+    - name: Build and test
+      working-directory: ./
+      run: ./build.sh runtests
+
+  build-and-test-windows:
+    
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.x.x
+    - name: Build and test
+      working-directory: ./
+      run: ./build.cmd runtests
+
   build-and-push-image:
+# only publish docker images when tests succeed
+    needs: [build-and-test-linux, build-and-test-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: read

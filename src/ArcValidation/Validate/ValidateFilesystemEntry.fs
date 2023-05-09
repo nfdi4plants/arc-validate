@@ -1,26 +1,24 @@
-namespace Validate
+namespace ArcValidation.Validate
+
+open ArcValidation
 
 open System.IO
 open ErrorMessage
 open OntologyHelperFunctions
 open FSharpAux
 
-
 // [DEPRECATED]
 // temporarily stays here to remember which cases to cover
-module Checks =
+//module Checks = 
 
-    open ArcPaths
-
-    let hasInfoFolder           = Directory.Exists infoPath
-    let hasObjectsFolder        = Directory.Exists objectsPath
-    let hasRefsFolder           = Directory.Exists refsPath
-    let hasRunsFolder           = Directory.Exists runsPath
-    let hasWorkflowsFolder      = Directory.Exists workflowsPath
-    let hasInvestigationFile    = File.Exists investigationPath
+    //let hasInfoFolder           = Directory.Exists arcPaths.InfoPath
+    //let hasObjectsFolder        = Directory.Exists arcPaths.ObjectsPath
+    //let hasRefsFolder           = Directory.Exists arcPaths.RefsPath
+    //let hasRunsFolder           = Directory.Exists arcPaths.RunsPath
+    //let hasWorkflowsFolder      = Directory.Exists arcPaths.WorkflowsPath
+    //let hasInvestigationFile    = File.Exists arcPaths.InvestigationPath
     //let studiesFolderStructure  = getElementInElementsFolder studiesPath
     //let allStudies              = checkStudiesFolderStructure studiesFolderStructure
-
 
 module FilesystemEntry =
 
@@ -49,7 +47,6 @@ module FilesystemEntry =
                 ) 
             if cond then Success
             else Error (Message.create studyFilepath None None None MessageKind.FilesystemEntryKind)
-
 
     module AssayFile =
 

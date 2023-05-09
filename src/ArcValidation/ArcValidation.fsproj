@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="InternalUtils.fs" />
+    <Compile Include="ExpectoExtensions.fs" />
+    <Compile Include="CheckIsaStructure.fs" />
+    <Compile Include="CvTokenHelperFunctions.fs" />
+    <Compile Include="ErrorMessage.fs" />
+    <Compile Include="FilesystemRepresentation.fs" />
+    <Compile Include="InformationExtraction.fs" />
+    <Compile Include="OntologyHelperFunctions.fs" />
+    <Compile Include="Configs\PathConfig.fs" />
+    <Compile Include="Configs\ArcConfig.fs" />
+    <Compile Include="Validate\ValidateFilesystemEntry.fs" />
+    <Compile Include="Validate\ValidateParam.fs" />
+    <Compile Include="Validate\ValidateCvBase.fs" />
+    <Compile Include="TestGeneration\ArcFileSystem.fs" />
+    <Compile Include="TestGeneration\ArcISA.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="[6.1.1]" />
+    <PackageReference Include="Expecto" Version="[9.0.4]" />
+    <PackageReference Include="FSharpAux" Version="[1.1.0]" />
+    <PackageReference Include="FSharpSpreadsheetML" Version="[0.0.8]" />
+    <PackageReference Include="ISADotNet" Version="[0.6.1]" />
+    <PackageReference Include="ISADotNet.XLSX" Version="[0.6.1]" />
+    <PackageReference Include="FsSpreadsheet" Version="[1.3.0-preview]" />
+    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
+    <PackageReference Include="ArcGraphModel" Version="[0.1.0-preview.3]" />
+    <PackageReference Include="ArcGraphModel.IO" Version="[0.1.0-preview.3]" />
+  </ItemGroup>
+</Project>
