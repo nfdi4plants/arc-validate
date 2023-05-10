@@ -27,6 +27,30 @@ _(WIP)_
   - _Is there a Factor?_
   - _Does the ISA object make sense from a scientific point of view?_
 
+## Structure
+
+```mermaid
+flowchart TD
+subgraph Toplevel
+    A[FilesystemEntries] -->|Reader| B[CvParam list]
+    B -->|Validation| C[ValidationResult list]
+    C -->|Writer| D[JUnit XML ResultsFile]
+    D -->|CreateBadge| E[Badge]
+end
+
+subgraph Reader
+    
+end
+```
+
+Requirements:
+- Reader:
+  1. Representation of filestructure (possibly `Filesystem.DataModel` in ARC.Core?)
+  2. Metadata parsing according to ARC specification (ISA.XLSX files, CWL files)
+      - Depending on the type of input (e.g. AnnotationTable, Investigation metadata section, CWL), the reader must parse the content respectively:
+        - Parse metadata section in Assay/Study/Investigation: Search for sheet with respective name ("Study"/"Assay"/"isa_investigation") and parse the content of the row-based table (key-value pairs) into CvParams
+        - Parse AnnotationTable in Assay/Study: Search for all tables containing "annotationTable" in their name and parse the content of the column-based table (key-value pairs) into CvParams
+
 ## Develop
 
 If you'd like to contribute, please follow the following steps (basic knowledge about Docker is helpful but not required):
