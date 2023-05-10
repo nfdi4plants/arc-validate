@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		global.json = global.json
 		graphModelIOTest.fsx = graphModelIOTest.fsx
 		playground.fsx = playground.fsx
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
