@@ -31,25 +31,56 @@ _(WIP)_
 
 ```mermaid
 flowchart TD
-subgraph Toplevel
-    A[FilesystemEntries] -->|Reader| B[CvParam list]
-    B -->|Validation| C[ValidationResult list]
-    C -->|Writer| D[JUnit XML ResultsFile]
-    D -->|CreateBadge| E[Badge]
+subgraph "Toplevel (Alternative)"
+    G[FilesystemEntries] 
+	H[Filesystem.DataModel]
+	I[CvParam list]
+    J[ValidationResult list]
+    K[JUnit XML ResultsFile]
+    L[Badge]
+
+	G --->|Reader| H
+	H --->|MetadataFilesToCvParams| I
+	H --->|Validation| J
+	I --->|Validation| J
+	J --->|Writer| K
+	K --->|CreateBadge| L
+
 end
 
-subgraph Reader
-    
+subgraph Toplevel
+    A[FilesystemEntries]
+	B[Filesystem.DataModel]
+	C[CvParam list]
+	D[ValidationResult list]
+	E[JUnit XML ResultsFile]
+	F[Badge]
+	A -->|Reader| B
+	B -->|MetaDataFilesToCvParams| C
+    C -->|Validation| D
+    D -->|Writer| E
+    E -->|CreateBadge| F
 end
 ```
 
-Requirements:
-- Reader:
-  1. Representation of filestructure (possibly `Filesystem.DataModel` in ARC.Core?)
-  2. Metadata parsing according to ARC specification (ISA.XLSX files, CWL files)
-      - Depending on the type of input (e.g. AnnotationTable, Investigation metadata section, CWL), the reader must parse the content respectively:
-        - Parse metadata section in Assay/Study/Investigation: Search for sheet with respective name ("Study"/"Assay"/"isa_investigation") and parse the content of the row-based table (key-value pairs) into CvParams
-        - Parse AnnotationTable in Assay/Study: Search for all tables containing "annotationTable" in their name and parse the content of the column-based table (key-value pairs) into CvParams
+## Requirements:
+
+### Filesystem.DataModel
+
+1. Shall represent the ARCs required file and folder structure. Required are top level folders as fields (e.g. Assays, Runs, ...)
+
+### Reader:
+
+#### Filesystem.DataModel
+
+Representation of filesystem structure (possibly `Filesystem.DataModel` in ARC.Core?)
+
+#### CvParam parsing
+
+Metadata parsing according to ARC specification (ISA.XLSX files, CWL files)
+  - Depending on the type of input (e.g. AnnotationTable, Investigation metadata section), the reader must parse the content respectively:
+    - Parse metadata section in Assay/Study/Investigation: Search for sheet with respective name ("Study"/"Assay"/"isa_investigation") and parse the content of the row-based table (key-value pairs) into CvParams
+    - Parse AnnotationTable in Assay/Study: Search for all tables containing "annotationTable" in their name and parse the content of the column-based table (key-value pairs) into CvParams
 
 ## Develop
 
