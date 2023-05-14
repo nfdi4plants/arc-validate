@@ -27,6 +27,42 @@ _(WIP)_
   - _Is there a Factor?_
   - _Does the ISA object make sense from a scientific point of view?_
 
+### Test classification
+
+Test are separated into critical and non-critical.  
+Critical tests are such that concern the primal integrity of the ARC. If these fail, the ARC's integrity is not given and thus does not satisfy the requirements (i.e., the ARC specification) on a basic level.  
+Non-Critical tests revolve around best practices in ARC and ISA structure and annotation and describe the quality of an ARC.  
+If any critical test fails, the validation returns an error exit code while this does not happen if all critical tests succeed.  
+This differentiation is important for, e.g., downstream applications and pipelines, using the output of the validation and behaving differently, according to the result of the validation.
+
+### List of critical tests
+
+- Is the `.arc` folder present?
+- Are a `.git` folder and all related files and subfolders present?
+- Is an Investigation file present?
+- Does the investigation have an identifier?
+- Does the Investigation have an Title?
+- Does at least one correctly registered person exist in the Investigation Contacts section?
+- Is the `studies` folder present?
+- Does each Study in the `studies` folder have a Study file?
+- Are all Studies present in the `studies` folder registered in the Investigation file?
+- Do all Studies registered in the Investigation file have an identifier?
+- Do all Studies registered in the Investigation file have a Study filepath?
+- Are all Studies registered in the Investigation file present in the filesystem?
+- Is the `assays` folder present?
+- Does each Assay in the `assays` folder have an Assay file?
+- Are all Assays present in the `assays` folder registered in the Investigation file and any Study file?
+- Do all Assays registered in the Investigation file or any Study file have an identifier? 
+- Do all Assays registered in the Investigation file or any Study file have an Assay filepath?
+- Are all Assays registered in the Investigation file or any Study file present in the filesystem? 
+- Is the `workflows` folder present?
+- Is the `runs` folder present?
+- Are all in the Annotation Tables described datafile paths present in the filesystem?
+
+### List of non-critical tests
+
+- 
+
 ## Structure
 
 ```mermaid
