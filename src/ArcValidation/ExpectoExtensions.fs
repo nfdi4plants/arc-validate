@@ -34,6 +34,19 @@ module Expecto =
                 timedOut = []
             }
 
+    /// Combines a TestRunSummary sequence to a single TestRunSummary.
+    /// 
+    /// Currently ignores maxMemory, memoryLimit, and timedOut fields.
+    let combineTestRunSummaries (testRunSummaries : seq<TestRunSummary>) =
+        testRunSummaries
+        |> Seq.reduce (
+            fun trs1 trs2 ->
+                {trs1 with
+                    results = trs1.results @ trs2.results
+                    duration = trs1.duration + trs2.duration
+                }
+        )
+
     let expectoVersion = 
         // Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>()   // fails because of not having the .dll at hand
         let userDir = Environment.SpecialFolder.UserProfile |> Environment.GetFolderPath        // workaround which uses NuGet package version

@@ -17,9 +17,9 @@
     <Compile Include="OntologyHelperFunctions.fs" />
     <Compile Include="Configs\PathConfig.fs" />
     <Compile Include="Configs\ArcConfig.fs" />
-    <Compile Include="Validate\ValidateFilesystemEntry.fs" />
-    <Compile Include="Validate\ValidateParam.fs" />
-    <Compile Include="Validate\ValidateCvBase.fs" />
+    <Compile Include="Validate\Critical\ValidateFilesystemEntry.fs" />
+    <Compile Include="Validate\Critical\ValidateParam.fs" />
+    <Compile Include="Validate\Critical\ValidateCvBase.fs" />
     <Compile Include="TestGeneration\ArcFileSystem.fs" />
     <Compile Include="TestGeneration\ArcISA.fs" />
   </ItemGroup>
@@ -35,5 +35,9 @@
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
     <PackageReference Include="ArcGraphModel" Version="[0.1.0-preview.3]" />
     <PackageReference Include="ArcGraphModel.IO" Version="[0.1.0-preview.3]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Validate\NonCritical\" />
   </ItemGroup>
 </Project>
