@@ -43,12 +43,8 @@ let main argv =
             /// these tests SHOULD pass for an ARC to be considered of high quality
             let nonCriticalTests =
                 testList "Non-critical" [
-                    testList "ARC" [
-                        TestGeneration.Critical.Arc.FileSystem.generateArcFileSystemTests arcConfig
-                    ]
-                    testList "ISA" [
-                        TestGeneration.Critical.Arc.ISA.generateISATests arcConfig
-                    ]
+                    testList "ARC" []
+                    testList "ISA" []
                 ]
 
             let nonCriticalTestResults =
