@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="CLIArgs.fs" />
+    <Compile Include="ExitCodes.fs" />
     <Compile Include="Program.fs" />    
   </ItemGroup>
 

@@ -5,6 +5,8 @@ open Argu
 open System.IO
 open ArcValidation
 open ArcValidation.Configs
+open ExitCodes
+
 
 [<EntryPoint>]
 let main argv =
@@ -21,10 +23,11 @@ let main argv =
             args.TryGetResult(CLIArgs.Out_Directory)
             |> Option.defaultValue arcConfig.PathConfig.ArcRootPath
 
+        /// these tests MUST pass for an ARC to be considered for publishing
         let criticalTests =
             testList "Critical" [
                 testList "ARC" [
-                    TestGeneration.Critical.Arc.FileSystem.generateArcFileSystemTests arcConfig      // TestGeneration.Critical.Arc.FileSystem...
+                    TestGeneration.Critical.Arc.FileSystem.generateArcFileSystemTests arcConfig
                 ]
                 testList "ISA" [
                     TestGeneration.Critical.Arc.ISA.generateISATests arcConfig
@@ -35,33 +38,57 @@ let main argv =
             criticalTests
             |> performTest
 
-        // if critical tests do NOT fail in any way then
-        if criticalTestResults.failed |> List.isEmpty && criticalTestResults.errored |> List.isEmpty then
+        if criticalTestResults.failed |> List.isEmpty && criticalTestResults.errored |> List.isEmpty then // if no critical tests failed or errored
+            
+            /// these tests SHOULD pass for an ARC to be considered of high quality
             let nonCriticalTests =
                 testList "Non-critical" [
+                    testList "ARC" [
+                        TestGeneration.Critical.Arc.FileSystem.generateArcFileSystemTests arcConfig
+                    ]
+                    testList "ISA" [
+                        TestGeneration.Critical.Arc.ISA.generateISATests arcConfig
+                    ]
                 ]
+
             let nonCriticalTestResults =
                 nonCriticalTests
                 |> performTest
-            combineTestRunSummaries [criticalTestResults; nonCriticalTestResults]
-            |> writeJUnitSummary (Path.Combine(outPath, "arc-validate-results.xml"))
-            0
-        else
+
+            [criticalTestResults; nonCriticalTestResults] 
+            |> combineTestRunSummaries // aggregate critical and non-critical test results
+            |> writeJUnitSummary (Path.Combine(outPath, "arc-validate-results.xml")) // write the combined result to a single file
+
+            ExitCode.Success |> int // critical tests passed, non-critical tests have been performed. Success!
+
+        else // one or more critical tests failed or errored.
             criticalTestResults
             |> Expecto.writeJUnitSummary (Path.Combine(outPath, "arc-validate-results.xml"))
-            1
+
+            ExitCode.CriticalTestFailure |> int
 
     with
         | :? ArguParseException as ex ->
             match ex.ErrorCode with
             | ErrorCode.HelpText  -> 
                 printfn "%s" (CLIArgs.cliArgParser.PrintUsage())
-                0
-            | _ -> 
+                ExitCode.Success |> int // printing usage is not an error
+
+            | ErrorCode.CommandLine ->
+                printfn "Argument parsing error:"
                 printfn "%s" ex.Message
-                1
+                printfn "%A" ex.StackTrace // might want to add verbosity level to hide this
+                ExitCode.ArgParseError |> int
+
+            | _ -> 
+                printfn "Internal Error:"
+                printfn "%s" ex.Message
+                printfn "%A" ex.StackTrace // might want to add verbosity level to hide this
+                ExitCode.InternalError |> int
         | ex ->
             printfn "Internal Error:"
             printfn "%s" ex.Message
-            printfn "%A" ex.StackTrace 
-            2
+            printfn "%A" ex.StackTrace // might want to add verbosity level to hide this
+
+            ExitCode.InternalError |> int
+            
