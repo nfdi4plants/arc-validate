@@ -9,6 +9,11 @@ open System.Diagnostics
 
 open JUnit
 
+type CLIResult = {
+    Process: Process
+    ValidationResults: ValidationResults
+}
+
 type CLIContext() =
     static member create 
         (
@@ -48,7 +53,11 @@ type CLIContext() =
                 proc.WaitForExit()
                 let result = ValidationResults.fromJUnitFile outFile
                   
-                f result
+                {
+                    Process = proc
+                    ValidationResults = result
+                }
+                |> f
 
 [<Tests>]
 let ``CLI Tests`` =
@@ -57,27 +66,33 @@ let ``CLI Tests`` =
             yield! testFixture (CLIContext.create(p = "fixtures/arcs/inveniotestarc")) [
                 "total test amount", (fun testResults -> fun () -> 
                     Expect.equal  
-                        (ValidationResults.getTotalTestCount testResults)
+                        (ValidationResults.getTotalTestCount testResults.ValidationResults)
                         (ValidationResults.getTotalTestCount ReferenceObjects.``invenio test arc validation results``)
                         "incorrect total amount of tests"
                 )
                 "passed tests", (fun testResults -> fun () -> 
                     Expect.equal  
-                        testResults.PassedTests
+                        testResults.ValidationResults.PassedTests
                         ReferenceObjects.``invenio test arc validation results``.PassedTests
                         "incorrect test results"
                 )
                 "failed tests", (fun testResults -> fun () -> 
                     Expect.equal  
-                        testResults.FailedTests
+                        testResults.ValidationResults.FailedTests
                         ReferenceObjects.``invenio test arc validation results``.FailedTests
                         "incorrect test results"
                 )
                 "errored tests", (fun testResults -> fun () -> 
                     Expect.equal  
-                        testResults.ErroredTests
+                        testResults.ValidationResults.ErroredTests
                         ReferenceObjects.``invenio test arc validation results``.ErroredTests
                         "incorrect test results"
+                )
+                "exit code is 0 (Success)", (fun testResults -> fun () -> 
+                    Expect.equal  
+                        testResults.Process.ExitCode
+                        0
+                        "incorrect exit code"
                 )
             ]
         ]

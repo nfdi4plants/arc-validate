@@ -1,4 +1,4 @@
-﻿namespace ArcValidation.TestGeneration.Arc
+﻿namespace ArcValidation.TestGeneration.Critical.Arc
 
 open ArcValidation
 open ArcValidation.Configs
