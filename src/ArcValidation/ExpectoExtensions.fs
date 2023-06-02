@@ -72,6 +72,12 @@ module Expecto =
     /// Generate test results using in a minimal JUnit schema.
     let writeJUnitSummary file (summary: Impl.TestRunSummary) =
 
+        /// Prints the actual message of an error message, without the error stack.
+        let truncateMsg msg = 
+            try String.toLines msg
+                |> Seq.head
+            with _ -> msg
+
         // junit does not have an official xml spec
         // this is a minimal implementation to get gitlab to recognize the tests:
         // https://docs.gitlab.com/ee/ci/junit_test_reports.html
@@ -90,7 +96,7 @@ module Expecto =
                 let content: XObject[] =
                     let makeMessageNode messageType (message: string) =
                         XElement(XName.Get messageType,
-                            XAttribute(XName.Get "message", message))
+                            XAttribute(XName.Get "message", truncateMsg message))
                     match test.result with
                     | Passed -> [||]
                     | Error e ->
