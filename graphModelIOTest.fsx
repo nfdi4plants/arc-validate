@@ -2,8 +2,8 @@
 #r "nuget: FsSpreadsheet.ExcelIO"
 #r "nuget: ArcGraphModel, 0.1.0-preview.1"
 #r "nuget: ArcGraphModel.IO, 0.1.0-preview.1"
-#I "src/bin/Debug/net6.0"
-#r "arc-validate.dll"
+#I "src/ArcValidation/bin/Debug/netstandard2.0"
+#r "ArcValidation.dll"
 
 //#I @"src\ArcGraphModel\bin\Release\net6.0"
 //#I @"../ArcGraphModel/src\ArcGraphModel.IO\bin\Release\net6.0"
@@ -16,6 +16,7 @@ open ArcGraphModel
 open ArcGraphModel.IO
 open FSharpAux
 open FsSpreadsheet.ExcelIO
+open ArcValidation
 open CvTokenHelperFunctions
 open OntologyHelperFunctions
 open System.IO
@@ -213,6 +214,16 @@ invContainers
 |> CvContainer.getSingleParam "File Name"
 |> Param.getValue
 
+invContainers
+|> Seq.choose CvContainer.tryCvContainer
+|> Seq.find (CvBase.getCvName >> (=) "Investigation")
+|> fun cvc -> cvc.Properties
+
+invTokens
+|> Seq.skipWhile (CvBase.getCvName >> (<>) "Investigation")
+|> Seq.takeWhile (CvBase.getCvName >> (<>) "Study")
+|> Seq.filter (CvBase.getCvName >> (=) "E-mail Address")
+
 
 // CONTACTS
 
@@ -225,6 +236,21 @@ let invContactsContainer =
     invContainers
     |> Seq.choose CvContainer.tryCvContainer
     |> Seq.filter (fun cv -> CvBase.equalsTerm Terms.person cv && CvContainer.isPartOfInvestigation cv)
+
+
+let person<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+    let firstName = CvContainer.tryGetPropertyStringValue "given name" personCvContainer
+    let lastName = CvContainer.tryGetPropertyStringValue "family name" personCvContainer
+    let emailAddress = CvContainer.tryGetPropertyStringValue "E-mail Address" personCvContainer
+    printfn $"emailAddress: {emailAddress}"
+    match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
+    | false, false -> Success
+    //| _ -> Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
+    // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
+    | _ -> Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
+
+person <| Seq.head invContactsContainer
+
 
 let person3 = Seq.item 2 invContactsContainer
 Validate.CvBase.person person3

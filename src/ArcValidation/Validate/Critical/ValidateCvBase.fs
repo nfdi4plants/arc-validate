@@ -16,8 +16,9 @@ module CvBase =
     let person<'T when 'T :> CvContainer> (personCvContainer : 'T) =
         let firstName = CvContainer.tryGetPropertyStringValue "given name" personCvContainer
         let lastName = CvContainer.tryGetPropertyStringValue "family name" personCvContainer
-        match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
-        | false, false -> Success
+        let emailAddress = CvContainer.tryGetPropertyStringValue "E-mail Address" personCvContainer
+        match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName, String.isNoneOrWhiteSpace emailAddress with
+        | false, false, false -> Success
         //| _ -> Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
         // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
         | _ -> Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
@@ -25,6 +26,10 @@ module CvBase =
     /// Validates several persons.
     let persons (personCvContainers : CvContainer seq) =
         Seq.map person personCvContainers
+
+    /// Validates an email address.
+    let emailAddress<'T when 'T :> CvContainer> (emailCvContainer : 'T) =
+        raise <| System.NotImplementedException()
 
     /// Validates a filepath.
     let filepath<'T when 'T :> CvParam> (filepathCvParam : 'T) =
