@@ -29,7 +29,11 @@ module ISA =
                         |> List.mapi (
                             fun i p ->
                                 // Validate the sufficiency of a Person in Investigation Contacts section (a Person is sufficient when first and last name, and email address are present):
-                                testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError FilesystemEntry.isValidTerm
+                                testList $"Person{i + 1}" [
+                                    testCase $"First name"      <| fun () -> Validate.CvBase.Person.firstName p |> throwError FilesystemEntry.isValidTerm
+                                    testCase $"Last name"       <| fun () -> Validate.CvBase.Person.firstName p |> throwError FilesystemEntry.isValidTerm
+                                    testCase $"Email address"   <| fun () -> Validate.CvBase.Person.firstName p |> throwError FilesystemEntry.isValidTerm
+                                ]
                                 // commented out until CvParam filling is done
                                 //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
                         )
