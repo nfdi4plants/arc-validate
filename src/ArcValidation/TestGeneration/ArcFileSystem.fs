@@ -45,7 +45,7 @@ module FileSystem =
                 //testCase "packFolder"               <| fun () -> Validate.FilesystemEntry.folder pathConfig.ObjectsPackPath    |> throwError FilesystemEntry.isPresent
                 //testCase "refsFolder"               <| fun () -> Validate.FilesystemEntry.folder pathConfig.RefsPath           |> throwError FilesystemEntry.isPresent
                 //testCase "refsHeadsFolder"          <| fun () -> Validate.FilesystemEntry.folder pathConfig.RefsHeadsPath      |> throwError FilesystemEntry.isPresent
-                //testCase "refsTagsFolder"       <| fun () -> Validate.FilesystemEntry.folder pathConfig.RefsTagsPath       |> throwError FilesystemEntry.isPresent
+                //testCase "refsTagsFolder"           <| fun () -> Validate.FilesystemEntry.folder pathConfig.RefsTagsPath       |> throwError FilesystemEntry.isPresent
             ]
             testList "Studies" [
                 for (p,id) in arcConfig.StudyPathsAndIds do
