@@ -23,6 +23,8 @@ let main argv =
             args.TryGetResult(CLIArgs.Out_Directory)
             |> Option.defaultValue arcConfig.PathConfig.ArcRootPath
 
+        let verbose = args.TryGetResult(CLIArgs.Verbose).IsSome
+
         /// these tests MUST pass for an ARC to be considered for publishing
         let criticalTests =
             testList "Critical" [
@@ -53,13 +55,13 @@ let main argv =
 
             [criticalTestResults; nonCriticalTestResults] 
             |> combineTestRunSummaries // aggregate critical and non-critical test results
-            |> writeJUnitSummary (Path.Combine(outPath, "arc-validate-results.xml")) // write the combined result to a single file
+            |> writeJUnitSummary verbose (Path.Combine(outPath, "arc-validate-results.xml")) // write the combined result to a single file
 
             ExitCode.Success |> int // critical tests passed, non-critical tests have been performed. Success!
 
         else // one or more critical tests failed or errored.
             criticalTestResults
-            |> Expecto.writeJUnitSummary (Path.Combine(outPath, "arc-validate-results.xml"))
+            |> Expecto.writeJUnitSummary verbose (Path.Combine(outPath, "arc-validate-results.xml"))
 
             ExitCode.CriticalTestFailure |> int
 

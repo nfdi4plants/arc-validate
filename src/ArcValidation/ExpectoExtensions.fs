@@ -69,8 +69,8 @@ module Expecto =
         doc.Save writer
 
 
-    /// Generate test results using in a minimal JUnit schema.
-    let writeJUnitSummary file (summary: Impl.TestRunSummary) =
+    /// Generate test results at a given filepath using in a minimal JUnit schema. If `verbose` is true, error stack is printed into failure message.
+    let writeJUnitSummary verbose file (summary: Impl.TestRunSummary) =
 
         /// Prints the actual message of an error message, without the error stack.
         let truncateMsg msg = 
@@ -96,7 +96,7 @@ module Expecto =
                 let content: XObject[] =
                     let makeMessageNode messageType (message: string) =
                         XElement(XName.Get messageType,
-                            XAttribute(XName.Get "message", truncateMsg message))
+                            XAttribute(XName.Get "message", if verbose then message else truncateMsg message))
                     match test.result with
                     | Passed -> [||]
                     | Error e ->
@@ -132,7 +132,7 @@ module Expecto =
 
 
     /// Generate test results using NUnit v2 schema.
-    let writeNUnitSummary (file : string option) (summary : TestRunSummary) =
+    let writeNUnitSummary verbose (file : string option) (summary : TestRunSummary) =
         // v3: https://github.com/nunit/docs/wiki/Test-Result-XML-Format
         // this impl is v2: http://nunit.org/docs/files/TestResult.xml
         let totalTests = summary.errored @ summary.failed @ summary.ignored @ summary.passed
@@ -180,7 +180,7 @@ module Expecto =
                 | Passed -> ()
                 | Error e ->
                     failureNode.Add(XName.Get "message", XCData e.Message)
-                    //failureNode.Add(XName.Get "stack-trace", XCData e.StackTrace)     // commented out to tackle unnecessary error stack trace in error message
+                    if verbose then failureNode.Add(XName.Get "stack-trace", XCData e.StackTrace)
                     element.Add failureNode
                 | Failed msg ->
                     // added to tackle unnecessary error stack trace in failure message
@@ -188,8 +188,8 @@ module Expecto =
                         String.trim msg
                         |> String.split '\n'
                         |> Array.head
-                    //failureNode.Add(XName.Get "message", XCData msg)
-                    failureNode.Add(XName.Get "message", XCData eWithoutStackTrace)
+                    if verbose then failureNode.Add(XName.Get "message", XCData msg)
+                    else failureNode.Add(XName.Get "message", XCData eWithoutStackTrace)
                     element.Add failureNode
                 | Ignored msg -> element.Add(XElement(XName.Get "reason", XElement(XName.Get "message", XCData msg)))
                 element)
