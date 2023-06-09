@@ -28,10 +28,8 @@ let main argv =
         /// these tests MUST pass for an ARC to be considered for publishing
         let criticalTests =
             testList "Critical" [
-                testList "ARC" [
+                testList "ARC" [    // maybe we don't even need this... what does it add semantically? We are always only testing the ARC...
                     TestGeneration.Critical.Arc.FileSystem.generateArcFileSystemTests arcConfig
-                ]
-                testList "ISA" [
                     TestGeneration.Critical.Arc.ISA.generateISATests arcConfig
                 ]
             ]
