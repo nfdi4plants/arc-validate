@@ -7,9 +7,17 @@
         <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.002" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Last name ]" time="0.001" />
     </testsuite>
 </testsuites>
