@@ -12,19 +12,37 @@ open System.IO
 /// Functions to validate #ICvBase entities.
 module CvBase =
 
-    /// Validates a person.
-    let person<'T when 'T :> CvContainer> (personCvContainer : 'T) =
-        let firstName = CvContainer.tryGetPropertyStringValue "given name" personCvContainer
-        let lastName = CvContainer.tryGetPropertyStringValue "family name" personCvContainer
-        match String.isNoneOrWhiteSpace firstName, String.isNoneOrWhiteSpace lastName with
-        | false, false -> Success
-        //| _ -> Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
-        // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
-        | _ -> Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
+    module Person =
 
-    /// Validates several persons.
-    let persons (personCvContainers : CvContainer seq) =
-        Seq.map person personCvContainers
+        /// Validates a person's given property.
+        let property<'T when 'T :> CvContainer> property (personCvContainer : 'T) =
+            let personProperty = CvContainer.tryGetPropertyStringValue property personCvContainer
+            if String.isNoneOrWhiteSpace personProperty then
+                // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
+                // Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
+                Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
+            else Success
+
+        /// Validates a person's email address.
+        let emailAddress<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+            property "E-mail Address" personCvContainer
+
+        /// Validates a person's first name.
+        let firstName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+            property "given name" personCvContainer
+
+        /// Validates a person's last name.
+        let lastName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+            property "family name" personCvContainer
+
+    /// Validates several persons' given properties.
+    let persons properties (personCvContainers : CvContainer seq) =
+        properties
+        |> Seq.collect (
+            fun person ->
+                personCvContainers
+                |> Seq.map (Person.property person)
+        )
 
     /// Validates a filepath.
     let filepath<'T when 'T :> CvParam> (filepathCvParam : 'T) =
