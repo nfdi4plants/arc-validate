@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <testsuites>
     <testsuite name="arc-validate">
-        <testcase name="[ Critical; ARC; Filesystem; arcFolder ]" time="0.002" />
-        <testcase name="[ Critical; ARC; Filesystem; InvestigationFile ]" time="0.002" />
-        <testcase name="[ Critical; ARC; Filesystem; StudiesFolder ]" time="0.002" />
-        <testcase name="[ Critical; ARC; Filesystem; AssaysFolder ]" time="0.002" />
-        <testcase name="[ Critical; ARC; Filesystem; Git; gitFolder ]" time="0.002" />
-        <testcase name="[ Critical; ISA; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
-        <testcase name="[ Critical; ISA; ISA; Semantic; Investigation; Person; Person1 ]" time="0.001" />
-        <testcase name="[ Critical; ISA; ISA; Semantic; Investigation; Person; Person2 ]" time="0.001" />
-        <testcase name="[ Critical; ISA; ISA; Semantic; Investigation; Person; Person3 ]" time="0.001" />
-        <testcase name="[ Critical; ISA; ISA; Semantic; Investigation; Person; Person4 ]" time="0.001" />
+        <testcase name="[ Critical; Filesystem; arcFolder ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; InvestigationFile ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; StudiesFolder ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 ]" time="0.001" />
     </testsuite>
 </testsuites>
