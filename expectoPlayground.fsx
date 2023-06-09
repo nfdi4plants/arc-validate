@@ -1,29 +1,11 @@
 #r "nuget: Expecto"
+#r "./src/ArcValidation/bin/Debug/netstandard2.0/ArcValidation.dll"
+#r "nuget: FSharpAux, 1.1.0"
 
 open Expecto
 open Expecto.Impl
-
-
-// ##############
-// INTERNAL UTILS
-// ##############
-
-let performTest test =
-    let w = System.Diagnostics.Stopwatch()
-    w.Start()
-    evalTests Tests.defaultConfig test
-    |> Async.RunSynchronously
-    |> fun r -> 
-        w.Stop()
-        {
-            results = r
-            duration = w.Elapsed
-            maxMemory = 0L
-            memoryLimit = 0L
-            timedOut = []
-        }
-
-// ##############
+open FSharpAux
+open ArcValidation
 
 
 [<Tests>]
@@ -61,3 +43,27 @@ let combinedTests = testList "combined" [test1; test2; test3]
 let testRunSummary = performTest combinedTests
 
 testRunSummary.failed |> List.map snd
+
+let failTest = testCase "definite fail" <| fun () -> Expect.isTrue false "definite"
+
+let failSumm = performTest failTest
+
+writeJUnitSummary "./failSumm.xml" failSumm
+
+/// Prints the actual message of an error message, without the error stack.
+let truncateMsg msg = 
+    try String.toLines msg
+        |> Seq.head
+    with _ -> msg
+
+let allFails = failSumm.errored @ failSumm.failed
+
+let allFailsSumm = List.map snd allFails
+
+let allFailsSummRes = allFailsSumm.Head.result
+
+let allFailsSummResMsg = match allFailsSummRes with | Failed s -> s | _ -> ""
+
+truncateMsg allFailsSummResMsg
+
+String.toLines allFailsSummResMsg
