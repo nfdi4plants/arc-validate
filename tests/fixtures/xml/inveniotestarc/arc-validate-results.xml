@@ -1,23 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <testsuites>
     <testsuite name="arc-validate">
-        <testcase name="[ Critical; Filesystem; arcFolder ]" time="0.002" />
-        <testcase name="[ Critical; Filesystem; InvestigationFile ]" time="0.002" />
-        <testcase name="[ Critical; Filesystem; StudiesFolder ]" time="0.002" />
-        <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
-        <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.002" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Last name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Last name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Last name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Email address ]" time="0.027">
+            <failure message="Actual term is not valid: /arc/isa.investigation.xlsx" />
+        </testcase>
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Email address ]" time="0.025">
+            <failure message="Actual term is not valid: /arc/isa.investigation.xlsx" />
+        </testcase>
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Email address ]" time="0.025">
+            <failure message="Actual term is not valid: /arc/isa.investigation.xlsx" />
+        </testcase>
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Email address ]" time="0.002">
+            <failure message="Actual term is not valid: /arc/isa.investigation.xlsx" />
+        </testcase>
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.064" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; First name ]" time="0.013" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Last name ]" time="0.013" />
+        <testcase name="[ Critical; Filesystem; arcFolder ]" time="0.011" />
+        <testcase name="[ Critical; Filesystem; InvestigationFile ]" time="0.011" />
+        <testcase name="[ Critical; Filesystem; StudiesFolder ]" time="0.011" />
+        <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.011" />
+        <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.011" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; First name ]" time="0.000" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Last name ]" time="0.000" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; First name ]" time="0.000" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Last name ]" time="0.000" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; First name ]" time="0.000" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Last name ]" time="0.000" />
     </testsuite>
 </testsuites>
