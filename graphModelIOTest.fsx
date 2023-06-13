@@ -251,6 +251,37 @@ let person<'T when 'T :> CvContainer> (personCvContainer : 'T) =
 
 person <| Seq.head invContactsContainer
 
+let property<'T when 'T :> CvContainer> property (personCvContainer : 'T) =
+    let personProperty = CvContainer.tryGetPropertyStringValue property personCvContainer
+    if String.isNoneOrWhiteSpace personProperty then
+        // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
+        // Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
+        Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
+    else Success
+
+let emailAddress<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+    property "E-mail Address" personCvContainer
+
+let firstName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+    property "given name" personCvContainer
+
+let lastName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+    property "family name" personCvContainer
+
+let p1 = Seq.head invContactsContainer
+p1.Properties
+
+emailAddress p1
+firstName p1
+lastName p1
+
+let p2 = Seq.item 1 invContactsContainer
+p2.Properties
+
+emailAddress p2
+firstName p2
+lastName p2
+
 
 let person3 = Seq.item 2 invContactsContainer
 Validate.CvBase.person person3
