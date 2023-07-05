@@ -37,7 +37,7 @@ module CvBase =
 
         /// Validates a person's affiliation.
         let affiliation<'T when 'T :> CvContainer> (personCvContainer : 'T) =
-            property "affiliation" personCvContainer
+            property "Affiliation" personCvContainer
 
     /// Validates several persons' given properties.
     let persons properties (personCvContainers : CvContainer seq) =

@@ -265,6 +265,13 @@ person3 |> fun cvParam -> CvParam.tryGetAttribute (CvTerm.getName Address.row) c
 person3.Attributes
 let person2 = Seq.item 1 invContactsContainer
 person2.Attributes
+person2.Properties
+let person1 = Seq.head invContactsContainer
+person1.Attributes
+person1.Properties
+
+Validate.CvBase.Person.affiliation person1
+Validate.CvBase.Person.affiliation person2
 
 
 // STUDIES
