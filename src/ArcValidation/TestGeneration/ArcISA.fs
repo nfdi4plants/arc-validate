@@ -33,6 +33,7 @@ module ISA =
                                     testCase "First name"       <| fun () -> Validate.CvBase.Person.firstName       p |> throwError FilesystemEntry.isPresent
                                     testCase "Last name"        <| fun () -> Validate.CvBase.Person.lastName        p |> throwError FilesystemEntry.isPresent
                                     testCase "Email address"    <| fun () -> Validate.CvBase.Person.emailAddress    p |> throwError FilesystemEntry.isPresent
+                                    testCase "Affiliation"      <| fun () -> Validate.CvBase.Person.affiliation     p |> throwError FilesystemEntry.isPresent
                                 ]
                                 // commented out until CvParam filling is done
                                 //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
