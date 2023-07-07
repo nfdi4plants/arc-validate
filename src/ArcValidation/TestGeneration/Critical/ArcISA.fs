@@ -32,7 +32,7 @@ module ISA =
                                 // try get person name if possible to display more precise test case name
                                 let optName = 
                                     let optFN = CvContainer.tryGetPropertyStringValue "given name" p    |> Option.defaultValue "?"
-                                    let optLN = CvContainer.tryGetPropertyStringValue "family name" p     |> Option.defaultValue "?"
+                                    let optLN = CvContainer.tryGetPropertyStringValue "family name" p   |> Option.defaultValue "?"
                                     let optN = $"{optFN} {optLN}"
                                     if optN = "? ?" then "(n/a)" else optN
                                 // Validate the sufficiency of a Person in Investigation Contacts section (a Person is sufficient when first and last name, and email address are present):
