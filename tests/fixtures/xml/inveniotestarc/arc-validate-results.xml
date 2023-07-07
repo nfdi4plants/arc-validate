@@ -7,21 +7,21 @@
         <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.002" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Affiliation ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1; Last name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Affiliation ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2; Last name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Affiliation ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3; Last name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Affiliation ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Email address ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; First name ]" time="0.001" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Last name ]" time="0.001" />
     </testsuite>
 </testsuites>
