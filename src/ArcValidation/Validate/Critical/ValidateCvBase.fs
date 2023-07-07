@@ -39,6 +39,8 @@ module CvBase =
         let affiliation<'T when 'T :> CvContainer> (personCvContainer : 'T) =
             property "Affiliation" personCvContainer
 
+        let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+
     /// Validates several persons' given properties.
     let persons properties (personCvContainers : CvContainer seq) =
         properties

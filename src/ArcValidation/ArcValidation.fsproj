@@ -20,6 +20,7 @@
     <Compile Include="Validate\Critical\ValidateFilesystemEntry.fs" />
     <Compile Include="Validate\Critical\ValidateParam.fs" />
     <Compile Include="Validate\Critical\ValidateCvBase.fs" />
+    <Compile Include="TestGeneration\NonCritical\ArcISA.fs" />
     <Compile Include="TestGeneration\Critical\ArcFileSystem.fs" />
     <Compile Include="TestGeneration\Critical\ArcISA.fs" />
   </ItemGroup>
@@ -38,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestGeneration\NonCritical\" />
     <Folder Include="Validate\NonCritical\" />
   </ItemGroup>
 </Project>
