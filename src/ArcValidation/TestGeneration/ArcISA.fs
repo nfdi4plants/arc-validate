@@ -30,9 +30,9 @@ module ISA =
                             fun i p ->
                                 // Validate the sufficiency of a Person in Investigation Contacts section (a Person is sufficient when first and last name, and email address are present):
                                 testList $"Person{i + 1}" [
-                                    testCase $"First name"      <| fun () -> Validate.CvBase.Person.firstName       p |> throwError FilesystemEntry.isValidTerm
-                                    testCase $"Last name"       <| fun () -> Validate.CvBase.Person.lastName        p |> throwError FilesystemEntry.isValidTerm
-                                    testCase $"Email address"   <| fun () -> Validate.CvBase.Person.emailAddress    p |> throwError FilesystemEntry.isValidTerm
+                                    testCase "First name"       <| fun () -> Validate.CvBase.Person.firstName       p |> throwError FilesystemEntry.isPresent
+                                    testCase "Last name"        <| fun () -> Validate.CvBase.Person.lastName        p |> throwError FilesystemEntry.isPresent
+                                    testCase "Email address"    <| fun () -> Validate.CvBase.Person.emailAddress    p |> throwError FilesystemEntry.isPresent
                                 ]
                                 // commented out until CvParam filling is done
                                 //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
