@@ -29,8 +29,8 @@ module ISA =
                             fun i p ->
                                 // try get person name if possible to display more precise test case name
                                 let optName = 
-                                    let optFN = CvContainer.tryGetPropertyStringValue "first name" p    |> Option.defaultValue "?"
-                                    let optLN = CvContainer.tryGetPropertyStringValue "last name" p     |> Option.defaultValue "?"
+                                    let optFN = CvContainer.tryGetPropertyStringValue "given name" p    |> Option.defaultValue "?"
+                                    let optLN = CvContainer.tryGetPropertyStringValue "family name" p   |> Option.defaultValue "?"
                                     let optN = $"{optFN} {optLN}"
                                     if optN = "? ?" then "(n/a)" else optN
                                 testList $"Person{i + 1} [{optName}]" [
