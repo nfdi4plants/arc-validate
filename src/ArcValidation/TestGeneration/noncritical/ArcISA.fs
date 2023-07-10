@@ -1,4 +1,4 @@
-﻿namespace ArcValidation.TestGeneration.Critical.Arc
+﻿namespace ArcValidation.TestGeneration.NonCritical.Arc
 
 open ArcValidation
 open ArcValidation.Configs
@@ -12,12 +12,12 @@ module ISA =
     open ArcGraphModel.IO
     open ErrorMessage.FailStrings
     open FSharpAux
-    open System.IO
+    //open System.IO
     open CvTokenHelperFunctions
 
     let generateISATests (arcConfig: ArcConfig) =
 
-        let pathConfig = arcConfig.PathConfig
+        //let pathConfig = arcConfig.PathConfig
 
         testList "ISA" [
             testList "Semantic" [
@@ -34,7 +34,7 @@ module ISA =
                                     let optN = $"{optFN} {optLN}"
                                     if optN = "? ?" then "(n/a)" else optN
                                 testList $"Person{i + 1} [{optName}]" [
-                                    testCase "First name"       <| fun () -> Validate.CvBase.Person.firstName       p |> throwError FilesystemEntry.isPresent
+                                    testCase "ORCID" <| fun () -> Validate.NonCritical.CvBase.Person.orcid p |> throwError FilesystemEntry.isPresent
                                 ]
                         )
                     )

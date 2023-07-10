@@ -16,12 +16,12 @@ module FileSystem =
         let pathConfig = arcConfig.PathConfig
 
         testList "Filesystem" [
-            testCase "arcFolder"                    <| fun () -> Validate.FilesystemEntry.folder pathConfig.DotArcFolderPath   |> throwError FilesystemEntry.isPresent
-            testCase "InvestigationFile"            <| fun () -> Validate.FilesystemEntry.file pathConfig.InvestigationPath    |> throwError FilesystemEntry.isPresent
-            testCase "StudiesFolder"                <| fun () -> Validate.FilesystemEntry.folder pathConfig.StudiesPath        |> throwError FilesystemEntry.isPresent
-            testCase "AssaysFolder"                 <| fun () -> Validate.FilesystemEntry.folder pathConfig.AssaysPath         |> throwError FilesystemEntry.isPresent
+            testCase "arcFolder"                    <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.DotArcFolderPath   |> throwError FilesystemEntry.isPresent
+            testCase "InvestigationFile"            <| fun () -> Validate.Critical.FilesystemEntry.file pathConfig.InvestigationPath    |> throwError FilesystemEntry.isPresent
+            testCase "StudiesFolder"                <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.StudiesPath        |> throwError FilesystemEntry.isPresent
+            testCase "AssaysFolder"                 <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.AssaysPath         |> throwError FilesystemEntry.isPresent
             testList "Git" [
-                testCase "gitFolder"                <| fun () -> Validate.FilesystemEntry.folder pathConfig.GitFolderPath      |> throwError FilesystemEntry.isPresent
+                testCase "gitFolder"                <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.GitFolderPath      |> throwError FilesystemEntry.isPresent
                 //testCase "hooksFolder"              <| fun () -> Validate.FilesystemEntry.folder pathConfig.HooksPath          |> throwError FilesystemEntry.isPresent
                 //testList "hooksFolder" [
                 //    testCase "applyPatchFile"       <| fun () -> Validate.FilesystemEntry.file pathConfig.ApplyPatchPath       |> throwError FilesystemEntry.isPresent
@@ -52,24 +52,24 @@ module FileSystem =
                     // Validate every present Study filepath in Investigation for presence in the ARC filesystem:
                     if p.IsSome then
                         let defId = Option.defaultValue "(no Study identifier)" id
-                        testCase $"{defId}" <| fun () -> Validate.FilesystemEntry.file p.Value |> throwError FilesystemEntry.isPresent
+                        testCase $"{defId}" <| fun () -> Validate.Critical.FilesystemEntry.file p.Value |> throwError FilesystemEntry.isPresent
                 for (p,id) in arcConfig.StudyFilesAndIds do
                     // Validate every Study in the ARC filesystem that has no Study file: (outcome will always be Error)
                     if p.IsNone then
                         let assumedFilepath = Path.Combine(pathConfig.StudiesPath, id, "isa.study.xlsx")
-                        testCase $"{id}" <| fun () -> Validate.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
+                        testCase $"{id}" <| fun () -> Validate.Critical.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
             ]
             testList "Assays" [
                 for (p,id) in arcConfig.AssayFilesAndIds do
                     // Validate every Assay in the ARC filesystem that has no Assay file: (outcome will always be Error)
                     if p.IsNone then
                         let assumedFilepath = Path.Combine(pathConfig.StudiesPath, id, "isa.assay.xlsx")
-                        testCase $"{id}" <| fun () -> Validate.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
+                        testCase $"{id}" <| fun () -> Validate.Critical.FilesystemEntry.file assumedFilepath |> throwError FilesystemEntry.isPresent
             ]
             testList "DataPathNames" [
                 for fp in arcConfig.DataPaths do
                     let fpParam = Param.tryParam fp |> Option.get
                     let fpValue = Param.getValueAsString fpParam
-                    testCase $"{fpValue}" <| fun () -> Validate.Param.filepath pathConfig.ArcRootPath fpParam |> throwError XLSXFile.isPresent
+                    testCase $"{fpValue}" <| fun () -> Validate.Critical.Param.filepath pathConfig.ArcRootPath fpParam |> throwError XLSXFile.isPresent
             ]
         ]
