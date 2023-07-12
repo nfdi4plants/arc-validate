@@ -12,16 +12,16 @@ open System.IO
 /// Functions to validate #ICvBase entities.
 module CvBase =
 
-    module Person =
+    /// Validates a CvContainer's given property.
+    let property<'T when 'T :> CvContainer> property (cvContainer : 'T) =
+        let containerProperty = CvContainer.tryGetPropertyStringValue property cvContainer
+        if String.isNoneOrWhiteSpace containerProperty then
+            // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
+            // Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
+            Error (ErrorMessage.FilesystemEntry.createFromCvParam cvContainer)
+        else Success
 
-        /// Validates a person's given property.
-        let property<'T when 'T :> CvContainer> property (personCvContainer : 'T) =
-            let personProperty = CvContainer.tryGetPropertyStringValue property personCvContainer
-            if String.isNoneOrWhiteSpace personProperty then
-                // TO DO: Rewrite this with own CvParam creation (instead of using HLW's one) which has all ErrorMessage-related information inside
-                // Error (ErrorMessage.XlsxFile.createFromCvParam personCvContainer)
-                Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
-            else Success
+    module Person =
 
         /// Validates a person's email address.
         let emailAddress<'T when 'T :> CvContainer> (personCvContainer : 'T) =
@@ -45,7 +45,7 @@ module CvBase =
         |> Seq.collect (
             fun person ->
                 personCvContainers
-                |> Seq.map (Person.property person)
+                |> Seq.map (property person)
         )
 
     /// Validates a filepath.
@@ -66,3 +66,10 @@ module CvBase =
         // TO DO: incorporate cell information (e.g. INVESTIGATION CONTACTS cell)
         //else Error (ErrorMessage.XlsxFile.createFromCvContainer contactsContainers)
         else Error (ErrorMessage.FilesystemEntry.createFromFile investigationPath)
+
+    /// Validates if a CvContainer collection contains a description.
+    let description investigationPath investigationContainers =
+        let error = Error (ErrorMessage.FilesystemEntry.createFromFile investigationPath)
+        match Seq.tryHead investigationContainers with
+        | Some c    -> property "descriptor" c
+        | None      -> error

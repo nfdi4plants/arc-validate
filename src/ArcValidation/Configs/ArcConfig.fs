@@ -2,9 +2,9 @@
 open ArcValidation
 open System.IO
 
-type ArcConfig(pathConfig:PathConfig) = 
+type ArcConfig(pathConfig : PathConfig) = 
 
-    new(arcRootPath: string) = 
+    new(arcRootPath : string) = 
         let pathConfig = new PathConfig(arcRootPath)
         ArcConfig(pathConfig)
 
@@ -21,6 +21,8 @@ type ArcConfig(pathConfig:PathConfig) =
     member this.InvestigationTokens = InformationExtraction.Investigation.getTokens this.InvestigationPathCvP this.InvestigationWorksheet
 
     member this.InvestigationContainers = InformationExtraction.Investigation.getContainers this.InvestigationTokens
+
+    member this.InvestigationContainer = InformationExtraction.Investigation.getInvestigationContainer this.InvestigationContainers
 
     member this.InvestigationStudies = InformationExtraction.Investigation.getStudies this.InvestigationContainers
 
