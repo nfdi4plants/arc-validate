@@ -25,5 +25,9 @@
         <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Email address ]" time="0.001" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; First name ]" time="0.001" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Last name ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; ORCID ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; ORCID ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; ORCID ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; ORCID ]" time="0.001" />
     </testsuite>
 </testsuites>
