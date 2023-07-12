@@ -6,8 +6,9 @@
         <testcase name="[ Critical; Filesystem; StudiesFolder ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.002" />
-        <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Title ]" time="0.002" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Description ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Affiliation ]" time="0.001" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Email address ]" time="0.001" />
         <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; First name ]" time="0.001" />

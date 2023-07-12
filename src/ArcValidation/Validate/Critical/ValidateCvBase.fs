@@ -73,3 +73,10 @@ module CvBase =
         match Seq.tryHead investigationContainers with
         | Some c    -> property "descriptor" c
         | None      -> error
+
+    /// Validates if a CvContainer collection contains a title.
+    let title investigationPath investigationContainers =
+        let error = Error (ErrorMessage.FilesystemEntry.createFromFile investigationPath)
+        match Seq.tryHead investigationContainers with
+        | Some c    -> property "title" c
+        | None      -> error

@@ -25,6 +25,7 @@ module ISA =
                     // Validate the existence of any Person in Investigation Contacts section:
                     testCase "Contacts" <| fun () -> Validate.CvBase.contacts pathConfig.InvestigationPath arcConfig.InvestigationContactsContainer |> throwError FilesystemEntry.isPresent
                     testCase "Description" <| fun () -> Validate.CvBase.description pathConfig.InvestigationPath arcConfig.InvestigationContainer |> throwError FilesystemEntry.isPresent
+                    testCase "Title" <| fun () -> Validate.CvBase.title pathConfig.InvestigationPath arcConfig.InvestigationContainer |> throwError FilesystemEntry.isPresent
                     testList "Person" (
                         arcConfig.InvestigationContactsContainer
                         |> List.ofSeq
