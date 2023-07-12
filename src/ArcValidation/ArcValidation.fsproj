@@ -20,6 +20,8 @@
     <Compile Include="Validate\Critical\ValidateFilesystemEntry.fs" />
     <Compile Include="Validate\Critical\ValidateParam.fs" />
     <Compile Include="Validate\Critical\ValidateCvBase.fs" />
+    <Compile Include="Validate\NonCritical\ValidateCvBase.fs" />
+    <Compile Include="TestGeneration\NonCritical\ArcISA.fs" />
     <Compile Include="TestGeneration\Critical\ArcFileSystem.fs" />
     <Compile Include="TestGeneration\Critical\ArcISA.fs" />
   </ItemGroup>
@@ -35,10 +37,5 @@
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
     <PackageReference Include="ArcGraphModel" Version="[0.1.0-preview.3]" />
     <PackageReference Include="ArcGraphModel.IO" Version="[0.1.0-preview.3]" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TestGeneration\NonCritical\" />
-    <Folder Include="Validate\NonCritical\" />
   </ItemGroup>
 </Project>

@@ -268,6 +268,9 @@ let firstName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
 let lastName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
     property "family name" personCvContainer
 
+let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) =
+    property "<  ORCID>" personCvContainer
+
 let p1 = Seq.head invContactsContainer
 p1.Properties
 
@@ -303,6 +306,9 @@ person1.Properties
 
 Validate.CvBase.Person.affiliation person1
 Validate.CvBase.Person.affiliation person2
+
+orcid person1
+orcid person2
 
 
 // STUDIES

@@ -23,7 +23,7 @@ module ISA =
             testList "Semantic" [
                 testList "Investigation" [
                     // Validate the existence of any Person in Investigation Contacts section:
-                    testCase "Contacts" <| fun () -> Validate.CvBase.contacts pathConfig.InvestigationPath arcConfig.InvestigationContactsContainer |> throwError FilesystemEntry.isPresent
+                    testCase "Contacts" <| fun () -> Validate.Critical.CvBase.contacts pathConfig.InvestigationPath arcConfig.InvestigationContactsContainer |> throwError FilesystemEntry.isPresent
                     testList "Person" (
                         arcConfig.InvestigationContactsContainer
                         |> List.ofSeq
@@ -37,10 +37,10 @@ module ISA =
                                     if optN = "? ?" then "(n/a)" else optN
                                 // Validate the sufficiency of a Person in Investigation Contacts section (a Person is sufficient when first and last name, and email address are present):
                                 testList $"Person{i + 1} [{optName}]" [
-                                    testCase "First name"       <| fun () -> Validate.CvBase.Person.firstName       p |> throwError FilesystemEntry.isPresent
-                                    testCase "Last name"        <| fun () -> Validate.CvBase.Person.lastName        p |> throwError FilesystemEntry.isPresent
-                                    testCase "Email address"    <| fun () -> Validate.CvBase.Person.emailAddress    p |> throwError FilesystemEntry.isPresent
-                                    testCase "Affiliation"      <| fun () -> Validate.CvBase.Person.affiliation     p |> throwError FilesystemEntry.isPresent
+                                    testCase "First name"       <| fun () -> Validate.Critical.CvBase.Person.firstName       p |> throwError FilesystemEntry.isPresent
+                                    testCase "Last name"        <| fun () -> Validate.Critical.CvBase.Person.lastName        p |> throwError FilesystemEntry.isPresent
+                                    testCase "Email address"    <| fun () -> Validate.Critical.CvBase.Person.emailAddress    p |> throwError FilesystemEntry.isPresent
+                                    testCase "Affiliation"      <| fun () -> Validate.Critical.CvBase.Person.affiliation     p |> throwError FilesystemEntry.isPresent
                                 ]
                                 // commented out until CvParam filling is done
                                 //testCase $"Person{i + 1}" <| fun () -> Validate.CvBase.person p |> throwError XLSXFile.isValidTerm
@@ -65,7 +65,7 @@ module ISA =
                             if p.IsSome then
                                 // Validate every Study in the ARC filesystem for registration in the Investigation:
                                 testCase $"{id}" <| fun () -> 
-                                    Validate.FilesystemEntry.StudyFile.registrationInInvestigation arcConfig.StudyPathsAndIds p.Value |> throwError FilesystemEntry.isRegistered
+                                    Validate.Critical.FilesystemEntry.StudyFile.registrationInInvestigation arcConfig.StudyPathsAndIds p.Value |> throwError FilesystemEntry.isRegistered
                     ]
                 ]
             ]

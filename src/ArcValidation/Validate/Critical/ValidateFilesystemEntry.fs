@@ -1,4 +1,4 @@
-namespace ArcValidation.Validate
+namespace ArcValidation.Validate.Critical
 
 open ArcValidation
 

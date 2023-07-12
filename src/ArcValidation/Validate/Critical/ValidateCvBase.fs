@@ -1,4 +1,4 @@
-﻿namespace ArcValidation.Validate
+﻿namespace ArcValidation.Validate.Critical
 
 open ArcValidation
 
@@ -38,6 +38,10 @@ module CvBase =
         /// Validates a person's affiliation.
         let affiliation<'T when 'T :> CvContainer> (personCvContainer : 'T) =
             property "Affiliation" personCvContainer
+
+        /// Validates a person's ORCID.
+        let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) = 
+            property "<  ORCID>" personCvContainer
 
     /// Validates several persons' given properties.
     let persons properties (personCvContainers : CvContainer seq) =
