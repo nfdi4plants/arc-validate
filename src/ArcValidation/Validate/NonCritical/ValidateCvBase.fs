@@ -14,7 +14,7 @@ module CvBase =
 
     module Person =
 
-        open ArcValidation.Validate.Critical.CvBase.Person
+        open ArcValidation.Validate.Critical.CvBase
 
         /// Validates a person's ORCID.
         let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) = 

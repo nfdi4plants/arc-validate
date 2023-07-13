@@ -1,4 +1,5 @@
 #r "nuget: FSharpAux.Core,2.0.0"
+#r "nuget: FsSpreadsheet"
 #r "nuget: FsSpreadsheet.ExcelIO"
 #r "nuget: ArcGraphModel, 0.1.0-preview.1"
 #r "nuget: ArcGraphModel.IO, 0.1.0-preview.1"
@@ -218,6 +219,19 @@ invContainers
 |> Seq.choose CvContainer.tryCvContainer
 |> Seq.find (CvBase.getCvName >> (=) "Investigation")
 |> fun cvc -> cvc.Properties
+//|> fun dict -> dict["descriptor"]
+//|> Seq.head
+//|> Param.tryParam
+//|> Option.get
+//|> Param.getValue
+
+let getInvestigationContainer (invContainers : seq<#ICvBase>) =
+    invContainers
+    |> Seq.choose CvContainer.tryCvContainer
+    |> Seq.filter (CvBase.equalsTerm Terms.investigation)
+
+let invContainer = getInvestigationContainer invContainers |> Seq.head
+invContainer.Properties
 
 invTokens
 |> Seq.skipWhile (CvBase.getCvName >> (<>) "Investigation")
