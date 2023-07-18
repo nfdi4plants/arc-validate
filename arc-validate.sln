@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		build.sh = build.sh
 		create-badge.py = create-badge.py
 		Dockerfile = Dockerfile
+		errorClassesStatic.fsx = errorClassesStatic.fsx
 		ErrorClassOntology.obo = ErrorClassOntology.obo
 		expectoPlayground.fsx = expectoPlayground.fsx
 		global.json = global.json
