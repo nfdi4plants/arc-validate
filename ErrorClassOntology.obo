@@ -17,7 +17,142 @@ comment:
 
 [Term]
 id: DPEO:00000001
-name: Missing
-def: "Given entity is not present." []
+name: MissingEntity
+def: "Expected entity is not present." []
 comment: 
 is_a: DPEO:00000000 ! Error
+
+[Term]
+id: DPEO:00000002
+name: MissingFilesystemEntry
+def: "Expected file or folder is not present." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000001 ! MissingEntity
+
+[Term]
+id: DPEO:00000003
+name: MissingValue
+def: "Expected value is not present." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000001 ! MissingEntity
+
+[Term]
+id: DPEO:00000004
+name: MissingEitherEntity
+def: "Neither of the expected entities is present." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000001 ! MissingEntity
+
+[Term]
+id: DPEO:00000005
+name: MissingEitherFilesystemEntry
+def: "Neither of the expected files or folders is present." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000001 ! MissingEntity
+is_a: DPEO:00000004 ! MissingEitherEntity
+
+[Term]
+id: DPEO:00000006
+name: MissingEitherValue
+def: "Neither of the expected values is present." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000001 ! MissingEntity
+is_a: DPEO:00000004 ! MissingEitherEntity
+
+[Term]
+id: DPEO:00000007
+name: NotRegistered
+def: "Given entity is not registered." []
+comment: 
+is_a: DPEO:00000000 ! Error
+
+[Term]
+id: DPEO:00000008
+name: FilesystemEntryNotRegistered
+def: "Given file or folder is not registered." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000007 ! NotRegistered
+
+[Term]
+id: DPEO:00000009
+name: ValueNotRegistered
+def: "Given value is not registered." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000007 ! NotRegistered
+
+[Term]
+id: DPEO:00000010
+name: TermNotRegistered
+def: "Given term is not registered." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000007 ! NotRegistered
+
+[Term]
+id: DPEO:00000011
+name: NotValid
+def: "Given entity is not valid." []
+comment: 
+is_a: DPEO:00000000 ! Error
+
+[Term]
+id: DPEO:00000012
+name: FilesystemEntryNotValid
+def: "Given file or folder is not valid." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000011 ! NotValid
+
+[Term]
+id: DPEO:00000013
+name: ValueNotValid
+def: "Given value not valid." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000011 ! NotValid
+
+[Term]
+id: DPEO:00000014
+name: TermNotValid
+def: "Given term not valid." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000011 ! NotValid
+
+[Term]
+id: DPEO:00000015
+name: VersionNotValid
+def: "Given version not valid." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000011 ! NotValid
+
+[Term]
+id: DPEO:00000016
+name: NotReproducible
+def: "Given entity is not reproducible." []
+comment: 
+is_a: DPEO:00000000 ! Error
+
+[Term]
+id: DPEO:00000017
+name: FilesystemEntryNotReproducible
+def: "Given file or folder is not reproducible." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000015 ! NotReproducible
+
+[Term]
+id: DPEO:00000018
+name: ValueNotReproducible
+def: "Given value is not reproducible." []
+comment: 
+is_a: DPEO:00000000 ! Error
+is_a: DPEO:00000015 ! NotReproducible
