@@ -78,7 +78,7 @@ module Worksheet =
         let annoTable = worksheet.Tables |> List.tryFind (fun t -> String.contains "annotationTable" t.Name)
         match annoTable with
         | Some t ->
-            t.Columns(worksheet.CellCollection)
+            t.GetColumns(worksheet.CellCollection)
             |> Seq.toList
             |> List.choose (fun r -> 
                 match r |> Tokenization.parseLine |> Seq.toList with
@@ -103,11 +103,13 @@ fsi.AddPrinter (fun (cvp : ICvBase) ->
 )
 
 
-let arcPath =
-    match System.Environment.MachineName with
-    | "DT-P-2021-12-OM" -> @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\"
-    | "NB-W-2020-11-OM" -> @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\"
-    | _ -> @"C:\Users\HLWei\Downloads\testArc\"
+//let arcPath =
+//    match System.Environment.MachineName with
+//    | "DT-P-2021-12-OM" -> @"C:\Users\revil\OneDrive\CSB-Stuff\NFDI\testARC30\"
+//    | "NB-W-2020-11-OM" -> @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\testARC30\"
+//    | _ -> @"C:\Users\HLWei\Downloads\testArc\"
+
+let arcPath = @"C:\Repos\nfdi4plants\invenio-test-arc\"
 
 
 // GET & TOKENIZE STUDY/ASSAY
@@ -208,12 +210,12 @@ invTokens[5] :?> CvContainer |> fun x -> x.Attributes
 
 let invContainers = TokenAggregation.aggregateTokens invTokens
 
-invContainers
-|> Seq.choose CvContainer.tryCvContainer
-|> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
-|> Seq.head
-|> CvContainer.getSingleParam "File Name"
-|> Param.getValue
+//invContainers
+//|> Seq.choose CvContainer.tryCvContainer
+//|> Seq.filter (fun cv -> CvBase.equalsTerm Terms.assay cv )
+//|> Seq.head
+//|> CvContainer.getSingleParam "File Name"
+//|> Param.getValue
 
 invContainers
 |> Seq.choose CvContainer.tryCvContainer
@@ -285,12 +287,22 @@ let lastName<'T when 'T :> CvContainer> (personCvContainer : 'T) =
 let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) =
     property "<  ORCID>" personCvContainer
 
+let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) = 
+    let orcidProperty = CvContainer.tryGetPropertyStringValue "<  ORCID>" personCvContainer
+    let rgxPat = System.Text.RegularExpressions.Regex("^\d{4}-\d{4}-\d{4}-\d{4}$")
+    let err = Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
+    match orcidProperty with
+    | s when String.isNoneOrWhiteSpace s -> err
+    | o when rgxPat.Match(o.Value).Success |> not -> err
+    | _ -> Success
+
 let p1 = Seq.head invContactsContainer
 p1.Properties
 
 emailAddress p1
 firstName p1
 lastName p1
+orcid p1
 
 let p2 = Seq.item 1 invContactsContainer
 p2.Properties
@@ -298,6 +310,14 @@ p2.Properties
 emailAddress p2
 firstName p2
 lastName p2
+orcid p2
+
+let p3 = Seq.item 2 invContactsContainer
+
+let p4 = Seq.item 3 invContactsContainer
+
+orcid p4
+p4.Properties["<  ORCID>"] |> Seq.head |> Param.tryParam |> Option.get |> Param.getParamValue
 
 
 let person3 = Seq.item 2 invContactsContainer
