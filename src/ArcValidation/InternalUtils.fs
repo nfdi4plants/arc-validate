@@ -76,3 +76,28 @@ module internal InternalUtils =
                             token
                         )
                     | None -> []
+
+
+    module Orcid =
+
+        /// Calculates the checksum digit of an ORCID.
+        /// The calculated checksum digit must match the last character of the given ORCID.
+        /// 
+        /// Input parameter "digits" must be the full ORCID to check but already without all hyphens excluded.
+        // modified for F# from: https://support.orcid.org/hc/en-us/articles/360006897674-Structure-of-the-ORCID-Identifier
+        let checksum (digits : string) = 
+            let rec loop i total =
+                if i < digits.Length - 1 then
+                    let digit = Char.GetNumericValue digits[i] |> int
+                    loop (i + 1) ((total + digit) * 2)
+                else total
+            let remainder = (loop 0 0) % 11
+            let result = (12 - remainder) % 11
+            if result = 10 then 'X' else string result |> char
+
+        /// Checks if a given string is a valid ORCID.
+        let checkValid (input : string) =
+            let rgxPat = System.Text.RegularExpressions.Regex("^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
+            let isNum = rgxPat.Match(input).Success
+            let noHyphens = String.replace "-" "" input
+            isNum && checksum noHyphens = noHyphens[noHyphens.Length - 1]

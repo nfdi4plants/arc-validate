@@ -1,12 +1,54 @@
 #r "nuget: FSharpAux"
 #r @"C:\Repos\nfdi4plants\ArcGraphModel\src\ArcGraphModel\bin\Debug\net6.0\ArcGraphModel.dll"
-#r @"C:\Repos\CSBiology\FsSpreadsheet\src\FsSpreadsheet\bin\Debug\netstandard2.0\FsSpreadsheet.dll"
+//#r @"C:\Repos\CSBiology\FsSpreadsheet\src\FsSpreadsheet\bin\Debug\netstandard2.0\FsSpreadsheet.dll"
 //#r @
 
 // TO DO: write validation tests that WORK ON CVPARAMS (list/array) instead of graph!
 
 // look for a function that checks if a Raw/Derived Data file is present in the ARC (look in arc-validate)
 // look if Input/Output columns have empty data cells
+
+
+
+
+open System
+open FSharpAux
+
+/// Calculates the checksum digit of an ORCID.
+/// The calculated checksum digit must match the last character of the given ORCID.
+/// 
+/// Input parameter "digits" must be the full ORCID to check but already without all hyphens excluded.
+let checksum (digits : string) = 
+    //let digits = String.replace "-" "" "0000-0003-3925-6778"
+    let rec loop i total =
+        if i < digits.Length - 1 then
+            let digit = Char.GetNumericValue digits[i] |> int
+            loop (i + 1) ((total + digit) * 2)
+        else total
+    let remainder = (loop 0 0) % 11
+    let result = (12 - remainder) % 11
+    if result = 10 then 'X' else string result |> char
+    //let mutable total = 0
+    //for i = 0 to digits.Length - 2 do
+    //    let digit = Char.GetNumericValue digits[i] |> int
+    //    total <- (total + digit) * 2
+    //let remainder = total % 11
+    //let result = (12 - remainder) % 11
+    //if result = 10 then "X" else string result
+
+checksum (String.replace "-" "" "0000-0002-8241-5300")
+checksum (String.replace "-" "" "0000-0003-3925-6778")
+
+/// Checks if a given string is a valid ORCID.
+let checkValid (input : string) =
+    let rgxPat = System.Text.RegularExpressions.Regex("^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
+    let isNum = rgxPat.Match(input).Success
+    let noHyphens = String.replace "-" "" input
+    isNum && checksum noHyphens = noHyphens[noHyphens.Length - 1]
+
+checkValid "0000-0002-8241-5300"
+checkValid "0000-0003-3925-6778"
+checkValid "0123-4567-8910-1112"
 
 open ArcGraphModel
 open ArcGraphModel.ArcType

@@ -42,11 +42,10 @@ module CvBase =
         /// Validates a person's ORCID.
         let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) = 
             let orcidProperty = CvContainer.tryGetPropertyStringValue "<  ORCID>" personCvContainer
-            let rgxPat = System.Text.RegularExpressions.Regex("^\d{4}-\d{4}-\d{4}-\d{4}$")
             let err = Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
             match orcidProperty with
             | s when String.isNoneOrWhiteSpace s -> err
-            | o when rgxPat.Match(o.Value).Success |> not -> err
+            | o when InternalUtils.Orcid.checkValid o.Value |> not -> err
             | _ -> Success
 
     /// Validates several persons' given properties.
