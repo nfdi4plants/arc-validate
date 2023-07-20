@@ -3,6 +3,10 @@
 open System
 
 
+// this is needed to allow ValidatorTests project to access internal modules
+[<assembly: Runtime.CompilerServices.InternalsVisibleTo("ValidatorTests")>]
+do()
+
 [<AutoOpen>]
 module internal InternalUtils =
 
