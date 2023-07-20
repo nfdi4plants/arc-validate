@@ -1,25 +1,22 @@
 ﻿namespace ArcValidation
 
+open System
+
+
 [<AutoOpen>]
 module internal InternalUtils =
 
-    open System
     open FSharpAux
     open FsSpreadsheet
     open ArcGraphModel
     open ArcGraphModel.IO
-    open Expecto
-    open Expecto.Impl
-    open System.Globalization
     open System.IO
-    open System.Xml
-    open System.Xml.Linq
 
     module String =
 
         /// Checks if a given string is null, empty, or consisting solely of whitespaces.
         let isNullOrWhiteSpace (str : string) =
-            System.String.IsNullOrWhiteSpace str
+            String.IsNullOrWhiteSpace str
 
         /// Checks if an input string option is None or, if it is Some, null, empty or consisting solely of whitespaces.
         let isNoneOrWhiteSpace str =
@@ -29,7 +26,7 @@ module internal InternalUtils =
         /// Checks if a string is a filepath.
         let isFilepath str =
             (String.contains "/" str || String.contains "\\" str) &&
-            IO.Path.GetExtension str <> ""
+            Path.GetExtension str <> ""
 
         /// Splits an file address string into a triple in the form of `sheetName * rowNumber * columnNumber`.
         let splitAddress str =
@@ -71,19 +68,20 @@ module internal InternalUtils =
                             | l -> Some l
                         )
                         |> List.concat
-                        |> List.map (fun token ->        
+                        |> List.map (fun token ->
                             CvAttributeCollection.tryAddAttribute sheetName token |> ignore
                             token
                         )
                     | None -> []
 
 
+    /// Functions to work with ORCID numbers.
     module Orcid =
 
         /// Calculates the checksum digit of an ORCID.
         /// The calculated checksum digit must match the last character of the given ORCID.
         /// 
-        /// Input parameter "digits" must be the full ORCID to check but already without all hyphens excluded.
+        /// Input parameter "digits" must be the full ORCID to check but already without all hyphens excluded, e.g. `1111222233334444`.
         // modified for F# from: https://support.orcid.org/hc/en-us/articles/360006897674-Structure-of-the-ORCID-Identifier
         let checksum (digits : string) = 
             let rec loop i total =
@@ -95,9 +93,22 @@ module internal InternalUtils =
             let result = (12 - remainder) % 11
             if result = 10 then 'X' else string result |> char
 
+        /// Checks if the given ORCID digits are in range.
+        /// Current range is 0000000150000007 to 0000000350000001 and 0009000000000000 to 0009001000000000 (as of July 2023).
+        /// 
+        /// Input parameter "digits" must be the full ORCID to check but already without all hyphens excluded, e.g. `1111222233334444`.
+        // source: https://support.orcid.org/hc/en-us/articles/360006897674-Structure-of-the-ORCID-Identifier
+        let checkRange (digits : string) =
+            let inNums = 
+                String.replace "X" "9" digits   // debatable if sufficient. Best approach would be to raise the digit before by 1 (recursively, if it'd be 9 a.s.o.)
+                |> int64
+            (inNums >= 150000007L && inNums <= 350000001L) || (inNums >= 9000000000000L && inNums <= 9001000000000L)
+
         /// Checks if a given string is a valid ORCID.
+        /// 
+        /// Checks if the ORCID is in current number range and has a valid checksum digit.
         let checkValid (input : string) =
             let rgxPat = System.Text.RegularExpressions.Regex("^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
             let isNum = rgxPat.Match(input).Success
             let noHyphens = String.replace "-" "" input
-            isNum && checksum noHyphens = noHyphens[noHyphens.Length - 1]
+            isNum && checkRange noHyphens && checksum noHyphens = noHyphens[noHyphens.Length - 1]
