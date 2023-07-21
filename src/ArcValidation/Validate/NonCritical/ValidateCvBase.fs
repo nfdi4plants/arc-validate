@@ -14,8 +14,11 @@ module CvBase =
 
     module Person =
 
-        open ArcValidation.Validate.Critical.CvBase
-
         /// Validates a person's ORCID.
         let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) = 
-            property "<  ORCID>" personCvContainer
+            let orcidProperty = CvContainer.tryGetPropertyStringValue "<  ORCID>" personCvContainer
+            let err = Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
+            match orcidProperty with
+            | s when String.isNoneOrWhiteSpace s -> err
+            | o when InternalUtils.Orcid.checkValid o.Value |> not -> err
+            | _ -> Success
