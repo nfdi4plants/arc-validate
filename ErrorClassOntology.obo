@@ -131,11 +131,11 @@ id: DPEO:00000017
 name: FilesystemEntryNotReproducible
 def: "Given file or folder is not reproducible." []
 comment: 
-is_a: DPEO:00000015 ! NotReproducible
+is_a: DPEO:00000016 ! NotReproducible
 
 [Term]
 id: DPEO:00000018
 name: ValueNotReproducible
 def: "Given value is not reproducible." []
 comment: 
-is_a: DPEO:00000015 ! NotReproducible
+is_a: DPEO:00000016 ! NotReproducible
