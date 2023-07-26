@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		arc-validate.sh = arc-validate.sh
 		build.cmd = build.cmd
 		build.sh = build.sh
+		codeGeneratorScripting.fsx = codeGeneratorScripting.fsx
 		create-badge.py = create-badge.py
 		Dockerfile = Dockerfile
 		errorClassesStatic.fsx = errorClassesStatic.fsx
