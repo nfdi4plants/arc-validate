@@ -1,10 +1,43 @@
 #r "nuget: FsOboParser"
 #r "nuget: FSharpAux"
+#r "nuget: FSharp.FGL"
 
 open FsOboParser
 open FSharpAux
+open FSharp.FGL
 
 let eco = OboOntology.fromFile true @"C:\Repos\nfdi4plants\arc-validate\ErrorClassOntology.obo"
+
+eco.Terms.Head
+let no5 = eco.Terms[5]
+
+no5.Id
+
+let nodes = 
+    eco.Terms 
+    |> List.map (fun t -> LVertex(t.Id, t.Name))
+
+let edges = 
+    eco.Terms 
+    |> List.collect (
+        fun t -> 
+            t.IsA
+            |> List.map (
+                fun isA -> LEdge(t.Id, isA, "is_a")
+            )
+    )
+
+let graph = 
+    Graph.empty
+    |> Vertices.addMany nodes
+    // in directed edges the direction is from tuple item 1 to tuple item 2? (tuple item 3 is only the label, of course)
+    |> Directed.Edges.addMany edges
+
+graph.Count
+graph["DPEO:00000000"]
+Graph.getContext "DPEO:00000000" graph
+Graph.getContext "DPEO:00000007" graph
+
 
 let testTerms = [
     OboTerm.Create("test:00000000", Name = "test")
@@ -15,10 +48,30 @@ let testTerms = [
 
 let testOntology = OboOntology.create testTerms []
 
-eco.Terms.Head
-let no5 = eco.Terms[5]
+let nodes2 = 
+    testOntology.Terms 
+    |> List.map (fun t -> LVertex(t.Id, t.Name))
 
-no5.Id
+let edges2 =
+    testOntology.Terms 
+    |> List.collect (
+        fun t -> 
+            t.IsA
+            |> List.map (
+                fun isA -> LEdge(t.Id, isA, "is_a")
+            )
+    )
+
+let graph2 =
+    Graph.empty
+    |> Vertices.addMany nodes2
+    |> Directed.Edges.addMany edges2
+
+Graph.getContext "test:00000000" graph2
+Graph.getContext "test:00000001" graph2
+
+
+
 
 let oal = eco.GetParentOntologyAnnotations(no5.Id)
 
@@ -35,7 +88,6 @@ let getChildren (ontology : OboOntology) (term : OboTerm) =
     ontology.GetChildOntologyAnnotations(term.Id)
 
 let parents = getParents eco no5
-let 
 
 let templateModuleString = """module <name> =
 
