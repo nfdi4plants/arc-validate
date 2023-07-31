@@ -1,4 +1,5 @@
-#I "../../fslaborg/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
+//#I "../../fslaborg/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
+#I "../../omaus/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
 #r "Graphoscope.dll"
 #r "nuget: FsOboParser"
 
@@ -76,3 +77,16 @@ graph4 |> FGraph.mapContexts (fun t -> t)
 
 let result5 = Algorithms.BFS.Compute("DPEO:00000018", graph4) |> List.ofSeq
 let result6 = Algorithms.BFS.Compute("DPEO:00000000", graph4) |> List.ofSeq
+
+
+let graph5 = FGraph.reverseEdges graph2
+
+let result7 = Algorithms.BFS.Compute("test:00000000", graph5) |> List.ofSeq
+
+let graph6 = FGraph.reverseEdges graph3
+
+let result8 = Algorithms.BFS.Compute("DPEO:00000018", graph6) |> List.ofSeq
+let result9 = Algorithms.BFS.Compute("DPEO:00000000", graph6) |> List.ofSeq
+
+result8 = result5
+result9 = result6
