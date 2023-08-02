@@ -3,14 +3,18 @@
 #r "Graphoscope.dll"
 #r "nuget: FsOboParser"
 #r "nuget: FSharpAux"
-//#r "nuget: FSharp.FGL"
+#r "nuget: FSharp.FGL"
 
 open FsOboParser
 open FSharpAux
-//open FSharp.FGL
+open FSharp.FGL
 open Graphoscope
 
-let eco = OboOntology.fromFile true @"C:\Repos\nfdi4plants\arc-validate\ErrorClassOntology.obo"
+open System.Text.RegularExpressions
+open System.IO
+
+
+let eco = OboOntology.fromFile true (Path.Combine(__SOURCE_DIRECTORY__, "ErrorClassOntology.obo"))
 
 eco.Terms.Head
 let no5 = eco.Terms[5]
@@ -24,8 +28,10 @@ let testTerms = [
     OboTerm.Create("test:00000003", Name = "test2b", IsA = ["test:00000000"])
 ]
 
-let testOntology = OboOntology.create testTerms []
+//let testOntology = OboOntology.create testTerms []
+let testOntology = OboOntology.fromFile true (Path.Combine(__SOURCE_DIRECTORY__, "TestOntology.obo"))
 
+//OboOntology.toFile (Path.Combine(__SOURCE_DIRECTORY__, "TestOntology.obo")) testOntology
 
 let templateModuleString = """module <name> =
 
@@ -50,9 +56,11 @@ lalalalala
 |> printfn "%s"
 
 
-let deconstructRelationship input =
-    let pattern = System.Text.RegularExpressions.Regex @"^(?<relName>\w+)\s(?<id>\w+:\d+)\s!\s.*$"
-    let matchResult = pattern.Match input
+/// Takes a relationship as input and returns its name and ID as anonymous record if they exist. Else returns None.
+let tryDeconstructRelationship relationship =
+    // matches patterns in the format of "<text> <text>:<numbers> ! <text with spaces>", e.g. "part_of INVMSO:00000001 ! Investigation Metadata"
+    let pattern = Regex @"^(?<relName>\w+)\s(?<id>\w+:\d+)\s!\s.*$"
+    let matchResult = pattern.Match relationship
     let relName = matchResult.Groups["relName"].Value
     let id = matchResult.Groups["id"].Value
     if String.isNullOrEmpty relName || String.isNullOrEmpty id then None
@@ -62,40 +70,104 @@ let deconstructRelationship input =
             Id                  = id
         |}
 
-let addRelationship (term : OboTerm) (graph : FGraph<string,OboTerm,string>) input =
-    let decRel = deconstructRelationship input
+/// Takes a relationship as input and returns its name and ID as anonymous record.
+let deconstructRelationship relationship =
+    // matches patterns in the format of "<text> <text>:<numbers> ! <text with spaces>", e.g. "part_of INVMSO:00000001 ! Investigation Metadata"
+    let pattern = Regex @"^(?<relName>\w+)\s(?<id>\w+:\d+)\s!\s.*$"
+    let matchResult = pattern.Match relationship
+    let relName = matchResult.Groups["relName"].Value
+    let id = matchResult.Groups["id"].Value
+    {|
+        RelationshipName    = relName
+        Id                  = id
+    |}
+
+/// <summary>
+/// Adds a given term as a node to a graph.
+/// </summary>
+/// <param name="term">The term.</param>
+/// <param name="graph">The graph that the term is added to.</param>
+let addTerm (graph : FGraph<string,OboTerm,string>) (term : OboTerm) =
+    FGraph.Node.add term.Id term graph
+
+let addRelation (graph : FGraph<string,OboTerm,string>) (term : OboTerm) =
+
+/// <summary>
+/// Adds the relationship of a given term as an edge to a graph.
+/// 
+/// Currently, only `part_of` and `has_a` relationships are supported.
+/// </summary>
+/// <param name="relationship">The relationship.</param>
+/// <param name="term">The relationship's term.</param>
+/// <param name="graph">The graph which the relationship is added to.</param>
+let addRelationship (graph : FGraph<string,OboTerm,string>) (term : OboTerm) relationship =
+    let decRel = tryDeconstructRelationship relationship
     match decRel with
     | Some dr -> 
-        match dr.RelationshipName with
-        | "part_of" -> FGraph.Edge.add dr.Id term.Id dr.RelationshipName graph
+        match dr.RelationshipName.ToLower() with
+        | "part_of" -> FGraph.Edge.add term.Id dr.Id dr.RelationshipName graph
+        | "has_a" -> FGraph.Edge.add dr.Id term.Id dr.RelationshipName graph
         | _ -> graph
     | None -> graph
 
+/// <summary>
+/// Adds the is_a relation of a given term as an edge to a graph.
+/// </summary>
+/// <param name="isA">The is_a relation.</param>
+/// <param name="term">The is_a's term.</param>
+/// <param name="graph">The graph which the is_a relation is added to.</param>
+let addIsA (graph : FGraph<string,OboTerm,string>) (term : OboTerm) isA =
+    FGraph.Edge.add term.Id isA "is_a" graph
 
+/// <summary>
+/// Adds the synonym of a given term as an edge to a graph if the synonym's term exists in the ontology.
+/// </summary>
+/// <param name="synoynm">The synonym.</param>
+/// <param name="term">The term that has the synonym.</param>
+/// <param name="ontology">The ontology of the term.</param>
+/// <param name="graph">The graph that has the is_a relation.</param>
+let tryAddSynonym (graph : FGraph<string,OboTerm,string>) (term : OboTerm) (ontology : OboOntology) synonym =
+    // CARE: `.Text` is not Term ID but name
+    let revisedSynonymText = String.replace "\"" "" synonym.Text    // because sometimes the synonym text has additional quotation marks that need to be eradicated
+    let synonymTerm =
+        ontology.Terms
+        |> List.tryFind (fun t -> t.Name = revisedSynonymText)
+    match synonymTerm with
+    | Some st -> FGraph.Edge.add term.Id st.Id $"synonym: {synonym.Scope.ToString()}" graph
+    | None -> graph
+
+/// Takes an OboOntology and returns an FGraph based on its terms and relations.
 let toGraph (ontology : OboOntology) =
     let graph = FGraph.empty<string,OboTerm,string>
+    // add Nodes first because otherwise exception "Target Node [...] does not exist" is thrown
+    List.iter (addTerm graph >> ignore) ontology.Terms
+    // now, add Edges
+    // if this approach is too slow because of double iteration, try to implement an algorithm to simultaneously add Nodes and Edges without triggering the exception above
     ontology.Terms
     |> List.iter (
         fun t -> 
-            FGraph.Node.add t.Id t graph |> ignore
             t.IsA
-            |> List.iter (
-                fun isA ->
-                    FGraph.Edge.add t.Id isA "is_a" graph |> ignore
-            )
+            |> List.iter (addIsA graph t >> ignore)
             t.Relationships
-            |> List.iter (addRelationship t graph >> ignore)
+            |> List.iter (addRelationship graph t >> ignore)
             t.Synonyms
-            |> List.iter (
-                fun synonym ->
-                    // check if `.Text` = id
-                    FGraph.Edge.add t.Id synonym.Text $"synonym: {synonym.Scope.ToString()}" graph |> ignore
-            )
+            |> List.iter (tryAddSynonym graph t ontology >> ignore)
     )
     graph
 
-let x = TermSynonymScope.ofString 1 "BROAD"
-x.ToString()
+let testOntologyGraph = toGraph testOntology
+testOntologyGraph.Keys |> Seq.toList
+testOntologyGraph["test:00000004"]
+
+let testOntologyTerms2 = [
+    OboTerm.Create("test:01", Name = "test1", Relationships = ["part_of test:02 ! test2"])
+    OboTerm.Create("test:02", Name = "test2", Relationships = ["has_a test:01 ! test1"])
+]
+let testOntology2 = OboOntology.create testOntologyTerms2 []
+let testOntology2Graph = toGraph testOntology2
+testOntology2Graph.Keys |> Seq.toList
+testOntology2Graph.Values |> Seq.toList
+
 
 //let oal = eco.GetParentOntologyAnnotations(no5.Id)
 
