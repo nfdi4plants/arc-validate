@@ -55,6 +55,7 @@ id: DPEO:00000006
 name: MissingEitherValue
 def: "Neither of the expected values is present." []
 comment: 
+is_a: DPEO:00000004 ! MissingEitherEntity
 
 [Term]
 id: DPEO:00000007
