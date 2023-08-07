@@ -36,6 +36,16 @@ def: "Expected value is not present." []
 comment: 
 is_a: DPEO:00000001 ! MissingEntity
 
+// to do: insert spaces into PascalCase names for better readability
+// to do: update IDs
+
+[Term]
+id: DPEO:00000003
+name: MissingMetadataKey
+def: "Expected value is not present." []
+comment: 
+is_a: DPEO:00000001 ! MissingEntity
+
 [Term]
 id: DPEO:00000004
 name: MissingEitherEntity

@@ -15,55 +15,7 @@ open FSharpAux
 open System.Collections.Generic
 
 
-module Error =
-
-    module MissingEntity =
-
-        type MissingValue =
-            static member id = "DPEO:00000003"
-            static member name = "Missing Value"
-
-
-module InvestigationMetadata =
-
-    module InvestigationContacts =
-
-        type InvestigationPersonLastName =
-            static member id = "INVMSO:00000022"
-            static member name = "Investigation Person Last Name"
-
-        type InvestigationPersonFirstName =
-            static member id = "INVMSO:00000023"
-            static member name = "Investigation Person First Name"
-
-
-
-
-type MessageKind =
-    | FilesystemEntryKind
-    | TextfileKind
-    | XLSXFileKind
-
-type Message = {
-        Path        : string
-        Line        : int option
-        Position    : int option
-        Sheet       : string option
-        Kind        : MessageKind
-    }
-    with
-
-    static member create path line pos sheet kind = {Path = path; Line = line; Position = pos; Sheet = sheet; Kind = kind}
-    static member Create(path, kind, ?Line, ?Pos, ?Sheet) = {Path = path; Line = Line; Position = Pos; Sheet = Sheet; Kind = kind}
-
-type ValidationResult =
-    | Success
-    | Error of Message
-
-let throwError failStringFunction result = 
-    match result with
-    | ValidationResult.Success -> ()
-    | ValidationResult.Error m -> failtestf "%s" (failStringFunction m)
+// from internal module copypasted
 
 open Impl
 
@@ -83,15 +35,144 @@ let performTest test =
         }
 
 
-let createErrorStackFilesystemEntry (message : Message) structuralOntologyTerm errorOntologyTerm =
-    $"{errorOntologyTerm} Error: {structuralOntologyTerm}.\nat {message.Path}"
 
-let createErrorStackTextfile (message : Message) structuralOntologyTerm errorOntologyTerm =
-    $"{errorOntologyTerm} Error: {structuralOntologyTerm}.\nat {message.Path}"
 
-let createErrorStackXlsxFile (message : Message) structuralOntologyTerm errorOntologyTerm =
-    let cellString = FsSpreadsheet.FsAddress(message.Line.Value, message.Position.Value).Address
-    $"{errorOntologyTerm} Error: {structuralOntologyTerm}.\nat '{message.Path}' > sheet '{message.Sheet.Value}' > cell '{cellString}'"
+
+
+
+//type IOntologyEntry =
+//    abstract member id : string
+//    abstract member name : string
+
+
+module Error =
+
+    module MissingEntity =
+
+        type MissingValue =
+            //interface IOntologyEntry with
+                static member id = "DPEO:00000003"
+                static member name = "Missing Value"
+
+        type MissingMetadataKey =
+                static member id = "DPEO:00000004"
+                static member name = "Missing Metadata Key"
+
+
+module InvestigationMetadata =
+
+    module InvestigationContacts =
+
+        type InvestigationPersonLastName =
+            //interface IOntologyEntry with
+                static member id = "INVMSO:00000022"
+                static member name = "Investigation Person Last Name"
+
+        type InvestigationPersonFirstName =
+            //interface IOntologyEntry with
+                static member id = "INVMSO:00000023"
+                static member name = "Investigation Person First Name"
+
+type InvestigationMetadata =
+    static member id = "INVMSO:00000001"
+    static member name = "Investigation Metadata"
+
+let metadataSections = [
+    21, InvestigationMetadata.InvestigationContacts.InvestigationPersonLastName.name
+    22, InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name
+]
+
+
+
+type ARCValidateContext = {
+        Tokens          : Dictionary<string,IParam list>
+        TestConditions  : Dictionary<string,bool>
+        Filepath        : string
+    }
+
+    with
+        static member create tokens testConditions filepath = {
+            Tokens          = tokens
+            TestConditions  = testConditions
+            Filepath        = filepath
+        }
+
+        static member getTokens (tokenName : string) (arcValidateContext : ARCValidateContext) =
+            arcValidateContext.Tokens[tokenName]
+
+        static member tryGetTokens (tokenName : string) (arcValidateContext : ARCValidateContext) =
+            Dictionary.tryFind tokenName arcValidateContext.Tokens
+
+        static member getTestCondition (testName : string)  (arcValidateContext : ARCValidateContext) =
+            arcValidateContext.TestConditions[testName]
+
+        static member tryGetTestCondition (testName : string) (arcValidateContext : ARCValidateContext) =
+            Dictionary.tryFind testName arcValidateContext.TestConditions
+
+        static member addTestCondition (testName : string) (testResult : bool) (arcValidateContext : ARCValidateContext) =
+            arcValidateContext.TestConditions.Add(testName, testResult)
+
+let dependentTestCase testName (conditionDic : Dictionary<string,bool>) dicKey testCase =
+    test testName {
+        if conditionDic[dicKey] then
+            testCase ()
+        else
+            skiptestf $"Skipped due to failed test: {dicKey}."
+    }
+
+//let testListExpanded name tests =
+//    testList name 
+
+let testCaseArc (arcValidateContext : ARCValidateContext) (error : string) (position : string) (test : ARCValidateContext -> string -> string -> unit) =
+    let name = $"{error} test: {position}"
+    testCase name (fun () -> test arcValidateContext name position)
+
+let testCaseArcDependent (arcValidateContext : ARCValidateContext) (error : string) (position : string) dependsOnTest (test : ARCValidateContext -> string -> string -> unit) =
+    let name = $"{error} test: {position}"
+    dependentTestCase name arcValidateContext.TestConditions dependsOnTest (fun () -> test arcValidateContext name position)
+
+
+type ARCTest = {
+        Name            : string
+        Test            : Test
+        //Dependencies    : ARCTest list
+    }
+
+    with
+        static member Create(error : string, position : string, test : Test (*dependencies*)) = {
+            Name            = $"{error} test: {position}"
+            Test            = test
+            //Dependencies    = dependencies
+        }
+
+        static member Create(error : string, position : string, arcValidateContext : ARCValidateContext, test : ARCValidateContext -> string -> string -> unit) = {
+            Name            = $"{error} test: {position}"
+            Test            = testCaseArc arcValidateContext error position test
+        }
+
+        static member CreateDependent(error : string, position : string, arcValidateContext : ARCValidateContext, test : ARCValidateContext -> string -> string -> unit, dependsOnTest) = {
+            Name            = $"{error} test: {position}"
+            Test            = testCaseArcDependent arcValidateContext error position dependsOnTest test
+        }
+
+
+
+
+let createErrorStack path =
+    $"'{path}'"
+
+let createErrorStackWithLinePos path line position =
+    $"'{path}' > line '{line}' > position '{position}'"
+
+let createErrorStackWithCell path sheet row column =
+    let cellString = FsSpreadsheet.FsAddress(row, column).Address
+    $"'{path}' > sheet '{sheet}' > cell '{cellString}'"
+
+let createErrorStackWithColumn path sheet column =
+    $"'{path}' > sheet '{sheet}' > column '{column}'"
+
+let createErrorStackWithRow path sheet row =
+    $"'{path}' > sheet '{sheet}' > row '{row}'"
 
 //let getRelativePath fullpath =      // alternative names: `getRelativeArcPath`, `getArcRelativePath`, `get
     
@@ -99,76 +180,141 @@ let createErrorStackXlsxFile (message : Message) structuralOntologyTerm errorOnt
 
 let invPath = @"C:/Repos/gitlab.nfdi4plants.org/ArcPrototype/isa.investigation.xlsx"
 
-let inv = ARCTokenization.Investigation.parseMetadataSheetFromFile invPath
+let inv : IParam list = try ARCTokenization.Investigation.parseMetadataSheetFromFile invPath with _ -> []
+//let inv : IParam list = []
 
-let invDict = Dictionary.ofList (inv |> List.groupBy CvBase.getCvName)
+// gucken wer das in Git Blame verbrochen hat!
+let invDict = Dictionary.ofList (inv |> List.groupBy CvBase.getCvName) :?> Dictionary<string,IParam list>
 
 let getMetadataSectionKey iParamList = 
     iParamList
     |> List.filter (fun ip -> Param.getValueAsString ip = (Terms.StructuralTerms.metadataSectionKey |> CvTerm.getName))
     |> List.exactlyOne
 
+(invDict["Study Person First Name"].Head :?> CvParam).GetAttribute(Address.row) |> Param.getValueAsInt
+(invDict["Study Person First Name"][1] :?> CvParam).GetAttribute(Address.row) |> Param.getValueAsInt
 
-let actual = true
-let actualList = []
 
-testList "meinTest" [
-    testCase "meinCase" <| fun () -> Expect.isTrue actual "falsch"
-]
 
-testList "meinTest" [
-    testCase "meinCase" <| fun () -> Expect.isTrue actual (createErrorStackXlsxFile (Message.Create("pfad", XLSXFileKind, 5, 1, "meinSheet")))
-]
 
-testList "meineTests" [
-    testCase "email" (fun () ->
-        Expect.isEmpty email "Email is empty"
-        Expect.isTrue (checkForCorrectFormat email) "Email has incorrect format"
-    )
-]
 
-let testCaseName = $"{Error.MissingEntity.MissingValue.name} test: {InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name}"
-let errorMessage = Message.Create("pfad", XLSXFileKind, 5, 1, "meinSheet")
 
-testCase testCaseName (fun _ -> Expect.isTrue false (errorMessage.ToString()))
-|> performTest
 
-testList "meinTest" [
 
-    testCase $"{Error.MissingEntity.MissingValue.name} test: {InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name}" <| fun () -> 
-        
-        match Dictionary.tryFind "Investigation Person First Name" invDict with
-        | Some value -> 
-            value
-            |> List.filter (fun ip -> Param.getValueAsString ip <> (Terms.StructuralTerms.metadataSectionKey |> CvTerm.getName))
-        | None -> []
-        |> fun actualList -> 
-            Expect.isNonEmpty actualList (Message.Create("pfad", XLSXFileKind, 5, 1, "meinSheet").ToString())
-]
 
 
 // !!!!!!!!!!SEHR GUT!!!!!!!!!!!!
 module ArcExpect =
+// alternativ: Expect.ARC.isNonEmpty usw.
 
     // davon werden wir vllt. 10 Stück oder so brauchen
-    let isNonEmpty (dict : #IDictionary<string,IParam list>) key (message : Message) =
-        match Dictionary.tryFind key dict with
+    let hasMetadataSectionKey (arcValidateContext : ARCValidateContext) testName key =
+        match Dictionary.tryFind key arcValidateContext.Tokens with
         | Some value -> 
+            try 
+                getMetadataSectionKey value |> ignore
+                ARCValidateContext.addTestCondition testName true arcValidateContext
+            with
+                | _ -> 
+                    ARCValidateContext.addTestCondition testName false arcValidateContext
+                    failtestf "%s" (createErrorStack arcValidateContext.Filepath)
+        | None -> 
+            ARCValidateContext.addTestCondition testName false arcValidateContext
+            failtestf "%s" (createErrorStack arcValidateContext.Filepath)
+
+    /// 
+    let hasValues (arcValidateContext : ARCValidateContext) testName key =
+        match Dictionary.tryFind key arcValidateContext.Tokens with
+        | Some value -> 
+            let mdsk = getMetadataSectionKey value
+            let row = (mdsk :?> CvParam).GetAttribute(Address.row) |> Param.getValueAsInt
+            let col = ((mdsk :?> CvParam).GetAttribute(Address.column) |> Param.getValueAsInt) + 1
+            let sheet = (mdsk :?> CvParam).GetAttribute(Address.worksheet) |> Param.getValueAsString
+            //let message = Message.Create(invPath, XLSXFileKind, row, col, sheet)
             value       // hier muss das filtern noch raus, das soll bereits vorher passieren
             |> List.filter (fun ip -> Param.getValueAsString ip <> (Terms.StructuralTerms.metadataSectionKey |> CvTerm.getName))
-        | None -> []
-        |> fun res ->
-            match res with
-            | [] ->
-                failtestf "%s" (sprintf "'%s' > sheet '%s' > cell '%s'" message.Path message.Sheet.Value (FsSpreadsheet.FsAddress(message.Line.Value, message.Position.Value).Address))
-            | _ -> ()
+            |> fun res ->
+                match res with
+                | [] ->
+                    ARCValidateContext.addTestCondition testName false arcValidateContext
+                    failtestf "%s" (createErrorStackWithCell invPath sheet row col)
+                | _ -> ARCValidateContext.addTestCondition testName true arcValidateContext
+        | None -> 
+            ARCValidateContext.addTestCondition testName false arcValidateContext
+            failtestf "%s" (createErrorStack arcValidateContext.Filepath)
+
+    let hasAllMetadataSectionKeys (arcValidateContext : ARCValidateContext) testName keyList =
+        keyList
+        |> List.iter (hasMetadataSectionKey arcValidateContext testName)
+
+
+
+let tl = 
+    testSequenced (
+        testList "Critical" [
+            let myArcContext = ARCValidateContext.create invDict (Dictionary()) invPath
+            let areAllMetadataSectionKeysPresentTest =
+                ARCTest.Create(
+                    error = Error.MissingEntity.MissingMetadataKey.name,
+                    position = InvestigationMetadata.name,
+                    arcValidateContext = myArcContext,
+                    test = ArcExpect.hasMetadataSectionKey
+                )
+            let hasMetadataSectionKeyTest = 
+                ARCTest.Create(
+                    error = Error.MissingEntity.MissingMetadataKey.name,
+                    position = InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name,
+                    arcValidateContext = myArcContext,
+                    test = ArcExpect.hasMetadataSectionKey
+                )
+            let hasValuesTest =
+                ARCTest.CreateDependent(
+                    error = Error.MissingEntity.MissingValue.name,
+                    position = InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name,
+                    arcValidateContext = myArcContext,
+                    dependsOnTest = hasMetadataSectionKeyTest.Name,
+                    test = ArcExpect.hasValues
+                )
+            areAllMetadataSectionKeysPresentTest.Test
+            hasMetadataSectionKeyTest.Test
+            hasValuesTest.Test
+        ]
+    )
+
+tl |> performTest
+
+    //testCase $"{Error.MissingEntity.MissingValue.name} test: {InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name}" <| fun () -> 
+    //    ArcExpect.isNotEmpty invDict "Investigation Person First Name"
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //let exists
+
+Error.MissingEntity.MissingValue.name
 
 testList "Critical" [
-    testCase $"{Error.MissingEntity.MissingValue.name} test: {InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name}" <| fun () -> 
-        ArcExpect.isNonEmpty invDict "Investigation Person First Name" (Message.Create("pfad", XLSXFileKind, 5, 1, "meinSheet"))
+    //testCase 
+    testCaseArc 
+        Error.MissingEntity.MissingValue.name 
+        InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name 
+
+        ArcExpect.isNotEmpty
+        //ArcExpect.isNotEmpty invDict "Investigation Person First Name"
 ]
 |> performTest
 // !!!!!!!!!!!!!!!!!!!!!!!!!
+
+ArcExpect.isNonEmpty invDict "Investigation Person First Name"
 
 
 // ValidationResult nicht notwendig, stattdessen alles in Expecto-Funktion evaluieren
