@@ -4,6 +4,7 @@
 #r "nuget: ARCTokenization"
 #r "nuget: Expecto"
 #r "nuget: FSharpAux"
+#r "nuget: Graphoscope"
 
 open Expecto
 open ControlledVocabulary
@@ -11,8 +12,10 @@ open ARCTokenization
 open FSharpAux
 //open ArcValidation.OntologyHelperFunctions
 //open ArcValidation.ErrorMessage
+open Graphoscope
 
 open System.Collections.Generic
+open System.Text.RegularExpressions
 
 
 // from internal module copypasted
@@ -33,6 +36,11 @@ let performTest test =
             memoryLimit = 0L
             timedOut = []
         }
+
+
+// small crappy crap
+
+let noImp = raise <| System.NotImplementedException()
 
 
 
@@ -199,6 +207,95 @@ let getMetadataSectionKey iParamList =
 
 
 
+
+
+
+
+module Expect =
+
+    module ARC =
+
+        /// Checks if a given value can by matched by a given Regex pattern. Else fails and returns given error message.
+        let matchPattern (regex : Regex) value errorMessage =
+            let regexRes = regex.Match value
+            if not regexRes.Success then
+                failtestf "%s" errorMessage
+
+
+        module Dict =
+
+            /// Checks if a given Dictionary contains a given key.
+            let contains key dict errorMessage =
+                if not (Dictionary.containsKey key dict) then
+                    failtestf "%s" errorMessage
+
+            /// Checks if a given Dictionary has a value under a given key. Else fails and returns given error message.
+            /// 
+            /// This differentiates by `contains` via assuming the key is present but evaluating if the value is Some or None.
+            let hasValue key dict errorMessage =
+                if (Dictionary.tryFind key dict).IsNone then
+                    failtestf "%s" errorMessage
+
+            /// Checks if a given Dictionary under a given key has a value that satisfies the predicate. Else fails and returns given error message.
+            let hasValueBy predicate key dict errorMessage =
+                match Dictionary.tryFind key dict with
+                | Some value ->
+                    if not (predicate value) then failtestf "%s" errorMessage
+                | None -> failtestf "%s" errorMessage
+
+            /// Checks if a given Dictionary under a given key has a value that equals the given value. Else fails and returns given error message.
+            let equalsValue key value dict errorMessage =
+                if not (Dictionary.item key dict = value) then
+                    failtestf "%s" errorMessage
+
+            /// Checks if a given Dictionary under a given key has a value that equals the given value after applying a given mapping function. Else fails and returns given error message.
+            let equalsValueBy mapping key value dict errorMessage =
+                if not (Dictionary.item key dict |> mapping = value) then
+                    failtestf "%s" errorMessage
+
+
+        module Graph =
+
+            /// Checks if a given key (i.e. NodeKey) exists in a given FGraph. Else fails and returns given error message.
+            let exists key graph errorMessage =
+                if not (FGraph.containsNode key graph) then
+                    failtestf "%s" errorMessage
+
+            /// Checks if a given key (i.e. NodeKey) has neighbours at a given level in a given FGraph. Else fails and returns given error message.
+            let hasNeighbours key level (graph : FGraph<_,_,_>) errorMessage =
+                let rec loop lvl currentNeighbours =
+                    if level = lvl then 
+                        currentNeighbours
+                        |> Seq.exists (
+                                fun t -> graph.Item t
+                                >> FContext.neighbours 
+                                >> Seq.isEmpty 
+                                >> not
+                        )
+                    else 
+                        let furtherNeighbours =
+                            currentNeighbours
+                            |> Seq.fold (
+                                fun acc n -> 
+                                    FContext.neighbours (graph.Item n)
+                            )
+                        loop (lvl + 1)
+                // CARE! `FContext.neighbours` rates Nodes that have circular Edges (Edges that point to themselve) as neighbours. Exclude them if this becomes a problem in future applications...
+                let res = FContext.neighbours (graph.Item key)
+                raise <| System.NotImplementedException()
+
+            /// Checks if a given key (i.e. NodeKey) has neighbours that satisfy a given predicate at a given level in a given FGraph. Else fails and returns given error message.
+            let hasNeighboursBy key level predicate graph errorMessage =
+                raise <| System.NotImplementedException()
+
+            //let extract key subtree graph errorMessage =
+            //    raise <| System.NotImplementedException()
+
+            //let tryGet key graph errorMessage =     // ist das nicht dasselbe wie exists?
+            //    raise <| System.NotImplementedException()
+
+            //let tryGetBy mapping key graph errorMessage =     // ist das nicht dasselbe wie exists?
+            //    raise <| System.NotImplementedException()
 
 
 
