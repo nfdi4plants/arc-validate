@@ -1,0 +1,25 @@
+[Term]
+id: test:00000000
+name: test
+
+[Term]
+id: test:00000001
+name: test2a
+is_a: test:00000000
+
+[Term]
+id: test:00000002
+name: test3
+is_a: test:00000001
+
+[Term]
+id: test:00000003
+name: test2b
+is_a: test:00000000
+
+[Term]
+id: test:00000004
+name: test4a
+is_a: test:00000002
+synonym: "test4b" EXACT [ ]
+synonym: "test5" RELATED [ ]

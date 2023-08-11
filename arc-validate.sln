@@ -10,11 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		build.sh = build.sh
 		create-badge.py = create-badge.py
 		Dockerfile = Dockerfile
-		expectoPlayground.fsx = expectoPlayground.fsx
+		ErrorClassOntology.obo = ErrorClassOntology.obo
 		global.json = global.json
-		graphModelIOTest.fsx = graphModelIOTest.fsx
-		playground.fsx = playground.fsx
 		README.md = README.md
+		TestOntology.obo = TestOntology.obo
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
@@ -45,6 +44,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{66A8015E-565
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 		.github\workflows\pipeline.yml = .github\workflows\pipeline.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds", "{7994D526-5B21-4EBD-9CCB-EFA04EE303CF}"
+	ProjectSection(SolutionItems) = preProject
+		codeGeneratorScripting.fsx = codeGeneratorScripting.fsx
+		errorClassesStatic.fsx = errorClassesStatic.fsx
+		expectoPlayground.fsx = expectoPlayground.fsx
+		graphModelIOTest.fsx = graphModelIOTest.fsx
+		graphoscopePlayground.fsx = graphoscopePlayground.fsx
+		playground.fsx = playground.fsx
+		prototype.fsx = prototype.fsx
 	EndProjectSection
 EndProject
 Global
@@ -78,6 +88,7 @@ Global
 		{0FF2245E-AFDA-4C93-9E38-44CA66C6DEB9} = {6275F297-567B-421B-B055-4F88B2785765}
 		{B46EA5BD-195E-4328-9B71-FE20F54C76F1} = {6275F297-567B-421B-B055-4F88B2785765}
 		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F} = {40D49078-F3AE-448F-A730-77063694830D}
+		{7994D526-5B21-4EBD-9CCB-EFA04EE303CF} = {B3F07465-2108-4C43-843A-9F503044FDB7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}
