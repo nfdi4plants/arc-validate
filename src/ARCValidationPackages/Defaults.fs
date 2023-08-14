@@ -1,6 +1,7 @@
 ﻿namespace ARCValidationPackages
 
 open System.Text.Json
+open System.IO
 open type System.Environment
 
 module Defaults =
@@ -19,11 +20,28 @@ module Defaults =
 
     let [<Literal>] GITHUB_API_ACCEPT_HEADER = "application/vnd.github+json"
 
-    let PACKAGE_CACHE_LOCATION () = 
-        GetFolderPath(
-            SpecialFolder.ApplicationData,
-            SpecialFolderOption.Create
-        )
+    let CONFIG_FOLDER() = 
+        let path = 
+            GetFolderPath(
+                SpecialFolder.ApplicationData,
+                SpecialFolderOption.Create
+            )
+            |> fun path -> 
+                Path.Combine(path, "arc-validate")
+                    .Replace("\\", "/")
+        Directory.CreateDirectory(path) |> ignore
+        path
+
+    let PACKAGE_CACHE_FOLDER () = 
+        let path = 
+            Path.Combine(CONFIG_FOLDER(), "arc-validation-packages-cache")
+                .Replace("\\", "/")
+        Directory.CreateDirectory(path) |> ignore
+        path
+
+    let CONFIG_FILE_PATH () = 
+        Path.Combine(CONFIG_FOLDER(), "arc-validation-packages.config")
+            .Replace("\\", "/")
 
     let SERIALIZATION_OPTIONS =  JsonSerializerOptions(WriteIndented = true)
 

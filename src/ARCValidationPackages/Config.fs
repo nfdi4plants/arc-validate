@@ -5,24 +5,28 @@ open System.Text.Json
 type Config = {
     PackageIndex: ValidationPackageIndex []
     IndexLastUpdated: System.DateTimeOffset
-    PackageCachePath: string
+    PackageCacheFolder: string
+    ConfigFilePath: string
 } with
     static member create (
         packageIndex: ValidationPackageIndex [],
         indexLastUpdated: System.DateTimeOffset,
-        packageCachePath: string
+        packageCacheFolder: string,
+        configFilePath: string
     ) =
         {
             PackageIndex = packageIndex
             IndexLastUpdated = indexLastUpdated
-            PackageCachePath = packageCachePath
+            PackageCacheFolder = packageCacheFolder
+            ConfigFilePath = configFilePath
         }
 
     static member initDefault() = 
         Config.create(
-            GitHubAPI.getPackageIndex(),
-            System.DateTimeOffset.Now,
-            Defaults.PACKAGE_CACHE_LOCATION()
+            packageIndex = GitHubAPI.getPackageIndex(),
+            indexLastUpdated = System.DateTimeOffset.Now,
+            packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER(),
+            configFilePath = Defaults.CONFIG_FILE_PATH()
         )
 
     static member read (path: string) =
@@ -30,7 +34,6 @@ type Config = {
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<Config>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
-    static member write (path: string) (config: Config) =
-        // to-do:
-        // - convert to json and write to file
-        raise (System.NotImplementedException())
+    static member write (config: Config) =
+        JsonSerializer.Serialize(config, Defaults.SERIALIZATION_OPTIONS)
+        |> fun json -> File.WriteAllText(config.ConfigFilePath, json)

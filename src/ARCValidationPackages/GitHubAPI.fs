@@ -43,3 +43,15 @@ type GitHubAPI =
         |> fun content -> Convert.FromBase64String(content)
         |> fun bytes -> Encoding.UTF8.GetString(bytes)
         |> fun index -> JsonSerializer.Deserialize<ValidationPackageIndex[]>(index, Defaults.SERIALIZATION_OPTIONS)
+
+    static member downloadPackageScript (packagePath: string, ?Token: string) =
+        GitHubAPI.getRepositoryContent(
+            owner = Defaults.PACKAGE_INDEX_OWNER,
+            repo = Defaults.PACKAGE_INDEX_REPO,
+            path = packagePath,
+            userAgent = Defaults.GITHUB_API_USER_AGENT,
+            ?Token = Token
+        )
+        |> fun json -> (json?content).GetString()
+        |> fun content -> Convert.FromBase64String(content)
+        |> fun bytes -> Encoding.UTF8.GetString(bytes)
