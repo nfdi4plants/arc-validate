@@ -48,14 +48,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{66A8015E-565
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds", "{7994D526-5B21-4EBD-9CCB-EFA04EE303CF}"
 	ProjectSection(SolutionItems) = preProject
+		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
 		codeGeneratorScripting.fsx = codeGeneratorScripting.fsx
 		errorClassesStatic.fsx = errorClassesStatic.fsx
 		expectoPlayground.fsx = expectoPlayground.fsx
+		playgrounds\github-api.fsx = playgrounds\github-api.fsx
 		graphModelIOTest.fsx = graphModelIOTest.fsx
 		graphoscopePlayground.fsx = graphoscopePlayground.fsx
 		playground.fsx = playground.fsx
 		prototype.fsx = prototype.fsx
 	EndProjectSection
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidationPackages", "src\ARCValidationPackages\ARCValidationPackages.fsproj", "{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +83,10 @@ Global
 		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +97,7 @@ Global
 		{B46EA5BD-195E-4328-9B71-FE20F54C76F1} = {6275F297-567B-421B-B055-4F88B2785765}
 		{59EC6B66-B9F6-4FFD-8538-56426ACFCD6F} = {40D49078-F3AE-448F-A730-77063694830D}
 		{7994D526-5B21-4EBD-9CCB-EFA04EE303CF} = {B3F07465-2108-4C43-843A-9F503044FDB7}
+		{CF14C74E-20D2-4EC9-B11E-357BFD1244CB} = {6275F297-567B-421B-B055-4F88B2785765}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}
