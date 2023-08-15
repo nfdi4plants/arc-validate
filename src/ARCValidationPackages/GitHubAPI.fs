@@ -2,6 +2,7 @@
 
 open FsHttp
 open System
+open System.IO
 open System.Text
 open System.Text.Json
 
@@ -27,7 +28,7 @@ type ValidationPackageIndex =
         ) = 
             ValidationPackageIndex.create(
                 repoPath = repoPath,
-                name = repoPath.Split("/").[1],
+                name = Path.GetFileNameWithoutExtension(repoPath),
                 lastUpdated = lastUpdated
             )
 
@@ -74,3 +75,6 @@ type GitHubAPI =
         |> fun json -> (json?content).GetString()
         |> fun content -> Convert.FromBase64String(content)
         |> fun bytes -> Encoding.UTF8.GetString(bytes)
+
+    static member downloadPackageScript (packageIndex: ValidationPackageIndex, ?Token: string) =
+        GitHubAPI.downloadPackageScript(packageIndex.RepoPath, ?Token = Token)

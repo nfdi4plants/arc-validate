@@ -28,7 +28,7 @@ type ARCValidationPackage =
             ARCValidationPackage.create(
                 name = packageIndex.Name,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), packageIndex.Name)
+                localPath = (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), $"{packageIndex.Name}.fsx").Replace("\\","/"))
             )
 
 

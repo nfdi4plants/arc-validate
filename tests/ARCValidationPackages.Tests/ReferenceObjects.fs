@@ -26,7 +26,7 @@ let testPackageIndex =
     [|
         ValidationPackageIndex.create(
             repoPath = "arc-validate-packages/test.fsx", 
-            name = "test.fsx",
+            name = "test",
             lastUpdated = testDate1
         )
     |]
@@ -44,17 +44,23 @@ printfn \"Hello, world!\"".ReplaceLineEndings()
 
 let testValidationPackage1 =
     ARCValidationPackage.create(
-        "test.fsx",
+        "test",
         testDate1,
         (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
     )
 
 let testValidationPackage2 =
     ARCValidationPackage.create(
-        "test.fsx",
+        "test",
         testDate2,
         (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
     )
 
 let testPackageCache1 = PackageCache([testValidationPackage1.Name, testValidationPackage1])
 let testPackageCache2 = PackageCache([testValidationPackage1.Name, testValidationPackage2])
+
+let testScriptPath = "fixtures/testScript.fsx"
+let testScriptArgsPath = "fixtures/testScriptArgs.fsx"
+
+let testScriptPackage = ARCValidationPackage.create("testScript", testDate1, testScriptPath)
+let testScriptArgsPackage = ARCValidationPackage.create("testScriptArgs", testDate1, testScriptArgsPath)
