@@ -46,14 +46,14 @@ let testValidationPackage1 =
     ARCValidationPackage.create(
         "test",
         testDate1,
-        (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
+        (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx").Replace("\\","/"))
     )
 
 let testValidationPackage2 =
     ARCValidationPackage.create(
         "test",
         testDate2,
-        (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
+        (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx").Replace("\\","/"))
     )
 
 let testPackageCache1 = PackageCache([testValidationPackage1.Name, testValidationPackage1])

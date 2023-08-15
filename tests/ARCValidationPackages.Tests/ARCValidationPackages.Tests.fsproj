@@ -7,17 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="fixtures\**" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Include="fixtures\**" CopyToOutputDirectory="Always"/>
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="DefaultsTests.fs" />
     <Compile Include="GitHubAPITests.fs" />
     <Compile Include="ARCValidationPackageTests.fs" />
     <Compile Include="PackageCacheTests.fs" />
     <Compile Include="ConfigTests.fs" />
-    <Compile Include="Sample.fs" />
+    <Compile Include="ScriptExecutionTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
@@ -28,6 +25,4 @@
     <ProjectReference Include="..\..\src\ARCValidationPackages\ARCValidationPackages.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.*" />
   </ItemGroup>
-
-  <ItemGroup />
 </Project>

@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fake.DotNet.Fsi" Version="[6.0.0]" />
+    <PackageReference Include="Fake.DotNet.Cli" Version="[6.0.0]" />
     <PackageReference Include="FsHttp" Version="[11.0.0]" />
   </ItemGroup>
 
