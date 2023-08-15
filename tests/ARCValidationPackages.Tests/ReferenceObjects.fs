@@ -17,11 +17,14 @@ if Directory.Exists(expected_config_folder_path) then Directory.Delete(expected_
 if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
 
 let testDate = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
+let testDate2 = System.DateTimeOffset.ParseExact("2023-08-15 11:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 
 let testPackageIndex = 
     [|
         ValidationPackageIndex.create(
-            "arc-validate-packages/test.fsx", testDate
+            repoPath = "arc-validate-packages/test.fsx", 
+            name = "test.fsx",
+            lastUpdated = testDate
         )
     |]
 
@@ -35,3 +38,17 @@ let testConfig =
 
 let testScriptContent = "// this file is intended for testing purposes only.
 printfn \"Hello, world!\"".ReplaceLineEndings()
+
+let testValidationPackage1 =
+    ARCValidationPackage.create(
+        "test.fsx",
+        testDate,
+        (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
+    )
+
+let testValidationPackage2 =
+    ARCValidationPackage.create(
+        "test.fsx",
+        testDate2,
+        (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
+    )

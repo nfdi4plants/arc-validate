@@ -7,10 +7,29 @@ open System.Text.Json
 
 type ValidationPackageIndex =
     {
-        Name: string
+        RepoPath: string
+        Name:string
         LastUpdated: System.DateTimeOffset
     } with
-        static member create (name: string, lastUpdated: System.DateTimeOffset) = { Name = name; LastUpdated = lastUpdated }
+        static member create (
+            repoPath: string, 
+            name: string, 
+            lastUpdated: System.DateTimeOffset
+        ) = 
+            { 
+                RepoPath = repoPath 
+                Name = name
+                LastUpdated = lastUpdated 
+            }
+        static member create (
+            repoPath: string, 
+            lastUpdated: System.DateTimeOffset
+        ) = 
+            ValidationPackageIndex.create(
+                repoPath = repoPath,
+                name = repoPath.Split("/").[1],
+                lastUpdated = lastUpdated
+            )
 
 type GitHubAPI =
     static member getRepositoryContent(

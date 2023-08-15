@@ -1,4 +1,4 @@
-﻿module GiHubAPITests
+﻿module GitHubAPITests
 
 open Expecto
 open ARCValidationPackages

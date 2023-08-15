@@ -13,7 +13,7 @@
   <ItemGroup>
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="DefaultsTests.fs" />
-    <Compile Include="GiHubAPITests.fs" />
+    <Compile Include="GitHubAPITests.fs" />
     <Compile Include="ARCValidationPackageTests.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="Sample.fs" />
