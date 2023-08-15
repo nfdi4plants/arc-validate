@@ -24,6 +24,20 @@
           "FSharp.Core": "[6.0.7]"
         }
       },
+      "ARCTokenization": {
+        "type": "Direct",
+        "requested": "[0.2.0, 0.2.0]",
+        "resolved": "0.2.0",
+        "contentHash": "7KIW8se25S7ybOQ9wdEUbLlu7tW7bdEFNuuDaDwb/rGjpRMXMr1WOZ4yefuBIoYhIjghBv+6SK/NjDX5zA7FPw==",
+        "dependencies": {
+          "ControlledVocabulary": "[0.0.0, 1.0.0)",
+          "FSharp.Core": "6.0.7",
+          "FSharpAux.Core": "[2.0.0]",
+          "FsOboParser": "[0.1.0]",
+          "FsSpreadsheet": "[3.1.1]",
+          "FsSpreadsheet.ExcelIO": "[3.1.1]"
+        }
+      },
       "Argu": {
         "type": "Direct",
         "requested": "[6.1.1, 6.1.1]",
@@ -130,6 +144,15 @@
           "FSharp.Core": "4.3.4"
         }
       },
+      "ControlledVocabulary": {
+        "type": "Transitive",
+        "resolved": "0.2.0",
+        "contentHash": "W3rp/JypWPlJmXIGLYDoxVWwWwF3tYWgrh45BY2kXy61byJmQQKsOdAu/aMc9Ko37iOwCdAahlC0FVZkubp/9Q==",
+        "dependencies": {
+          "FSharp.Core": "6.0.7",
+          "FSharpAux.Core": "[2.0.0]"
+        }
+      },
       "DocumentFormat.OpenXml": {
         "type": "Transitive",
         "resolved": "2.12.3",
@@ -180,6 +203,15 @@
         "dependencies": {
           "FSharp.Core": "5.0.0",
           "System.Text.Json": "5.0.0"
+        }
+      },
+      "FsOboParser": {
+        "type": "Transitive",
+        "resolved": "0.1.0",
+        "contentHash": "xe5bQB+HXA+sauov0ZZlDVrkVFKBM+m8S7clP04d1SqOkuPDkgum5k5g5bOZNoDVP9WEu0YaNSkR31CS2RwENQ==",
+        "dependencies": {
+          "FSharp.Core": "6.0.7",
+          "ISADotNet": "0.6.1"
         }
       },
       "ISADotNet.QueryModel": {
