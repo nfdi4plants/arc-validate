@@ -15,6 +15,7 @@
     <Compile Include="DefaultsTests.fs" />
     <Compile Include="GitHubAPITests.fs" />
     <Compile Include="ARCValidationPackageTests.fs" />
+    <Compile Include="PackageCacheTests.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />

@@ -16,7 +16,7 @@ if Directory.Exists(expected_config_folder_path) then Directory.Delete(expected_
 // ensure that the config file does not exist before running tests
 if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
 
-let testDate = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
+let testDate1 = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 let testDate2 = System.DateTimeOffset.ParseExact("2023-08-15 11:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 
 let testPackageIndex = 
@@ -24,14 +24,14 @@ let testPackageIndex =
         ValidationPackageIndex.create(
             repoPath = "arc-validate-packages/test.fsx", 
             name = "test.fsx",
-            lastUpdated = testDate
+            lastUpdated = testDate1
         )
     |]
 
 let testConfig =
     Config.create(
         testPackageIndex,
-        testDate,
+        testDate1,
         Defaults.PACKAGE_CACHE_FOLDER(),
         Defaults.CONFIG_FILE_PATH()
     )
@@ -42,7 +42,7 @@ printfn \"Hello, world!\"".ReplaceLineEndings()
 let testValidationPackage1 =
     ARCValidationPackage.create(
         "test.fsx",
-        testDate,
+        testDate1,
         (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
     )
 
@@ -52,3 +52,6 @@ let testValidationPackage2 =
         testDate2,
         (Path.Combine(Defaults.PACKAGE_CACHE_FOLDER(), "test.fsx"))
     )
+
+let testPackageCache1 = PackageCache([testValidationPackage1.Name, testValidationPackage1])
+let testPackageCache2 = PackageCache([testValidationPackage1.Name, testValidationPackage2])
