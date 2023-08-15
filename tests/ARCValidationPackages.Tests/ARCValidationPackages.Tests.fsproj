@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="fixtures\**" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Remove="fixtures\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="DefaultsTests.fs" />
+    <Compile Include="GiHubAPITests.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />
@@ -23,7 +27,5 @@
     <PackageReference Update="FSharp.Core" Version="6.*" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="fixtures\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

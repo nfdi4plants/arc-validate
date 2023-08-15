@@ -32,3 +32,6 @@ let testConfig =
         Defaults.PACKAGE_CACHE_FOLDER(),
         Defaults.CONFIG_FILE_PATH()
     )
+
+let testScriptContent = "// this file is intended for testing purposes only.
+printfn \"Hello, world!\"".ReplaceLineEndings()
