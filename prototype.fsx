@@ -38,12 +38,26 @@ let performTest test =
         }
 
 
-// small crappy crap
 
-let noImp = raise <| System.NotImplementedException()
+type Relation = 
+    | IsA of string
+    | PartOf of string
+    | HasA of string
+    | Follows of string
+    | Custom of string * string
 
+let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
+paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
+let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
+
+let graph = FGraph.empty<int*string,CvParam,Relation list>
+
+cvparamse
+|> List.iteri (
+    fun i p -> FGraph.addNode (i, CvBase.getCvName p) p graph
+)
 
 
 
