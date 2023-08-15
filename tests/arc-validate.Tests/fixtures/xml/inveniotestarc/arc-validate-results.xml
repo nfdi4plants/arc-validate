@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+    <testsuite name="arc-validate">
+        <testcase name="[ Critical; Filesystem; arcFolder ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; InvestigationFile ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; StudiesFolder ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
+        <testcase name="[ Critical; Filesystem; Git; gitFolder ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Title ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Description ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Contacts ]" time="0.002" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; Last name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Affiliation ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Email address ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; First name ]" time="0.001" />
+        <testcase name="[ Critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; Last name ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person1 [Lukas Weil]; ORCID ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person2 [Marcel Tschoepe]; ORCID ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person3 [Testington TestMan]; ORCID ]" time="0.001" />
+        <testcase name="[ Non-critical; ISA; Semantic; Investigation; Person; Person4 [Tiesto TestWoman]; ORCID ]" time="0.001" />
+    </testsuite>
+</testsuites>
