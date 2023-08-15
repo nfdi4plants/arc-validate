@@ -7,6 +7,8 @@ open System.IO
 
 let config = Config.initDefault()
 
+config |> Config.write
+
 let cache = PackageCache()
 
 config.PackageIndex[2]

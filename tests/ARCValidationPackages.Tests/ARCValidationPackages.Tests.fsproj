@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="DefaultsTests.fs" />
+    <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <Compile Include="ReferenceObjects.fs" />
+    <Compile Include="DefaultsTests.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />
@@ -20,5 +21,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
     <ProjectReference Include="..\..\src\ARCValidationPackages\ARCValidationPackages.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="fixtures\" />
   </ItemGroup>
 </Project>

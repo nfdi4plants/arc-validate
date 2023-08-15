@@ -40,7 +40,7 @@ module Defaults =
         path
 
     let CONFIG_FILE_PATH () = 
-        Path.Combine(CONFIG_FOLDER(), "arc-validation-packages.config")
+        Path.Combine(CONFIG_FOLDER(), "packages-config.json")
             .Replace("\\", "/")
 
     let SERIALIZATION_OPTIONS =  JsonSerializerOptions(WriteIndented = true)
