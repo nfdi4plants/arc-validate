@@ -14,8 +14,10 @@ let expected_config_file_path = Path.Combine(expected_config_folder_path, "packa
 
 // remove any existing config folder for running tests
 if Directory.Exists(expected_config_folder_path) then Directory.Delete(expected_config_folder_path, true)
-// ensure that the config file does not exist before running tests
+if Directory.Exists(expected_package_cache_folder_path) then Directory.Delete(expected_package_cache_folder_path, true)
+// ensure that these file do not exist before running tests
 if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
+if File.Exists(expected_package_cache_file_path) then File.Delete(expected_package_cache_file_path)
 
 let testDate1 = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 let testDate2 = System.DateTimeOffset.ParseExact("2023-08-15 11:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)

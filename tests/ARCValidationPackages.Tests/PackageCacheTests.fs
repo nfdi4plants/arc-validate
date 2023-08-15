@@ -50,13 +50,14 @@ let tests =
 
             test "can write json" {
                 testPackageCache1 |> PackageCache.write()
-                Expect.isTrue (File.Exists(expected_package_cache_file_path)) "config file was not created"
+                Expect.isTrue (File.Exists(expected_package_cache_file_path)) "package cache file was not created"
             }
 
             test "can read json" {
                 Expect.sequenceEqual 
                     (PackageCache.read())
                     testPackageCache1
+                    "package cache file was not read correctly"
             }
         ]
     )
