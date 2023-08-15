@@ -1,6 +1,8 @@
 ﻿namespace ARCValidationPackages
 
 open System.Collections.Generic
+open System.IO
+open System.Text.Json
 
 type PackageCache =
     inherit Dictionary<string, ARCValidationPackage>
@@ -24,13 +26,11 @@ type PackageCache =
         cache.Remove(name) |> ignore
         cache
 
-    static member write (path: string) (cache: PackageCache) =
-        // to-do:
-        // - convert to json and write to file
-        raise (System.NotImplementedException())
-
     static member read (path: string) =
-        // to-do:
-        // - load cache from json file in cache location
-        // - init object with loaded values
-        raise (System.NotImplementedException())
+        path
+        |> File.ReadAllText
+        |> fun jsonString -> JsonSerializer.Deserialize<PackageCache>(jsonString, Defaults.SERIALIZATION_OPTIONS)
+
+    static member write (path: string) (cache: PackageCache) =
+        JsonSerializer.Serialize(cache, Defaults.SERIALIZATION_OPTIONS)
+        |> fun json -> File.WriteAllText(path, json)
