@@ -9,6 +9,7 @@ let application_data_path = Environment.GetFolderPath(SpecialFolder.ApplicationD
 
 let expected_config_folder_path = Path.Combine(application_data_path, "nfdi4plants/arc-validate").Replace("\\", "/")
 let expected_package_cache_folder_path = Path.Combine(expected_config_folder_path, "arc-validation-packages-cache").Replace("\\", "/")
+let expected_package_cache_file_path = Path.Combine(expected_package_cache_folder_path, "packages-cache.json").Replace("\\", "/")
 let expected_config_file_path = Path.Combine(expected_config_folder_path, "packages-config.json").Replace("\\", "/")
 
 // remove any existing config folder for running tests

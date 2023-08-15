@@ -39,7 +39,7 @@ let ``Config tests`` =
                     "package cache folder path does not exist"
             }
             test "can write json" {
-                testConfig |> Config.write
+                testConfig |> Config.write()
                 Expect.isTrue (File.Exists(expected_config_file_path)) "config file was not created"
             }
             test "can read json" {

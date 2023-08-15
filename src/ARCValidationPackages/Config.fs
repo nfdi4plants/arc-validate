@@ -29,11 +29,14 @@ type Config = {
             configFilePath = Defaults.CONFIG_FILE_PATH()
         )
 
-    static member read (path: string) =
+    static member read (?Path: string) =
+        let path = defaultArg Path (Defaults.CONFIG_FILE_PATH())
         path
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<Config>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
-    static member write (config: Config) =
-        JsonSerializer.Serialize(config, Defaults.SERIALIZATION_OPTIONS)
-        |> fun json -> File.WriteAllText(config.ConfigFilePath, json)
+    static member write (?Path: string) =
+        fun (config: Config) ->
+            let path = defaultArg Path config.ConfigFilePath
+            JsonSerializer.Serialize(config, Defaults.SERIALIZATION_OPTIONS)
+            |> fun json -> File.WriteAllText(config.ConfigFilePath, json)

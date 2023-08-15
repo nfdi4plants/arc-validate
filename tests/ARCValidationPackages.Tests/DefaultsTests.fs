@@ -23,6 +23,12 @@ let ``Defaults tests`` =
                     (Directory.Exists(expected_config_folder_path))
                     "config folder path does not exist"
             }
+            test "config file path is correct" {
+                Expect.equal 
+                    (Defaults.CONFIG_FILE_PATH()) 
+                    expected_config_file_path
+                    "config file path is not correct"
+            }
             test "package cache folder path is correct" {
                 Expect.equal 
                     (Defaults.PACKAGE_CACHE_FOLDER()) 
@@ -34,10 +40,10 @@ let ``Defaults tests`` =
                     (Directory.Exists(expected_package_cache_folder_path))
                     "package cache folder path does not exist"
             }
-            test "config file path is correct" {
+            test "package cache file path is correct" {
                 Expect.equal 
-                    (Defaults.CONFIG_FILE_PATH()) 
-                    expected_config_file_path
+                    (Defaults.PACKAGE_CACHE_FILE_PATH()) 
+                    expected_package_cache_file_path
                     "config file path is not correct"
             }
         ]

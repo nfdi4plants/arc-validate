@@ -32,6 +32,10 @@ module Defaults =
         Directory.CreateDirectory(path) |> ignore
         path
 
+    let CONFIG_FILE_PATH () = 
+        Path.Combine(CONFIG_FOLDER(), "packages-config.json")
+            .Replace("\\", "/")
+
     let PACKAGE_CACHE_FOLDER () = 
         let path = 
             Path.Combine(CONFIG_FOLDER(), "arc-validation-packages-cache")
@@ -39,8 +43,8 @@ module Defaults =
         Directory.CreateDirectory(path) |> ignore
         path
 
-    let CONFIG_FILE_PATH () = 
-        Path.Combine(CONFIG_FOLDER(), "packages-config.json")
+    let PACKAGE_CACHE_FILE_PATH () = 
+        Path.Combine(PACKAGE_CACHE_FOLDER(), "packages-cache.json")
             .Replace("\\", "/")
 
     let SERIALIZATION_OPTIONS =  JsonSerializerOptions(WriteIndented = true)

@@ -51,11 +51,15 @@ type PackageCache =
         cache.Remove(name) |> ignore
         cache
 
-    static member read (path: string) =
+    static member read (?Path: string) =
+        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
         path
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<PackageCache>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
-    static member write (path: string) (cache: PackageCache) =
-        JsonSerializer.Serialize(cache, Defaults.SERIALIZATION_OPTIONS)
-        |> fun json -> File.WriteAllText(path, json)
+
+    static member write (?Path: string) =
+        fun (cache: PackageCache) ->
+            let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+            JsonSerializer.Serialize(cache, Defaults.SERIALIZATION_OPTIONS)
+            |> fun json -> File.WriteAllText(path, json)
