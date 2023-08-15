@@ -6,7 +6,9 @@ let project = "arc-validate"
 
 let testProjects = 
     [
-        "tests/ValidatorTests.fsproj"
+        "tests/ARCValidation.Tests/ARCValidation.Tests.fsproj"
+        "tests/ARCValidationPackages.Tests/ARCValidationPackages.Tests.fsproj"
+        "tests/arc-validate.Tests/arc-validate.Tests.fsproj"
     ]
 
 let solutionFile  = $"{project}.sln"

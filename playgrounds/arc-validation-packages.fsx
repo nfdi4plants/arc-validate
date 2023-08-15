@@ -5,15 +5,20 @@
 open ARCValidationPackages
 open System.IO
 
-let c = Config.initDefault()
+let config = Config.initDefault()
 
-c.PackageIndex[2]
+let cache = PackageCache()
+
+config.PackageIndex[2]
 |> fun i ->
     let script = GitHubAPI.downloadPackageScript(i.Name)
 
-    let scriptPath = Path.Combine(c.PackageCacheFolder, $"""{i.Name.Split("/")[0]}.fsx""")
+    let scriptPath = Path.Combine(config.PackageCacheFolder, $"""{i.Name.Split("/")[1]}""")
+
+    let name = Path.GetFileNameWithoutExtension(scriptPath)
+
+    cache.Add(name, ARCValidationPackage.create(i.Name, i.LastUpdated, scriptPath))
 
     File.WriteAllText(scriptPath, script)
 
-Defaults.PACKAGE_CACHE_FOLDER()
-Directory.Exists(Defaults.PACKAGE_CACHE_FOLDER())
+cache

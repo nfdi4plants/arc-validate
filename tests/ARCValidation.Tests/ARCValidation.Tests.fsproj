@@ -7,13 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="JUnit.fs" />
-    <Compile Include="ReferenceObjects.fs" />
-    <Compile Include="APITests\InternalUtilsTests.fs" />
-    <Compile Include="APITests\ExpectoExtensions.fs" />
-    <Compile Include="APITests\PathConfig.fs" />
-    <Compile Include="CLITests\CLITests.fs" />
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Remove="CLITests\**" />
+    <Compile Include="InternalUtilsTests.fs" />
+    <Compile Include="ExpectoExtensions.fs" />
+    <Compile Include="PathConfig.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
@@ -21,8 +19,7 @@
     <PackageReference Include="Expecto" Version="9.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-    <ProjectReference Include="..\src\arc-validate\arc-validate.fsproj" />
-    <ProjectReference Include="..\src\ArcValidation\ArcValidation.fsproj" />
+    <ProjectReference Include="..\..\src\ArcValidation\ArcValidation.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.*" />
   </ItemGroup>
 </Project>

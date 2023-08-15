@@ -1,4 +1,4 @@
-﻿module APITests.PathConfig
+﻿module PathConfigTests
 
 open ArcValidation
 open ArcValidation.Configs
@@ -14,7 +14,7 @@ let normalizePath (path: string) = path.Replace("\\","/")
 
 [<Tests>]
 let ``PathConfig tests`` =
-    testList "APITests.PathConfig" [
+    testList "PathConfig" [
         yield! testFixture (pathFixture "/arcs/test/path") [
             "PathConfig.ArcRootPath"       , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.ArcRootPath       ) "/arcs/test/path" "ArcRootPath was incorrect")
             "PathConfig.StudiesPath"       , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.StudiesPath       ) "/arcs/test/path/studies" "StudiesPath was incorrect")
