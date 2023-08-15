@@ -10,8 +10,8 @@
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <EmbeddedResource Remove="CLITests\**" />
     <Compile Include="InternalUtilsTests.fs" />
-    <Compile Include="ExpectoExtensions.fs" />
-    <Compile Include="PathConfig.fs" />
+    <Compile Include="ExpectoExtensionsTests.fs" />
+    <Compile Include="PathConfigTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 

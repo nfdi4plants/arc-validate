@@ -27,7 +27,7 @@ module Defaults =
                 SpecialFolderOption.Create
             )
             |> fun path -> 
-                Path.Combine(path, "arc-validate")
+                Path.Combine(path, "nfdi4plants/arc-validate")
                     .Replace("\\", "/")
         Directory.CreateDirectory(path) |> ignore
         path
