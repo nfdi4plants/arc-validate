@@ -13,6 +13,7 @@ open FSharpAux
 //open ArcValidation.OntologyHelperFunctions
 //open ArcValidation.ErrorMessage
 open Graphoscope
+open FsOboParser
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -40,11 +41,10 @@ let performTest test =
 
 
 type Relation = 
-    | IsA of string
-    | PartOf of string
-    | HasA of string
-    | Follows of string
-    | Custom of string * string
+    | IsA = 1
+    | PartOf = 2
+    | HasA = 4
+    | Follows = 8
 
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
@@ -52,12 +52,71 @@ paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List
 
 let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
 
-let graph = FGraph.empty<int*string,CvParam,Relation list>
+let fromCvParamList cvpList =
+    cvpList
+    |> List.mapi (
+        fun i cvp ->
+            (i,CvBase.getCvName cvp), cvp
+    )
+    |> FGraph.createFromNodes<int*string,CvParam,Relation> 
 
-cvparamse
-|> List.iteri (
-    fun i p -> FGraph.addNode (i, CvBase.getCvName p) p graph
-)
+let invesGraph = fromCvParamList cvparamse
+
+let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
+
+let pattern = Regex @"^(?<relName>.+) (?<id>.+:\d+)$"
+
+let r = pattern.Match "part_of INVMSO:00000082"
+r.Groups["relName"]
+let r2 = pattern.Match "hjhejdkckjdsaö"
+r2.Groups["relName"].Value
+
+
+/// Takes a relationship and returns a tuple consisting of the name of the relationship and the ID of the OboTerm it matches.
+let deconstructRelationship relationship =
+    let pattern = Regex @"^(?<relName>.+) (?<id>.+:\d+)$"
+    let regexMatch = pattern.Match relationship
+    regexMatch.Groups["relName"].Value, regexMatch.Groups["id"].Value
+
+deconstructRelationship "hjhejdkckjdsaö"
+deconstructRelationship "part_of INVMSO:00000082"
+
+/// Takes an OboTerm and returns its relationships as a triple consisting of the input term's ID, the name of the relationship, and the related term's ID.
+let getRelatedTermIds (term : OboTerm) =
+    term.Relationships
+    |> List.map (
+        deconstructRelationship
+        >> fun (r,tId) -> term.Id, r, tId
+    )
+
+getRelatedTermIds obo.Terms[1]
+
+let getRelatedTerms (ontology : OboOntology) (term : OboTerm) =
+    term.Relationships
+    |> List.map (
+        deconstructRelationship
+        >> fun (r,tId) -> 
+            term, 
+            r, 
+            ontology.Terms
+            |> List.tryFind (
+                fun t -> t.Id = tId
+            )
+    )
+
+getRelatedTerms obo obo.Terms[1]
+
+
+
+let relations =
+    cvparamse
+    |> List.map (
+        //CvBase.getCvName
+        CvBase.getCvAccession
+        >> fun tan ->
+            obo.Terms
+            |> List.
+    )
 
 
 

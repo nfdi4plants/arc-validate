@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="OboGraph.fs" />
     <Compile Include="ArcGraph.fs" />
     <Compile Include="InternalUtils.fs" />
     <Compile Include="ExpectoExtensions.fs" />
