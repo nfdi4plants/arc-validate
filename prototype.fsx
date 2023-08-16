@@ -48,11 +48,20 @@ type Relation =
     | HasA = 4
     | Follows = 8
 
-let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+//let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
 paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
-let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
+//let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
+let cvparamse = 
+    paramse 
+    |> List.map (
+        fun p -> 
+            match CvParam.tryCvParam p with
+            | Some cvp -> cvp
+            | None -> CvParam(p.ID, p.Name, p.RefUri, p.Value, p :?> CvAttributeCollection)
+    )
 
 let fromCvParamList cvpList =
     cvpList
