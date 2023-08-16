@@ -48,6 +48,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds", "{7994D526-5B21-4EBD-9CCB-EFA04EE303CF}"
 	ProjectSection(SolutionItems) = preProject
 		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
+		argu.fsx = argu.fsx
 		codeGeneratorScripting.fsx = codeGeneratorScripting.fsx
 		errorClassesStatic.fsx = errorClassesStatic.fsx
 		expectoPlayground.fsx = expectoPlayground.fsx
