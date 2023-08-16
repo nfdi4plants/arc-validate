@@ -10,14 +10,14 @@ open Fake.Tools.Git
 
 let ensureArcFixtures = BuildTask.create "EnsureArcFixtures" [] {
     let arcFixtures = [
-        "tests/fixtures/arcs/inveniotestarc"
+        "tests/arc-validate.Tests/fixtures/arcs/inveniotestarc"
     ]
     arcFixtures
     |> List.iter (fun arcPath ->
         if not (Directory.Exists(arcPath)) then 
-            printfn $"cloning {arcPath}"
             Directory.CreateDirectory(arcPath) |> ignore
-            Repository.clone "tests/fixtures/arcs" "https://github.com/nfdi4plants/invenio-test-arc" "inveniotestarc"
+            printfn $"cloning {arcPath}"
+            Repository.clone "tests/arc-validate.Tests/fixtures/arcs" "https://github.com/nfdi4plants/invenio-test-arc" "inveniotestarc"
     )
 }
 
