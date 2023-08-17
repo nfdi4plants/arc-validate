@@ -1,20 +1,25 @@
-﻿module ARCValidate
+﻿module Main
 
 open Expecto
 open Argu
 open System.IO
 open ArcValidation
 open ArcValidation.Configs
-open ExitCodes
 
+open ARCValidate
+open ARCValidate.CLIArguments
+open ARCValidate.CLICommands
 
 [<EntryPoint>]
 let main argv =
+
+    let parser = ArcValidateCommand.createParser()
+
     try
-        let args = CLIArgs.cliArgParser.ParseCommandLine()
+        let args = parser.ParseCommandLine()
 
         let arcConfig = 
-            args.TryGetResult(CLIArgs.ARC_Directory)
+            args.TryGetResult(ARC_Directory)
             |> Option.defaultValue (System.Environment.GetEnvironmentVariable("ARC_PATH")) // default to ARC_PATH if argument is not provided
             |> fun s -> if System.String.IsNullOrWhiteSpace(s) then System.Environment.CurrentDirectory else s // default to ./ if ARC_PATH is not set
             |> fun s -> ArcConfig(s)
