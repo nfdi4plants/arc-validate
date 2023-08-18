@@ -2,20 +2,20 @@
 open Argu
 
 type PackageInstallArgs = 
-    | [<Last; ExactlyOnce; MainCommand>] Pakage of package_name:string
+    | [<Last; ExactlyOnce; MainCommand>] Package of package_name:string
 
     interface IArgParserTemplate with
         member s.Usage =
             match s with
-            | Pakage _        -> "name of the validation package to install"
+            | Package _        -> "name of the validation package to install"
 
 type PackageUninstallArgs = 
-    | [<Last; ExactlyOnce; MainCommand>] Pakage of package_name:string
+    | [<Last; ExactlyOnce; MainCommand>] Package of package_name:string
 
     interface IArgParserTemplate with
         member s.Usage =
             match s with
-            | Pakage _        -> "name of the validation package to uninstall"
+            | Package _        -> "name of the validation package to uninstall"
 
 type PackageListArgs = 
     | [<AltCommandLine("-i"); Unique>] Installed
