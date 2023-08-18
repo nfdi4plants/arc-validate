@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Results.fs" />
     <Compile Include="Defaults.fs" />
     <Compile Include="GitHubAPI.fs" />
     <Compile Include="ArcValidationPackage.fs" />
     <Compile Include="PackageCache.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="ScriptExecution.fs" />
+    <Compile Include="TopLevelAPI.fs" />
   </ItemGroup>
 
   <ItemGroup>
