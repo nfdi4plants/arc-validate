@@ -42,12 +42,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{66A8015E-565
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 		.github\workflows\pipeline.yml = .github\workflows\pipeline.yml
-		.github\workflows\test-on-v2.yml = .github\workflows\test-on-v2.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds", "{7994D526-5B21-4EBD-9CCB-EFA04EE303CF}"
 	ProjectSection(SolutionItems) = preProject
 		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
+		playgrounds\argu.fsx = playgrounds\argu.fsx
 		codeGeneratorScripting.fsx = codeGeneratorScripting.fsx
 		errorClassesStatic.fsx = errorClassesStatic.fsx
 		expectoPlayground.fsx = expectoPlayground.fsx
