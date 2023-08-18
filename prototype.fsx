@@ -5,6 +5,7 @@
 #r "nuget: Expecto"
 #r "nuget: FSharpAux"
 #r "nuget: Graphoscope"
+#r "nuget: Cyjs.NET"
 
 open Expecto
 open ControlledVocabulary
@@ -14,6 +15,7 @@ open FSharpAux
 //open ArcValidation.ErrorMessage
 open Graphoscope
 open FsOboParser
+open Cyjs.NET
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -50,7 +52,7 @@ let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repo
 
 paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
-let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
+let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
 
 let fromCvParamList cvpList =
     cvpList
@@ -60,36 +62,21 @@ let fromCvParamList cvpList =
     )
     |> FGraph.createFromNodes<int*string,CvParam,Relation> 
 
-let invesGraph = fromCvParamList cvparamse
+let invesContentGraph = fromCvParamList cvparamse
 
 let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
 
-let pattern = Regex @"^(?<relName>.+) (?<id>.+:\d+)$"
-
-let r = pattern.Match "part_of INVMSO:00000082"
-r.Groups["relName"]
-let r2 = pattern.Match "hjhejdkckjdsaö"
-r2.Groups["relName"].Value
-
-
-/// Takes a relationship and returns a tuple consisting of the name of the relationship and the ID of the OboTerm it matches.
 let deconstructRelationship relationship =
     let pattern = Regex @"^(?<relName>.+) (?<id>.+:\d+)$"
     let regexMatch = pattern.Match relationship
     regexMatch.Groups["relName"].Value, regexMatch.Groups["id"].Value
 
-deconstructRelationship "hjhejdkckjdsaö"
-deconstructRelationship "part_of INVMSO:00000082"
-
-/// Takes an OboTerm and returns its relationships as a triple consisting of the input term's ID, the name of the relationship, and the related term's ID.
 let getRelatedTermIds (term : OboTerm) =
     term.Relationships
     |> List.map (
         deconstructRelationship
         >> fun (r,tId) -> term.Id, r, tId
     )
-
-getRelatedTermIds obo.Terms[1]
 
 let getRelatedTerms (ontology : OboOntology) (term : OboTerm) =
     term.Relationships
@@ -104,7 +91,78 @@ let getRelatedTerms (ontology : OboOntology) (term : OboTerm) =
             )
     )
 
-getRelatedTerms obo obo.Terms[1]
+
+
+let tans = cvparamse |> List.map CvParam.getCvAccession
+
+let assTerms = tans |> List.choose (fun tan -> obo.Terms |> List.tryFind (fun term -> term.Id = tan))
+//assTerms |> List.fold (fun acc y -> acc && Option.isSome y) true
+
+let assTermsRelships = assTerms |> List.collect (getRelatedTerms obo)
+
+let toRelation relationship =
+    match relationship with
+    | "part_of" -> Relation.PartOf
+    | "is_a" -> Relation.IsA
+    | "has_a" -> Relation.HasA
+    | "follows" -> Relation.Follows
+    | "follws" -> Relation.Follows      // delete later
+    | _ -> failwith $"Relationship {relationship} is no supported Relation."
+
+toRelation "part_of" + toRelation "has_a" + toRelation "follows"
+toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
+
+let assTermsRels = assTermsRelships |> List.map (fun (o1,rs,o2) -> o1, toRelation rs, o2)
+
+invesContentGraph.Keys |> Seq.head
+invesContentGraph.Values |> Seq.head
+
+
+//let vizGraph =
+//    CyGraph.initEmpty ()
+//    |> CyGraph.withElements [
+//            //for (sk,s,tk,t,el) in (FGraph.toSeq invesContentGraph) do
+//            for (sk,s,tk,t,el) in (FGraph.toSeq spaßGraph) do
+//                let sk, tk = (string sk), (string tk)
+//                yield Elements.node sk [ CyParam.label s ]
+//                yield Elements.node tk [ CyParam.label t ]
+//                yield Elements.edge  (sprintf "%s_%s" sk tk) sk tk [ CyParam.label el ]
+//        ]
+//    |> CyGraph.withStyle "node"     
+//        [
+//            CyParam.content =. CyParam.label
+//            CyParam.color "#A00975"
+//        ]
+
+let toNodeCyGraph (fGraph : FGraph<_,_,_>) =
+    CyGraph.initEmpty ()
+    |> CyGraph.withElements (
+            //for (sk,s,tk,t,el) in (FGraph.toSeq invesContentGraph) do
+            let nks = fGraph.Keys |> List.ofSeq
+            let nls = fGraph.Values |> Seq.toList |> List.map (fun (i,s,o) -> s.ToString())
+            List.zip nks nls
+            |> List.map (fun (nk,nl) -> Elements.node (string nk) [CyParam.label nl])
+        )
+    |> CyGraph.withStyle "node"     
+        [
+            CyParam.content =. CyParam.label
+            CyParam.color "#A00975"
+        ]
+
+CyGraph.initEmpty ()
+|> CyGraph.withElements (
+        //for (sk,s,tk,t,el) in (FGraph.toSeq invesContentGraph) do
+        let nks = invesContentGraph.Keys |> List.ofSeq
+        let nls = invesContentGraph.Values |> Seq.toList |> List.map (fun (i,s,o) -> s.ToString())
+        List.zip nks nls
+        |> List.map (fun (nk,nl) -> Elements.node (string nk) [CyParam.label $"{fst nk}, {snd nk}"])
+    )
+|> CyGraph.withStyle "node"     
+    [
+        CyParam.content =. CyParam.label
+        CyParam.color "#A00975"
+    ]
+|> CyGraph.show
 
 
 
@@ -115,7 +173,9 @@ let relations =
         CvBase.getCvAccession
         >> fun tan ->
             obo.Terms
-            |> List.
+            |> List.map (
+                getRelatedTerms obo
+            )
     )
 
 
