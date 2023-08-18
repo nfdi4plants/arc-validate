@@ -26,11 +26,3 @@ type PackageListArgs =
             match s with
             | Installed     -> "list installed packages from the package cache"
             | Indexed       -> "list indexed packages from the cached package index"
-
-type IndexArgs = 
-    | [<Last; AltCommandLine("-u"); ExactlyOnce;>] Update
-
-    interface IArgParserTemplate with
-        member s.Usage =
-            match s with
-            | Update     -> "update the package index"

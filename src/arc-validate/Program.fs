@@ -6,14 +6,13 @@ open System.IO
 open ArcValidation
 open ArcValidation.Configs
 
+open LegacyArgs
 open ARCValidate
-open ARCValidate.CLIArguments
-open ARCValidate.CLICommands
 
 [<EntryPoint>]
 let main argv =
 
-    let parser = ArcValidateCommand.createParser()
+    let parser = legacyArgParser
 
     try
         let args = parser.ParseCommandLine()
@@ -25,10 +24,10 @@ let main argv =
             |> fun s -> ArcConfig(s)
 
         let outPath = 
-            args.TryGetResult(CLIArgs.Out_Directory)
+            args.TryGetResult(LegacyArgs.Out_Directory)
             |> Option.defaultValue arcConfig.PathConfig.ArcRootPath
 
-        let verbose = args.TryGetResult(CLIArgs.Verbose).IsSome
+        let verbose = args.TryGetResult(LegacyArgs.Verbose).IsSome
 
         /// these tests MUST pass for an ARC to be considered for publishing
         let criticalTests =
@@ -69,7 +68,7 @@ let main argv =
         | :? ArguParseException as ex ->
             match ex.ErrorCode with
             | ErrorCode.HelpText  -> 
-                printfn "%s" (CLIArgs.cliArgParser.PrintUsage())
+                printfn "%s" (LegacyArgs.legacyArgParser.PrintUsage())
                 ExitCode.Success |> int // printing usage is not an error
 
             | ErrorCode.CommandLine ->

@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CLIArgs\LegacyArgs.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
-    <Compile Include="Commands\ValidateCommand.fs" />
     <Compile Include="Commands\PackageCommand.fs" />
     <Compile Include="Commands\ArcValidateCommand.fs" />
+    <Compile Include="APIs\PackageAPI.fs" />
+    <Compile Include="APIs\ValidateAPI.fs" />
+    <Compile Include="APIs\ARCValidateAPI.fs" />
+    <Compile Include="CommandHandling.fs.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="Program.fs" />    
   </ItemGroup>
@@ -22,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" />
     <ProjectReference Include="..\ArcValidation\ArcValidation.fsproj" />
   </ItemGroup>
 
