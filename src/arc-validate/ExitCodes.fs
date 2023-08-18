@@ -1,5 +1,5 @@
 ﻿namespace ARCValidate
-
+open ARCValidationPackages.Errors
 /// Enum to model different exit codes to be returned by the cli tool.
 [<Struct>]
 type ExitCode =
@@ -9,5 +9,5 @@ type ExitCode =
     | CriticalTestFailure = 1
     /// Argu returned an argument parsing error.
     | ArgParseError = 2
-    /// Other internal errors happened.
+    /// Misc internal errors happened.
     | InternalError = 3
