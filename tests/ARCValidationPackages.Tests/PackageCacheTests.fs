@@ -22,7 +22,7 @@ let tests =
                 Expect.sequenceEqual 
                     (
                         PackageCache()
-                        |> PackageCache.addOfPackageIndex(testPackageIndex[0], testDate1)
+                        |> PackageCache.cachePackageOfIndex(testPackageIndex[0], testDate1)
                     )
                     testPackageCache1
                     "ARCValidationPackage was not added to the PackageCache correctly."
