@@ -11,9 +11,10 @@ module Errors =
     | PackageNotFound of package: string
     | DownloadError of package: string * msg: string
 
-    type PackageAPIError =
-        | UpdateIndexError of UpdateIndexError
-        | PackageInstallError of PackageInstallError
+    type PackageUninstallError =
+    | PackageNotInstalled of msg: string
+    | IOError of msg: string
+
 
 module API = 
 
@@ -88,3 +89,42 @@ module API =
         else    
             // package does not exists on the local index
             Error (PackageNotFound packageName)
+
+    let uninstallPackage (verbose: bool) (config: Config) (cache: PackageCache) (packageName: string) : Result<string, PackageUninstallError> = 
+
+        if verbose then printfn $"uninstalling package {packageName}..."
+        if cache.ContainsKey(packageName) then
+            if verbose then printfn $"package {packageName} is installed. removing..."
+            let package = cache.[packageName]
+            try
+                if verbose then printfn $"removing {package.LocalPath}..."
+                File.Delete(package.LocalPath)
+                cache
+                |> PackageCache.removePackage packageName
+                |> PackageCache.write()
+                Ok ($"uninstalled package {packageName} from {package.LocalPath}")
+            with e ->
+                if verbose then printfn $"failed to remove {package.LocalPath}: {e.Message}"
+                Error (IOError e.Message)
+        else
+            if verbose then printfn $"package {packageName} is not installed."
+            Error (PackageNotInstalled packageName)
+
+    let listCachedPackages (verbose: bool) (cache: PackageCache) : Result<ARCValidationPackage list, string> = 
+        try
+            cache 
+            |> PackageCache.getPackages
+            |> Ok
+        
+        with e ->
+            Error e.Message
+
+    let listIndexedPackages (verbose: bool) (config: Config) : Result<ValidationPackageIndex list, string> = 
+        try
+            config.PackageIndex
+            |> Array.toList
+            |> Ok
+        
+        with e ->
+            Error e.Message
+

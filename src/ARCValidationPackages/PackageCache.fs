@@ -23,6 +23,9 @@ type PackageCache =
     static member getPackage (name: string) (cache: PackageCache) =
         cache[name]
 
+    static member getPackages (cache: PackageCache) =
+        cache.Values |> Seq.toList
+
     static member tryGetPackage (name: string) (cache: PackageCache) =
         if cache.ContainsKey(name) then Some cache[name] else None
 
