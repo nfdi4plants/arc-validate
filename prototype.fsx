@@ -6,6 +6,7 @@
 #r "nuget: FSharpAux"
 #r "nuget: Graphoscope"
 #r "nuget: Cyjs.NET"
+#r "nuget: FsOboParser"
 
 open Expecto
 open ControlledVocabulary
@@ -16,6 +17,7 @@ open FSharpAux
 open Graphoscope
 open FsOboParser
 open Cyjs.NET
+open FsOboParser
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -54,60 +56,34 @@ let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repo
 paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
 //let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
-let cvparamse = 
-    paramse 
-    |> List.map (
-        fun p -> 
-            match CvParam.tryCvParam p with
-            | Some cvp -> cvp
-            | None -> CvParam(p.ID, p.Name, p.RefUri, p.Value, p :?> CvAttributeCollection)
-    )
+//let cvparamse = 
+//    paramse 
+//    |> List.map (
+//        fun p -> 
+//            match CvParam.tryCvParam p with
+//            | Some cvp -> cvp
+//            | None -> CvParam(p.ID, p.Name, p.RefUri, p.Value, p :?> CvAttributeCollection)
+//    )
+let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
 
-let fromCvParamList cvpList =
-    cvpList
-    |> List.mapi (
-        fun i cvp ->
-            (i,CvBase.getCvName cvp), cvp
-    )
-    |> FGraph.createFromNodes<int*string,CvParam,Relation> 
+//let fromCvParamList cvpList =
+//    cvpList
+//    |> List.mapi (
+//        fun i cvp ->
+//            (i,CvBase.getCvName cvp), cvp
+//    )
+//    |> FGraph.createFromNodes<int*string,CvParam,Relation> 
 
-let invesContentGraph = fromCvParamList cvparamse
+//let invesContentGraph = fromCvParamList cvparamse
 
 let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
 
-let deconstructRelationship relationship =
-    let pattern = Regex @"^(?<relName>.+) (?<id>.+:\d+)$"
-    let regexMatch = pattern.Match relationship
-    regexMatch.Groups["relName"].Value, regexMatch.Groups["id"].Value
+//let tans = cvparamse |> List.map CvParam.getCvAccession
 
-let getRelatedTermIds (term : OboTerm) =
-    term.Relationships
-    |> List.map (
-        deconstructRelationship
-        >> fun (r,tId) -> term.Id, r, tId
-    )
-
-let getRelatedTerms (ontology : OboOntology) (term : OboTerm) =
-    term.Relationships
-    |> List.map (
-        deconstructRelationship
-        >> fun (r,tId) -> 
-            term, 
-            r, 
-            ontology.Terms
-            |> List.tryFind (
-                fun t -> t.Id = tId
-            )
-    )
-
-
-
-let tans = cvparamse |> List.map CvParam.getCvAccession
-
-let assTerms = tans |> List.choose (fun tan -> obo.Terms |> List.tryFind (fun term -> term.Id = tan))
+//let assTerms = tans |> List.choose (fun tan -> obo.Terms |> List.tryFind (fun term -> term.Id = tan))
 //assTerms |> List.fold (fun acc y -> acc && Option.isSome y) true
 
-let assTermsRelships = assTerms |> List.collect (getRelatedTerms obo)
+//let assTermsRelships = assTerms |> List.collect (fun x -> OboOntology.getRelatedTerms x obo)
 
 let toRelation relationship =
     match relationship with
@@ -118,14 +94,90 @@ let toRelation relationship =
     | "follws" -> Relation.Follows      // delete later
     | _ -> failwith $"Relationship {relationship} is no supported Relation."
 
-toRelation "part_of" + toRelation "has_a" + toRelation "follows"
-toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
+//toRelation "part_of" + toRelation "has_a" + toRelation "follows"
+//toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
 
-let assTermsRels = assTermsRelships |> List.map (fun (o1,rs,o2) -> o1, toRelation rs, o2)
+//let assTermsRels = assTermsRelships |> List.map (fun (o1,rs,o2) -> o1, toRelation rs, o2)
 
-invesContentGraph.Keys |> Seq.head
-invesContentGraph.Values |> Seq.head
+//invesContentGraph.Keys |> Seq.head
+//invesContentGraph.Values |> Seq.head
 
+let getRelatedTermByRelation relation term onto =
+    OboOntology.getRelatedTerms term onto 
+    |> List.choose (
+        fun (term1,relationship,term2) -> 
+            if toRelation relationship = relation then
+                term2
+            else None
+    )
+
+let getOboTerm onto (cvp : CvParam) =
+    onto.Terms |> List.find (fun term -> term.Id = cvp.Accession)
+
+let tryGetOboTerm onto (cvp : CvParam) =
+    onto.Terms |> List.tryFind (fun term -> term.Id = cvp.Accession)
+
+let toNodeCyGraph (fGraph : FGraph<_,_,_>) =
+    CyGraph.initEmpty ()
+    |> CyGraph.withElements (
+            let nks = fGraph.Keys |> List.ofSeq
+            let nls = fGraph.Values |> Seq.toList |> List.map (fun (i,s,o) -> s.ToString())
+            List.zip nks nls
+            |> List.map (fun (nk,nl) -> Elements.node (string nk) [CyParam.label nl])
+        )
+    |> CyGraph.withStyle "node"     
+        [
+            CyParam.content =. CyParam.label
+            CyParam.color "#A00975"
+        ]
+
+let toFullCyGraph (fGraph : FGraph<int*string,CvParam,Relation>) =
+    CyGraph.initEmpty ()
+    |> CyGraph.withElements [
+            for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq fGraph do
+                let nk1s = sprintf "%i, %s" (fst nk1) (snd nk1)
+                let nk2s = sprintf "%i, %s" (fst nk2) (snd nk2)
+                Elements.node nk1s [CyParam.label nd1.Name]
+                Elements.node nk2s [CyParam.label nd2.Name]
+                Elements.edge (sprintf "%s_%s" nk1s nk2s) nk1s nk2s [CyParam.label <| e.ToString()]
+        ]
+    |> CyGraph.withStyle "node"     
+        [
+            CyParam.content =. CyParam.label
+            CyParam.color "#A00975"
+        ]
+
+
+
+
+let constructFollowsGraph onto cvps =
+    let rec loop inputList (collList : CvParam list) failedList i graph =
+        match inputList with
+        | h1 :: t1 ->
+            match collList with
+            | [] -> loop t1 (h1 :: collList) failedList i graph
+            | h2 :: t2 ->
+                let cvpTerm = onto.Terms |> List.find (fun term -> term.Id = h1.Accession)
+                let relatedTerms = getRelatedTermByRelation Relation.Follows cvpTerm onto
+                if relatedTerms.Length = 0 then
+                    //loop inputList t2 (h2 :: failedList) i graph      // maybe in some cases correct? investigate!
+                    loop inputList t2 failedList i graph
+                elif relatedTerms |> List.tryFind (fun rt -> rt.Id = h2.Accession) |> Option.isSome then
+                    FGraph.addElement (i + 1,h1.Name) h1 (i,h2.Name) h2 Relation.Follows graph
+                    |> loop inputList t2 failedList (i + 1)
+                else
+                    loop inputList t2 (h2 :: failedList) i graph
+        | [] -> graph, failedList
+    loop cvps [] [] 0 FGraph.empty<int*string,CvParam,Relation>
+
+let resGraph, faileds = constructFollowsGraph obo (cvparamse |> List.filter (fun cvp -> cvp.GetAttribute("Column") |> Param.getValue = 1))
+//toFullCyGraph resGraph |> CyGraph.show
+
+
+for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq resGraph do
+    let nk1s = sprintf "%i, %s" (fst nk1) (snd nk1)
+    let nk2s = sprintf "%i, %s" (fst nk2) (snd nk2)
+    printfn "%s ---%A---> %s" nk1s e nk2s
 
 //let vizGraph =
 //    CyGraph.initEmpty ()
@@ -174,18 +226,6 @@ CyGraph.initEmpty ()
 |> CyGraph.show
 
 
-
-let relations =
-    cvparamse
-    |> List.map (
-        //CvBase.getCvName
-        CvBase.getCvAccession
-        >> fun tan ->
-            obo.Terms
-            |> List.map (
-                getRelatedTerms obo
-            )
-    )
 
 
 
