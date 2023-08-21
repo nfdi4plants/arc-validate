@@ -6,7 +6,7 @@
 #r "nuget: FSharpAux"
 #r "nuget: Graphoscope"
 #r "nuget: Cyjs.NET"
-#r "nuget: FsOboParser"
+#r "nuget: FsOboParser, 0.3.0"
 
 open Expecto
 open ControlledVocabulary
@@ -17,7 +17,6 @@ open FSharpAux
 open Graphoscope
 open FsOboParser
 open Cyjs.NET
-open FsOboParser
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -50,8 +49,8 @@ type Relation =
     | HasA = 4
     | Follows = 8
 
-//let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
-let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+//let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
 paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
@@ -101,6 +100,43 @@ let toRelation relationship =
 
 //invesContentGraph.Keys |> Seq.head
 //invesContentGraph.Values |> Seq.head
+
+
+let ontologyToGraph onto =
+    let outputGraph = FGraph.empty<string,OboTerm,Relation>
+    OboOntology.getRelations onto
+    |> List.fold (
+        fun (acc : TermRelation<Relation> list) e ->
+            match e with
+            | Empty t -> 
+                printfn "Term %s is empty" t.Id
+                acc
+            | TargetMissing (r,t) -> 
+                printfn "Term %s with relation %s has no target term" t.Id r
+                acc
+            | Target (r,ss,tt) ->
+                if acc |> List.exists (fun (Target (r2,ss2,tt2)) -> ss2 = ss && tt2 = tt) then
+                    acc
+                else e :: acc
+    ) []
+    //|> List.iter (
+    //    fun tr ->
+    //        match tr with
+    //        | Empty t -> printfn "Term %s is empty" t.Id
+    //        | TargetMissing (r,t) -> ()
+    //        | Target (r,st,tt) -> 
+    //            FGraph.addElement st.Id st tt.Id tt (toRelation r) outputGraph
+    //            |> ignore
+    //)
+    //outputGraph
+
+let res = ontologyToGraph obo
+
+let testG = FGraph.empty<int,string,string>
+FGraph.addElement 1 "node1" 2 "node2" "rel" testG
+FGraph.addElement 1 "node1" 2 "node2" "rel2" testG
+
+
 
 let getRelatedTermByRelation relation term onto =
     OboOntology.getRelatedTerms term onto 
