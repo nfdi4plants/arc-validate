@@ -149,6 +149,7 @@ let toFullCyGraph (fGraph : FGraph<int*string,CvParam,Relation>) =
 
 
 
+// building the follows graph
 
 let constructFollowsGraph onto cvps =
     let rec loop inputList (collList : CvParam list) failedList i graph =
@@ -167,7 +168,7 @@ let constructFollowsGraph onto cvps =
                     |> loop inputList t2 failedList (i + 1)
                 else
                     loop inputList t2 (h2 :: failedList) i graph
-        | [] -> graph, failedList
+        | [] -> graph, List.rev failedList
     loop cvps [] [] 0 FGraph.empty<int*string,CvParam,Relation>
 
 let resGraph, faileds = constructFollowsGraph obo (cvparamse |> List.filter (fun cvp -> cvp.GetAttribute("Column") |> Param.getValue = 1))
@@ -177,55 +178,29 @@ let resGraph, faileds = constructFollowsGraph obo (cvparamse |> List.filter (fun
 for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq resGraph do
     let nk1s = sprintf "%i, %s" (fst nk1) (snd nk1)
     let nk2s = sprintf "%i, %s" (fst nk2) (snd nk2)
-    printfn "%s ---%A---> %s" nk1s e nk2s
+    printfn "Rows%i->%i   %s ---%A---> %s" (nd1.GetAttribute "Row" |> Param.getValueAsInt) (nd2.GetAttribute "Row" |> Param.getValueAsInt) nk1s e nk2s
 
-//let vizGraph =
-//    CyGraph.initEmpty ()
-//    |> CyGraph.withElements [
-//            //for (sk,s,tk,t,el) in (FGraph.toSeq invesContentGraph) do
-//            for (sk,s,tk,t,el) in (FGraph.toSeq spaßGraph) do
-//                let sk, tk = (string sk), (string tk)
-//                yield Elements.node sk [ CyParam.label s ]
-//                yield Elements.node tk [ CyParam.label t ]
-//                yield Elements.edge  (sprintf "%s_%s" sk tk) sk tk [ CyParam.label el ]
-//        ]
-//    |> CyGraph.withStyle "node"     
-//        [
-//            CyParam.content =. CyParam.label
-//            CyParam.color "#A00975"
-//        ]
-
-let toNodeCyGraph (fGraph : FGraph<_,_,_>) =
-    CyGraph.initEmpty ()
-    |> CyGraph.withElements (
-            //for (sk,s,tk,t,el) in (FGraph.toSeq invesContentGraph) do
-            let nks = fGraph.Keys |> List.ofSeq
-            let nls = fGraph.Values |> Seq.toList |> List.map (fun (i,s,o) -> s.ToString())
-            List.zip nks nls
-            |> List.map (fun (nk,nl) -> Elements.node (string nk) [CyParam.label nl])
-        )
-    |> CyGraph.withStyle "node"     
-        [
-            CyParam.content =. CyParam.label
-            CyParam.color "#A00975"
-        ]
-
-CyGraph.initEmpty ()
-|> CyGraph.withElements (
-        //for (sk,s,tk,t,el) in (FGraph.toSeq invesContentGraph) do
-        let nks = invesContentGraph.Keys |> List.ofSeq
-        let nls = invesContentGraph.Values |> Seq.toList |> List.map (fun (i,s,o) -> s.ToString())
-        List.zip nks nls
-        |> List.map (fun (nk,nl) -> Elements.node (string nk) [CyParam.label $"{fst nk}, {snd nk}"])
-    )
-|> CyGraph.withStyle "node"     
-    [
-        CyParam.content =. CyParam.label
-        CyParam.color "#A00975"
-    ]
-|> CyGraph.show
+faileds |> List.iter (fun cvp -> printfn "Row%i   %s" (cvp.GetAttribute "Row" |> Param.getValueAsInt) cvp.Name)
 
 
+// building the part_of graph
+
+let paramsCtcs = Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly.xlsx"
+
+let cvpsCtcs = paramsCtcs |> List.map (Param.tryCvParam >> Option.get)
+
+// look for what is next follows term. if 
+// - it matches + has same part_of: connect it to previous
+// - it does not match but is same follows + same part_of: put to collList
+// - it does not match + has not same part_of: 
+
+let constructPartOfGraph onto cvps =
+    let rec loop inputList (collList : CvParam list) i graph =
+        match inputList with
+        | h1 :: t1 ->
+            match collList with
+            | [] -> loop t1 (h1 :: collList) i graph
+    loop cvps [] 0 FGraph.empty<int*string,CvParam,Relation>
 
 
 
