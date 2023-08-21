@@ -43,7 +43,8 @@ let performTest test =
 
 
 
-type Relation = 
+[<System.Flags>]
+type ArcRelation = 
     | IsA = 1
     | PartOf = 2
     | HasA = 4
@@ -84,14 +85,13 @@ let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
 
 //let assTermsRelships = assTerms |> List.collect (fun x -> OboOntology.getRelatedTerms x obo)
 
-let toRelation relationship =
+let toArcRelation relationship =
     match relationship with
-    | "part_of" -> Relation.PartOf
-    | "is_a" -> Relation.IsA
-    | "has_a" -> Relation.HasA
-    | "follows" -> Relation.Follows
-    | "follws" -> Relation.Follows      // delete later
-    | _ -> failwith $"Relationship {relationship} is no supported Relation."
+    | "part_of" -> ArcRelation.PartOf
+    | "is_a" -> ArcRelation.IsA
+    | "has_a" -> ArcRelation.HasA
+    | "follows" -> ArcRelation.Follows
+    | _ -> failwith $"Relationship {relationship} is no supported ArcRelation."
 
 //toRelation "part_of" + toRelation "has_a" + toRelation "follows"
 //toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
@@ -102,40 +102,43 @@ let toRelation relationship =
 //invesContentGraph.Values |> Seq.head
 
 
-let ontologyToGraph onto =
-    let outputGraph = FGraph.empty<string,OboTerm,Relation>
+let tryToArcRelation termRelation =
+    match termRelation with
+    | Empty t -> None
+    | TargetMissing (r,t) -> None
+    | Target (r,st,tt) -> Some (toArcRelation r,st,tt)
+
+let ontologyToFGraph onto =
     OboOntology.getRelations onto
-    |> List.fold (
-        fun (acc : TermRelation<Relation> list) e ->
-            match e with
-            | Empty t -> 
-                printfn "Term %s is empty" t.Id
-                acc
-            | TargetMissing (r,t) -> 
-                printfn "Term %s with relation %s has no target term" t.Id r
-                acc
-            | Target (r,ss,tt) ->
-                if acc |> List.exists (fun (Target (r2,ss2,tt2)) -> ss2 = ss && tt2 = tt) then
-                    acc
-                else e :: acc
-    ) []
-    //|> List.iter (
-    //    fun tr ->
-    //        match tr with
-    //        | Empty t -> printfn "Term %s is empty" t.Id
-    //        | TargetMissing (r,t) -> ()
-    //        | Target (r,st,tt) -> 
-    //            FGraph.addElement st.Id st tt.Id tt (toRelation r) outputGraph
-    //            |> ignore
-    //)
-    //outputGraph
+    |> Seq.choose tryToArcRelation
+    |> Seq.groupBy (
+        fun (r,st,tt) -> 
+            st, tt
+    )
+    |> Seq.map (
+        fun (k,v) -> 
+            v 
+            |> Seq.reduce (
+                fun (ar1,st1,tt1) (ar2,st2,tt2) -> 
+                    ar1 + ar2, st1, tt1
+            )
+    )
+    |> Seq.fold (
+        fun acc (ar,st,tt) -> 
+            FGraph.addElement st.Id st tt.Id tt ar acc
+    ) FGraph.empty<string,OboTerm,ArcRelation>
 
-let res = ontologyToGraph obo
+let res = ontologyToFGraph obo
 
-let testG = FGraph.empty<int,string,string>
-FGraph.addElement 1 "node1" 2 "node2" "rel" testG
-FGraph.addElement 1 "node1" 2 "node2" "rel2" testG
+for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq res do
+    let nk1s = sprintf "%s" nd1.Name
+    let nk2s = sprintf "%s" nd2.Name
+    printfn "%s ---%A---> %s" nk1s e nk2s
 
+ArcRelation.Follows ||| ArcRelation.PartOf
+
+
+//[<System.Flags>] type ArcRelation = | IsA = 1 | PartOf = 2 | HasA = 4 | Follows = 8;; let toArcRelation relationship = match relationship with | "part_of" -> ArcRelation.PartOf | "is_a" -> ArcRelation.IsA | "has_a" -> ArcRelation.HasA | "follows" -> ArcRelation.Follows | _ -> failwith $"Relationship {relationship} is no supported ArcRelation.";; let tryToArcRelation termRelation = match termRelation with | Empty t -> None | TargetMissing (r,t) -> None | Target (r,st,tt) -> Some (toArcRelation r,st,tt);; let ontologyToFGraph onto = OboOntology.getRelations onto |> Seq.choose tryToArcRelation |> Seq.groupBy (fun (r,st,tt) -> st, tt) |> Seq.map (fun (k,v) -> v |> Seq.reduce (fun (ar1,st1,tt1) (ar2,st2,tt2) -> ar1 + ar2, st1, tt1)) |> Seq.fold (fun acc (ar,st,tt) -> FGraph.addElement st.Id st tt.Id tt ar acc) FGraph.empty<string,OboTerm,ArcRelation>
 
 
 let getRelatedTermByRelation relation term onto =
