@@ -49,6 +49,7 @@ type ArcRelation =
     | PartOf = 2
     | HasA = 4
     | Follows = 8
+    | Unknown = 16
 
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 //let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
@@ -91,7 +92,8 @@ let toArcRelation relationship =
     | "is_a" -> ArcRelation.IsA
     | "has_a" -> ArcRelation.HasA
     | "follows" -> ArcRelation.Follows
-    | _ -> failwith $"Relationship {relationship} is no supported ArcRelation."
+    //| _ -> failwith $"Relationship {relationship} is no supported ArcRelation."
+    | _ -> ArcRelation.Unknown
 
 //toRelation "part_of" + toRelation "has_a" + toRelation "follows"
 //toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
@@ -135,10 +137,37 @@ for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq res do
     let nk2s = sprintf "%s" nd2.Name
     printfn "%s ---%A---> %s" nk1s e nk2s
 
-ArcRelation.Follows ||| ArcRelation.PartOf
+
+let e = FContext.successors res[cvparamse.Head.Accession]
+e |> Seq.head
+
+let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    FContext.successors graph[cvp.Accession]
+
+let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
+    cvp1.Accession  = cvp2.Accession &&
+    cvp1.Name       = cvp2.Name &&
+    cvp1.RefUri     = cvp2.RefUri &&
+    cvp1.Value      = cvp2.Value &&
+    cvp1.Attributes = cvp2.Attributes   // careful bc of Dictionary! Comment out if necessary!
+
+let paramEmpty = UserParam("", ParamValue.Value "") :> IParam
+let cvpEmpty = CvParam("", "", "", ParamValue.Value "", Dictionary<string,IParam>() |> fun x -> x.Add("lil", paramEmpty); x)
+let cvpEmpty2= CvParam("", "", "", ParamValue.Value "", Dictionary<string,IParam>() |> fun x -> x.Add("lil", paramEmpty); x)
+equalsCvp cvpEmpty cvpEmpty2
+
+let constructIsaGraph isaOntoGraph (cvParams : CvParam list) =
+    let cvpEmpty = (CvParam("", "", "", ParamValue.Value ""))
+    let rec loop inputList collList oldHead graph =
+        match inputList with
+        | h :: t ->
+            if oldHead = cvpEmpty then loop t collList h graph
+            else 
+                FGraph.findNode oldHead.Accession
+        | 
+    loop cvParams [] cvpEmpty FGraph.empty<int*string,CvParam,ArcRelation>
 
 
-//[<System.Flags>] type ArcRelation = | IsA = 1 | PartOf = 2 | HasA = 4 | Follows = 8;; let toArcRelation relationship = match relationship with | "part_of" -> ArcRelation.PartOf | "is_a" -> ArcRelation.IsA | "has_a" -> ArcRelation.HasA | "follows" -> ArcRelation.Follows | _ -> failwith $"Relationship {relationship} is no supported ArcRelation.";; let tryToArcRelation termRelation = match termRelation with | Empty t -> None | TargetMissing (r,t) -> None | Target (r,st,tt) -> Some (toArcRelation r,st,tt);; let ontologyToFGraph onto = OboOntology.getRelations onto |> Seq.choose tryToArcRelation |> Seq.groupBy (fun (r,st,tt) -> st, tt) |> Seq.map (fun (k,v) -> v |> Seq.reduce (fun (ar1,st1,tt1) (ar2,st2,tt2) -> ar1 + ar2, st1, tt1)) |> Seq.fold (fun acc (ar,st,tt) -> FGraph.addElement st.Id st tt.Id tt ar acc) FGraph.empty<string,OboTerm,ArcRelation>
 
 
 let getRelatedTermByRelation relation term onto =
@@ -170,22 +199,40 @@ let toNodeCyGraph (fGraph : FGraph<_,_,_>) =
             CyParam.color "#A00975"
         ]
 
-let toFullCyGraph (fGraph : FGraph<int*string,CvParam,Relation>) =
+toNodeCyGraph res |> CyGraph.show
+
+let toFullCyGraph (fGraph : FGraph<string,OboTerm,ArcRelation>) =
     CyGraph.initEmpty ()
     |> CyGraph.withElements [
             for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq fGraph do
-                let nk1s = sprintf "%i, %s" (fst nk1) (snd nk1)
-                let nk2s = sprintf "%i, %s" (fst nk2) (snd nk2)
+                let nk1s = sprintf "%s" nk1
+                let nk2s = sprintf "%s" nk2
                 Elements.node nk1s [CyParam.label nd1.Name]
                 Elements.node nk2s [CyParam.label nd2.Name]
-                Elements.edge (sprintf "%s_%s" nk1s nk2s) nk1s nk2s [CyParam.label <| e.ToString()]
+                Elements.edge (sprintf "%s_%s" nk1s nk2s) nk1s nk2s [
+                    CyParam.label <| e.ToString()
+                    match e with
+                    | ArcRelation.Follows -> CyParam.color "red"
+                    | ArcRelation.PartOf -> CyParam.color "blue"
+                    | x when x = ArcRelation.PartOf + ArcRelation.Follows -> CyParam.color "purple"
+                ]
         ]
     |> CyGraph.withStyle "node"     
         [
             CyParam.content =. CyParam.label
             CyParam.color "#A00975"
         ]
+    |> CyGraph.withStyle "edge"     
+        [
+            //CyParam.content =. CyParam.label
+            CyParam.Line.color =. CyParam.color
+        ]
+    |> CyGraph.withLayout (Layout.initCose <| Layout.LayoutOptions.Cose(ComponentSpacing = 40, EdgeElasticity = 100))
+    |> CyGraph.withSize(1920, 1080)
 
+toFullCyGraph res |> CyGraph.show
+
+res |> FGraph.toSeq |> Seq.map (fun )
 
 
 // building the follows graph
