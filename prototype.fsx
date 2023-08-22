@@ -51,8 +51,7 @@ type ArcRelation =
     | Follows = 8
     | Unknown = 16
 
-let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\gitlab.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
-//let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
 paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
@@ -130,19 +129,20 @@ let ontologyToFGraph onto =
             FGraph.addElement st.Id st tt.Id tt ar acc
     ) FGraph.empty<string,OboTerm,ArcRelation>
 
-let res = ontologyToFGraph obo
+let ontoGraph = ontologyToFGraph obo
 
-for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq res do
+for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq ontoGraph do
     let nk1s = sprintf "%s" nd1.Name
     let nk2s = sprintf "%s" nd2.Name
     printfn "%s ---%A---> %s" nk1s e nk2s
 
 
-let e = FContext.successors res[cvparamse.Head.Accession]
-e |> Seq.head
 
 let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
     FContext.successors graph[cvp.Accession]
+    |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
+    |> Seq.map (fun ((id,t),r) -> id, t, r)
+
 
 let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
     cvp1.Accession  = cvp2.Accession &&
@@ -151,23 +151,24 @@ let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
     cvp1.Value      = cvp2.Value &&
     cvp1.Attributes = cvp2.Attributes   // careful bc of Dictionary! Comment out if necessary!
 
-let paramEmpty = UserParam("", ParamValue.Value "") :> IParam
-let cvpEmpty = CvParam("", "", "", ParamValue.Value "", Dictionary<string,IParam>() |> fun x -> x.Add("lil", paramEmpty); x)
-let cvpEmpty2= CvParam("", "", "", ParamValue.Value "", Dictionary<string,IParam>() |> fun x -> x.Add("lil", paramEmpty); x)
-equalsCvp cvpEmpty cvpEmpty2
+
+let getFollows onto currentCvp (priorCvp : CvParam) =
+    getRelatedCvParams currentCvp onto
+    |> Seq.tryFind (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag ArcRelation.Follows)
+
+let getPartOf onto currentCvp (priorCvp : CvParam) =
+    getRelatedCvParams currentCvp onto
+    |> Seq.tryFind (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag ArcRelation.Follows)
 
 let constructIsaGraph isaOntoGraph (cvParams : CvParam list) =
-    let cvpEmpty = (CvParam("", "", "", ParamValue.Value ""))
-    let rec loop inputList collList oldHead graph =
+    let rec loop i inputList collList priorHead (graph : FGraph<int*string,CvParam,ArcRelation>) =
         match inputList with
         | h :: t ->
-            if oldHead = cvpEmpty then loop t collList h graph
-            else 
-                FGraph.findNode oldHead.Accession
-        | 
-    loop cvParams [] cvpEmpty FGraph.empty<int*string,CvParam,ArcRelation>
-
-
+            match getFollows isaOntoGraph h priorHead, getPartOf isaOntoGraph h priorHead with
+            | Some (id1,t1,r1), Some (id2,t2,r2) -> FGraph.addElement (i + 1, h.Accession) h (i, priorHead.Accession) priorHead 
+            | None, None -> loop i t (priorHead :: collList) h graph
+        | [] -> graph
+    loop 0 cvParams.Tail [] cvParams.Head FGraph.empty<int*string,CvParam,ArcRelation>
 
 
 let getRelatedTermByRelation relation term onto =
