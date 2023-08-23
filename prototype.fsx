@@ -137,7 +137,11 @@ for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq ontoGraph do
     printfn "%s ---%A---> %s" nk1s e nk2s
 
 
+// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+// Helper functions for ISA graph construction
+// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
+/// Returns all related Terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
 let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
     FContext.successors graph[cvp.Accession]
     |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
@@ -152,23 +156,126 @@ let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
     cvp1.Attributes = cvp2.Attributes   // careful bc of Dictionary! Comment out if necessary!
 
 
-let getFollows onto currentCvp (priorCvp : CvParam) =
+/// Checks is a given current CvParam has a given ArcRelation to a given prior CvParam by using a given ontology graph.
+let hasRelationTo onto (relation : ArcRelation) currentCvp (priorCvp : CvParam) =
     getRelatedCvParams currentCvp onto
-    |> Seq.tryFind (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag ArcRelation.Follows)
+    |> Seq.exists (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag relation)
 
-let getPartOf onto currentCvp (priorCvp : CvParam) =
-    getRelatedCvParams currentCvp onto
-    |> Seq.tryFind (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag ArcRelation.Follows)
+/// Checks is a given current CvParam has a follows relationship to a given prior CvParam by using a given ontology graph.
+let hasFollowsTo onto currentCvp priorCvp =
+    hasRelationTo onto ArcRelation.Follows currentCvp priorCvp
 
-let constructIsaGraph isaOntoGraph (cvParams : CvParam list) =
-    let rec loop i inputList collList priorHead (graph : FGraph<int*string,CvParam,ArcRelation>) =
+/// Checks is a given current CvParam has a part_of relationship to a given prior CvParam by using a given OboOntology.
+let hasPartOfTo onto currentCvp priorCvp =
+    hasRelationTo onto ArcRelation.PartOf currentCvp priorCvp
+
+
+/// Checks if 2 given CvParams share the same ArcRelation to the same other term.
+let equalsRelation onto (relation : ArcRelation) cvp1 cvp2 =
+    let relTermsCvp1 = getRelatedCvParams cvp1 onto |> Seq.filter (fun (id,t,r) -> r.HasFlag relation)
+    let relTermsCvp2 = getRelatedCvParams cvp2 onto |> Seq.filter (fun (id,t,r) -> r.HasFlag relation)
+    relTermsCvp1
+    |> Seq.exists (
+        fun (id1,t1,r1) -> 
+            relTermsCvp2
+            |> Seq.exists (
+                fun (id2,t2,r2) -> 
+                    t1 = t2 && r2.HasFlag relation && r1.HasFlag relation
+            )
+    )
+
+/// Checks if 2 given CvParams share the same part_of relationship to the same other term.
+let equalsPartOf onto cvp1 cvp2 =
+    equalsRelation onto ArcRelation.PartOf cvp1 cvp2
+
+/// Checks if 2 given CvParams share the same follows relationship to the same other term.
+let equalsFollows onto cvp1 cvp2 =
+    equalsRelation onto ArcRelation.Follows cvp1 cvp2
+
+//let findSectionHead onto currentCvp graph =
+//    let r = getRelatedCvParams currentCvp onto |> Seq.tryPick (fun (id,t,r) -> if r.HasFlag ArcRelation.PartOf then Some id else None)
+//    FGraph.findNode 
+
+//let getPreviousFollow cvp onto subgraph =
+//    let rt = getRelatedCvParams cvp onto |> Seq.filter (fun (id,t,r) -> r.HasFlag ArcRelation.Follows)
+
+let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
+    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =
         match inputList with
-        | h :: t ->
-            match getFollows isaOntoGraph h priorHead, getPartOf isaOntoGraph h priorHead with
-            | Some (id1,t1,r1), Some (id2,t2,r2) -> FGraph.addElement (i + 1, h.Accession) h (i, priorHead.Accession) priorHead 
-            | None, None -> loop i t (priorHead :: collList) h graph
         | [] -> graph
-    loop 0 cvParams.Tail [] cvParams.Head FGraph.empty<int*string,CvParam,ArcRelation>
+        | h :: t ->
+            if hasFollowsTo isaOntoGraph h priorHead then
+                if hasPartOfTo isaOntoGraph h priorHead then
+                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
+                    |> loop (i + 1) t collList h (i,priorHead.Accession,priorHead)
+                elif equalsPartOf isaOntoGraph h priorHead then
+                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
+                    |> loop (i + 1) t collList h sectionHeader
+                else
+                    FGraph.addElement (i + 1,collList.Head.Accession) collList.Head (sectionHeader |> fun (i,id,t) -> i,id) (sectionHeader |> fun (i,id,t) -> t) "" graph
+                    |> loop (i + 1) collList.Tail t collList.Head sectionHeader
+            elif equalsPartOf isaOntoGraph h priorHead then
+                if CvParam.equalsTerm (CvParam.getTerm h) priorHead then
+                    loop i 
+    loop iOuter cvParams.Tail [] cvParams.Head 
+
+
+
+
+
+// problem: approach too big, try working only with sections
+///// Takes an ontology graph and a list of CvParams and constructs an ISA graph from them.
+//let constructIsaGraph isaOntoGraph (cvParams : CvParam list) =
+//    let rec loop i inputList collList priorHead priorSectionHeader (graph : FGraph<int*string,CvParam,string>) =
+//        match inputList with
+//        | h :: t ->
+//            match hasFollowsTo isaOntoGraph h priorHead with
+//            | true ->
+//                match hasPartOfTo isaOntoGraph h priorHead with
+//                | true ->
+//                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
+//                    |> loop (i + 1) t collList h (i,priorHead.Accession)
+//                | false ->
+//                    match equalsPartOf isaOntoGraph h priorHead with
+//                    | true ->
+//                        FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
+//                        |> loop (i + 1) t collList h priorSectionHeader
+//                    | false ->
+//                        // go through collList and add to graph
+//                        loop i collList t 
+//            | false ->
+//                match hasPartOfTo isaOntoGraph h priorHead with
+//                | true ->
+//                    failwith $"{h.Accession} has no follows but part_of to prior head {priorHead.Accession}. This should never happen since Column 1 must be correct."
+//                | false ->
+//                    match equalsPartOf isaOntoGraph h priorHead with
+//                    | true ->
+//                        match CvParam.equalsTerm (CvParam.getTerm h) priorHead with
+//                        | true ->
+//                            loop i t (h :: collList) priorHead priorSectionHeader graph
+//                        | false ->
+//                            // get previous elements, init them empty and add them to graph
+//                    | false ->
+//                        failwith $"{h.Accession} has no follows but shares the same part_of as prior head {priorHead.Accession}. This should never happen since Column 1 must be correct"
+//        | [] -> graph
+//    loop 0 cvParams.Tail [] cvParams.Head (0,"") FGraph.empty<int*string,CvParam,string>
+
+///// Takes an ontology graph and a list of CvParams and constructs an ISA graph from them.
+//let constructIsaGraph isaOntoGraph (cvParams : CvParam list) =
+//    let rec loop i inputList collList priorHead (graph : FGraph<int*string,CvParam,ArcRelation>) =
+//        match inputList with
+//        | h :: t ->
+//            match getFollows isaOntoGraph h priorHead, getPartOf isaOntoGraph h priorHead with
+//            | Some (id1,t1,r1), Some (id2,t2,r2) -> 
+//                FGraph.addElement (i + 1, h.Accession) h (i, priorHead.Accession) priorHead r1 graph
+//                |> loop (i + 1) t collList h 
+//            | None, Some (id,t,r) -> failwith $"{h.Accession} has no follows but part_of to prior head. This should never happen since Column 1 must be correct."
+//            | Some (id,t,r), None ->
+//            | None, None -> loop i t (priorHead :: collList) h graph
+//        | [] -> graph
+//    loop 0 cvParams.Tail [] cvParams.Head FGraph.empty<int*string,CvParam,ArcRelation>
+
+// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 
 let getRelatedTermByRelation relation term onto =
