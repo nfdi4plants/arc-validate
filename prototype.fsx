@@ -199,25 +199,62 @@ let equalsFollows onto cvp1 cvp2 =
 //let getPreviousFollow cvp onto subgraph =
 //    let rt = getRelatedCvParams cvp onto |> Seq.filter (fun (id,t,r) -> r.HasFlag ArcRelation.Follows)
 
-let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
-    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =
+
+let constructSubgraph isaOntoGraph (cvParams : CvParam list) =
+    let rec loop inputList restList priorHead (graph : FGraph<string*string,CvParam,string>) =
         match inputList with
-        | [] -> graph
         | h :: t ->
-            if hasFollowsTo isaOntoGraph h priorHead then
-                if hasPartOfTo isaOntoGraph h priorHead then
-                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
-                    |> loop (i + 1) t collList h (i,priorHead.Accession,priorHead)
-                elif equalsPartOf isaOntoGraph h priorHead then
-                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
-                    |> loop (i + 1) t collList h sectionHeader
-                else
-                    FGraph.addElement (i + 1,collList.Head.Accession) collList.Head (sectionHeader |> fun (i,id,t) -> i,id) (sectionHeader |> fun (i,id,t) -> t) "" graph
-                    |> loop (i + 1) collList.Tail t collList.Head sectionHeader
-            elif equalsPartOf isaOntoGraph h priorHead then
-                if CvParam.equalsTerm (CvParam.getTerm h) priorHead then
-                    loop i 
-    loop iOuter cvParams.Tail [] cvParams.Head 
+            if hasPartOfTo isaOntoGraph h priorHead then
+                printfn $"case first term after section header: h: {h.Name}, priorHead: {priorHead.Name}"
+                loop t (priorHead :: restList) h graph
+            else
+                if equalsPartOf isaOntoGraph h priorHead then
+                    if CvParam.equalsTerm (CvParam.getTerm h) priorHead then
+                        printfn $"case same term: h: {h.Name}, priorHead: {priorHead.Name}"
+                        loop t (h :: restList) h graph
+                    else 
+                        printfn $"case new term: h: {h.Name}, priorHead: {priorHead.Name}"
+                        loop t restList h graph
+                else 
+                    printfn $"case new section header: h: {h.Name}, priorHead: {priorHead.Name}"
+                    loop (h :: restList |> List.rev |> List.tail) t (restList |> List.rev |> List.head) graph
+        | [] -> 
+            printfn "done!"
+            0
+    loop cvParams.Tail [] cvParams.Head FGraph.empty<string*string,CvParam,string>
+
+let cvpContactsSimple = 
+    Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Simple.xlsx"
+    |> List.map (Param.toCvParam)
+
+constructSubgraph ontoGraph cvpContactsSimple
+
+let cvpContactsComplex = 
+    Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
+    |> List.map (Param.toCvParam)
+
+constructSubgraph ontoGraph cvpContactsComplex
+
+
+//let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
+//    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =
+//        match inputList with
+//        | [] -> graph
+//        | h :: t ->
+//            if hasFollowsTo isaOntoGraph h priorHead then
+//                if hasPartOfTo isaOntoGraph h priorHead then
+//                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
+//                    |> loop (i + 1) t collList h (i,priorHead.Accession,priorHead)
+//                elif equalsPartOf isaOntoGraph h priorHead then
+//                    FGraph.addElement (i + 1,h.Accession) h (i,priorHead.Accession) priorHead "" graph
+//                    |> loop (i + 1) t collList h sectionHeader
+//                else
+//                    FGraph.addElement (i + 1,collList.Head.Accession) collList.Head (sectionHeader |> fun (i,id,t) -> i,id) (sectionHeader |> fun (i,id,t) -> t) "" graph
+//                    |> loop (i + 1) collList.Tail t collList.Head sectionHeader
+//            elif equalsPartOf isaOntoGraph h priorHead then
+//                if CvParam.equalsTerm (CvParam.getTerm h) priorHead then
+//                    loop i 
+//    loop iOuter cvParams.Tail [] cvParams.Head 
 
 
 
