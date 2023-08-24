@@ -131,10 +131,66 @@ let ontologyToFGraph onto =
 
 let ontoGraph = ontologyToFGraph obo
 
-for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq ontoGraph do
-    let nk1s = sprintf "%s" nd1.Name
-    let nk2s = sprintf "%s" nd2.Name
-    printfn "%s ---%A---> %s" nk1s e nk2s
+let printGraph transformFunction (graph : FGraph<_,_,_>) =
+    for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq graph do
+        let nk1s = sprintf "%s" (transformFunction nd1)
+        let nk2s = sprintf "%s" (transformFunction nd2)
+        printfn "%s ---%A---> %s" nk1s e nk2s
+
+ontoGraph |> printGraph (fun x -> x.Name)
+
+let toFullCyGraph nodeKeyTransformer nodeDataTransformer edgeTransformer (fGraph : FGraph<_,_,_>) =
+    CyGraph.initEmpty ()
+    |> CyGraph.withElements [
+            for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq fGraph do
+                let nk1s = nodeKeyTransformer nk1
+                let nk2s = nodeKeyTransformer nk2
+                Elements.node nk1s [CyParam.label <| nodeDataTransformer nd1]
+                Elements.node nk2s [CyParam.label <| nodeDataTransformer nd2]
+                Elements.edge (sprintf "%s_%s" nk1s nk2s) nk1s nk2s (edgeTransformer e)
+        ]
+    |> CyGraph.withStyle "node"     
+        [
+            CyParam.content =. CyParam.label
+            CyParam.color "#A00975"
+        ]
+    |> CyGraph.withStyle "edge"     
+        [
+            //CyParam.content =. CyParam.label
+            CyParam.Line.color =. CyParam.color
+        ]
+    |> CyGraph.withLayout (Layout.initCose <| Layout.LayoutOptions.Cose(ComponentSpacing = 40, EdgeElasticity = 100))
+    |> CyGraph.withSize(1800, 800)
+
+let ontoGraphToFullCyGraph graph =
+    toFullCyGraph 
+        (sprintf "%s") 
+        (fun (d : OboTerm) -> d.Name)
+        (fun e -> 
+            [
+                CyParam.label <| e.ToString()
+                match e with
+                | ArcRelation.Follows -> CyParam.color "red"
+                | ArcRelation.PartOf -> CyParam.color "blue"
+                | x when x = ArcRelation.PartOf + ArcRelation.Follows -> CyParam.color "purple"
+            ]
+        )
+        graph
+
+let isaGraphToFullCyGraph (graph : FGraph<int*string,CvParam,ArcRelation>) =
+    toFullCyGraph
+        (fun (h,n) -> $"{h}, {n}")
+        (fun (d : CvParam) -> $"{d.Name}: {d.Value |> ParamValue.getValueAsString}")
+        (fun e -> 
+            [
+                CyParam.label <| e.ToString()
+                match e with
+                | ArcRelation.Follows -> CyParam.color "red"
+                | ArcRelation.PartOf -> CyParam.color "blue"
+                | x when x = ArcRelation.PartOf + ArcRelation.Follows -> CyParam.color "purple"
+            ]
+        )
+        graph
 
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -199,35 +255,50 @@ let equalsFollows onto cvp1 cvp2 =
 //let getPreviousFollow cvp onto subgraph =
 //    let rt = getRelatedCvParams cvp onto |> Seq.filter (fun (id,t,r) -> r.HasFlag ArcRelation.Follows)
 
+cvparamse
+|> Seq.groupWhen (isHeader)
 
-let constructSubgraph isaOntoGraph (cvParams : CvParam list) =
-    let rec loop inputList restList priorHead (graph : FGraph<string*string,CvParam,string>) =
-        match inputList with
+let constructSubgraph isaOntology (cvParams : CvParam list) =
+    let nextToSectionHeader currentCvp priorCvp =
+        hasPartOfTo isaOntology currentCvp priorCvp
+    let sharesSection cvp1 cvp2 =
+        equalsPartOf isaOntology cvp1 cvp2
+    let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
+    let rec loop tokens stash prior parent =
+        match tokens with
         | h :: t ->
-            if hasPartOfTo isaOntoGraph h priorHead then
-                printfn $"case first term after section header: h: {h.Name}, priorHead: {priorHead.Name}"
-                loop t (priorHead :: restList) h graph
-            else
-                if equalsPartOf isaOntoGraph h priorHead then
-                    if CvParam.equalsTerm (CvParam.getTerm h) priorHead then
-                        printfn $"case same term: h: {h.Name}, priorHead: {priorHead.Name}"
-                        loop t (h :: restList) h graph
-                    else 
-                        printfn $"case new term: h: {h.Name}, priorHead: {priorHead.Name}"
-                        loop t restList h graph
-                else 
-                    printfn $"case new section header: h: {h.Name}, priorHead: {priorHead.Name}"
-                    loop (h :: restList |> List.rev |> List.tail) t (restList |> List.rev |> List.head) graph
+            printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
+            match nextToSectionHeader h prior with
+            | true ->
+                printfn $"case first term after section header: h: {h.Name}, priorHead: {prior.Name}"
+                FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
+                loop t (prior :: stash) h h
+            | false ->
+                match sharesSection h prior with
+                | true ->
+                    match CvParam.equalsTerm (CvParam.getTerm h) prior with
+                    | true ->
+                        printfn $"case same term: h: {h.Name}, priorHead: {prior.Name}"
+                        loop t (h :: stash) h parent
+                    | false ->
+                        printfn $"case new term: h: {h.Name}, priorHead: {prior.Name}"
+                        FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows |> ignore
+                        loop t stash h h
+                | false ->
+                    printfn $"case new section header: h: {h.Name}, priorHead: {prior.Name}"
+                    loop (h :: stash |> List.rev |> List.tail) t (stash |> List.rev |> List.head) parent
         | [] -> 
             printfn "done!"
-            0
-    loop cvParams.Tail [] cvParams.Head FGraph.empty<string*string,CvParam,string>
+    loop cvParams.Tail [] cvParams.Head cvParams.Head 
+    isaGraph
 
 let cvpContactsSimple = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Simple.xlsx"
     |> List.map (Param.toCvParam)
 
-constructSubgraph ontoGraph cvpContactsSimple
+let doneGraph = constructSubgraph ontoGraph cvpContactsSimple
+doneGraph |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
+doneGraph |> isaGraphToFullCyGraph |> CyGraph.show
 
 let cvpContactsComplex = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
