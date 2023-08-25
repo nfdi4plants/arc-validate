@@ -53,7 +53,7 @@ type ArcRelation =
 
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
-paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
+//paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 
 //let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
 //let cvparamse = 
@@ -177,7 +177,7 @@ let ontoGraphToFullCyGraph graph =
         )
         graph
 
-ontoGraphToFullCyGraph ontoGraph |> CyGraph.show
+//ontoGraphToFullCyGraph ontoGraph |> CyGraph.show
 
 let isaGraphToFullCyGraph (graph : FGraph<int*string,CvParam,ArcRelation>) =
     toFullCyGraph
@@ -257,9 +257,6 @@ let equalsFollows onto cvp1 cvp2 =
 //let getPreviousFollow cvp onto subgraph =
 //    let rt = getRelatedCvParams cvp onto |> Seq.filter (fun (id,t,r) -> r.HasFlag ArcRelation.Follows)
 
-cvparamse
-|> Seq.groupWhen (isHeader)
-
 /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that have no relation pointing at them.
 let getEndpoints (onto : FGraph<string,OboTerm,ArcRelation>) =
     onto.Values
@@ -268,10 +265,9 @@ let getEndpoints (onto : FGraph<string,OboTerm,ArcRelation>) =
     |> Seq.choose (fun (t,p) -> if Seq.length p = 0 then Some t else None)
 
 
-obo.Terms[2]
-getEndpoints ontoGraph |> List.ofSeq |> List.map (fun t -> t.Name)
-
-|> List.ofSeq
+//obo.Terms[2]
+//getEndpoints ontoGraph |> List.ofSeq |> List.map (fun t -> t.Name)
+//|> List.ofSeq
 
 
 /// Takes an OboTerm seq of endpoints (that is, any term without predecessors) and filters a list of CvParams where every CvParam that is an endpoint is excluded.
@@ -291,37 +287,98 @@ let deleteEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam 
 
 //deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
 
+let cvparamseNoEndpointSectionKeys = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
+
+let isHeader (ontoEndpoints : OboTerm seq) (cvp : CvParam) =
+    ontoEndpoints
+    |> Seq.exists (fun t -> t.Name = cvp.Name && t.Id = cvp.Accession)
+    |> not
+
+cvparamseNoEndpointSectionKeys
+|> Seq.groupWhen (getEndpoints ontoGraph |> isHeader)
+|> Seq.toList
+|> List.item 1
+
+// [deprecated]
+//let getFollowTerm (onto : FGraph<string,OboTerm,ArcRelation>) cvp =
+//    getRelatedCvParams cvp onto
+//    |> Seq.map (fun (id,t,r) -> r.HasFlag ArcRelation.Follows)
+
+//getFollowTerm ontoGraph cvparamse[1], cvparamse[1]
+
+
+type OboTerm with
+
+    static member toCvTerm (term : OboTerm) =
+        let ref = String.takeWhile ((<>) ':') term.Id
+        {Accession = term.Id; Name = term.Name; RefUri = ref}
+
+//OboTerm.toCvTerm (ontoGraph.Values |> Seq.head |> fun (_,t,_) -> t)
+
+//cvparamse.[1].Attributes |> Dictionary.item "Row"
+
+let createEmptyFollowsCvParam onto cvp =
+    getRelatedCvParams cvp onto
+    |> Seq.pick (
+        fun (id,t,r) -> 
+            if r.HasFlag ArcRelation.Follows then 
+                let rowParam = CvParam(Address.row, ParamValue.Value (Param.getValueAsInt cvp["Row"] - 1))
+                let colParam = CvParam(Address.column, ParamValue.Value (Param.getValueAsInt cvp["Column"]))
+                let wsParam = CvParam(Address.worksheet, ParamValue.Value (Param.getValueAsString cvp["Worksheet"]))
+                Some (CvParam(OboTerm.toCvTerm t, ParamValue.Value "", [rowParam; colParam; wsParam]))
+            else None
+    )
+
+cvparamse[7]["Column"]
+(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Column"]
+cvparamse[7]["Row"]
+(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Row"]
+cvparamse[7]["Worksheet"]
+(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Worksheet"]
+
+
+
 let constructSubgraph isaOntology (cvParams : CvParam list) =
     let nextToSectionHeader currentCvp priorCvp =
         hasPartOfTo isaOntology currentCvp priorCvp
-    let sharesSection cvp1 cvp2 =
-        equalsPartOf isaOntology cvp1 cvp2
+    let follows currentCvp priorCvp =
+        hasFollowsTo isaOntology currentCvp priorCvp
     let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
-    let rec loop tokens (stash : CvParam list) prior parent =
+    let rec loop (tokens : CvParam list) (stash : CvParam list) (prior : CvParam) parent =
         match tokens with
         | h :: t ->
-            printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
-            match nextToSectionHeader h prior with
-            | true ->
-                printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
-                FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
-                loop t (prior :: stash) h h
-            | false ->
-                match sharesSection h prior with
+            match t with
+            | [] ->
+                match stash with
+                | [] ->
+                    printfn "done via empty stash!"
+                | _ ->
+                    printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
+                    loop (h :: stash |> List.rev |> List.tail) t (stash |> List.rev |> List.head) parent
+            | _ ->
+                match follows h prior with
                 | true ->
-                    match CvParam.equalsTerm (CvParam.getTerm h) prior with
+                    printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
+                    match nextToSectionHeader h prior with
                     | true ->
-                        printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
-                        loop t (h :: stash) h parent
+                        printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
+                        FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
+                        loop t (prior :: stash) h h
                     | false ->
                         printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
                         FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows isaGraph |> ignore
                         loop t stash h h
                 | false ->
-                    printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
-                    loop (h :: stash |> List.rev |> List.tail) t (stash |> List.rev |> List.head) parent
+                    match CvParam.equalsTerm (CvParam.getTerm h) prior with
+                    | true ->
+                        printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
+                        loop t (h :: stash) h parent
+                    | false ->
+                        printfn $"case term missing: h: {h.Name}, prior: {prior.Name}"
+                        let missingTerm = createEmptyFollowsCvParam isaOntology h
+                        loop (missingTerm :: h :: t) stash prior parent
         | [] -> 
-            printfn "done!"
+            printfn "done via empty tokensList! (should not happen...)"
     loop cvParams.Tail [] cvParams.Head cvParams.Head
     isaGraph
 
@@ -329,16 +386,20 @@ let cvpContactsSimple =
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Simple.xlsx"
     |> List.map (Param.toCvParam)
 
-//let doneGraph = constructSubgraph ontoGraph cvpContactsSimple
-let doneGraph = constructSubgraph ontoGraph (getEndpoints ontoGraph |> deleteEndpointSectionKeys <| cvpContactsSimple)
-doneGraph |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
-doneGraph |> isaGraphToFullCyGraph |> CyGraph.show
+Result.Error
 
-let cvpContactsComplex = 
+//let doneGraphSimple = constructSubgraph ontoGraph cvpContactsSimple
+let doneGraphSimple = constructSubgraph ontoGraph (getEndpoints ontoGraph |> deleteEndpointSectionKeys <| cvpContactsSimple)
+doneGraphSimple |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
+doneGraphSimple |> isaGraphToFullCyGraph |> CyGraph.show
+
+let cvpContactsComplicated = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
     |> List.map (Param.toCvParam)
 
-constructSubgraph ontoGraph cvpContactsComplex
+let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicated
+doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
+doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
 
 //let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
