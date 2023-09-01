@@ -193,6 +193,7 @@ let isaGraphToFullCyGraph (graph : FGraph<int*string,CvParam,ArcRelation>) =
             ]
         )
         graph
+        |> CyGraph.withLayout(Layout.initBreadthfirst <| Layout.LayoutOptions.Cose())
 
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -287,17 +288,17 @@ let deleteEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam 
 
 //deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
 
-let cvparamseNoEndpointSectionKeys = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
+//let cvparamseNoEndpointSectionKeys = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
 
 let isHeader (ontoEndpoints : OboTerm seq) (cvp : CvParam) =
     ontoEndpoints
     |> Seq.exists (fun t -> t.Name = cvp.Name && t.Id = cvp.Accession)
     |> not
 
-cvparamseNoEndpointSectionKeys
-|> Seq.groupWhen (getEndpoints ontoGraph |> isHeader)
-|> Seq.toList
-|> List.item 1
+//cvparamseNoEndpointSectionKeys
+//|> Seq.groupWhen (getEndpoints ontoGraph |> isHeader)
+//|> Seq.toList
+//|> List.item 1
 
 // [deprecated]
 //let getFollowTerm (onto : FGraph<string,OboTerm,ArcRelation>) cvp =
@@ -329,12 +330,12 @@ let createEmptyFollowsCvParam onto cvp =
             else None
     )
 
-cvparamse[7]["Column"]
-(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Column"]
-cvparamse[7]["Row"]
-(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Row"]
-cvparamse[7]["Worksheet"]
-(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Worksheet"]
+//cvparamse[7]["Column"]
+//(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Column"]
+//cvparamse[7]["Row"]
+//(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Row"]
+//cvparamse[7]["Worksheet"]
+//(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Worksheet"]
 
 
 
