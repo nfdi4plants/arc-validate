@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ArcRelation.fs" />
     <Compile Include="OboGraph.fs" />
     <Compile Include="ArcGraph.fs" />
     <Compile Include="InternalUtils.fs" />
