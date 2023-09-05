@@ -26,16 +26,16 @@
       },
       "ARCTokenization": {
         "type": "Direct",
-        "requested": "[0.2.0, 0.2.0]",
-        "resolved": "0.2.0",
-        "contentHash": "7KIW8se25S7ybOQ9wdEUbLlu7tW7bdEFNuuDaDwb/rGjpRMXMr1WOZ4yefuBIoYhIjghBv+6SK/NjDX5zA7FPw==",
+        "requested": "[1.0.2, 1.0.2]",
+        "resolved": "1.0.2",
+        "contentHash": "/UySI1eIX8AFt+ZYvh7qCneefNxVxdPMyvtzQxMAn++D/o/LbusL3D+yFpYp+wBGzXG2CXyWKHYj4b6cjqYNBA==",
         "dependencies": {
-          "ControlledVocabulary": "[0.0.0, 1.0.0)",
+          "ControlledVocabulary": "[1.0.0, 2.0.0)",
           "FSharp.Core": "6.0.7",
           "FSharpAux.Core": "[2.0.0]",
           "FsOboParser": "[0.1.0]",
-          "FsSpreadsheet": "[3.1.1]",
-          "FsSpreadsheet.ExcelIO": "[3.1.1]"
+          "FsSpreadsheet": "[4.1.0]",
+          "FsSpreadsheet.ExcelIO": "[4.1.0]"
         }
       },
       "Argu": {
@@ -168,8 +168,8 @@
       },
       "ControlledVocabulary": {
         "type": "Transitive",
-        "resolved": "0.2.0",
-        "contentHash": "W3rp/JypWPlJmXIGLYDoxVWwWwF3tYWgrh45BY2kXy61byJmQQKsOdAu/aMc9Ko37iOwCdAahlC0FVZkubp/9Q==",
+        "resolved": "1.0.0",
+        "contentHash": "tRyXV68MFItDRAiXdnS26V406zAao/GXRRktEO94pdBWArmdlfB+CvdVBGC1v5rv9OGCxg7fteHqyJSTK6Th3A==",
         "dependencies": {
           "FSharp.Core": "6.0.7",
           "FSharpAux.Core": "[2.0.0]"

@@ -40,7 +40,7 @@
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
     <PackageReference Include="ArcGraphModel" Version="[0.1.0-preview.3]" />
     <PackageReference Include="ArcGraphModel.IO" Version="[0.1.0-preview.3]" />
-    <PackageReference Include="ARCTokenization" Version="[0.2.0]" />
+    <PackageReference Include="ARCTokenization" Version="[1.0.2]" />
     <PackageReference Include="Graphoscope" Version="[0.2.0]" />
     <PackageReference Include="FsOboParser" Version="[0.3.0]" />
   </ItemGroup>
