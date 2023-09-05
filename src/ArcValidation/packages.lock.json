@@ -83,6 +83,16 @@
           "FSharp.Core": "5.0.1"
         }
       },
+      "FsOboParser": {
+        "type": "Direct",
+        "requested": "[0.3.0, 0.3.0]",
+        "resolved": "0.3.0",
+        "contentHash": "vLXAWcQVwRTVZN0pBwujorxPRt3UTl3OFyBOR2a2SGEiyUPkzV2kdc1QbXynR4FxwmQyf0F1VxR0auS9qSxL3A==",
+        "dependencies": {
+          "FSharp.Core": "6.0.7",
+          "ISADotNet": "0.6.1"
+        }
+      },
       "FsSpreadsheet": {
         "type": "Direct",
         "requested": "[1.3.0-preview, 1.3.0-preview]",
@@ -306,15 +316,6 @@
         "dependencies": {
           "FSharp.Core": "5.0.0",
           "System.Text.Json": "5.0.0"
-        }
-      },
-      "FsOboParser": {
-        "type": "Transitive",
-        "resolved": "0.1.0",
-        "contentHash": "xe5bQB+HXA+sauov0ZZlDVrkVFKBM+m8S7clP04d1SqOkuPDkgum5k5g5bOZNoDVP9WEu0YaNSkR31CS2RwENQ==",
-        "dependencies": {
-          "FSharp.Core": "6.0.7",
-          "ISADotNet": "0.6.1"
         }
       },
       "ISADotNet.QueryModel": {
