@@ -10,6 +10,7 @@ type ArcRelation =
     | Follows = 8
     | Unknown = 16
 
+/// Functions for working with ArcRelations.
 module ArcRelation =
 
     /// Takes a relationship in the form of a string and returns the respective ArcRelation. Every relationship that cannot be represented will be returned as Unknown ArcRelation.
