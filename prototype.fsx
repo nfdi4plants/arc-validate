@@ -17,6 +17,8 @@ open FSharpAux
 open Graphoscope
 open FsOboParser
 open Cyjs.NET
+open ArcValidation
+open ArcValidation.ArcRelation
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -42,14 +44,6 @@ let performTest test =
         }
 
 
-
-[<System.Flags>]
-type ArcRelation = 
-    | IsA = 1
-    | PartOf = 2
-    | HasA = 4
-    | Follows = 8
-    | Unknown = 16
 
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
@@ -84,15 +78,6 @@ let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
 //assTerms |> List.fold (fun acc y -> acc && Option.isSome y) true
 
 //let assTermsRelships = assTerms |> List.collect (fun x -> OboOntology.getRelatedTerms x obo)
-
-let toArcRelation relationship =
-    match relationship with
-    | "part_of" -> ArcRelation.PartOf
-    | "is_a" -> ArcRelation.IsA
-    | "has_a" -> ArcRelation.HasA
-    | "follows" -> ArcRelation.Follows
-    //| _ -> failwith $"Relationship {relationship} is no supported ArcRelation."
-    | _ -> ArcRelation.Unknown
 
 //toRelation "part_of" + toRelation "has_a" + toRelation "follows"
 //toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
