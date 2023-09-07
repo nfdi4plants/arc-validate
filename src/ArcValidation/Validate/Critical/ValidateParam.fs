@@ -26,6 +26,7 @@ module Param =
                     |> Option.get 
                     |> Param.getValueAsString 
                     |> String.replace "/" "\\"
+                //printfn "elementFullpath is %s" elementFullpath
                 let subFolder =
                     match fileKind with
                     | "Protocol REF" -> "protocols"
@@ -34,9 +35,13 @@ module Param =
                         elif elementFullpath |> String.contains "\\studies\\" then "resources"
                         else ""     // empty string is not an elegant way though `Path.Combine` ignores it
                     | _ -> ""
+                //printfn "subFolder is %s" subFolder
                 let efpTrunc =
                     let i = String.findIndexBack '\\' elementFullpath
-                    elementFullpath[.. i]
+                    elementFullpath[.. i - 1]
+                //printfn "efpTrunc is %s" efpTrunc
                 Path.Combine(efpTrunc, subFolder, relFilepath)
+                |> String.replace "\\" "/"
+                //|> fun r -> printfn "assumed filepath is %s" r; r
         if File.Exists fullpath then Success
         else Error (ErrorMessage.XlsxFile.createFromCvParam filepathParam)
