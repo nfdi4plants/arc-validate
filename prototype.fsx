@@ -20,6 +20,7 @@ open Cyjs.NET
 open ArcValidation
 open ArcValidation.OboGraph
 open ArcValidation.ArcGraph
+open ArcValidation.ArcGraph.Visualization
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -143,11 +144,11 @@ let equalsFollows onto cvp1 cvp2 =
 //getFollowTerm ontoGraph cvparamse[1], cvparamse[1]
 
 // duplicate from InternalUtils
-type OboTerm with
+//type OboTerm with
 
-    static member toCvTerm (term : OboTerm) =
-        let ref = String.takeWhile ((<>) ':') term.Id
-        {Accession = term.Id; Name = term.Name; RefUri = ref}
+//    static member toCvTerm (term : OboTerm) =
+//        let ref = String.takeWhile ((<>) ':') term.Id
+//        {Accession = term.Id; Name = term.Name; RefUri = ref}
 
 //OboTerm.toCvTerm (ontoGraph.Values |> Seq.head |> fun (_,t,_) -> t)
 
