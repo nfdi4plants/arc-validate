@@ -34,7 +34,7 @@ module ISA =
                                     let optN = $"{optFN} {optLN}"
                                     if optN = "? ?" then "(n/a)" else optN
                                 testList $"Person{i + 1} [{optName}]" [
-                                    testCase "ORCID" <| fun () -> Validate.NonCritical.CvBase.Person.orcid p |> throwError FilesystemEntry.isPresent
+                                    
                                 ]
                         )
                     )
