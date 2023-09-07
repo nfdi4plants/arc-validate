@@ -48,6 +48,17 @@
           "System.Configuration.ConfigurationManager": "4.4.0"
         }
       },
+      "Cyjs.NET": {
+        "type": "Direct",
+        "requested": "[0.0.4, 0.0.4]",
+        "resolved": "0.0.4",
+        "contentHash": "1q5Wj17gi05Xz84q2Y52I8UokONnMO1yuXsfJ15x110l2s9KSWWtY2qamMAp9ucSqCHIBCs/U5YuEwqDWg7NBg==",
+        "dependencies": {
+          "DynamicObj": "0.0.3",
+          "FSharp.Core": "5.0.0",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "Expecto": {
         "type": "Direct",
         "requested": "[9.0.4, 9.0.4]",
@@ -181,6 +192,14 @@
         "contentHash": "qLww6khV25dTzGU3+9rG5vB6RbMoWuNA015151ZmazoepkvxW6/4a5u4QQASoXsZsBITsw5ZO0/Xpzm31tQ43g==",
         "dependencies": {
           "System.IO.Packaging": "4.7.0"
+        }
+      },
+      "DynamicObj": {
+        "type": "Transitive",
+        "resolved": "0.0.3",
+        "contentHash": "P1vSL2S6erqaM+8uwEM20AluKSiyBZ+45aCPpc0i/Sse+Z1+toWxp6vKzXDNgqTpvdjV3glRiYcNADggwVAYpw==",
+        "dependencies": {
+          "FSharp.Core": "5.0.0"
         }
       },
       "FSharp.Data": {
@@ -345,6 +364,11 @@
         "type": "Transitive",
         "resolved": "0.11.3",
         "contentHash": "DNYE+io5XfEE8+E+5padThTPHJARJHbz1mhbhMPNrrWGKVKKqj/KEeLvbawAmbIcT73NuxLV7itHZaYCZcVWGg=="
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "12.0.3",
+        "contentHash": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg=="
       },
       "Swate.Api": {
         "type": "Transitive",
