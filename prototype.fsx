@@ -18,7 +18,8 @@ open Graphoscope
 open FsOboParser
 open Cyjs.NET
 open ArcValidation
-open ArcValidation.ArcRelation
+open ArcValidation.OboGraph
+open ArcValidation.ArcGraph
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -87,110 +88,16 @@ let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
 //invesContentGraph.Keys |> Seq.head
 //invesContentGraph.Values |> Seq.head
 
-
-let tryToArcRelation termRelation =
-    match termRelation with
-    | Empty t -> None
-    | TargetMissing (r,t) -> None
-    | Target (r,st,tt) -> Some (toArcRelation r,st,tt)
-
-let ontologyToFGraph onto =
-    OboOntology.getRelations onto
-    |> Seq.choose tryToArcRelation
-    |> Seq.groupBy (
-        fun (r,st,tt) -> 
-            st, tt
-    )
-    |> Seq.map (
-        fun (k,v) -> 
-            v 
-            |> Seq.reduce (
-                fun (ar1,st1,tt1) (ar2,st2,tt2) -> 
-                    ar1 + ar2, st1, tt1
-            )
-    )
-    |> Seq.fold (
-        fun acc (ar,st,tt) -> 
-            FGraph.addElement st.Id st tt.Id tt ar acc
-    ) FGraph.empty<string,OboTerm,ArcRelation>
-
 let ontoGraph = ontologyToFGraph obo
-
-let printGraph transformFunction (graph : FGraph<_,_,_>) =
-    for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq graph do
-        let nk1s = sprintf "%s" (transformFunction nd1)
-        let nk2s = sprintf "%s" (transformFunction nd2)
-        printfn "%s ---%A---> %s" nk1s e nk2s
 
 //ontoGraph |> printGraph (fun x -> x.Name)
 
-let toFullCyGraph nodeKeyTransformer nodeDataTransformer edgeTransformer (fGraph : FGraph<_,_,_>) =
-    CyGraph.initEmpty ()
-    |> CyGraph.withElements [
-            for (nk1,nd1,nk2,nd2,e) in FGraph.toSeq fGraph do
-                let nk1s = nodeKeyTransformer nk1
-                let nk2s = nodeKeyTransformer nk2
-                Elements.node nk1s [CyParam.label <| nodeDataTransformer nd1]
-                Elements.node nk2s [CyParam.label <| nodeDataTransformer nd2]
-                Elements.edge (sprintf "%s_%s" nk1s nk2s) nk1s nk2s (edgeTransformer e)
-        ]
-    |> CyGraph.withStyle "node"     
-        [
-            CyParam.content =. CyParam.label
-            CyParam.color "#A00975"
-        ]
-    |> CyGraph.withStyle "edge"     
-        [
-            //CyParam.content =. CyParam.label
-            CyParam.Line.color =. CyParam.color
-        ]
-    |> CyGraph.withLayout (Layout.initCose <| Layout.LayoutOptions.Cose(ComponentSpacing = 40, EdgeElasticity = 100))
-    |> CyGraph.withSize(1800, 800)
-
-let ontoGraphToFullCyGraph graph =
-    toFullCyGraph 
-        (sprintf "%s") 
-        (fun (d : OboTerm) -> d.Name)
-        (fun e -> 
-            [
-                CyParam.label <| e.ToString()
-                match e with
-                | ArcRelation.Follows -> CyParam.color "red"
-                | ArcRelation.PartOf -> CyParam.color "blue"
-                | x when x = ArcRelation.PartOf + ArcRelation.Follows -> CyParam.color "purple"
-            ]
-        )
-        graph
-
 //ontoGraphToFullCyGraph ontoGraph |> CyGraph.show
-
-let isaGraphToFullCyGraph (graph : FGraph<int*string,CvParam,ArcRelation>) =
-    toFullCyGraph
-        (fun (h,n) -> $"{h}, {n}")
-        (fun (d : CvParam) -> $"{d.Name}: {d.Value |> ParamValue.getValueAsString}")
-        (fun e -> 
-            [
-                CyParam.label <| e.ToString()
-                match e with
-                | ArcRelation.Follows -> CyParam.color "red"
-                | ArcRelation.PartOf -> CyParam.color "blue"
-                | x when x = ArcRelation.PartOf + ArcRelation.Follows -> CyParam.color "purple"
-            ]
-        )
-        graph
-        |> CyGraph.withLayout(Layout.initBreadthfirst <| Layout.LayoutOptions.Cose())
 
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 // Helper functions for ISA graph construction
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-
-/// Returns all related Terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
-    FContext.successors graph[cvp.Accession]
-    |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
-    |> Seq.map (fun ((id,t),r) -> id, t, r)
-
 
 let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
     cvp1.Accession  = cvp2.Accession &&
@@ -198,35 +105,6 @@ let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
     cvp1.RefUri     = cvp2.RefUri &&
     cvp1.Value      = cvp2.Value &&
     cvp1.Attributes = cvp2.Attributes   // careful bc of Dictionary! Comment out if necessary!
-
-
-/// Checks is a given current CvParam has a given ArcRelation to a given prior CvParam by using a given ontology graph.
-let hasRelationTo onto (relation : ArcRelation) currentCvp (priorCvp : CvParam) =
-    getRelatedCvParams currentCvp onto
-    |> Seq.exists (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag relation)
-
-/// Checks is a given current CvParam has a follows relationship to a given prior CvParam by using a given ontology graph.
-let hasFollowsTo onto currentCvp priorCvp =
-    hasRelationTo onto ArcRelation.Follows currentCvp priorCvp
-
-/// Checks is a given current CvParam has a part_of relationship to a given prior CvParam by using a given OboOntology.
-let hasPartOfTo onto currentCvp priorCvp =
-    hasRelationTo onto ArcRelation.PartOf currentCvp priorCvp
-
-
-/// Checks if 2 given CvParams share the same ArcRelation to the same other term.
-let equalsRelation onto (relation : ArcRelation) cvp1 cvp2 =
-    let relTermsCvp1 = getRelatedCvParams cvp1 onto |> Seq.filter (fun (id,t,r) -> r.HasFlag relation)
-    let relTermsCvp2 = getRelatedCvParams cvp2 onto |> Seq.filter (fun (id,t,r) -> r.HasFlag relation)
-    relTermsCvp1
-    |> Seq.exists (
-        fun (id1,t1,r1) -> 
-            relTermsCvp2
-            |> Seq.exists (
-                fun (id2,t2,r2) -> 
-                    t1 = t2 && r2.HasFlag relation && r1.HasFlag relation
-            )
-    )
 
 /// Checks if 2 given CvParams share the same part_of relationship to the same other term.
 let equalsPartOf onto cvp1 cvp2 =
@@ -243,42 +121,14 @@ let equalsFollows onto cvp1 cvp2 =
 //let getPreviousFollow cvp onto subgraph =
 //    let rt = getRelatedCvParams cvp onto |> Seq.filter (fun (id,t,r) -> r.HasFlag ArcRelation.Follows)
 
-/// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that have no relation pointing at them.
-let getEndpoints (onto : FGraph<string,OboTerm,ArcRelation>) =
-    onto.Values
-    |> Seq.map (fun c -> c |> fun (id,t,e) -> t, FContext.predecessors c)
-    |> Seq.map (fun (t,p) -> t, p |> Seq.filter (fun (id,r) -> r.HasFlag ArcRelation.PartOf))
-    |> Seq.choose (fun (t,p) -> if Seq.length p = 0 then Some t else None)
-
-
 //obo.Terms[2]
 //getEndpoints ontoGraph |> List.ofSeq |> List.map (fun t -> t.Name)
 //|> List.ofSeq
 
 
-/// Takes an OboTerm seq of endpoints (that is, any term without predecessors) and filters a list of CvParams where every CvParam that is an endpoint is excluded.
-let deleteEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam list) =
-    cvParams
-    |> List.filter (
-        fun cvp ->
-            ontoEndpoints
-            |> Seq.exists (
-                fun t ->
-                    t.Name = cvp.Name &&
-                    t.Id = cvp.Accession &&
-                    CvParam.getValueAsTerm cvp |> fun cvt -> cvt.Accession = "AGMO:00000001" && cvt.Name = "Metadata Section Key"
-            )
-            |> not
-    )
-
 //deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
 
 //let cvparamseNoEndpointSectionKeys = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvparamse
-
-let isHeader (ontoEndpoints : OboTerm seq) (cvp : CvParam) =
-    ontoEndpoints
-    |> Seq.exists (fun t -> t.Name = cvp.Name && t.Id = cvp.Accession)
-    |> not
 
 //cvparamseNoEndpointSectionKeys
 //|> Seq.groupWhen (getEndpoints ontoGraph |> isHeader)
@@ -292,7 +142,7 @@ let isHeader (ontoEndpoints : OboTerm seq) (cvp : CvParam) =
 
 //getFollowTerm ontoGraph cvparamse[1], cvparamse[1]
 
-
+// duplicate from InternalUtils
 type OboTerm with
 
     static member toCvTerm (term : OboTerm) =
@@ -303,18 +153,6 @@ type OboTerm with
 
 //cvparamse.[1].Attributes |> Dictionary.item "Row"
 
-let createEmptyFollowsCvParam onto cvp =
-    getRelatedCvParams cvp onto
-    |> Seq.pick (
-        fun (id,t,r) -> 
-            if r.HasFlag ArcRelation.Follows then 
-                let rowParam = CvParam(Address.row, ParamValue.Value (Param.getValueAsInt cvp["Row"] - 1))
-                let colParam = CvParam(Address.column, ParamValue.Value (Param.getValueAsInt cvp["Column"]))
-                let wsParam = CvParam(Address.worksheet, ParamValue.Value (Param.getValueAsString cvp["Worksheet"]))
-                Some (CvParam(OboTerm.toCvTerm t, ParamValue.Value "", [rowParam; colParam; wsParam]))
-            else None
-    )
-
 //cvparamse[7]["Column"]
 //(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Column"]
 //cvparamse[7]["Row"]
@@ -323,56 +161,9 @@ let createEmptyFollowsCvParam onto cvp =
 //(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Worksheet"]
 
 
-
-let constructSubgraph isaOntology (cvParams : CvParam list) =
-    let nextToSectionHeader currentCvp priorCvp =
-        hasPartOfTo isaOntology currentCvp priorCvp
-    let follows currentCvp priorCvp =
-        hasFollowsTo isaOntology currentCvp priorCvp
-    let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
-    let rec loop (tokens : CvParam list) (stash : CvParam list) (prior : CvParam) parent =
-        match tokens with
-        | h :: t ->
-            match t with
-            | [] ->
-                match stash with
-                | [] ->
-                    printfn "done via empty stash!"
-                | _ ->
-                    printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
-                    loop (h :: stash |> List.rev |> List.tail) t (stash |> List.rev |> List.head) parent
-            | _ ->
-                match follows h prior with
-                | true ->
-                    printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
-                    match nextToSectionHeader h prior with
-                    | true ->
-                        printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
-                        FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
-                        loop t (prior :: stash) h h
-                    | false ->
-                        printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
-                        FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows isaGraph |> ignore
-                        loop t stash h h
-                | false ->
-                    match CvParam.equalsTerm (CvParam.getTerm h) prior with
-                    | true ->
-                        printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
-                        loop t (h :: stash) h parent
-                    | false ->
-                        printfn $"case term missing: h: {h.Name}, prior: {prior.Name}"
-                        let missingTerm = createEmptyFollowsCvParam isaOntology h
-                        loop (missingTerm :: h :: t) stash prior parent
-        | [] -> 
-            printfn "done via empty tokensList! (should not happen...)"
-    loop cvParams.Tail [] cvParams.Head cvParams.Head
-    isaGraph
-
 let cvpContactsSimple = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Simple.xlsx"
     |> List.map (Param.toCvParam)
-
-Result.Error
 
 //let doneGraphSimple = constructSubgraph ontoGraph cvpContactsSimple
 let doneGraphSimple = constructSubgraph ontoGraph (getEndpoints ontoGraph |> deleteEndpointSectionKeys <| cvpContactsSimple)
