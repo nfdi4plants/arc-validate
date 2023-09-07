@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		build.sh = build.sh
 		create-badge.py = create-badge.py
 		Dockerfile = Dockerfile
-		expectoPlayground.fsx = expectoPlayground.fsx
+		ErrorClassOntology.obo = ErrorClassOntology.obo
 		global.json = global.json
-		graphModelIOTest.fsx = graphModelIOTest.fsx
 		playground.fsx = playground.fsx
 		README.md = README.md
+		TestOntology.obo = TestOntology.obo
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
