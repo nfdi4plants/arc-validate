@@ -14,13 +14,4 @@ module CvBase =
 
     module Person =
 
-        /// Validates a person's ORCID.
-        let orcid<'T when 'T :> CvContainer> (personCvContainer : 'T) = 
-            let orcidProperty = CvContainer.tryGetPropertyStringValue "<  ORCID>" personCvContainer
-            //printfn "ORCID property: %A" orcidProperty
-            let err = Error (ErrorMessage.FilesystemEntry.createFromCvParam personCvContainer)
-            match orcidProperty with
-            //| s when String.isNoneOrWhiteSpace s -> err
-            | None -> Success
-            | o when InternalUtils.Orcid.checkValid o.Value |> not -> err
-            | _ -> Success
+        let () = ()
