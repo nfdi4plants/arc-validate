@@ -62,7 +62,7 @@ type Config = {
 
     static member get (?Path: string) =
         if Config.exists(?Path = Path) then
-            Config.read()
+            Config.read(?Path = Path)
         else
             Config.initDefault()
 
