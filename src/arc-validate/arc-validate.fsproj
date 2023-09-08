@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\LegacyArgs.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
@@ -16,7 +17,6 @@
     <Compile Include="APIs\ValidateAPI.fs" />
     <Compile Include="APIs\ARCValidateAPI.fs" />
     <Compile Include="CommandHandling.fs.fs" />
-    <Compile Include="ExitCodes.fs" />
     <Compile Include="Program.fs" />    
   </ItemGroup>
 

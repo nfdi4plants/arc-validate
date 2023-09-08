@@ -5,11 +5,24 @@ open Expecto
 open System.IO
 
 open ReferenceObjects
+open TestUtils
+
 
 [<Tests>]
 let ``Config tests`` = 
     testSequenced (
         testList "Config tests" [
+
+            resetConfigEnvironment()
+
+            let testConfig =
+                Config.create(
+                    packageIndex = testPackageIndex,
+                    indexLastUpdated = testDate1,
+                    configFilePath = Defaults.CONFIG_FILE_PATH(),
+                    packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER()
+                )
+
             test "config file path is correct" {
                Expect.equal 
                     (testConfig.ConfigFilePath) 

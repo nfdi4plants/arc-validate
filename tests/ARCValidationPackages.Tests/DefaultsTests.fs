@@ -7,6 +7,7 @@ open System.IO
 open type System.Environment
 
 open ReferenceObjects
+open TestUtils
 
 [<Tests>]
 let ``Defaults tests`` =
@@ -46,5 +47,6 @@ let ``Defaults tests`` =
                     expected_package_cache_file_path
                     "config file path is not correct"
             }
+
         ]
     )

@@ -23,6 +23,9 @@ type PackageCache =
     static member getPackage (name: string) (cache: PackageCache) =
         cache[name]
 
+    static member getPackages (cache: PackageCache) =
+        cache.Values |> Seq.toList
+
     static member tryGetPackage (name: string) (cache: PackageCache) =
         if cache.ContainsKey(name) then Some cache[name] else None
 
@@ -30,7 +33,13 @@ type PackageCache =
         cache.Add(package.Name, package)
         cache
 
-    static member addOfPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset) =
+    static member cachePackageByName (packageName: string, ?Path: string, ?Date: System.DateTimeOffset) =
+        fun (cache: PackageCache) ->
+            let package = ARCValidationPackage.ofPackageName(packageName, ?Path = Path)
+            cache 
+            |> PackageCache.addPackage package
+
+    static member cachePackageOfIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset) =
         fun (cache: PackageCache) ->
             let package = ARCValidationPackage.ofPackageIndex(packageIndex, ?Date = Date)
             cache.Add(package.Name, package)
@@ -51,12 +60,21 @@ type PackageCache =
         cache.Remove(name) |> ignore
         cache
 
+    static member exists (?Path: string) =
+        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+        File.Exists(path)
+
     static member read (?Path: string) =
         let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
         path
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<PackageCache>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
+    static member get (?Path: string) =
+        if PackageCache.exists(?Path = Path) then
+            PackageCache.read()
+        else
+            PackageCache.create([])
 
     static member write (?Path: string) =
         fun (cache: PackageCache) ->

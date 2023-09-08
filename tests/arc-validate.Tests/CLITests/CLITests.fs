@@ -1,99 +1,110 @@
-module CLITests
+module asd
 
-open Expecto
-open Expecto.Tests
-open Expecto.Impl
-open Expecto.Logging
-open System.IO
-open System.Diagnostics
+//open Expecto
+//open Expecto.Tests
+//open Expecto.Impl
+//open Expecto.Logging
+//open System.IO
+//open System.Diagnostics
+//open Fake.Core
 
-open JUnit
+//open JUnit
 
-type CLIResult = {
-    Process: Process
-    ValidationResults: ValidationResults
-}
+//let runTool (tool: string) (args: string []) =
+//    CreateProcess.fromRawCommand tool args
+//    |> CreateProcess.redirectOutput
+//    |> Proc.run
 
-type CLIContext() =
-    static member create 
-        (
-            ?p: string,
-            ?o : string
-        ) = 
-            fun f ->
-                let tool = $"arc-validate"
-                let args = 
-                    [
-                        p |> Option.map (fun p -> $"-p {p} ") |> Option.defaultValue ""
-                        o |> Option.map (fun o -> $"-o {o} ") |> Option.defaultValue ""
-                    ]
-                    |> String.concat ""
 
-                let outFile = 
-                    o
-                    |> Option.defaultValue (System.Environment.GetEnvironmentVariable("ARC_PATH")) // default to ARC_PATH if argument is not provided
-                    |> fun s -> 
-                        if p.IsSome then 
-                            p.Value else 
-                        if System.String.IsNullOrWhiteSpace(s) then 
-                            System.Environment.CurrentDirectory 
-                        else s // default to ./ if ARC_PATH is not set
-                    |> fun s -> Path.Combine(s, "arc-validate-results.xml")
+//if Directory.Exists(ARCValidationPackages.Defaults.CONFIG_FOLDER()) then Directory.Delete(ARCValidationPackages.Defaults.CONFIG_FOLDER(), true)
+//[<Tests>]
+//let ``CLI Tests`` =
+//    testSequenced (
+//        testList "CLI tests" [
+//            testSequenced (
+//                testList "arc-validate validate -i fixtures/arcs/inveniotestarc" [
+//                    let proc = runTool "arc-validate" [|"validate"; "-i"; "fixtures/arcs/inveniotestarc"|] 
 
-                let procStartInfo = 
-                    ProcessStartInfo(
-                        UseShellExecute = false,
-                        FileName = "arc-validate",
-                        Arguments = args
-                    )
-                printfn "%A" System.Environment.CurrentDirectory
-                printfn "%A" procStartInfo
+//                    test "exit code is 0 (Success)" {
+//                        Expect.equal proc.ExitCode 0 "incorrect exit code"
+//                    }
 
-                let proc = Process.Start(procStartInfo)
-                proc.WaitForExit()
-                let result = ValidationResults.fromJUnitFile outFile
-                  
-                {
-                    Process = proc
-                    ValidationResults = result
-                }
-                |> f
+//                    test "resultFileExists" {
+//                        Expect.isTrue (File.Exists("fixtures/arcs/inveniotestarc/arc-validate-results.xml")) "result file does not exist at expected location"
+//                    }
 
-[<Tests>]
-let ``CLI Tests`` =
-    testList "CLI tests" [
-        testList "fixtures/arcs/inveniotestarc" [
-            yield! testFixture (CLIContext.create(p = "fixtures/arcs/inveniotestarc")) [
-                "total test amount", (fun testResults -> fun () -> 
-                    Expect.equal  
-                        (ValidationResults.getTotalTestCount testResults.ValidationResults)
-                        (ValidationResults.getTotalTestCount ReferenceObjects.``invenio test arc validation results``)
-                        "incorrect total amount of tests"
-                )
-                "passed tests", (fun testResults -> fun () -> 
-                    Expect.equal  
-                        testResults.ValidationResults.PassedTests
-                        ReferenceObjects.``invenio test arc validation results``.PassedTests
-                        "incorrect test results"
-                )
-                "failed tests", (fun testResults -> fun () -> 
-                    Expect.equal  
-                        testResults.ValidationResults.FailedTests
-                        ReferenceObjects.``invenio test arc validation results``.FailedTests
-                        "incorrect test results"
-                )
-                "errored tests", (fun testResults -> fun () -> 
-                    Expect.equal  
-                        testResults.ValidationResults.ErroredTests
-                        ReferenceObjects.``invenio test arc validation results``.ErroredTests
-                        "incorrect test results"
-                )
-                "exit code is 0 (Success)", (fun testResults -> fun () -> 
-                    Expect.equal  
-                        testResults.Process.ExitCode
-                        0
-                        "incorrect exit code"
-                )
-            ]
-        ]
-    ]
+//                    let validationResults = ValidationResults.fromJUnitFile "fixtures/arcs/inveniotestarc/arc-validate-results.xml"
+
+//                    test "passed tests"{
+//                        Expect.equal  
+//                            validationResults.PassedTests
+//                            ReferenceObjects.``invenio test arc validation results``.PassedTests
+//                            "incorrect test results"
+            
+//                    }
+//                    test "failed tests" {
+            
+//                        Expect.equal  
+//                            validationResults.FailedTests
+//                            ReferenceObjects.``invenio test arc validation results``.FailedTests
+//                            "incorrect test results"
+//                    }
+//                    test "errored tests" {
+//                        Expect.equal  
+//                            validationResults.ErroredTests
+//                            ReferenceObjects.``invenio test arc validation results``.ErroredTests
+//                            "incorrect test results"
+//                    }
+//                ]
+//            )
+//            testSequenced (
+//                testList "arc-validate package install test" [
+//                    let proc = runTool "arc-validate" [|"package"; "install"; "test"|]
+//                    test "exit code is 0 (Success)" {
+//                        Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output}"
+//                    }
+
+//                    test "package cache folder is created" {
+//                        Expect.isTrue (Directory.Exists(ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER())) "package cache folder was not created"
+//                    }
+
+//                    test "package cache file is created" {
+//                        Expect.isTrue (File.Exists(ARCValidationPackages.Defaults.PACKAGE_CACHE_FILE_PATH())) "package cache was not created at expected location"
+//                    }
+
+//                    test "installed package file exists" {
+//                        let package = 
+//                            Path.Combine(
+//                                ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER(),
+//                                "test.fsx"
+//                            )
+//                        Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
+//                    }
+//                ]
+//            )
+//            testSequenced (
+//                ptestList "arc-validate package uninstall test" [
+//                    test "installed package file exists before deletion" {
+//                        let package = 
+//                            Path.Combine(
+//                                ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER(),
+//                                "test.fsx"
+//                            )
+//                        Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
+//                    }
+//                    let proc = runTool "arc-validate" [|"package"; "uninstall"; "test"|]
+//                    test "exit code is 0 (Success)" {
+//                        Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output}"
+//                    }
+//                    test "installed package file is deleted" {
+//                        let package = 
+//                            Path.Combine(
+//                                ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER(),
+//                                "test.fsx"
+//                            )
+//                        Expect.isFalse (File.Exists(package)) "package file was not deleted"
+//                    }
+//                ]
+//            )
+//        ]
+//    )

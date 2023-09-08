@@ -31,4 +31,4 @@ module CommandHandling =
             if verbose then printfn "Subcommand: package"
             handlePackageSubCommand verbose (subcommand.GetSubCommand())
 
-        | ARCValidateCommand.Verbose -> ()
+        | _ -> ExitCode.ArgParseError

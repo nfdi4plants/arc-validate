@@ -4,6 +4,7 @@ open Expecto
 open ARCValidationPackages
 open System.IO
 open ReferenceObjects
+open TestUtils
 
 [<Tests>]
 let tests =
@@ -22,7 +23,7 @@ let tests =
                 Expect.sequenceEqual 
                     (
                         PackageCache()
-                        |> PackageCache.addOfPackageIndex(testPackageIndex[0], testDate1)
+                        |> PackageCache.cachePackageOfIndex(testPackageIndex[0], testDate1)
                     )
                     testPackageCache1
                     "ARCValidationPackage was not added to the PackageCache correctly."
@@ -49,6 +50,7 @@ let tests =
             }
 
             test "can write json" {
+                deleteDefaultPackageCache() // make sure any cached file is deleted before testing that it can be written
                 testPackageCache1 |> PackageCache.write()
                 Expect.isTrue (File.Exists(expected_package_cache_file_path)) "package cache file was not created"
             }
