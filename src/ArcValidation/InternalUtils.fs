@@ -12,9 +12,11 @@ module internal InternalUtils =
 
     open FSharpAux
     open FsSpreadsheet
-    open ArcGraphModel
-    open ArcGraphModel.IO
+    //open ArcGraphModel
+    //open ArcGraphModel.IO
     open System.IO
+    open FsOboParser
+    open ControlledVocabulary
 
     module String =
 
@@ -51,32 +53,6 @@ module internal InternalUtils =
         static member TryGetFiles(path, searchPattern) =
             try Directory.GetFiles(path, searchPattern) |> Some
             with :? System.ArgumentException -> None
-
-
-    module ArcGraphModel =
-
-        module IO =
-
-            module Worksheet =
-
-                let parseColumns (worksheet : FsWorksheet) = 
-                    let sheetName = Address.createWorksheetParam worksheet.Name
-                    let annoTable = worksheet.Tables |> List.tryFind (fun t -> String.contains "annotationTable" t.Name)
-                    match annoTable with
-                    | Some t ->
-                        t.Columns(worksheet.CellCollection)
-                        |> Seq.toList
-                        |> List.choose (fun r -> 
-                            match r |> Tokenization.parseLine |> Seq.toList with
-                            | [] -> None
-                            | l -> Some l
-                        )
-                        |> List.concat
-                        |> List.map (fun token ->
-                            CvAttributeCollection.tryAddAttribute sheetName token |> ignore
-                            token
-                        )
-                    | None -> []
 
 
     /// Functions to work with ORCID numbers.
@@ -116,3 +92,10 @@ module internal InternalUtils =
             let isNum = rgxPat.Match(input).Success
             let noHyphens = String.replace "-" "" input
             isNum && checkRange noHyphens && checksum noHyphens = noHyphens[noHyphens.Length - 1]
+
+
+    type OboTerm with
+
+        static member toCvTerm (term : OboTerm) =
+            let ref = String.takeWhile ((<>) ':') term.Id
+            CvTerm.create(term.Id, term.Name, ref)

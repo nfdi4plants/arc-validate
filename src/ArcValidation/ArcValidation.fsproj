@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <Compile Include="InternalUtils.fs" />
+    <Compile Include="ArcRelation.fs" />
+    <Compile Include="OboGraph.fs" />
+    <Compile Include="ArcGraph.fs" />
     <Compile Include="ExpectoExtensions.fs" />
     <Compile Include="CheckIsaStructure.fs" />
     <Compile Include="CvTokenHelperFunctions.fs" />
@@ -37,5 +40,9 @@
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
     <PackageReference Include="ArcGraphModel" Version="[0.1.0-preview.3]" />
     <PackageReference Include="ArcGraphModel.IO" Version="[0.1.0-preview.3]" />
+    <PackageReference Include="ARCTokenization" Version="[1.0.2]" />
+    <PackageReference Include="Graphoscope" Version="[0.2.0]" />
+    <PackageReference Include="FsOboParser" Version="[0.3.0]" />
+    <PackageReference Include="Cyjs.NET" Version="[0.0.4]" />
   </ItemGroup>
 </Project>
