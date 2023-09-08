@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" />
-    <ProjectReference Include="..\ArcValidation\ARCValidation.fsproj" />
+    <ProjectReference Include="..\ARCValidation\ARCValidation.fsproj" />
   </ItemGroup>
 
 </Project>
