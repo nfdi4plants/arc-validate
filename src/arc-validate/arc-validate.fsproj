@@ -16,7 +16,7 @@
     <Compile Include="APIs\PackageAPI.fs" />
     <Compile Include="APIs\ValidateAPI.fs" />
     <Compile Include="APIs\ARCValidateAPI.fs" />
-    <Compile Include="CommandHandling.fs.fs" />
+    <Compile Include="CommandHandling.fs" />
     <Compile Include="Program.fs" />    
   </ItemGroup>
 
