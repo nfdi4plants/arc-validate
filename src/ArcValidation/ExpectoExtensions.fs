@@ -4,9 +4,6 @@
 module Expecto =
     open System
     open FSharpAux
-    open FsSpreadsheet
-    open ArcGraphModel
-    open ArcGraphModel.IO
     open Expecto
     open Expecto.Impl
     open System.Globalization
