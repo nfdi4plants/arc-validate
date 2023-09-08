@@ -3,12 +3,10 @@
 //#r "Graphoscope.dll"
 #r "nuget: FsOboParser"
 #r "nuget: FSharpAux"
-#r "nuget: FSharp.FGL"
 #r "nuget: Graphoscope"
 
 open FsOboParser
 open FSharpAux
-open FSharp.FGL
 open Graphoscope
 
 open System.Text.RegularExpressions
@@ -34,8 +32,8 @@ let testOntology = OboOntology.fromFile true (Path.Combine(__SOURCE_DIRECTORY__,
 
 //OboOntology.toFile (Path.Combine(__SOURCE_DIRECTORY__, "TestOntology.obo")) testOntology
 
-let templateModuleString = """module <name> =
-
+let templateModuleString = """module ``<name>`` =
+    let key = CvTerm.create(<id>, <name>, <ref>)
 """
 
 let templateTypeString = """type <name> =
@@ -43,17 +41,17 @@ let templateTypeString = """type <name> =
     static member id = "<id>"
 """
 
+String.replicate 2 "    "
+
 
 let indent level input =
-    let spaces = String.init (level * 4) (fun _ -> " ")
+    let spaces = String.replicate level "    "
     input
     |> String.toLines
     |> Seq.map (fun s -> $"{spaces}{s}")
     |> Seq.reduce (fun x y -> $"{x}\n{y}")
 
-indent 1 """lalalalalala
-lalalalala
-    lalalalal"""
+indent 1 templateModuleString
 |> printfn "%s"
 
 
@@ -91,7 +89,7 @@ let deconstructRelationship relationship =
 let addTerm (graph : FGraph<string,OboTerm,string>) (term : OboTerm) =
     FGraph.Node.add term.Id term graph
 
-let addRelation (graph : FGraph<string,OboTerm,string>) (term : OboTerm) =
+let addRelation (graph : FGraph<string,OboTerm,string>) (term : OboTerm) =()
 
 /// <summary>
 /// Adds the relationship of a given term as an edge to a graph.

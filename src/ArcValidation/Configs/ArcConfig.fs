@@ -12,44 +12,45 @@ type ArcConfig(pathConfig : PathConfig) =
 
     // Investigation (might be worth to separate into mutiple configs)
 
-    member this.InvestigationWorkbook = InformationExtraction.Investigation.getWorkbook this.PathConfig.InvestigationPath
+    member this.InvestigationWorkbook = ()
 
-    member this.InvestigationWorksheet = InformationExtraction.Investigation.getWorksheet this.InvestigationWorkbook
+    member this.InvestigationWorksheet = ()
 
-    member this.InvestigationPathCvP = InformationExtraction.Investigation.getPathCvP this.PathConfig.InvestigationPath
+    member this.InvestigationPathCvP = ()
 
-    member this.InvestigationTokens = InformationExtraction.Investigation.getTokens this.InvestigationPathCvP this.InvestigationWorksheet
+    member this.InvestigationTokens = ()
 
-    member this.InvestigationContainers = InformationExtraction.Investigation.getContainers this.InvestigationTokens
+    member this.InvestigationContainers = ()
 
-    member this.InvestigationContainer = InformationExtraction.Investigation.getInvestigationContainer this.InvestigationContainers
+    member this.InvestigationContainer = ()
 
-    member this.InvestigationStudies = InformationExtraction.Investigation.getStudies this.InvestigationContainers
+    member this.InvestigationStudies = ()
 
-    member this.InvestigationContactsContainer = InformationExtraction.Investigation.getContactsContainer this.InvestigationContainers
+    member this.InvestigationContactsContainer = ()
 
     // Study (might be worth to separate into mutiple configs)
 
-    member this.StudyPathsAndIds = InformationExtraction.Study.getPathsAndIds this.PathConfig.StudiesPath this.InvestigationStudies
+    member this.StudyPathsAndIds = ()
     
-    member this.StudyFolders = InformationExtraction.Study.getFolders this.PathConfig.StudiesPath
+    member this.StudyFolders = ()
 
-    member this.StudyFilesAndIds = InformationExtraction.Study.getFilesAndIds this.StudyFolders
+    member this.StudyFilesAndIds = ()
 
-    member this.StudyAnnotationTables = InformationExtraction.Study.getAnnotationTables this.StudyFilesAndIds
+    member this.StudyAnnotationTables = ()
 
-    member this.StudyRawOrDerivedDataPaths = InformationExtraction.Study.getRawOrDerivedDataPaths this.StudyAnnotationTables
+    member this.StudyRawOrDerivedDataPaths = ()
 
     // Assay (might be worth to separate into mutiple configs)
 
-    member this.AssayFolders = InformationExtraction.Assay.getFolders this.PathConfig.AssaysPath
+    member this.AssayFolders = ()
 
-    member this.AssayFilesAndIds = InformationExtraction.Assay.getFilesAndIds this.AssayFolders
+    member this.AssayFilesAndIds = ()
 
-    member this.AssayAnnotationTables = InformationExtraction.Assay.getAnnotationTables this.AssayFilesAndIds
+    member this.AssayAnnotationTables = ()
 
-    member this.AssayRawOrDerivedDataPaths = InformationExtraction.Assay.getRawOrDerivedDataPaths this.AssayAnnotationTables
+    member this.AssayRawOrDerivedDataPaths = ()
 
     // Composite
 
-    member this.DataPaths = Seq.append this.StudyRawOrDerivedDataPaths this.AssayRawOrDerivedDataPaths
+    //member this.DataPaths = Seq.append this.StudyRawOrDerivedDataPaths this.AssayRawOrDerivedDataPaths
+    member this.DataPaths = ()
