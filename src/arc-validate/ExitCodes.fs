@@ -1,4 +1,4 @@
-﻿module ExitCodes
+﻿namespace ARCValidate
 
 /// Enum to model different exit codes to be returned by the cli tool.
 [<Struct>]

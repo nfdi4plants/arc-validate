@@ -1,4 +1,4 @@
-﻿module APITests.ExpectoExtensions
+﻿module ExpectoExtensionsTests
 
 open ArcValidation
 open ArcValidation.Configs
@@ -10,7 +10,7 @@ let dummyTestFailed = testCase "dummyTest2" (fun _ -> Expect.isTrue false "is no
 
 [<Tests>]
 let ``Expecto extensions tests`` =
-    testList "APITests.ExpectoExtensions" [
+    testList "ExpectoExtensions" [
         testList "combineTestResults" [
             let combinedTsrs = combineTestRunSummaries [dummyTestFailed; dummyTestPassed]
             testCase "Combines results correctly" (fun _ ->

@@ -7,13 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="JUnit.fs" />
+    <None Include="fixtures\**" CopyToOutputDirectory="Always"/>
     <Compile Include="ReferenceObjects.fs" />
-    <Compile Include="APITests\InternalUtilsTests.fs" />
-    <Compile Include="APITests\ExpectoExtensions.fs" />
-    <Compile Include="APITests\PathConfig.fs" />
-    <Compile Include="CLITests\CLITests.fs" />
-    <None Include="fixtures\**" CopyToOutputDirectory="Always" />
+    <Compile Include="DefaultsTests.fs" />
+    <Compile Include="GitHubAPITests.fs" />
+    <Compile Include="ARCValidationPackageTests.fs" />
+    <Compile Include="PackageCacheTests.fs" />
+    <Compile Include="ConfigTests.fs" />
+    <Compile Include="ScriptExecutionTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
@@ -21,8 +22,7 @@
     <PackageReference Include="Expecto" Version="9.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-    <ProjectReference Include="..\src\arc-validate\arc-validate.fsproj" />
-    <ProjectReference Include="..\src\ArcValidation\ArcValidation.fsproj" />
+    <ProjectReference Include="..\..\src\ARCValidationPackages\ARCValidationPackages.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.*" />
   </ItemGroup>
 </Project>

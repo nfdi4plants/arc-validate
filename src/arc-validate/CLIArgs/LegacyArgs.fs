@@ -1,9 +1,10 @@
-﻿module CLIArgs
+﻿module LegacyArgs
 
 open Argu
-open System.IO
+open System
 
-type CliArguments =
+[<Obsolete>]
+type LegacyArguments =
     | [<AltCommandLine("-p")>] ARC_Directory of path:string
     | [<AltCommandLine("-o")>] Out_Directory of path:string
     | [<AltCommandLine("-v")>] Verbose
@@ -15,6 +16,8 @@ type CliArguments =
             | Out_Directory _ -> "Optional. Specify a output directory for the test results file (arc-validate-results.xml). Default: file gets written to the arc root folder."
             | Verbose         -> "Use verbose error messages (with full error stack)."
 
+[<Obsolete>]
 let errorHandler = ProcessExiter(colorizer = function ErrorCode.HelpText -> None | _ -> Some System.ConsoleColor.Red)
 
-let cliArgParser = ArgumentParser.Create<CliArguments>(programName = "arc-to-invenio", errorHandler = errorHandler)
+[<Obsolete>]
+let legacyArgParser = ArgumentParser.Create<LegacyArguments>(programName = "arc-validate", errorHandler = errorHandler)
