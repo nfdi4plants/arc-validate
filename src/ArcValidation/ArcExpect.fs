@@ -83,7 +83,20 @@ module ArcExpect =
                     cvp
                     |> errorMessageOf "is invalid."              
                     |> Expecto.Tests.failtestNoStackf "%s"                   
-
+        
+        
+        static member isMatchBy (validator:string -> boll) =
+            fun (cvp:CvParam) ->
+                let tmp = 
+                    CvParam.getParamValue cvp
+                    |> ParamValue.getValue
+                    |> string
+                match validator tmp with
+                | true -> ()
+                | false ->
+                    cvp
+                    |> errorMessageOf "is invalid."               
+                    |> Expecto.Tests.failtestNoStackf "%s"    
 
     type ByTerm() =
         
