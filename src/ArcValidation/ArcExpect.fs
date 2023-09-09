@@ -3,7 +3,7 @@
 module ArcExpect =
 
     open CvParamExtensions
-
+    open ControlledVocabulary
 
     /// <summary>
     /// 
@@ -85,7 +85,7 @@ module ArcExpect =
                     |> Expecto.Tests.failtestNoStackf "%s"                   
         
         
-        static member isMatchBy (validator:string -> boll) =
+        static member isMatchBy (validator:string -> bool) =
             fun (cvp:CvParam) ->
                 let tmp = 
                     CvParam.getParamValue cvp

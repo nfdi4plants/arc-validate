@@ -1,7 +1,9 @@
 ﻿namespace ArcValidation
 
-module ParamCollection =
 
+
+module ParamCollection =
+    open ControlledVocabulary
     /// <summary>
     /// 
     /// </summary>

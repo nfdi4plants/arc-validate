@@ -1,7 +1,7 @@
 ﻿namespace ArcValidation
 
 module CvParamExtensions =
-
+    open ControlledVocabulary
     /// <summary>
     /// 
     /// </summary>
