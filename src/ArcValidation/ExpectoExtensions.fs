@@ -15,6 +15,45 @@ module Expecto =
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // taken & modified from: https://github.com/haf/expecto
     // ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+    type TestID =
+        | Guid
+        | Name of string
+
+    type TestDelayBuilder() =
+        member __.Zero() = 
+            ()
+        member __.Delay f = 
+            f
+        member __.Run (f : unit -> unit) =
+            f
+
+
+
+    /// Test case computation expression builder
+    type TestCaseBuilderSp(id:TestID) =
+        member __.TryFinally(f, compensation) =
+          try
+            f()
+          finally
+            compensation()
+        member __.TryWith(f, catchHandler) =
+          try
+            f()
+          with e -> catchHandler e
+        member __.Using(disposable: #IDisposable, f) = using disposable f
+        member __.For(sequence, f) =
+          for i in sequence do f i
+        member __.While(gd, prog) =
+          while gd() do prog()
+        member __.Combine(f1, f2) = f2(); f1
+        member __.Zero() = ()
+        member __.Delay f = f
+        member __.Run f =
+          match id with
+          | Guid -> testCase (System.Guid.NewGuid().ToString()) f
+          | Name str -> testCase str f
+
+
 
     let performTest test =
         let w = System.Diagnostics.Stopwatch()
