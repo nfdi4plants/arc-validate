@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="StaticCvTerms.fs" />
+    <Compile Include="DirTokenizer.fs" />
+    <Compile Include="InternalUtils.fs" />
     <Compile Include="StringValidationPattern.fs" />
     <Compile Include="ParamCollection.fs" />
     <Compile Include="CvParamExtensions.fs" />
     <Compile Include="ExpectoExtensions.fs" />
     <Compile Include="ArcExpect.fs" />
-    <Compile Include="InternalUtils.fs" />
     <Compile Include="ArcRelation.fs" />
     <Compile Include="OboGraph.fs" />
     <Compile Include="ArcGraph.fs" />

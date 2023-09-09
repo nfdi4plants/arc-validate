@@ -1,9 +1,11 @@
 ﻿namespace ArcValidation
 
+
 module StringValidationPattern =
 
     open System
     open System.Text.RegularExpressions
+    open FSharpAux
     
     let email = Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     let orcid = Regex("^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")

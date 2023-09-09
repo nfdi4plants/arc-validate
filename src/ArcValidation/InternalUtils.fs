@@ -3,12 +3,12 @@
 open System
 
 
-// this is needed to allow ValidatorTests project to access internal modules
-[<assembly: Runtime.CompilerServices.InternalsVisibleTo("ARCValidation.Tests")>]
-do()
+//// this is needed to allow ValidatorTests project to access internal modules
+//[<assembly: Runtime.CompilerServices.InternalsVisibleTo("ARCValidation.Tests")>]
+//do()
 
 [<AutoOpen>]
-module internal InternalUtils =
+module InternalUtils =
 
     open FSharpAux
     open FsSpreadsheet
