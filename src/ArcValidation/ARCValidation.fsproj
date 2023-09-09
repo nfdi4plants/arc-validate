@@ -7,13 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="CvParamExtensions.fs" />
+    <Compile Include="StringValidationPattern.fs" />
     <Compile Include="ParamCollection.fs" />
+    <Compile Include="CvParamExtensions.fs" />
+    <Compile Include="ExpectoExtensions.fs" />
+    <Compile Include="ArcExpect.fs" />
     <Compile Include="InternalUtils.fs" />
     <Compile Include="ArcRelation.fs" />
     <Compile Include="OboGraph.fs" />
     <Compile Include="ArcGraph.fs" />
-    <Compile Include="ExpectoExtensions.fs" />
     <Compile Include="Configs\PathConfig.fs" />
     <Compile Include="Configs\ArcConfig.fs" />
     <Compile Include="TestGeneration\NonCritical\ArcISA.fs" />
