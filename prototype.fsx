@@ -26,24 +26,24 @@ open System.Collections.Generic
 open System.Text.RegularExpressions
 
 
-// from internal module copypasted
+//// from internal module copypasted
 
-open Impl
+//open Impl
 
-let performTest test =
-    let w = System.Diagnostics.Stopwatch()
-    w.Start()
-    evalTests Tests.defaultConfig test
-    |> Async.RunSynchronously
-    |> fun r -> 
-        w.Stop()
-        {
-            results = r
-            duration = w.Elapsed
-            maxMemory = 0L
-            memoryLimit = 0L
-            timedOut = []
-        }
+//let performTest test =
+//    let w = System.Diagnostics.Stopwatch()
+//    w.Start()
+//    evalTests Tests.defaultConfig test
+//    |> Async.RunSynchronously
+//    |> fun r -> 
+//        w.Stop()
+//        {
+//            results = r
+//            duration = w.Elapsed
+//            maxMemory = 0L
+//            memoryLimit = 0L
+//            timedOut = []
+//        }
 
 
 
