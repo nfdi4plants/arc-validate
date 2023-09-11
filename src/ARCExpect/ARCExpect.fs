@@ -5,6 +5,8 @@ module ARCExpect =
     open CvParamExtensions
     open ControlledVocabulary
 
+    open StaticCvTerms.IsaTerms
+
     /// <summary>
     /// 
     /// </summary>
@@ -140,4 +142,13 @@ module ARCExpect =
                     cvp
                     |> errorMessageOf "is missing."
                     |> Expecto.Tests.failtestNoStackf "%s"
+
+    /// <summary>
+    /// composite validation function based on ArcExpect.ByValue and ArcExpect.ByTerm
+    /// </summary>
+    type Valid =
+
+        static member email (cvp:CvParam) = 
+            cvp |> ByValue.isMatch StringValidationPattern.email
+            cvp |> ByTerm.equals Investigation.Contacts.``Investigation Person Email``
 

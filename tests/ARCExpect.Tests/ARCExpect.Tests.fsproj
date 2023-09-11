@@ -10,8 +10,10 @@
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <EmbeddedResource Remove="CLITests\**" />
     <Compile Include="InternalUtilsTests.fs" />
+    <Compile Include="ReferenceObjects.fs" />
     <Compile Include="ExpectoExtensionsTests.fs" />
     <Compile Include="PathConfigTests.fs" />
+    <Compile Include="ARCExpectTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
