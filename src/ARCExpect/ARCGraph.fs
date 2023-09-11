@@ -22,14 +22,26 @@ module ARCGraph =
         )
         |> FGraph.createFromNodes<int*string,CvParam,ARCRelation> 
 
-    /// Returns all related Terms (as ID * OboTerm * ARCRelation) of a given CvParam by using a given ontology graph.
-    let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
-        FContext.successors graph[cvp.Accession]
+    /// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
+    let getRelatedCvParamsBy relating (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+        relating graph[cvp.Accession]
         |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
         |> Seq.map (fun ((id,t),r) -> id, t, r)
 
-    /// Checks is a given current CvParam has a given ARCRelation to a given prior CvParam by using a given ontology graph.
-    let hasRelationTo onto (relation : ARCRelation) currentCvp (priorCvp : CvParam) =
+    /// Returns all related terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+    let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+        getRelatedCvParamsBy FContext.neighbours cvp graph
+
+    /// Returns all succeeding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+    let getSucceedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+        getRelatedCvParamsBy FContext.successors cvp graph
+
+    /// Returns all preceding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+    let getPrecedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+        getRelatedCvParamsBy FContext.predecessors cvp graph
+
+    /// Checks is a given current CvParam has a given ArcRelation to a given prior CvParam by using a given ontology graph.
+    let hasRelationTo onto (relation : ArcRelation) currentCvp (priorCvp : CvParam) =
         getRelatedCvParams currentCvp onto
         |> Seq.exists (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag relation)
 
@@ -55,15 +67,19 @@ module ARCGraph =
                 )
         )
 
-    /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that have no relation pointing at them.
-    let getEndpoints (onto : FGraph<string,OboTerm,ARCRelation>) =
+    /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that don't have the given ArcRelation pointing at them.
+    let getEndpointsBy (arcRelation : ArcRelation) (onto : FGraph<string,OboTerm,ArcRelation>) =
         onto.Values
         |> Seq.map (fun c -> c |> fun (id,t,e) -> t, FContext.predecessors c)
-        |> Seq.map (fun (t,p) -> t, p |> Seq.filter (fun (id,r) -> r.HasFlag ARCRelation.PartOf))
+        |> Seq.map (fun (t,p) -> t, p |> Seq.filter (fun (id,r) -> r.HasFlag arcRelation))
         |> Seq.choose (fun (t,p) -> if Seq.length p = 0 then Some t else None)
 
-    /// Takes an OboTerm seq of endpoints (that is, any term without predecessors) and filters a list of CvParams where every CvParam that is an endpoint is excluded.
-    let deleteEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam list) =
+    /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that have no part_of relation pointing at them.
+    let getPartOfEndpoints (onto : FGraph<string,OboTerm,ArcRelation>) =
+        getEndpointsBy ArcRelation.PartOf
+
+    /// Takes an OboTerm seq of endpoints (that is, any term without part_of predecessors) and filters a list of CvParams where every CvParam that is an endpoint is excluded.
+    let deletePartOfEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam list) =
         cvParams
         |> List.filter (
             fun cvp ->
@@ -85,7 +101,7 @@ module ARCGraph =
 
     /// Takes an ontology FGraph and a given CvParam and creates a CvParam based on a CvTerm that has the "Follows" relation to the given CvParam's term. The created CvParam's value is an empty string.
     let createEmptyPriorFollowsCvParam onto cvp =
-        getRelatedCvParams cvp onto
+        getSucceedingCvParams cvp onto
         |> Seq.pick (
             fun (id,t,r) -> 
                 if r.HasFlag ARCRelation.Follows then 
@@ -97,8 +113,17 @@ module ARCGraph =
         )
 
     /// Takes an ontology FGraph and a given CvParam and creates a CvParam based on the CvTerm that the given CvParam's term is related to via the "Follows" relation. The created CvParam's value is an empty string.
-    let createEmptySubsequentFollowsCvParamPrior onto cvp =
-        ()
+    let createEmptySubsequentFollowsCvParam onto cvp =
+        getPrecedingCvParams cvp onto
+        |> Seq.pick (
+            fun (id,t,r) -> 
+                if r.HasFlag ArcRelation.Follows then 
+                    let rowParam = CvParam(Address.row, ParamValue.Value (Param.getValueAsInt cvp["Row"] + 1))
+                    let colParam = CvParam(Address.column, ParamValue.Value (Param.getValueAsInt cvp["Column"]))
+                    let wsParam = CvParam(Address.worksheet, ParamValue.Value (Param.getValueAsString cvp["Worksheet"]))
+                    Some (CvParam(OboTerm.toCvTerm t, ParamValue.Value "", [rowParam; colParam; wsParam]))
+                else None
+        )
 
     /// Takes an ISA-based ontology in the form of an FGraph and a list of CvParams and creates an FGraph based on a section header's "follows" and "part_of" relations.
     let constructSubgraph isaOntology (cvParams : CvParam list) =
@@ -114,34 +139,36 @@ module ARCGraph =
                 | [] ->
                     match stash with
                     | [] ->
-                        printfn "done via empty stash!"
+                        //printfn "done via empty stash!"
+                        ()
                     | _ ->
-                        printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
+                        //printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
                         loop (h :: stash |> List.rev |> List.tail) t (stash |> List.rev |> List.head) parent
                 | _ ->
                     match follows h prior with
                     | true ->
-                        printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
+                        //printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
                         match nextToSectionHeader h prior with
                         | true ->
-                            printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
-                            FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ARCRelation.PartOf + ARCRelation.Follows) isaGraph |> ignore
+                            //printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
+                            FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
                             loop t (prior :: stash) h h
                         | false ->
-                            printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
-                            FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ARCRelation.Follows isaGraph |> ignore
+                            //printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
+                            FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows isaGraph |> ignore
                             loop t stash h h
                     | false ->
                         match CvParam.equalsTerm (CvParam.getTerm h) prior with
                         | true ->
-                            printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
+                            //printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
                             loop t (h :: stash) h parent
                         | false ->
-                            printfn $"case term missing: h: {h.Name}, prior: {prior.Name}"
+                            //printfn $"case term missing: h: {h.Name}, prior: {prior.Name}"
                             let missingTerm = createEmptyPriorFollowsCvParam isaOntology h
                             loop (missingTerm :: h :: t) stash prior parent
             | [] -> 
-                printfn "done via empty tokensList! (should not happen...)"
+                //printfn "done via empty tokensList! (should not happen...)"
+                ()
         loop cvParams.Tail [] cvParams.Head cvParams.Head
         isaGraph
 
