@@ -1,12 +1,13 @@
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
-#r "ArcValidation.dll"
+#r "ARCValidation.dll"
 
 #r "nuget: ARCTokenization"
 #r "nuget: Expecto"
-#r "nuget: FSharpAux"
+#r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
 #r "nuget: Cyjs.NET"
 #r "nuget: FsOboParser, 0.3.0"
+
 
 open Expecto
 open ControlledVocabulary
@@ -17,6 +18,7 @@ open FSharpAux
 open Graphoscope
 open FsOboParser
 open Cyjs.NET
+
 open ArcValidation
 open ArcValidation.OboGraph
 open ArcValidation.ArcGraph
@@ -174,6 +176,7 @@ doneGraphSimple |> isaGraphToFullCyGraph |> CyGraph.show
 let cvpContactsComplicated = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
     |> List.map (Param.toCvParam)
+let 
 
 let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicated
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
