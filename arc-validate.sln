@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5C204780-A94B-46A2-B768-B12C7D81DDFC}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidation", "src\ArcValidation\ARCValidation.fsproj", "{0FF2245E-AFDA-4C93-9E38-44CA66C6DEB9}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidation", "src\ARCValidation\ARCValidation.fsproj", "{0FF2245E-AFDA-4C93-9E38-44CA66C6DEB9}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "arc-validate", "src\arc-validate\arc-validate.fsproj", "{B46EA5BD-195E-4328-9B71-FE20F54C76F1}"
 EndProject
