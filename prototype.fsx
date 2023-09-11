@@ -182,8 +182,103 @@ let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedRea
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
-let completeOpenEnds onto graph =
-    let opneEndpoints = Graphoscope.Algorithms.DFS.ofFGraph
+// from ArcGraph.fs
+/// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
+let getRelatedCvParamsBy relating (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    relating graph[cvp.Accession]
+    |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
+    |> Seq.map (fun ((id,t),r) -> id, t, r)
+
+/// Returns all related terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    getRelatedCvParamsBy FContext.neighbours cvp graph
+
+/// Returns all succeeding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+let getSucceedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    getRelatedCvParamsBy FContext.successors cvp graph
+
+/// Returns all preceding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+let getPrecedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    getRelatedCvParamsBy FContext.predecessors cvp graph
+
+/// Takes an ontology FGraph and a given CvParam and creates a CvParam based on the CvTerm that the given CvParam's term is related to via the "Follows" relation. The created CvParam's value is an empty string.
+let createEmptySubsequentFollowsCvParam onto cvp =
+    getPrecedingCvParams cvp onto
+    |> Seq.pick (
+        fun (id,t,r) -> 
+            if r.HasFlag ArcRelation.Follows then 
+                let rowParam = CvParam(Address.row, ParamValue.Value (Param.getValueAsInt cvp["Row"] + 1))
+                let colParam = CvParam(Address.column, ParamValue.Value (Param.getValueAsInt cvp["Column"]))
+                let wsParam = CvParam(Address.worksheet, ParamValue.Value (Param.getValueAsString cvp["Worksheet"]))
+                Some (CvParam(OboTerm.toCvTerm t, ParamValue.Value "", [rowParam; colParam; wsParam]))
+            else None
+    )
+
+let getSubsequentFollowsTerm onto cvp =
+    getPrecedingCvParams cvp onto
+    |> Seq.pick (fun (id,t,r) -> if r.HasFlag ArcRelation.Follows then Some t else None)
+
+
+
+Seq.zip doneGraphComplicated.Keys doneGraphComplicated.Values
+|> Seq.map (
+    fun (nk1,c) -> 
+        if FContext.predecessors c |> Seq.isEmpty then 
+            printfn "empty preds @ %A" nk1
+            getSubsequentFollowsTerm ontoGraph (c |> fun (p,nd,s) -> nd)
+            |> fun r -> printfn "term: %A" r; r
+        else OboTerm.Create ""
+)
+|> List.ofSeq
+|> ignore
+
+
+equalsRelation ontoGraph ArcRelation.PartOf 
+
+
+/// 
+let completeOpenEnds onto (graph : FGraph<(int * string),CvParam,ArcRelation>) =
+
+    let kvs = List.zip (List.ofSeq graph.Keys) (List.ofSeq graph.Values)
+    let newGraph = 
+        FGraph.toSeq graph
+        |> Seq.fold (fun acc (nk1,nd1,nk2,nd2,e) -> FGraph.addElement nk1 nd1 nk2 nd2 e acc) FGraph.empty 
+
+    let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
+        //printfn "input: %A" input
+        printfn "inputL: %A" input.Length
+        match input with
+        | (nk1,c) :: t ->
+            printfn "pred: %A" (FContext.predecessors c)
+            if FContext.predecessors c |> Seq.isEmpty then 
+                printfn "nk1: %A" nk1
+                c
+                |> fun (p,nd1,s) ->
+                    let newS = createEmptySubsequentFollowsCvParam onto nd1
+                    printfn "newS: %A" newS
+                    if equalsRelation ontoGraph ArcRelation.PartOf nd1 newS then
+                        printfn "addEle\n" 
+                        let newSnk = hash newS, newS.Name
+                        printfn "newSnk: %A" newSnk
+                        FGraph.addElement newSnk newS nk1 nd1 ArcRelation.Follows newGraph
+                        |> ignore
+                        let newSnkc = newGraph[newSnk]
+                        let newT = (newSnk, newSnkc) :: t
+                        printfn "newT: %A" newT
+                        loop newT
+                    else 
+                        printfn "no addEle\n"
+                        loop t
+            else loop t
+            //loop t
+        | [] -> printfn "end"; ()
+    loop kvs
+
+    newGraph
+
+
+
+completeOpenEnds ontoGraph doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
 //let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
 //    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =
