@@ -10,6 +10,10 @@ module CvTerms =
 
 module CvParams =
     
-    let ``Investigation Person First Name`` = CvParam(CvTerms.``Investigation Person First Name``,ParamValue.Value "Kevin")
+    let ``Empty Value`` = CvParam(CvTerms.``Investigation Person First Name``, ParamValue.Value "")
 
-    let ``Investigation Person Email`` = CvParam(CvTerms.``Investigation Person Email``, ParamValue.Value "yes@yes.com")
+    let ``Investigation Person First Name`` = CvParam(CvTerms.``Investigation Person First Name``, ParamValue.Value "Kevin")
+
+    let ``Investigation Person Email (valid)`` = CvParam(CvTerms.``Investigation Person Email``, ParamValue.Value "yes@yes.com")
+
+    let ``Investigation Person Email (invalid)`` = CvParam(CvTerms.``Investigation Person Email``, ParamValue.Value "nope")
