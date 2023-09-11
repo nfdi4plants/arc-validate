@@ -4,14 +4,14 @@
     ".NETStandard,Version=v2.0": {
       "ARCTokenization": {
         "type": "Direct",
-        "requested": "[1.0.2, 1.0.2]",
-        "resolved": "1.0.2",
-        "contentHash": "/UySI1eIX8AFt+ZYvh7qCneefNxVxdPMyvtzQxMAn++D/o/LbusL3D+yFpYp+wBGzXG2CXyWKHYj4b6cjqYNBA==",
+        "requested": "[1.0.3, 1.0.3]",
+        "resolved": "1.0.3",
+        "contentHash": "SrpkXII0rg8U8FdQKYTHROJEVli3N85QpBRIYdCgV6VtHvn724k57B1IoA9ImlImOEtHfVf3vk/dtRtgdfa9eg==",
         "dependencies": {
           "ControlledVocabulary": "[1.0.0, 2.0.0)",
           "FSharp.Core": "6.0.7",
           "FSharpAux.Core": "[2.0.0]",
-          "FsOboParser": "[0.1.0]",
+          "FsOboParser": "[0.3.0]",
           "FsSpreadsheet": "[4.1.0]",
           "FsSpreadsheet.ExcelIO": "[4.1.0]"
         }

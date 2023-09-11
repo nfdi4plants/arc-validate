@@ -31,7 +31,7 @@
     <PackageReference Include="FSharpAux" Version="[1.1.0]" />
     <PackageReference Include="FsSpreadsheet" Version="[1.3.0-preview]" />
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
-    <PackageReference Include="ARCTokenization" Version="[1.0.2]" />
+    <PackageReference Include="ARCTokenization" Version="[1.0.3]" />
     <PackageReference Include="Graphoscope" Version="[0.2.0]" />
     <PackageReference Include="FsOboParser" Version="[0.3.0]" />
     <PackageReference Include="Cyjs.NET" Version="[0.0.4]" />
