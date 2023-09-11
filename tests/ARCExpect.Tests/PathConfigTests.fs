@@ -1,7 +1,7 @@
 ﻿module PathConfigTests
 
-open ArcValidation
-open ArcValidation.Configs
+open ARCExpect
+open ARCExpect.Configs
 
 open Expecto
 
@@ -16,13 +16,13 @@ let normalizePath (path: string) = path.Replace("\\","/")
 let ``PathConfig tests`` =
     testList "PathConfig" [
         yield! testFixture (pathFixture "/arcs/test/path") [
-            "PathConfig.ArcRootPath"       , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.ArcRootPath       ) "/arcs/test/path" "ArcRootPath was incorrect")
+            "PathConfig.ArcRootPath"       , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.ARCRootPath       ) "/arcs/test/path" "ArcRootPath was incorrect")
             "PathConfig.StudiesPath"       , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.StudiesPath       ) "/arcs/test/path/studies" "StudiesPath was incorrect")
             "PathConfig.AssaysPath"        , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.AssaysPath        ) "/arcs/test/path/assays" "AssaysPath was incorrect")
             "PathConfig.RunsPath"          , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.RunsPath          ) "/arcs/test/path/runs" "RunsPath was incorrect")
             "PathConfig.WorkflowsPath"     , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.WorkflowsPath     ) "/arcs/test/path/workflows" "WorkflowsPath was incorrect")
             "PathConfig.InvestigationPath" , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.InvestigationPath ) "/arcs/test/path/isa.investigation.xlsx" "InvestigationPath was incorrect")
-            "PathConfig.DotArcFolderPath"  , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.DotArcFolderPath  ) "/arcs/test/path/.arc" "DotArcFolderPath was incorrect")
+            "PathConfig.DotArcFolderPath"  , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.DotARCFolderPath  ) "/arcs/test/path/.arc" "DotArcFolderPath was incorrect")
             "PathConfig.GitFolderPath"     , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.GitFolderPath     ) "/arcs/test/path/.git" "GitFolderPath was incorrect")
             "PathConfig.ConfigPath"        , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.ConfigPath        ) "/arcs/test/path/.git/config" "ConfigPath was incorrect")
             "PathConfig.DescriptionPath"   , (fun pathConfig -> fun () -> Expect.equal (normalizePath pathConfig.DescriptionPath   ) "/arcs/test/path/.git/description" "DescriptionPath was incorrect")

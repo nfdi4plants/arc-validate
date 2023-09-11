@@ -6,8 +6,8 @@ open FSharpAux
 open ControlledVocabulary
 open FsOboParser
 
-open ArcValidation
-open ArcValidation.StringValidationPattern.Orcid
+open ARCExpect
+open ARCExpect.StringValidationPattern.Orcid
 
 
 [<Tests>]

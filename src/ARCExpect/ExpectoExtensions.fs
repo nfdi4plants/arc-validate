@@ -1,4 +1,4 @@
-﻿namespace ArcValidation
+﻿namespace ARCExpect
 
 [<AutoOpen>]
 module Expecto =

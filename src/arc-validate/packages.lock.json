@@ -85,6 +85,11 @@
           "FSharp.Core": "5.0.0"
         }
       },
+      "Fable.Core": {
+        "type": "Transitive",
+        "resolved": "4.0.0",
+        "contentHash": "crDLkyN4xADgnCqIneMUGVDo2oS92W4oufbIH/jwc8Fk7nIH6pS/Ds1rBB4R1jUfU1WM1k9GEPa4Up8cNj5VYw=="
+      },
       "Fake.Core.Context": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -373,20 +378,21 @@
       },
       "FsSpreadsheet": {
         "type": "Transitive",
-        "resolved": "1.3.0-preview",
-        "contentHash": "DjLwdkucZduA8fKfdc8oUJbjYlLuK+JCukkKWWAJpvTCeCFkCUPsYGxYIVJ5/K1vmfGyG62moV8y9vEGTRn2BQ==",
+        "resolved": "4.1.0",
+        "contentHash": "le3gCV13dNtOYnIN5e8GblSFnwaAHeIKlNdMTi9Luh5CqfFUrNiTT2kwCaf3pC6blCwmOIJXgNGaH7TZdXCSTw==",
         "dependencies": {
-          "FSharp.Core": "6.0.7"
+          "FSharp.Core": "6.0.7",
+          "Fable.Core": "4.0.0"
         }
       },
       "FsSpreadsheet.ExcelIO": {
         "type": "Transitive",
-        "resolved": "1.0.1",
-        "contentHash": "Ax8DtmzrTX8jH+lqMhEW66BAEGn/aJZlYpmK/2ohsQkwgefpGgYNQ3yEjtMTtZmbhUYRh+Hdu0iFh641f1BWog==",
+        "resolved": "4.1.0",
+        "contentHash": "jcSb5sX3BU32bvt2wUt07fB4K4172dVp8beS/QTAL+ze84+3ur3SC+d++QYObQmHF9g8vmyGnni+c1wkAjtkWg==",
         "dependencies": {
           "DocumentFormat.OpenXml": "[2.12.3]",
           "FSharp.Core": "6.0.7",
-          "FsSpreadsheet": "[1.0.0, 2.0.0)"
+          "FsSpreadsheet": "[4.0.0, 5.0.0)"
         }
       },
       "Graphoscope": {
@@ -879,7 +885,7 @@
           "System.Drawing.Common": "4.7.0"
         }
       },
-      "arcvalidation": {
+      "arcexpect": {
         "type": "Project",
         "dependencies": {
           "ARCTokenization": "[1.0.3, 1.0.3]",
@@ -889,8 +895,8 @@
           "FSharp.Core": "[6.0.7, )",
           "FSharpAux": "[1.1.0, 1.1.0]",
           "FsOboParser": "[0.3.0, 0.3.0]",
-          "FsSpreadsheet": "[1.3.0-preview, 1.3.0-preview]",
-          "FsSpreadsheet.ExcelIO": "[1.0.1, 1.0.1]",
+          "FsSpreadsheet": "[4.1.0, 4.1.0]",
+          "FsSpreadsheet.ExcelIO": "[4.1.0, 4.1.0]",
           "Graphoscope": "[0.2.0, 0.2.0]"
         }
       },

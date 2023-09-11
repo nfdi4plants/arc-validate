@@ -1,6 +1,6 @@
-﻿namespace ArcValidation
+﻿namespace ARCExpect
 
-module ArcExpect =
+module ARCExpect =
 
     open CvParamExtensions
     open ControlledVocabulary

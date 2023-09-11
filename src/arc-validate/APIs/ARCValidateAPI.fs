@@ -2,7 +2,7 @@
 
 open ARCValidate.CLIArguments
 open ARCValidate.CLICommands
-open ArcValidation
+open ARCExpect
 open ARCValidationPackages
 
 open Argu

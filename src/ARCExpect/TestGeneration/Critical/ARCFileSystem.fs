@@ -1,13 +1,13 @@
-﻿namespace ArcValidation.TestGeneration.Critical.Arc
+﻿namespace ARCExpect.TestGeneration.Critical.ARC
 
-open ArcValidation
-open ArcValidation.Configs
+open ARCExpect
+open ARCExpect.Configs
 
 module FileSystem =
 
     open Expecto
 
-    let generateArcFileSystemTests (arcConfig: ArcConfig) =
+    let generateARCFileSystemTests (arcConfig: ARCConfig) =
 
         let pathConfig = arcConfig.PathConfig
 

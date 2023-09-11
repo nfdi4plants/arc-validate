@@ -3,8 +3,8 @@
 open Expecto
 open Argu
 open System.IO
-open ArcValidation
-open ArcValidation.Configs
+open ARCExpect
+open ARCExpect.Configs
 
 open LegacyArgs
 open ARCValidate
@@ -22,7 +22,7 @@ let main argv =
 
         let verbose = args.TryGetResult(ARCValidateCommand.Verbose) |> Option.isSome
         
-        handleArcValidateCommand verbose (args.GetSubCommand())
+        handleARCValidateCommand verbose (args.GetSubCommand())
         |> int
 
     with

@@ -1,7 +1,7 @@
-﻿namespace ArcValidation.TestGeneration.NonCritical.Arc
+﻿namespace ARCExpect.TestGeneration.NonCritical.ARC
 
-open ArcValidation
-open ArcValidation.Configs
+open ARCExpect
+open ARCExpect.Configs
 
 module ISA =
 
@@ -9,7 +9,7 @@ module ISA =
     open FSharpAux
     //open System.IO
 
-    let generateISATests (arcConfig: ArcConfig) =
+    let generateISATests (arcConfig: ARCConfig) =
 
         //let pathConfig = arcConfig.PathConfig
 

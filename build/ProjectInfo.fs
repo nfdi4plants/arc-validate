@@ -6,7 +6,7 @@ let project = "arc-validate"
 
 let testProjects = 
     [
-        "tests/ARCValidation.Tests/ARCValidation.Tests.fsproj"
+        "tests/ARCExpect.Tests/ARCExpect.Tests.fsproj"
         "tests/ARCValidationPackages.Tests/ARCValidationPackages.Tests.fsproj"
         "tests/arc-validate.Tests/arc-validate.Tests.fsproj"
     ]

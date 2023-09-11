@@ -14,23 +14,23 @@
     <Compile Include="ParamCollection.fs" />
     <Compile Include="CvParamExtensions.fs" />
     <Compile Include="ExpectoExtensions.fs" />
-    <Compile Include="ArcExpect.fs" />
-    <Compile Include="ArcRelation.fs" />
+    <Compile Include="ARCExpect.fs" />
+    <Compile Include="ARCRelation.fs" />
     <Compile Include="OboGraph.fs" />
-    <Compile Include="ArcGraph.fs" />
+    <Compile Include="ARCGraph.fs" />
     <Compile Include="Configs\PathConfig.fs" />
-    <Compile Include="Configs\ArcConfig.fs" />
-    <Compile Include="TestGeneration\NonCritical\ArcISA.fs" />
-    <Compile Include="TestGeneration\Critical\ArcFileSystem.fs" />
-    <Compile Include="TestGeneration\Critical\ArcISA.fs" />
+    <Compile Include="Configs\ARCConfig.fs" />
+    <Compile Include="TestGeneration\NonCritical\ARCISA.fs" />
+    <Compile Include="TestGeneration\Critical\ARCFileSystem.fs" />
+    <Compile Include="TestGeneration\Critical\ARCISA.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Argu" Version="[6.1.1]" />
     <PackageReference Include="Expecto" Version="[9.0.4]" />
     <PackageReference Include="FSharpAux" Version="[1.1.0]" />
-    <PackageReference Include="FsSpreadsheet" Version="[1.3.0-preview]" />
-    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[1.0.1]" />
+    <PackageReference Include="FsSpreadsheet" Version="[4.1.0]" />
+    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[4.1.0]" />
     <PackageReference Include="ARCTokenization" Version="[1.0.3]" />
     <PackageReference Include="Graphoscope" Version="[0.2.0]" />
     <PackageReference Include="FsOboParser" Version="[0.3.0]" />

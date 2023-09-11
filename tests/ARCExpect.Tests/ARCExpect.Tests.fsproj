@@ -9,7 +9,6 @@
   <ItemGroup>
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <EmbeddedResource Remove="CLITests\**" />
-    <Compile Include="StringValidationPatternTests.fs" />
     <Compile Include="InternalUtilsTests.fs" />
     <Compile Include="ExpectoExtensionsTests.fs" />
     <Compile Include="PathConfigTests.fs" />
@@ -20,7 +19,7 @@
     <PackageReference Include="Expecto" Version="9.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-    <ProjectReference Include="..\..\src\ArcValidation\ARCValidation.fsproj" />
+    <ProjectReference Include="..\..\src\ARCExpect\ARCExpect.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.*" />
   </ItemGroup>
 </Project>

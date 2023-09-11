@@ -1,5 +1,5 @@
 ﻿/// Paths to folders and files that must/should exist in an ARC.
-namespace ArcValidation.Configs
+namespace ARCExpect.Configs
 
 open System.IO
 
@@ -7,20 +7,20 @@ type PathConfig(arcRootPath: string) =
 
     // settable root path. All other properties are explicit properties meaning that they get evaluated everytime they are accessed -> they are always changed accordingly to the root path. 
     // Useful for setting correct root path via CLI args or defaulting to another value.
-    member val ArcRootPath = arcRootPath with get, set
+    member val ARCRootPath = arcRootPath with get, set
 
     //
-    member this.StudiesPath         = Path.Combine(this.ArcRootPath, "studies")
-    member this.AssaysPath          = Path.Combine(this.ArcRootPath, "assays")
-    member this.RunsPath            = Path.Combine(this.ArcRootPath, "runs")
-    member this.WorkflowsPath       = Path.Combine(this.ArcRootPath, "workflows")
-    member this.InvestigationPath   = Path.Combine(this.ArcRootPath, "isa.investigation.xlsx")
+    member this.StudiesPath         = Path.Combine(this.ARCRootPath, "studies")
+    member this.AssaysPath          = Path.Combine(this.ARCRootPath, "assays")
+    member this.RunsPath            = Path.Combine(this.ARCRootPath, "runs")
+    member this.WorkflowsPath       = Path.Combine(this.ARCRootPath, "workflows")
+    member this.InvestigationPath   = Path.Combine(this.ARCRootPath, "isa.investigation.xlsx")
 
     //
-    member this.DotArcFolderPath    = Path.Combine(this.ArcRootPath, ".arc")
+    member this.DotARCFolderPath    = Path.Combine(this.ARCRootPath, ".arc")
 
     //
-    member this.GitFolderPath       = Path.Combine(this.ArcRootPath, ".git")
+    member this.GitFolderPath       = Path.Combine(this.ARCRootPath, ".git")
     member this.ConfigPath          = Path.Combine(this.GitFolderPath, "config")
     member this.DescriptionPath     = Path.Combine(this.GitFolderPath, "description")
     member this.HeadPath            = Path.Combine(this.GitFolderPath, "HEAD")

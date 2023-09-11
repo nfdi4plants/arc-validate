@@ -1,7 +1,7 @@
 ﻿module ExpectoExtensionsTests
 
-open ArcValidation
-open ArcValidation.Configs
+open ARCExpect
+open ARCExpect.Configs
 open Expecto
 
 

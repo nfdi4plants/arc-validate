@@ -12,7 +12,7 @@
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
     <Compile Include="Commands\PackageCommand.fs" />
-    <Compile Include="Commands\ArcValidateCommand.fs" />
+    <Compile Include="Commands\ARCValidateCommand.fs" />
     <Compile Include="APIs\PackageAPI.fs" />
     <Compile Include="APIs\ValidateAPI.fs" />
     <Compile Include="APIs\ARCValidateAPI.fs" />
@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" />
     <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" />
-    <ProjectReference Include="..\ARCValidation\ARCValidation.fsproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace ArcValidation
+﻿namespace ARCExpect
 
 open ControlledVocabulary
 
@@ -30,4 +30,4 @@ module StaticCvTerms =
         /// The full path, relative path or a Universal Naming Convention (UNC) path
         let Path          = CvTerm.create("IO:00000009","Path","IO")
         let FilePath      = CvTerm.create("IO:00000010","FilePath","IO")
-        let DirectoryPath = CvTerm.create("IO:00000011","DirectoryPath","IO")
+        let DirectoryPath = CvTerm.create("IO:00000c011","DirectoryPath","IO")

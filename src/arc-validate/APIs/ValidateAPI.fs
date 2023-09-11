@@ -2,8 +2,8 @@
 
 open ARCValidate
 open ARCValidate.CLIArguments
-open ArcValidation
-open ArcValidation.Configs
+open ARCExpect
+open ARCExpect.Configs
 
 open Expecto
 open System.IO
@@ -17,17 +17,17 @@ module ValidateAPI =
             args.TryGetResult(ARC_Directory)
             |> Option.defaultValue (System.Environment.GetEnvironmentVariable("ARC_PATH")) // default to ARC_PATH if argument is not provided
             |> fun s -> if System.String.IsNullOrWhiteSpace(s) then System.Environment.CurrentDirectory else s // default to ./ if ARC_PATH is not set
-            |> fun s -> ArcConfig(s)
+            |> fun s -> ARCConfig(s)
 
         let outPath = 
             args.TryGetResult(Out_Directory)
-            |> Option.defaultValue arcConfig.PathConfig.ArcRootPath
+            |> Option.defaultValue arcConfig.PathConfig.ARCRootPath
 
         /// these tests MUST pass for an ARC to be considered for publishing
         let criticalTests =
             testList "Critical" [
-                TestGeneration.Critical.Arc.FileSystem.generateArcFileSystemTests arcConfig
-                TestGeneration.Critical.Arc.ISA.generateISATests arcConfig
+                TestGeneration.Critical.ARC.FileSystem.generateARCFileSystemTests arcConfig
+                TestGeneration.Critical.ARC.ISA.generateISATests arcConfig
             ]
 
         let criticalTestResults =
@@ -39,7 +39,7 @@ module ValidateAPI =
             /// these tests SHOULD pass for an ARC to be considered of high quality
             let nonCriticalTests =
                 testList "Non-critical" [
-                    TestGeneration.NonCritical.Arc.ISA.generateISATests arcConfig
+                    TestGeneration.NonCritical.ARC.ISA.generateISATests arcConfig
                 ]
 
             let nonCriticalTestResults =

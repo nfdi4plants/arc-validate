@@ -21,7 +21,7 @@ module CommandHandling =
             if verbose then printfn "Command: update-index"
             PackageAPI.updateIndex verbose
 
-    let handleArcValidateCommand (verbose:bool) command = 
+    let handleARCValidateCommand (verbose:bool) command = 
         match command with
         | ARCValidateCommand.Validate subcommand -> 
             if verbose then printfn "Command: validate"

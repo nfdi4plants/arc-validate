@@ -1,4 +1,4 @@
-﻿namespace ArcValidation
+﻿namespace ARCExpect
 
 
 open System
@@ -13,8 +13,8 @@ module InternalUtils =
 
     open FSharpAux
     open FsSpreadsheet
-    //open ArcGraphModel
-    //open ArcGraphModel.IO
+    //open ARCGraphModel
+    //open ARCGraphModel.IO
     open System.IO
     open FsOboParser
     open ControlledVocabulary
