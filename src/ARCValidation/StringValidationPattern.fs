@@ -8,7 +8,7 @@ module StringValidationPattern =
     open FSharpAux
     
     let email = Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-    let orcid = Regex("^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
+    let orcid = Regex(@"^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
 
     /// Functions to work with ORCID numbers.
     module Orcid =

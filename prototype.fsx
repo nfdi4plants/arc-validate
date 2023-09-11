@@ -1,12 +1,13 @@
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
-#r "ArcValidation.dll"
+#r "ARCValidation.dll"
 
 #r "nuget: ARCTokenization"
 #r "nuget: Expecto"
-#r "nuget: FSharpAux"
+#r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
 #r "nuget: Cyjs.NET"
 #r "nuget: FsOboParser, 0.3.0"
+
 
 open Expecto
 open ControlledVocabulary
@@ -17,6 +18,7 @@ open FSharpAux
 open Graphoscope
 open FsOboParser
 open Cyjs.NET
+
 open ArcValidation
 open ArcValidation.OboGraph
 open ArcValidation.ArcGraph
@@ -26,24 +28,24 @@ open System.Collections.Generic
 open System.Text.RegularExpressions
 
 
-// from internal module copypasted
+//// from internal module copypasted
 
-open Impl
+//open Impl
 
-let performTest test =
-    let w = System.Diagnostics.Stopwatch()
-    w.Start()
-    evalTests Tests.defaultConfig test
-    |> Async.RunSynchronously
-    |> fun r -> 
-        w.Stop()
-        {
-            results = r
-            duration = w.Elapsed
-            maxMemory = 0L
-            memoryLimit = 0L
-            timedOut = []
-        }
+//let performTest test =
+//    let w = System.Diagnostics.Stopwatch()
+//    w.Start()
+//    evalTests Tests.defaultConfig test
+//    |> Async.RunSynchronously
+//    |> fun r -> 
+//        w.Stop()
+//        {
+//            results = r
+//            duration = w.Elapsed
+//            maxMemory = 0L
+//            memoryLimit = 0L
+//            timedOut = []
+//        }
 
 
 
@@ -174,11 +176,14 @@ doneGraphSimple |> isaGraphToFullCyGraph |> CyGraph.show
 let cvpContactsComplicated = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
     |> List.map (Param.toCvParam)
+let cvpContactsComplicatedReassessed = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvpContactsComplicated
 
-let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicated
+let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedReassessed
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
+let completeOpenEnds onto graph =
+    let opneEndpoints = Graphoscope.Algorithms.DFS.ofFGraph
 
 //let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
 //    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =
