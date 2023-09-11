@@ -176,12 +176,14 @@ doneGraphSimple |> isaGraphToFullCyGraph |> CyGraph.show
 let cvpContactsComplicated = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
     |> List.map (Param.toCvParam)
-let 
+let cvpContactsComplicatedReassessed = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvpContactsComplicated
 
-let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicated
+let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedReassessed
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
+let completeOpenEnds onto graph =
+    let opneEndpoints = Graphoscope.Algorithms.DFS.ofFGraph
 
 //let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
 //    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =
