@@ -22,4 +22,16 @@ let ``Expecto extensions tests`` =
                 Expect.equal combinedTsrs.duration expectedDuration "durations were not correctly combined"
             )
         ]
+        //TO-DO: implemet these!
+        ptestList "writeJUnitSummary" [
+            ptest "can create correct junit file" {()}
+            ptest "can write correct junit file" {()}
+        ]
+        ptestList "writeNUnitSummary" [
+            ptest "can create correct nunit file" {()}
+            ptest "can write correct nunit file" {()}
+        ]
+        ptestList "custom TestCaseBuilder" [
+            ptest "compare tests with custom CE" {()}
+        ]
     ]

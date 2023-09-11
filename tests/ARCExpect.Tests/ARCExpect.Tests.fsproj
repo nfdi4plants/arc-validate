@@ -13,6 +13,9 @@
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="ExpectoExtensionsTests.fs" />
     <Compile Include="PathConfigTests.fs" />
+    <Compile Include="DirTokenizerTests.fs" />
+    <Compile Include="CvParamExtensionsTest.fs" />
+    <Compile Include="ParamCollectionTests.fs" />
     <Compile Include="ARCExpectTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
