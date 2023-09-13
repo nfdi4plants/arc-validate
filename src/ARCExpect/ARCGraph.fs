@@ -127,11 +127,12 @@ module ARCGraph =
 
     /// Takes an ISA-based ontology in the form of an FGraph and a list of CvParams and creates an FGraph based on a section header's "follows" and "part_of" relations.
     let constructSubgraph isaOntology (cvParams : CvParam list) =
+
         let nextToSectionHeader currentCvp priorCvp =
             hasPartOfTo isaOntology currentCvp priorCvp
         let follows currentCvp priorCvp =
             hasFollowsTo isaOntology currentCvp priorCvp
-        let isaGraph = FGraph.empty<int*string,CvParam,ARCRelation>
+
         let rec loop (tokens : CvParam list) (stash : CvParam list) (prior : CvParam) parent =
             match tokens with
             | h :: t ->
@@ -169,8 +170,49 @@ module ARCGraph =
             | [] -> 
                 //printfn "done via empty tokensList! (should not happen...)"
                 ()
+
+        let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
+
         loop cvParams.Tail [] cvParams.Head cvParams.Head
         isaGraph
+
+    /// Takes on ISA-based ontology FGraph and a structural FGraph and closes all loose ends (i.e., creating connected nodes to such nodes that should have a Follows ArcRelation and share the same PartOf ArcRelation) of the latter according to the ontology graph.
+    let completeOpenEnds onto (graph : FGraph<(int * string),CvParam,ArcRelation>) =
+
+        let kvs = List.zip (List.ofSeq graph.Keys) (List.ofSeq graph.Values)
+        let newGraph = 
+            FGraph.toSeq graph
+            |> Seq.fold (fun acc (nk1,nd1,nk2,nd2,e) -> FGraph.addElement nk1 nd1 nk2 nd2 e acc) FGraph.empty 
+
+        let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
+            //printfn "inputL: %A" input.Length
+            match input with
+            | (nk1,c) :: t ->
+                //printfn "pred: %A" (FContext.predecessors c)
+                if FContext.predecessors c |> Seq.isEmpty then 
+                    //printfn "nk1: %A" nk1
+                    c
+                    |> fun (p,nd1,s) ->
+                        let newS = createEmptySubsequentFollowsCvParam onto nd1
+                        //printfn "newS: %A" newS
+                        if equalsRelation onto ArcRelation.PartOf nd1 newS then
+                            //printfn "addEle\n" 
+                            let newSnk = hash newS, newS.Name
+                            //printfn "newSnk: %A" newSnk
+                            FGraph.addElement newSnk newS nk1 nd1 ArcRelation.Follows newGraph
+                            |> ignore
+                            let newSnkc = newGraph[newSnk]
+                            let newT = (newSnk, newSnkc) :: t
+                            //printfn "newT: %A" newT
+                            loop newT
+                        else 
+                            //printfn "no addEle\n"
+                            loop t
+                else loop t
+            | [] -> printfn "end"; ()
+        loop kvs
+
+        newGraph
 
 
     /// Functions for visualizing ARC FGraphs.
