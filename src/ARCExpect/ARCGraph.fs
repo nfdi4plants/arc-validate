@@ -134,6 +134,8 @@ module ARCGraph =
         let follows currentCvp priorCvp =
             hasFollowsTo isaOntology currentCvp priorCvp
 
+        let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
+
         let rec loop (tokens : CvParam list) (stash : CvParam list) (prior : CvParam) parent =
             match tokens with
             | h :: t ->
@@ -171,8 +173,6 @@ module ARCGraph =
             | [] -> 
                 //printfn "done via empty tokensList! (should not happen...)"
                 ()
-
-        let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
 
         loop cvParams.Tail [] cvParams.Head cvParams.Head
         isaGraph

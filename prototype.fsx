@@ -259,48 +259,6 @@ Seq.zip doneGraphComplicated.Keys doneGraphComplicated.Values
 |> ignore
 
 
-equalsRelation ontoGraph ArcRelation.PartOf 
-
-
-/// 
-let completeOpenEnds onto (graph : FGraph<(int * string),CvParam,ArcRelation>) =
-
-    let kvs = List.zip (List.ofSeq graph.Keys) (List.ofSeq graph.Values)
-    let newGraph = 
-        FGraph.toSeq graph
-        |> Seq.fold (fun acc (nk1,nd1,nk2,nd2,e) -> FGraph.addElement nk1 nd1 nk2 nd2 e acc) FGraph.empty 
-
-    let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
-        //printfn "inputL: %A" input.Length
-        match input with
-        | (nk1,c) :: t ->
-            //printfn "pred: %A" (FContext.predecessors c)
-            if FContext.predecessors c |> Seq.isEmpty then 
-                //printfn "nk1: %A" nk1
-                c
-                |> fun (p,nd1,s) ->
-                    let newS = createEmptySubsequentFollowsCvParam onto nd1
-                    //printfn "newS: %A" newS
-                    if equalsRelation ontoGraph ArcRelation.PartOf nd1 newS then
-                        //printfn "addEle\n" 
-                        let newSnk = hash newS, newS.Name
-                        //printfn "newSnk: %A" newSnk
-                        FGraph.addElement newSnk newS nk1 nd1 ArcRelation.Follows newGraph
-                        |> ignore
-                        let newSnkc = newGraph[newSnk]
-                        let newT = (newSnk, newSnkc) :: t
-                        //printfn "newT: %A" newT
-                        loop newT
-                    else 
-                        //printfn "no addEle\n"
-                        loop t
-            else loop t
-        | [] -> printfn "end"; ()
-    loop kvs
-
-    newGraph
-
-
 
 completeOpenEnds ontoGraph doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
