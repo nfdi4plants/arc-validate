@@ -214,6 +214,8 @@ module ArcGraph =
 
         newGraph
 
+    let create
+
 
     /// Functions for visualizing ARC FGraphs.
     module Visualization =
