@@ -240,6 +240,13 @@ let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.pa
 
 res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
 
+let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
+
+    let cvps = xlsxParsing xlsxPath |> List.choose (Param.tryCvParam)
+
+    
+
+
 let getSubsequentFollowsTerm onto cvp =
     getPrecedingCvParams cvp onto
     |> Seq.pick (fun (id,t,r) -> if r.HasFlag ArcRelation.Follows then Some t else None)
