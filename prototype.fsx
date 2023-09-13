@@ -102,13 +102,6 @@ let ontoGraph = ontologyToFGraph obo
 // Helper functions for ISA graph construction
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
-let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
-    cvp1.Accession  = cvp2.Accession &&
-    cvp1.Name       = cvp2.Name &&
-    cvp1.RefUri     = cvp2.RefUri &&
-    cvp1.Value      = cvp2.Value &&
-    cvp1.Attributes = cvp2.Attributes   // careful bc of Dictionary! Comment out if necessary!
-
 /// Checks if 2 given CvParams share the same part_of relationship to the same other term.
 let equalsPartOf onto cvp1 cvp2 =
     equalsRelation onto ArcRelation.PartOf cvp1 cvp2
@@ -174,6 +167,13 @@ let cvpContactsComplicatedReassessed = deletePartOfEndpointSectionKeys (getPartO
 let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedReassessed
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
+
+
+let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
+
+    let cvps = xlsxParsing xlsxPath |> List.choose (Param.tryCvParam)
+
+    
 
 
 let getSubsequentFollowsTerm onto cvp =
