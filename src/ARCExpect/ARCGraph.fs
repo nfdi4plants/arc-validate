@@ -77,7 +77,7 @@ module ARCGraph =
 
     /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that have no part_of relation pointing at them.
     let getPartOfEndpoints (onto : FGraph<string,OboTerm,ArcRelation>) =
-        getEndpointsBy ArcRelation.PartOf
+        getEndpointsBy ArcRelation.PartOf onto
 
     /// Takes an OboTerm seq of endpoints (that is, any term without part_of predecessors) and filters a list of CvParams where every CvParam that is an endpoint is excluded.
     let deletePartOfEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam list) =
