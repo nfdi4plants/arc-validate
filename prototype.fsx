@@ -145,13 +145,6 @@ let equalsFollows onto cvp1 cvp2 =
 
 //getFollowTerm ontoGraph cvparamse[1], cvparamse[1]
 
-// duplicate from InternalUtils
-//type OboTerm with
-
-//    static member toCvTerm (term : OboTerm) =
-//        let ref = String.takeWhile ((<>) ':') term.Id
-//        {Accession = term.Id; Name = term.Name; RefUri = ref}
-
 //OboTerm.toCvTerm (ontoGraph.Values |> Seq.head |> fun (_,t,_) -> t)
 
 //cvparamse.[1].Attributes |> Dictionary.item "Row"
@@ -169,50 +162,19 @@ let cvpContactsSimple =
     |> List.map (Param.toCvParam)
 
 //let doneGraphSimple = constructSubgraph ontoGraph cvpContactsSimple
-let doneGraphSimple = constructSubgraph ontoGraph (getEndpoints ontoGraph |> deleteEndpointSectionKeys <| cvpContactsSimple)
+let doneGraphSimple = constructSubgraph ontoGraph (getPartOfEndpoints ontoGraph |> deletePartOfEndpointSectionKeys <| cvpContactsSimple)
 doneGraphSimple |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphSimple |> isaGraphToFullCyGraph |> CyGraph.show
 
 let cvpContactsComplicated = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
     |> List.map (Param.toCvParam)
-let cvpContactsComplicatedReassessed = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvpContactsComplicated
+let cvpContactsComplicatedReassessed = deletePartOfEndpointSectionKeys (getPartOfEndpoints ontoGraph) cvpContactsComplicated
 
 let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedReassessed
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
-// from ArcGraph.fs
-/// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
-let getRelatedCvParamsBy relating (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
-    relating graph[cvp.Accession]
-    |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
-    |> Seq.map (fun ((id,t),r) -> id, t, r)
-
-/// Returns all related terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
-    getRelatedCvParamsBy FContext.neighbours cvp graph
-
-/// Returns all succeeding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-let getSucceedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
-    getRelatedCvParamsBy FContext.successors cvp graph
-
-/// Returns all preceding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-let getPrecedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
-    getRelatedCvParamsBy FContext.predecessors cvp graph
-
-/// Takes an ontology FGraph and a given CvParam and creates a CvParam based on the CvTerm that the given CvParam's term is related to via the "Follows" relation. The created CvParam's value is an empty string.
-let createEmptySubsequentFollowsCvParam onto cvp =
-    getPrecedingCvParams cvp onto
-    |> Seq.pick (
-        fun (id,t,r) -> 
-            if r.HasFlag ArcRelation.Follows then 
-                let rowParam = CvParam(Address.row, ParamValue.Value (Param.getValueAsInt cvp["Row"] + 1))
-                let colParam = CvParam(Address.column, ParamValue.Value (Param.getValueAsInt cvp["Column"]))
-                let wsParam = CvParam(Address.worksheet, ParamValue.Value (Param.getValueAsString cvp["Worksheet"]))
-                Some (CvParam(OboTerm.toCvTerm t, ParamValue.Value "", [rowParam; colParam; wsParam]))
-            else None
-    )
 
 let getSubsequentFollowsTerm onto cvp =
     getPrecedingCvParams cvp onto
