@@ -240,6 +240,15 @@ let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.pa
 
 res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
 
+/// 
+let groupWhenHeader onto (cvps : CvParam list) =
+    let endpoints = getPartOfEndpoints onto
+    cvps
+    |> List.groupWhen (isHeader endpoints)
+
+groupWhenHeader ontoGraph cvparamse
+
+
 let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
 
     let cvps = xlsxParsing xlsxPath |> List.choose (Param.tryCvParam)
