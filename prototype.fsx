@@ -1,3 +1,4 @@
+#I "src/ArcValidation/bin/Release/netstandard2.0"
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
 #r "ARCValidation.dll"
 
@@ -5,7 +6,7 @@
 #r "nuget: Expecto"
 #r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
-#r "nuget: Cyjs.NET"
+#r "nuget: Cytoscape.NET"
 #r "nuget: FsOboParser, 0.3.0"
 
 
@@ -17,7 +18,7 @@ open FSharpAux
 //open ArcValidation.ErrorMessage
 open Graphoscope
 open FsOboParser
-open Cyjs.NET
+open Cytoscape.NET
 
 open ArcValidation
 open ArcValidation.OboGraph
@@ -169,20 +170,31 @@ doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
 
-/// 
+/// Takes an ISA-based ontology FGraph and a list of CvParams and returns the CvParams grouped into lists of sections.
 let groupWhenHeader onto (cvps : CvParam list) =
     let endpoints = getPartOfEndpoints onto
     cvps
     |> List.groupWhen (isHeader endpoints)
 
 groupWhenHeader ontoGraph cvparamse
+|> List.map (List.map (fun c -> c.Name))
 
 
+/// Takes an ISA-based ontology FGraph, an XLSX parsing function and a path to an XLSX file and returns a seq of section-based ISA-structured subgraphs.
+/// 
+/// `xlsxParsing` can be any of `Investigation.parseMetadataSheetFromFile`, `Study.parseMetadataSheetFromFile`, or `Assay.parseMetadataSheetFromFile`.
 let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
-
     let cvps = xlsxParsing xlsxPath |> List.choose (Param.tryCvParam)
+    let groupedCvps = groupWhenHeader onto cvps
+    groupedCvps
+    |> Seq.map (
+        ArcGraph.constructSubgraph onto 
+        >> completeOpenEnds onto
+    )
 
-    
+let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
+res0 |> Seq.item 1 |> Visualization.isaGraphToFullCyGraph |> CyGraph.withLayout (Layout.initGrid (Layout.LayoutOptions.Cose(NodeRepulsion = 500000000))) |> CyGraph.show
 
 
 let getSubsequentFollowsTerm onto cvp =
