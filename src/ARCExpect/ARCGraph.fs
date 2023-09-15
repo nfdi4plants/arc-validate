@@ -210,12 +210,28 @@ module ARCGraph =
                             //printfn "no addEle\n"
                             loop t
                 else loop t
-            | [] -> printfn "end"; ()
+            | [] -> (*printfn "end";*) ()
         loop kvs
 
         newGraph
 
-    let create
+    /// Takes an ISA-based ontology FGraph and a list of CvParams and returns the CvParams grouped into lists of sections.
+    let groupWhenHeader onto (cvps : CvParam list) =
+        let endpoints = getPartOfEndpoints onto
+        cvps
+        |> List.groupWhen (isHeader endpoints)
+
+    /// Takes an ISA-based ontology FGraph, an XLSX parsing function and a path to an XLSX file and returns a seq of section-based ISA-structured subgraphs.
+    /// 
+    /// `xlsxParsing` can be any of `Investigation.parseMetadataSheetFromFile`, `Study.parseMetadataSheetFromFile`, or `Assay.parseMetadataSheetFromFile`.
+    let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
+        let cvps = xlsxParsing xlsxPath |> List.choose (Param.tryCvParam)
+        let groupedCvps = groupWhenHeader onto cvps
+        groupedCvps
+        |> Seq.map (
+            constructSubgraph onto 
+            >> completeOpenEnds onto
+        )
 
 
         let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
