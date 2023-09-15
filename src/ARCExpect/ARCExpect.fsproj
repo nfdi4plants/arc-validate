@@ -32,6 +32,6 @@
     <PackageReference Include="ARCTokenization" Version="[1.2.0]" />
     <PackageReference Include="Graphoscope" Version="[0.2.0]" />
     <PackageReference Include="FsOboParser" Version="[0.3.0]" />
-    <PackageReference Include="Cyjs.NET" Version="[0.0.4]" />
+    <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
   </ItemGroup>
 </Project>
