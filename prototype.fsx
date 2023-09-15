@@ -1,4 +1,3 @@
-#I "src/ArcValidation/bin/Release/netstandard2.0"
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
 #I "src/ArcValidation/bin/Release/netstandard2.0"
 #r "ARCValidation.dll"
@@ -266,6 +265,24 @@ let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
 let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
 res0 |> Seq.item 1 |> Visualization.isaGraphToFullCyGraph |> CyGraph.withLayout (Layout.initGrid (Layout.LayoutOptions.Cose(NodeRepulsion = 500000000))) |> CyGraph.show
+res0 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res0 |> Seq.toList
+res0
+|> Seq.iteri (
+    fun i e ->
+        printfn "%i" i
+        Visualization.isaGraphToFullCyGraph e
+        |> ignore
+)
+
+let eps = getPartOfEndpoints ontoGraph
+cvparamse 
+|> deletePartOfEndpointSectionKeys eps
+|> groupWhenHeader eps
+|> List.map (constructSubgraph ontoGraph)
+|> List.mapi (
+    fun i x -> completeOpenEnds ontoGraph x
+)
 
 
 let getSubsequentFollowsTerm onto cvp =
