@@ -415,6 +415,14 @@
           "FSharp.Core": "5.0.0"
         }
       },
+      "Giraffe.ViewEngine": {
+        "type": "Transitive",
+        "resolved": "1.4.0",
+        "contentHash": "gWzlp8KGDLaPHMm/xGzfLT1e9wZaJhBKhEuMsPRBSn7wAMkSgMcaqJlWl8mFGCcOOx0r9UyDJvCJJQyljYmo+g==",
+        "dependencies": {
+          "FSharp.Core": "5.0.0"
+        }
+      },
       "Graphoscope": {
         "type": "Transitive",
         "resolved": "0.2.0",
