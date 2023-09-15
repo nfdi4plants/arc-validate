@@ -284,6 +284,13 @@ cvparamse
     fun i x -> completeOpenEnds ontoGraph x
 )
 
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+
+"Study" = "Study"
+
+let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
+
+"Assay" = "Assay"
 
 let getSubsequentFollowsTerm onto cvp =
     getPrecedingCvParams cvp onto
