@@ -1,13 +1,18 @@
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
 #I "src/ArcValidation/bin/Release/netstandard2.0"
 #r "ARCValidation.dll"
+#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
+#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
+#r "ARCTokenization.dll"
+#r "ControlledVocabulary.dll"
 
-#r "nuget: ARCTokenization"
+//#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
 #r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
 #r "nuget: Cytoscape.NET"
 #r "nuget: FsOboParser, 0.3.0"
+#r "nuget: FsSpreadsheet.ExcelIO, 4.1.0"
 
 
 open Expecto
@@ -191,13 +196,24 @@ cvparamse
     fun i x -> completeOpenEnds ontoGraph x
 )
 
-let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
 
-"Study" = "Study"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx"
+
+res1 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res1 |> Seq.last |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.toList
+res1 |> Seq.head |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 6 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 7 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 8 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
+res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.head
 
 let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
 
-"Assay" = "Assay"
+res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
 
 let getSubsequentFollowsTerm onto cvp =
     getPrecedingCvParams cvp onto
