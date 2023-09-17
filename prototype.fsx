@@ -285,12 +285,22 @@ cvparamse
 )
 
 let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx"
 
-"Study" = "Study"
+res1 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res1 |> Seq.last |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.toList
+res1 |> Seq.head |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 6 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 7 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 8 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
+res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.head
 
 let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
 
-"Assay" = "Assay"
+res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
 
 let getSubsequentFollowsTerm onto cvp =
     getPrecedingCvParams cvp onto
