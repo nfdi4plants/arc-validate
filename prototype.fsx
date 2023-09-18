@@ -298,6 +298,31 @@ res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
 res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
 res1 |> Seq.head
 
+
+let ontoGraph1 = ontologyToFGraph Terms.StudyMetadata.ontology
+let endpoints = getPartOfEndpoints ontoGraph1
+let cvps1a = Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx" 
+cvps1a.Length
+let cvps1b = cvps1a |> List.choose (Param.tryCvParam)
+cvps1b.Length
+let cvps1c = cvps1b |> deletePartOfEndpointSectionKeys endpoints
+cvps1c.Length
+cvps1c |> List.iter (fun x -> printfn "%s" x.Name)
+let cvps1d = cvps1c |> groupWhenHeader endpoints
+cvps1d.Length
+cvps1d[7]
+let cvps1e =
+    cvps1d
+    |> List.map (constructSubgraph ontoGraph1)
+cvps1e.Length
+cvps1e.Head
+cvps1e[5]
+let cvps1f =
+    cvps1e
+    |> List.mapi (fun i e -> printfn "%i" i; completeOpenEnds ontoGraph1 e)
+let res1a = ArcGraph.
+
+
 let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
 
 res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
