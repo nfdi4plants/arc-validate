@@ -143,35 +143,35 @@ module ARCGraph =
                 | [] ->
                     match stash with
                     | [] ->
-                        //printfn "done via empty stash!"
+                        printfn "done via empty stash!"
                         ()
                     | _ ->
-                        //printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
+                        printfn $"case new section header: h: {h.Name}, prior: {prior.Name}"
                         loop (h :: stash |> List.rev |> List.tail) t (stash |> List.rev |> List.head) parent
                 | _ ->
                     match follows h prior with
                     | true ->
-                        //printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
+                        printfn "tokensList is %A" (tokens |> List.map (fun (cvp : CvParam) -> $"{cvp.Name}: {cvp.Value |> ParamValue.getValueAsString}"))
                         match nextToSectionHeader h prior with
                         | true ->
-                            //printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
+                            printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
                             FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
                             loop t (prior :: stash) h h
                         | false ->
-                            //printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
+                            printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
                             FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows isaGraph |> ignore
                             loop t stash h h
                     | false ->
                         match CvParam.equalsTerm (CvParam.getTerm h) prior with
                         | true ->
-                            //printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
+                            printfn $"case same term: h: {h.Name}, prior: {prior.Name}"
                             loop t (h :: stash) h parent
                         | false ->
-                            //printfn $"case term missing: h: {h.Name}, prior: {prior.Name}"
+                            printfn $"case term missing: h: {h.Name}, prior: {prior.Name}"
                             let missingTerm = createEmptyPriorFollowsCvParam isaOntology h
                             loop (missingTerm :: h :: t) stash prior parent
             | [] -> 
-                //printfn "done via empty tokensList! (should not happen...)"
+                printfn "done via empty tokensList! (should not happen...)"
                 ()
 
         loop cvParams.Tail [] cvParams.Head cvParams.Head
