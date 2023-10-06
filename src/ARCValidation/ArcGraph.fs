@@ -129,6 +129,8 @@ module ArcGraph =
     /// Takes an ISA-based ontology in the form of an FGraph and a list of CvParams and creates an FGraph based on a section header's "follows" and "part_of" relations.
     let constructSubgraph isaOntology (cvParams : CvParam list) =
 
+        printfn "Start constructSubgraph with CvPs: %A" cvParams
+
         let nextToSectionHeader currentCvp priorCvp =
             hasPartOfTo isaOntology currentCvp priorCvp
         let follows currentCvp priorCvp =
@@ -174,6 +176,7 @@ module ArcGraph =
                 printfn "done via empty tokensList! (should not happen...)"
                 ()
 
+        FGraph.addNode (hash cvParams.Head,cvParams.Head.Name) cvParams.Head isaGraph |> ignore
         loop cvParams.Tail [] cvParams.Head cvParams.Head
         isaGraph
 
