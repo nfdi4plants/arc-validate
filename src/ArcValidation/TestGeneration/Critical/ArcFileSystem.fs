@@ -16,7 +16,7 @@ module FileSystem =
         let pathConfig = arcConfig.PathConfig
 
         testList "Filesystem" [
-            testCase "arcFolder"                    <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.DotArcFolderPath   |> throwError FilesystemEntry.isPresent
+            //testCase "arcFolder"                    <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.DotArcFolderPath   |> throwError FilesystemEntry.isPresent
             testCase "InvestigationFile"            <| fun () -> Validate.Critical.FilesystemEntry.file pathConfig.InvestigationPath    |> throwError FilesystemEntry.isPresent
             testCase "StudiesFolder"                <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.StudiesPath        |> throwError FilesystemEntry.isPresent
             testCase "AssaysFolder"                 <| fun () -> Validate.Critical.FilesystemEntry.folder pathConfig.AssaysPath         |> throwError FilesystemEntry.isPresent

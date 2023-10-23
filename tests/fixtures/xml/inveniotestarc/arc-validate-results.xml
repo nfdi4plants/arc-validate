@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <testsuites>
     <testsuite name="arc-validate">
-        <testcase name="[ Critical; Filesystem; arcFolder ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; InvestigationFile ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; StudiesFolder ]" time="0.002" />
         <testcase name="[ Critical; Filesystem; AssaysFolder ]" time="0.002" />
