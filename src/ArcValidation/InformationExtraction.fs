@@ -72,7 +72,11 @@ module InformationExtraction =
                         Param.getValueAsString 
                         >> fun s -> 
                             let sLinux = String.replace "\\" "/" s
-                            Path.Combine(studiesPath, sLinux)
+                            //printfn $"found study: {sLinux}"
+                            if sLinux.StartsWith("studies/") then 
+                                Path.Combine(studiesPath, (sLinux.Replace("studies/",""))) // hotfix for studies that are registered with path relative to arc root
+                            else
+                                Path.Combine(studiesPath, sLinux)
                     ),
                     CvContainer.tryGetSingleAs<IParam> "identifier" cvc
                     |> Option.map Param.getValueAsString

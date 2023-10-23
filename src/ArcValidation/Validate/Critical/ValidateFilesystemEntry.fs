@@ -43,6 +43,7 @@ module FilesystemEntry =
                 |> Seq.exists (
                     fun (p,id) -> 
                         let pLinux = Option.map (String.replace "/" "\\") p
+                        //printfn $"checking {pLinux} vs {Some studyFilepathLinux}"
                         pLinux = Some studyFilepathLinux
                 ) 
             if cond then Success
