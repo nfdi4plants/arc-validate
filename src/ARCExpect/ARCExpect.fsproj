@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Argu" Version="[6.1.1]" />
     <PackageReference Include="Expecto" Version="[9.0.4]" />
     <PackageReference Include="FSharpAux" Version="[1.1.0]" />
     <PackageReference Include="FsSpreadsheet" Version="[4.1.0]" />

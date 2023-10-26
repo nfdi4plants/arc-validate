@@ -10,6 +10,8 @@ open Expecto
 open System.IO
 open Argu
 
+open ControlledVocabulary
+
 module ValidateAPI = 
 
     let validate (verbose: bool) (args: ParseResults<ValidateArgs>)=
@@ -31,6 +33,9 @@ module ValidateAPI =
         let investigationTokens = 
             if hasInvFile then 
                 Investigation.parseMetadataSheetFromFile (Path.Combine(root, "isa.investigation.xlsx"))
+                |> List.filter (fun p ->
+                    Param.getValueAsTerm p <> Terms.StructuralTerms.metadataSectionKey // filter these out to get only value-holding cells
+                )
             else 
                 []
 
@@ -57,13 +62,29 @@ module ValidateAPI =
                 nonCriticalTests
                 |> performTest
 
-            [criticalTestResults; nonCriticalTestResults] 
-            |> combineTestRunSummaries // aggregate critical and non-critical test results
+            let combinedTestResults = 
+                [criticalTestResults; nonCriticalTestResults] 
+                |> combineTestRunSummaries // aggregate critical and non-critical test results
+
+            let badge = 
+                combinedTestResults
+                |> BadgeCreation.createSuccessBadge "ARC quality"
+            
+            badge.WriteBadge(Path.Combine(outPath, "arc-quality.svg"))
+
+            combinedTestResults
             |> writeJUnitSummary verbose (Path.Combine(outPath, "arc-validate-results.xml")) // write the combined result to a single file
 
             ExitCode.Success // critical tests passed, non-critical tests have been performed. Success!
 
         else // one or more critical tests failed or errored.
+
+            let badge = 
+                criticalTestResults
+                |> BadgeCreation.createCriticalFailBadge "ARC quality"
+            
+            badge.WriteBadge(Path.Combine(outPath, "arc-quality.svg"))
+
             criticalTestResults
             |> Expecto.writeJUnitSummary verbose (Path.Combine(outPath, "arc-validate-results.xml"))
 

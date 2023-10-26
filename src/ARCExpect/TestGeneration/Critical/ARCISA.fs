@@ -28,7 +28,7 @@ module ISA =
                 }
                 ARCExpect.test (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
                     cvParams
-                    |> ARCExpect.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
+                    |> ARCExpect.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
                 }
             ]
         ]

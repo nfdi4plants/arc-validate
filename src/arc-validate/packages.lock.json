@@ -2,6 +2,16 @@
   "version": 1,
   "dependencies": {
     "net6.0": {
+      "AnyBadge.NET": {
+        "type": "Direct",
+        "requested": "[1.0.0, 1.0.0]",
+        "resolved": "1.0.0",
+        "contentHash": "JuHMr4Onoj1h6KXgysWw4FvM/7zxwc/RfRV4KD/v9tg5v68jDbckloSuayNQefpUaUd0/ITLd3L7hkx4d66DYA==",
+        "dependencies": {
+          "FSharp.Core": "6.0.7",
+          "Semver": "2.3.0"
+        }
+      },
       "Argu": {
         "type": "Direct",
         "requested": "[6.1.1, 6.1.1]",
@@ -584,6 +594,11 @@
         "resolved": "6.0.0",
         "contentHash": "XA59hPSbKdExu28TbONlD/BwOkKzjo4u2mkEJIP4wnDz9P65FdM34cVA+2/jztKrKyFmX8jpQW++xOp99mufjw=="
       },
+      "Semver": {
+        "type": "Transitive",
+        "resolved": "2.3.0",
+        "contentHash": "4vYo1zqn6pJ1YrhjuhuOSbIIm0CpM47grbpTJ5ABjOlfGt/EhMEM9ed4MRK5Jr6gVnntWDqOUzGeUJp68PZGjw=="
+      },
       "System.CodeDom": {
         "type": "Transitive",
         "resolved": "4.4.0",
@@ -889,7 +904,6 @@
         "type": "Project",
         "dependencies": {
           "ARCTokenization": "[1.2.0, 1.2.0]",
-          "Argu": "[6.1.1, 6.1.1]",
           "Cyjs.NET": "[0.0.4, 0.0.4]",
           "Expecto": "[9.0.4, 9.0.4]",
           "FSharp.Core": "[6.0.7, )",

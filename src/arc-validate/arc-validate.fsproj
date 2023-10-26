@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="BadgeCreation.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\LegacyArgs.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
@@ -21,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AnyBadge.NET" Version="[1.0.0]" />
     <PackageReference Include="Argu" Version="[6.1.1]" />
     <PackageReference Include="Expecto" Version="[9.0.4]" />
   </ItemGroup>

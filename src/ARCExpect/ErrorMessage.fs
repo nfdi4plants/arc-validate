@@ -16,7 +16,7 @@ type ErrorMessage =
 
         let str = new System.Text.StringBuilder()    
         str.AppendFormat("The term '{0}' {1}\n",  cvTerm.Name, error) |> ignore 
-        str.AppendFormat("'from {0}' with accession {1}",  cvTerm.RefUri, cvTerm.Accession) |> ignore 
+        //str.AppendFormat("'from {0}' with accession {1}",  cvTerm.RefUri, cvTerm.Accession) |> ignore 
         str.ToString()
 
     static member ofCvParam (error:string) (cvParam: CvParam) =
