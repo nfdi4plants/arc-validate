@@ -1,5 +1,1 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<testsuites>
-    <testsuite name="arc-validate">
-    </testsuite>
-</testsuites>
+﻿<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="arc-validate"><testcase name="[ Critical; FileSystem; Investigation; Investigation File ]" time="0.004" /><testcase name="[ Critical; Investigation Metadata; INVESTIGATION; Investigation Title ]" time="0.002" /><testcase name="[ Critical; Investigation Metadata; INVESTIGATION; Investigation Description ]" time="0.002" /></testsuite></testsuites>

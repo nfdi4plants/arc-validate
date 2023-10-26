@@ -2,10 +2,9 @@
 
 module ARCExpect =
 
-    open CvParamExtensions
     open ControlledVocabulary
 
-    open StaticCvTerms.IsaTerms
+    open ARCTokenization.StructuralOntology
 
     /// <summary>
     /// 
@@ -30,11 +29,11 @@ module ARCExpect =
 
     type ByValue() =
         static member notEmpty (cvp:CvParam) =
-            match isEmpty cvp with
+            match CvParam.isEmpty cvp with
             | false -> ()
             | true ->
                 cvp
-                |> errorMessageOf "is empty."                
+                |> ErrorMessage.ofCvParam "is empty."                
                 |> Expecto.Tests.failtestNoStackf "%s"
 
         static member equals (targetValue:System.IConvertible) (cvp:CvParam) =
@@ -43,19 +42,36 @@ module ARCExpect =
             | true  -> ()
             | false -> 
                 cvp
-                |> errorMessageOf $"should equal {targetValue}."
+                |> ErrorMessage.ofCvParam $"should equal {targetValue}."
                 |> Expecto.Tests.failtestNoStackf "%s"
 
-        static member contains (set:seq<System.IConvertible>) =
-            fun (cvp:CvParam) -> 
-                let tmp = 
-                    CvParam.getParamValue cvp
-                    |> ParamValue.getValue                
-                match Seq.contains tmp set with
+        /// <summary>
+        /// tests wether any of the CvParams in the given collection has the expectedValue
+        /// </summary>
+        /// <param name="expectedValue">the value expected to occur in at least 1 CvParam in the given collection</param>
+        static member contains (expectedValue: #System.IConvertible) =
+            fun (set: #seq<CvParam>) -> 
+                match Seq.exists (fun (cvp : CvParam)-> (cvp.Value |> ParamValue.getValue) = (expectedValue :> System.IConvertible)) set with
                 | true  -> ()
                 | false ->
-                cvp
-                |> errorMessageOf $"should equal either [{set}]"
+                expectedValue
+                |> ErrorMessage.ofValue $"does not exist"
+                |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// tests wether any of the CvParams equal the expectedParam by value
+        /// </summary>
+        /// <param name="expectedParam">the Cvparam for which it is expected to share it's value with at least one Cvparam in the collection</param>
+        static member contains (expectedParam:CvParam) =
+            fun (set: #seq<CvParam>) -> 
+                let tmp = 
+                    CvParam.getParamValue expectedParam
+                    |> ParamValue.getValue                
+                match Seq.exists (fun (cvp : CvParam)-> (cvp.Value |> ParamValue.getValue) = tmp) set with
+                | true  -> ()
+                | false ->
+                expectedParam
+                |> ErrorMessage.ofCvParam $"does not exist"
                 |> Expecto.Tests.failtestNoStackf "%s"
         
 
@@ -69,7 +85,7 @@ module ARCExpect =
                 | true -> ()
                 | false ->
                     cvp
-                    |> errorMessageOf "is invalid."               
+                    |> ErrorMessage.ofCvParam "is invalid."               
                     |> Expecto.Tests.failtestNoStackf "%s"                   
 
 
@@ -83,7 +99,7 @@ module ARCExpect =
                 | true -> ()
                 | false ->
                     cvp
-                    |> errorMessageOf "is invalid."              
+                    |> ErrorMessage.ofCvParam "is invalid."              
                     |> Expecto.Tests.failtestNoStackf "%s"                   
         
         
@@ -97,7 +113,7 @@ module ARCExpect =
                 | true -> ()
                 | false ->
                     cvp
-                    |> errorMessageOf "is invalid."               
+                    |> ErrorMessage.ofCvParam "is invalid."               
                     |> Expecto.Tests.failtestNoStackf "%s"    
 
     type ByTerm() =
@@ -108,8 +124,8 @@ module ARCExpect =
                 match (CvParam.getTerm cvp) = target with
                 | true -> ()
                 | false ->
-                     cvp
-                    |> errorMessageOf $"should equal {target}."              
+                    cvp
+                    |> ErrorMessage.ofCvParam $"should equal {target}."              
                     |> Expecto.Tests.failtestNoStackf "%s"                        
 
         /// Compares by Term 
@@ -118,29 +134,34 @@ module ARCExpect =
                 match (CvParam.getTerm cvp) = (CvParam.getTerm target) with
                 | true -> ()
                 | false ->
-                     cvp
-                    |> errorMessageOf $"should equal {target}."              
+                    cvp
+                    |> ErrorMessage.ofCvParam $"should equal {target}."              
                     |> Expecto.Tests.failtestNoStackf "%s"              
         
-        static member exists (set:seq<CvTerm>) =
-            fun (cvp:CvParam) -> 
-                let term = CvParam.getTerm cvp
-                match Seq.contains term set with 
-                | true -> ()
-                | false ->
-                    cvp
-                    |> errorMessageOf "is missing."
-                    |> Expecto.Tests.failtestNoStackf "%s"                   
-
-        /// Compares by Term 
-        static member exists (set:seq<CvParam>) =            
-            fun (cvp:CvParam) -> 
-                let term = CvParam.getTerm cvp              
-                match Seq.exists (fun e -> CvParam.getTerm e = term) set  with
+        /// <summary>
+        /// tests wether any of the CvParams in the given collection is annotated with the expectedTerm
+        /// </summary>
+        /// <param name="expectedTerm">the term expected to occur in at least 1 CvParam in the given collection</param>
+        static member contains (expectedTerm:CvTerm) =
+            fun (set: #seq<CvParam>) -> 
+                match Seq.exists (fun e -> CvParam.getTerm e = expectedTerm) set  with
                 | true  -> ()
                 | false ->
-                    cvp
-                    |> errorMessageOf "is missing."
+                    expectedTerm
+                    |> ErrorMessage.ofCvTerm "is missing."
+                    |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// tests wether any of the CvParams equal the expectedParam by term
+        /// </summary>
+        /// <param name="expectedParam">the Cvparam for which it is expected to share it's term with at least one Cvparam in the collection</param>
+        static member contains (expectedParam:CvParam) =            
+            fun (set: #seq<CvParam>) -> 
+                match Seq.exists (fun e -> CvParam.getTerm e = CvParam.getTerm expectedParam) set with
+                | true  -> ()
+                | false ->
+                    expectedParam
+                    |> ErrorMessage.ofCvParam "is missing."
                     |> Expecto.Tests.failtestNoStackf "%s"
 
     /// <summary>
@@ -150,5 +171,5 @@ module ARCExpect =
 
         static member email (cvp:CvParam) = 
             cvp |> ByValue.isMatch StringValidationPattern.email
-            cvp |> ByTerm.equals Investigation.Contacts.``Investigation Person Email``
+            cvp |> ByTerm.equals INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
 

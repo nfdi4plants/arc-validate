@@ -1,7 +1,14 @@
 ﻿namespace ARCExpect.TestGeneration.NonCritical.ARC
 
 open ARCExpect
+open ControlledVocabulary
+open ARCTokenization
+open CvParamExtensions
 open ARCExpect.Configs
+
+open ARCTokenization
+open ARCTokenization.StructuralOntology
+
 
 module ISA =
 
@@ -9,14 +16,12 @@ module ISA =
     open FSharpAux
     //open System.IO
 
-    let generateISATests (arcConfig: ARCConfig) =
+    let generateISATests (tokens: IParam list) =
 
+        let cvParams = tokens |> List.choose Param.tryCvParam
+        
         //let pathConfig = arcConfig.PathConfig
 
-        testList "ISA" [
-            testList "Semantic" [
-                testList "Investigation" [
-                    testList "Person" []
-                ]
-            ]
+        testList INVMSO.``Investigation Metadata``.key.Name [
+
         ]

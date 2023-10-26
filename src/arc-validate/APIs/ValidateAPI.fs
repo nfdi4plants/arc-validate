@@ -4,6 +4,7 @@ open ARCValidate
 open ARCValidate.CLIArguments
 open ARCExpect
 open ARCExpect.Configs
+open ARCTokenization
 
 open Expecto
 open System.IO
@@ -13,21 +14,31 @@ module ValidateAPI =
 
     let validate (verbose: bool) (args: ParseResults<ValidateArgs>)=
 
-        let arcConfig = 
+        let root = 
             args.TryGetResult(ARC_Directory)
             |> Option.defaultValue (System.Environment.GetEnvironmentVariable("ARC_PATH")) // default to ARC_PATH if argument is not provided
             |> fun s -> if System.String.IsNullOrWhiteSpace(s) then System.Environment.CurrentDirectory else s // default to ./ if ARC_PATH is not set
-            |> fun s -> ARCConfig(s)
+            |> Path.GetFullPath
+            |> fun p -> p.Replace("\\","/")
+            |> fun p -> if not (p.EndsWith("/")) then p + "/" else p // ensure path ends with a slash
 
         let outPath = 
             args.TryGetResult(Out_Directory)
-            |> Option.defaultValue arcConfig.PathConfig.ARCRootPath
+            |> Option.defaultValue root
+
+        let hasInvFile = File.Exists(Path.Combine(root, "isa.investigation.xlsx"))
+
+        let investigationTokens = 
+            if hasInvFile then 
+                Investigation.parseMetadataSheetFromFile (Path.Combine(root, "isa.investigation.xlsx"))
+            else 
+                []
 
         /// these tests MUST pass for an ARC to be considered for publishing
         let criticalTests =
             testList "Critical" [
-                TestGeneration.Critical.ARC.FileSystem.generateARCFileSystemTests arcConfig
-                TestGeneration.Critical.ARC.ISA.generateISATests arcConfig
+                TestGeneration.Critical.ARC.FileSystem.generateARCFileSystemTests root
+                TestGeneration.Critical.ARC.ISA.generateISATests investigationTokens
             ]
 
         let criticalTestResults =
@@ -39,7 +50,7 @@ module ValidateAPI =
             /// these tests SHOULD pass for an ARC to be considered of high quality
             let nonCriticalTests =
                 testList "Non-critical" [
-                    TestGeneration.NonCritical.ARC.ISA.generateISATests arcConfig
+                    TestGeneration.NonCritical.ARC.ISA.generateISATests investigationTokens
                 ]
 
             let nonCriticalTestResults =

@@ -13,10 +13,10 @@ let ``ByValue tests`` =
                 "inequal values were not correctly detected as inequal"
         }
 
-        test "contained value is detected" {ARCExpect.ByValue.contains ["Kevin"; "Kevin2"] ReferenceObjects.CvParams.``Investigation Person First Name``}
+        test "contained value is detected" {ARCExpect.ByValue.contains "Kevin" [ReferenceObjects.CvParams.``Investigation Person First Name``]}
         test "non-contained value is detected" {
             Expect.throws 
-                (fun () -> ARCExpect.ByValue.contains ["Kevin2"; "Kevin3"] ReferenceObjects.CvParams.``Investigation Person First Name``) 
+                (fun () -> ARCExpect.ByValue.contains "Kevin2" [ReferenceObjects.CvParams.``Investigation Person First Name``]) 
                 "non-contained value was not correctly detected as not contained"
         }
 
@@ -57,10 +57,10 @@ let ``ByTerm tests`` =
                 "inequal cvterms were not correctly detected as inequal"
         }
 
-        test "contained cvparam is detected" {ARCExpect.ByTerm.exists [ReferenceObjects.CvParams.``Investigation Person First Name``] ReferenceObjects.CvParams.``Investigation Person First Name``}
+        test "contained cvparam is detected" {ARCExpect.ByTerm.contains ReferenceObjects.CvParams.``Investigation Person First Name`` [ReferenceObjects.CvParams.``Investigation Person First Name``] }
         test "non-contained cvparam is detected" {
             Expect.throws 
-                (fun () -> ARCExpect.ByTerm.exists [ReferenceObjects.CvParams.``Investigation Person Email (valid)``] ReferenceObjects.CvParams.``Investigation Person First Name``) 
+                (fun () -> ARCExpect.ByTerm.contains ReferenceObjects.CvParams.``Investigation Person First Name`` [ReferenceObjects.CvParams.``Investigation Person Email (valid)``] ) 
                 "non-contained cvparam was not correctly detected as not contained"
         }
 

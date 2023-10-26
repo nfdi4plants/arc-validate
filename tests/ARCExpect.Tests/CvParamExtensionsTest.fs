@@ -2,7 +2,6 @@
 
 open Expecto
 open ARCExpect
-open ARCExpect.CvParamExtensions
 
 // TO-DO: implement these
 [<Tests>]

@@ -7,12 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="StaticCvTerms.fs" />
-    <Compile Include="DirTokenizer.fs" />
     <Compile Include="InternalUtils.fs" />
     <Compile Include="StringValidationPattern.fs" />
     <Compile Include="ParamCollection.fs" />
-    <Compile Include="CvParamExtensions.fs" />
+    <Compile Include="CVExtensions.fs" />
+    <Compile Include="ErrorMessage.fs" />
     <Compile Include="ExpectoExtensions.fs" />
     <Compile Include="ARCExpect.fs" />
     <Compile Include="ARCRelation.fs" />
@@ -31,7 +30,7 @@
     <PackageReference Include="FSharpAux" Version="[1.1.0]" />
     <PackageReference Include="FsSpreadsheet" Version="[4.1.0]" />
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[4.1.0]" />
-    <PackageReference Include="ARCTokenization" Version="[1.0.3]" />
+    <PackageReference Include="ARCTokenization" Version="[1.2.0]" />
     <PackageReference Include="Graphoscope" Version="[0.2.0]" />
     <PackageReference Include="FsOboParser" Version="[0.3.0]" />
     <PackageReference Include="Cyjs.NET" Version="[0.0.4]" />
