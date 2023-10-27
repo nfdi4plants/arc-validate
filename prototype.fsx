@@ -6,7 +6,7 @@
 //#r "ARCTokenization.dll"
 //#r "ControlledVocabulary.dll"
 
-#r "nuget: ARCTokenization"
+//#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
 #r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
@@ -177,6 +177,97 @@ let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedRea
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
+let wrongTermInContacts = ArcGraph.fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+wrongTermInContacts |> List.ofSeq
+let wrongTermInContactsF = Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+
+let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
+res0 |> Seq.item 1 |> Visualization.isaGraphToFullCyGraph |> CyGraph.withLayout (Layout.initGrid (Layout.LayoutOptions.Cose(NodeRepulsion = 500000000))) |> CyGraph.show
+res0 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res0 |> Seq.toList
+res0
+|> Seq.iteri (
+    fun i e ->
+        printfn "%i" i
+        Visualization.isaGraphToFullCyGraph e
+        |> ignore
+)
+
+let eps = getPartOfEndpoints ontoGraph
+cvparamse 
+|> deletePartOfEndpointSectionKeys eps
+|> groupWhenHeader eps
+|> List.map (constructSubgraph ontoGraph)
+|> List.mapi (
+    fun i x -> completeOpenEnds ontoGraph x
+)
+
+
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx"
+
+res1 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res1 |> Seq.last |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.toList
+res1 |> Seq.head |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 6 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 7 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 8 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
+res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.head
+
+
+let ontoGraph1 = ontologyToFGraph Terms.StudyMetadata.ontology
+let endpoints = getPartOfEndpoints ontoGraph1
+let cvps1a = Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx" 
+cvps1a.Length
+let cvps1b = cvps1a |> List.choose (Param.tryCvParam)
+cvps1b.Length
+let cvps1c = cvps1b |> deletePartOfEndpointSectionKeys endpoints
+cvps1c.Length
+cvps1c |> List.iter (fun x -> printfn "%s" x.Name)
+let cvps1d = cvps1c |> groupWhenHeader endpoints
+cvps1d.Length
+cvps1d[7]
+let cvps1e =
+    cvps1d
+    |> List.map (constructSubgraph ontoGraph1)
+cvps1e.Length
+cvps1e.Head
+cvps1e[5]
+let cvps1f =
+    cvps1e
+    |> List.mapi (fun i e -> printfn "%i" i; completeOpenEnds ontoGraph1 e)
+let res1a = ArcGraph.
+
+
+let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
+
+res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+
+let getSubsequentFollowsTerm onto cvp =
+    getPrecedingCvParams cvp onto
+    |> Seq.pick (fun (id,t,r) -> if r.HasFlag ArcRelation.Follows then Some t else None)
+
+
+
+Seq.zip doneGraphComplicated.Keys doneGraphComplicated.Values
+|> Seq.map (
+    fun (nk1,c) -> 
+        if FContext.predecessors c |> Seq.isEmpty then 
+            printfn "empty preds @ %A" nk1
+            getSubsequentFollowsTerm ontoGraph (c |> fun (p,nd,s) -> nd)
+            |> fun r -> printfn "term: %A" r; r
+        else OboTerm.Create ""
+)
+|> List.ofSeq
+|> ignore
+
+
+
+completeOpenEnds ontoGraph doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 let wrongTermInContacts = ArcGraph.fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
 wrongTermInContacts |> List.ofSeq
 let wrongTermInContactsF = Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
