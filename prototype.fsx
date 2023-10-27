@@ -1,10 +1,10 @@
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
 #I "src/ArcValidation/bin/Release/netstandard2.0"
 #r "ARCValidation.dll"
-#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
-#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
-#r "ARCTokenization.dll"
-#r "ControlledVocabulary.dll"
+//#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
+//#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
+//#r "ARCTokenization.dll"
+//#r "ControlledVocabulary.dll"
 
 //#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
@@ -58,6 +58,9 @@ open System.Text.RegularExpressions
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
 //paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
+paramse |> List.iter (fun p -> printfn "%A" <| p.GetType().ToString())
+paramse |> List.iter (fun p -> printfn "%A" <| (p.Value |> ParamValue.getValueAsString))
+paramse |> List.iter (fun p -> printfn "%A" <| p.Name)
 
 //let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
 //let cvparamse = 
@@ -173,6 +176,10 @@ let cvpContactsComplicatedReassessed = deletePartOfEndpointSectionKeys (getPartO
 let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedReassessed
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
+
+let wrongTermInContacts = ArcGraph.fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+wrongTermInContacts |> List.ofSeq
+let wrongTermInContactsF = Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
 
 let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
