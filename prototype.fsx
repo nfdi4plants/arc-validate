@@ -1,12 +1,18 @@
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
+#I "src/ArcValidation/bin/Release/netstandard2.0"
 #r "ARCValidation.dll"
+//#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
+//#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
+//#r "ARCTokenization.dll"
+//#r "ControlledVocabulary.dll"
 
-#r "nuget: ARCTokenization"
+//#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
 #r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
-#r "nuget: Cyjs.NET"
+#r "nuget: Cytoscape.NET"
 #r "nuget: FsOboParser, 0.3.0"
+#r "nuget: FsSpreadsheet.ExcelIO, 4.1.0"
 
 
 open Expecto
@@ -17,7 +23,7 @@ open FSharpAux
 //open ArcValidation.ErrorMessage
 open Graphoscope
 open FsOboParser
-open Cyjs.NET
+open Cytoscape.NET
 
 open ArcValidation
 open ArcValidation.OboGraph
@@ -52,6 +58,9 @@ open System.Text.RegularExpressions
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
 //paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
+paramse |> List.iter (fun p -> printfn "%A" <| p.GetType().ToString())
+paramse |> List.iter (fun p -> printfn "%A" <| (p.Value |> ParamValue.getValueAsString))
+paramse |> List.iter (fun p -> printfn "%A" <| p.Name)
 
 //let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
 //let cvparamse = 
@@ -102,13 +111,6 @@ let ontoGraph = ontologyToFGraph obo
 // Helper functions for ISA graph construction
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
-let equalsCvp (cvp1 : CvParam) (cvp2 : CvParam) =
-    cvp1.Accession  = cvp2.Accession &&
-    cvp1.Name       = cvp2.Name &&
-    cvp1.RefUri     = cvp2.RefUri &&
-    cvp1.Value      = cvp2.Value &&
-    cvp1.Attributes = cvp2.Attributes   // careful bc of Dictionary! Comment out if necessary!
-
 /// Checks if 2 given CvParams share the same part_of relationship to the same other term.
 let equalsPartOf onto cvp1 cvp2 =
     equalsRelation onto ArcRelation.PartOf cvp1 cvp2
@@ -145,13 +147,6 @@ let equalsFollows onto cvp1 cvp2 =
 
 //getFollowTerm ontoGraph cvparamse[1], cvparamse[1]
 
-// duplicate from InternalUtils
-//type OboTerm with
-
-//    static member toCvTerm (term : OboTerm) =
-//        let ref = String.takeWhile ((<>) ':') term.Id
-//        {Accession = term.Id; Name = term.Name; RefUri = ref}
-
 //OboTerm.toCvTerm (ontoGraph.Values |> Seq.head |> fun (_,t,_) -> t)
 
 //cvparamse.[1].Attributes |> Dictionary.item "Row"
@@ -169,21 +164,288 @@ let cvpContactsSimple =
     |> List.map (Param.toCvParam)
 
 //let doneGraphSimple = constructSubgraph ontoGraph cvpContactsSimple
-let doneGraphSimple = constructSubgraph ontoGraph (getEndpoints ontoGraph |> deleteEndpointSectionKeys <| cvpContactsSimple)
+let doneGraphSimple = constructSubgraph ontoGraph (getPartOfEndpoints ontoGraph |> deletePartOfEndpointSectionKeys <| cvpContactsSimple)
 doneGraphSimple |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphSimple |> isaGraphToFullCyGraph |> CyGraph.show
 
 let cvpContactsComplicated = 
     Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_ContactsOnly_Complicated.xlsx"
     |> List.map (Param.toCvParam)
-let cvpContactsComplicatedReassessed = deleteEndpointSectionKeys (getEndpoints ontoGraph) cvpContactsComplicated
+let cvpContactsComplicatedReassessed = deletePartOfEndpointSectionKeys (getPartOfEndpoints ontoGraph) cvpContactsComplicated
 
 let doneGraphComplicated = constructSubgraph ontoGraph cvpContactsComplicatedReassessed
 doneGraphComplicated |> printGraph (fun x -> $"{x.Name}: {x.Value |> ParamValue.getValueAsString}")
 doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
-let completeOpenEnds onto graph =
-    let opneEndpoints = Graphoscope.Algorithms.DFS.ofFGraph
+let wrongTermInContacts = ArcGraph.fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+wrongTermInContacts |> List.ofSeq
+let wrongTermInContactsF = Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+
+let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
+res0 |> Seq.item 1 |> Visualization.isaGraphToFullCyGraph |> CyGraph.withLayout (Layout.initGrid (Layout.LayoutOptions.Cose(NodeRepulsion = 500000000))) |> CyGraph.show
+res0 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res0 |> Seq.toList
+res0
+|> Seq.iteri (
+    fun i e ->
+        printfn "%i" i
+        Visualization.isaGraphToFullCyGraph e
+        |> ignore
+)
+
+let eps = getPartOfEndpoints ontoGraph
+cvparamse 
+|> deletePartOfEndpointSectionKeys eps
+|> groupWhenHeader eps
+|> List.map (constructSubgraph ontoGraph)
+|> List.mapi (
+    fun i x -> completeOpenEnds ontoGraph x
+)
+
+
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx"
+
+res1 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res1 |> Seq.last |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.toList
+res1 |> Seq.head |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 6 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 7 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 8 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
+res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.head
+
+
+let ontoGraph1 = ontologyToFGraph Terms.StudyMetadata.ontology
+let endpoints = getPartOfEndpoints ontoGraph1
+let cvps1a = Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx" 
+cvps1a.Length
+let cvps1b = cvps1a |> List.choose (Param.tryCvParam)
+cvps1b.Length
+let cvps1c = cvps1b |> deletePartOfEndpointSectionKeys endpoints
+cvps1c.Length
+cvps1c |> List.iter (fun x -> printfn "%s" x.Name)
+let cvps1d = cvps1c |> groupWhenHeader endpoints
+cvps1d.Length
+cvps1d[7]
+let cvps1e =
+    cvps1d
+    |> List.map (constructSubgraph ontoGraph1)
+cvps1e.Length
+cvps1e.Head
+cvps1e[5]
+let cvps1f =
+    cvps1e
+    |> List.mapi (fun i e -> printfn "%i" i; completeOpenEnds ontoGraph1 e)
+let res1a = ArcGraph.
+
+
+let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
+
+res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+
+let getSubsequentFollowsTerm onto cvp =
+    getPrecedingCvParams cvp onto
+    |> Seq.pick (fun (id,t,r) -> if r.HasFlag ArcRelation.Follows then Some t else None)
+
+
+
+Seq.zip doneGraphComplicated.Keys doneGraphComplicated.Values
+|> Seq.map (
+    fun (nk1,c) -> 
+        if FContext.predecessors c |> Seq.isEmpty then 
+            printfn "empty preds @ %A" nk1
+            getSubsequentFollowsTerm ontoGraph (c |> fun (p,nd,s) -> nd)
+            |> fun r -> printfn "term: %A" r; r
+        else OboTerm.Create ""
+)
+|> List.ofSeq
+|> ignore
+
+
+
+completeOpenEnds ontoGraph doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
+let wrongTermInContacts = ArcGraph.fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+wrongTermInContacts |> List.ofSeq
+let wrongTermInContactsF = Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation_wrongTermInContacts.xlsx"
+
+let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
+res0 |> Seq.item 1 |> Visualization.isaGraphToFullCyGraph |> CyGraph.withLayout (Layout.initGrid (Layout.LayoutOptions.Cose(NodeRepulsion = 500000000))) |> CyGraph.show
+res0 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res0 |> Seq.toList
+res0
+|> Seq.iteri (
+    fun i e ->
+        printfn "%i" i
+        Visualization.isaGraphToFullCyGraph e
+        |> ignore
+)
+
+let eps = getPartOfEndpoints ontoGraph
+cvparamse 
+|> deletePartOfEndpointSectionKeys eps
+|> groupWhenHeader eps
+|> List.map (constructSubgraph ontoGraph)
+|> List.mapi (
+    fun i x -> completeOpenEnds ontoGraph x
+)
+
+
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx"
+
+res1 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res1 |> Seq.last |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.toList
+res1 |> Seq.head |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 6 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 7 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 8 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
+res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.head
+
+
+let ontoGraph1 = ontologyToFGraph Terms.StudyMetadata.ontology
+let endpoints = getPartOfEndpoints ontoGraph1
+let cvps1a = Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx" 
+cvps1a.Length
+let cvps1b = cvps1a |> List.choose (Param.tryCvParam)
+cvps1b.Length
+let cvps1c = cvps1b |> deletePartOfEndpointSectionKeys endpoints
+cvps1c.Length
+cvps1c |> List.iter (fun x -> printfn "%s" x.Name)
+let cvps1d = cvps1c |> groupWhenHeader endpoints
+cvps1d.Length
+cvps1d[7]
+let cvps1e =
+    cvps1d
+    |> List.map (constructSubgraph ontoGraph1)
+cvps1e.Length
+cvps1e.Head
+cvps1e[5]
+let cvps1f =
+    cvps1e
+    |> List.mapi (fun i e -> printfn "%i" i; completeOpenEnds ontoGraph1 e)
+let res1a = ArcGraph.
+
+
+let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
+
+res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+
+/// Takes an ISA-based ontology FGraph and a list of CvParams and returns the CvParams grouped into lists of sections.
+let groupWhenHeader onto (cvps : CvParam list) =
+    let endpoints = getPartOfEndpoints onto
+    cvps
+    |> List.groupWhen (isHeader endpoints)
+
+groupWhenHeader ontoGraph cvparamse
+|> List.map (List.map (fun c -> c.Name))
+
+
+/// Takes an ISA-based ontology FGraph, an XLSX parsing function and a path to an XLSX file and returns a seq of section-based ISA-structured subgraphs.
+/// 
+/// `xlsxParsing` can be any of `Investigation.parseMetadataSheetFromFile`, `Study.parseMetadataSheetFromFile`, or `Assay.parseMetadataSheetFromFile`.
+let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
+    let cvps = xlsxParsing xlsxPath |> List.choose (Param.tryCvParam)
+    let groupedCvps = groupWhenHeader onto cvps
+    groupedCvps
+    |> Seq.map (
+        ArcGraph.constructSubgraph onto 
+        >> completeOpenEnds onto
+    )
+
+let res0 = fromXlsxFile ontoGraph Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+res0 |> Seq.head |> Visualization.isaGraphToFullCyGraph |> CyGraph.show
+res0 |> Seq.item 1 |> Visualization.isaGraphToFullCyGraph |> CyGraph.withLayout (Layout.initGrid (Layout.LayoutOptions.Cose(NodeRepulsion = 500000000))) |> CyGraph.show
+res0 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res0 |> Seq.toList
+res0
+|> Seq.iteri (
+    fun i e ->
+        printfn "%i" i
+        Visualization.isaGraphToFullCyGraph e
+        |> ignore
+)
+
+let eps = getPartOfEndpoints ontoGraph
+cvparamse 
+|> deletePartOfEndpointSectionKeys eps
+|> groupWhenHeader eps
+|> List.map (constructSubgraph ontoGraph)
+|> List.mapi (
+    fun i x -> completeOpenEnds ontoGraph x
+)
+
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let res1 = fromXlsxFile (ontologyToFGraph Terms.StudyMetadata.ontology) Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx"
+
+res1 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+res1 |> Seq.last |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.toList
+res1 |> Seq.head |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 6 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 7 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.item 8 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.iteri (fun i _ -> printfn "%i" i)
+res1 |> Seq.item 100 |> Visualization.printGraph (fun nd -> nd.Name)
+res1 |> Seq.head
+
+
+let ontoGraph1 = ontologyToFGraph Terms.StudyMetadata.ontology
+let endpoints = getPartOfEndpoints ontoGraph1
+let cvps1a = Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study_unnecessarilyFilled.xlsx" 
+cvps1a.Length
+let cvps1b = cvps1a |> List.choose (Param.tryCvParam)
+cvps1b.Length
+let cvps1c = cvps1b |> deletePartOfEndpointSectionKeys endpoints
+cvps1c.Length
+cvps1c |> List.iter (fun x -> printfn "%s" x.Name)
+let cvps1d = cvps1c |> groupWhenHeader endpoints
+cvps1d.Length
+cvps1d[7]
+let cvps1e =
+    cvps1d
+    |> List.map (constructSubgraph ontoGraph1)
+cvps1e.Length
+cvps1e.Head
+cvps1e[5]
+let cvps1f =
+    cvps1e
+    |> List.mapi (fun i e -> printfn "%i" i; completeOpenEnds ontoGraph1 e)
+let res1a = ArcGraph.
+
+
+let res2 = fromXlsxFile (ontologyToFGraph Terms.AssayMetadata.ontology) Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
+
+res2 |> Seq.iter (Visualization.isaGraphToFullCyGraph >> CyGraph.show)
+
+let getSubsequentFollowsTerm onto cvp =
+    getPrecedingCvParams cvp onto
+    |> Seq.pick (fun (id,t,r) -> if r.HasFlag ArcRelation.Follows then Some t else None)
+
+
+
+Seq.zip doneGraphComplicated.Keys doneGraphComplicated.Values
+|> Seq.map (
+    fun (nk1,c) -> 
+        if FContext.predecessors c |> Seq.isEmpty then 
+            printfn "empty preds @ %A" nk1
+            getSubsequentFollowsTerm ontoGraph (c |> fun (p,nd,s) -> nd)
+            |> fun r -> printfn "term: %A" r; r
+        else OboTerm.Create ""
+)
+|> List.ofSeq
+|> ignore
+
+
+
+completeOpenEnds ontoGraph doneGraphComplicated |> isaGraphToFullCyGraph |> CyGraph.show
 
 //let constructSubraph iOuter isaOntoGraph (cvParams : CvParam list) =
 //    let rec loop i (inputList : CvParam list) (collList : CvParam list) (priorHead : CvParam) sectionHeader (graph : FGraph<int*string,CvParam,string>) =

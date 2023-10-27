@@ -69,14 +69,15 @@
           "FSharpAux.Core": "[2.0.0]"
         }
       },
-      "Cyjs.NET": {
+      "Cytoscape.NET": {
         "type": "Transitive",
-        "resolved": "0.0.4",
-        "contentHash": "1q5Wj17gi05Xz84q2Y52I8UokONnMO1yuXsfJ15x110l2s9KSWWtY2qamMAp9ucSqCHIBCs/U5YuEwqDWg7NBg==",
+        "resolved": "0.2.0",
+        "contentHash": "HDqP8Xt+j5aaKa2ymHW3IlOUj662HCGVq/+gXBGifxwETwO6V5eiFGwTkeZJ4UjgMCGfL7gZL+iUlE8QYOIyXQ==",
         "dependencies": {
-          "DynamicObj": "0.0.3",
-          "FSharp.Core": "5.0.0",
-          "Newtonsoft.Json": "12.0.3"
+          "DynamicObj": "2.0.0",
+          "FSharp.Core": "6.0.7",
+          "Giraffe.ViewEngine": "1.4.0",
+          "Newtonsoft.Json": "13.0.1"
         }
       },
       "DocumentFormat.OpenXml": {
@@ -89,10 +90,11 @@
       },
       "DynamicObj": {
         "type": "Transitive",
-        "resolved": "0.0.3",
-        "contentHash": "P1vSL2S6erqaM+8uwEM20AluKSiyBZ+45aCPpc0i/Sse+Z1+toWxp6vKzXDNgqTpvdjV3glRiYcNADggwVAYpw==",
+        "resolved": "2.0.0",
+        "contentHash": "26GDec7PIgj/vyRGk+Ijogk2PU24ltqy9s2fQudJtXik0nLU56Ydq/XXNYWMRBxn9HtFiSFigOMQ3yZ2HavnVA==",
         "dependencies": {
-          "FSharp.Core": "5.0.0"
+          "FSharp.Core": "6.0.2",
+          "Newtonsoft.Json": "13.0.1"
         }
       },
       "Fable.Core": {
@@ -403,6 +405,22 @@
           "DocumentFormat.OpenXml": "[2.12.3]",
           "FSharp.Core": "6.0.7",
           "FsSpreadsheet": "[4.0.0, 5.0.0)"
+        }
+      },
+      "Giraffe.ViewEngine": {
+        "type": "Transitive",
+        "resolved": "1.4.0",
+        "contentHash": "gWzlp8KGDLaPHMm/xGzfLT1e9wZaJhBKhEuMsPRBSn7wAMkSgMcaqJlWl8mFGCcOOx0r9UyDJvCJJQyljYmo+g==",
+        "dependencies": {
+          "FSharp.Core": "5.0.0"
+        }
+      },
+      "Giraffe.ViewEngine": {
+        "type": "Transitive",
+        "resolved": "1.4.0",
+        "contentHash": "gWzlp8KGDLaPHMm/xGzfLT1e9wZaJhBKhEuMsPRBSn7wAMkSgMcaqJlWl8mFGCcOOx0r9UyDJvCJJQyljYmo+g==",
+        "dependencies": {
+          "FSharp.Core": "5.0.0"
         }
       },
       "Graphoscope": {
@@ -903,8 +921,9 @@
       "arcexpect": {
         "type": "Project",
         "dependencies": {
-          "ARCTokenization": "[1.2.0, 1.2.0]",
-          "Cyjs.NET": "[0.0.4, 0.0.4]",
+          "ARCTokenization": "[1.0.3, 1.0.3]",
+          "Argu": "[6.1.1, 6.1.1]",
+          "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
           "FSharp.Core": "[6.0.7, )",
           "FSharpAux": "[1.1.0, 1.1.0]",
