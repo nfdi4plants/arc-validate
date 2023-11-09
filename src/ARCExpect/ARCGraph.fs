@@ -24,25 +24,25 @@ module ARCGraph =
         |> FGraph.createFromNodes<int*string,CvParam,ARCRelation> 
 
     /// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
-    let getRelatedCvParamsBy relating (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    let getRelatedCvParamsBy relating (cvp : CvParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
         relating graph[cvp.Accession]
         |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
         |> Seq.map (fun ((id,t),r) -> id, t, r)
 
     /// Returns all related terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-    let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    let getRelatedCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
         getRelatedCvParamsBy FContext.neighbours cvp graph
 
     /// Returns all succeeding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-    let getSucceedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    let getSucceedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
         getRelatedCvParamsBy FContext.successors cvp graph
 
     /// Returns all preceding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-    let getPrecedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ArcRelation>) =
+    let getPrecedingCvParams (cvp : CvParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
         getRelatedCvParamsBy FContext.predecessors cvp graph
 
     /// Checks is a given current CvParam has a given ArcRelation to a given prior CvParam by using a given ontology graph.
-    let hasRelationTo onto (relation : ArcRelation) currentCvp (priorCvp : CvParam) =
+    let hasRelationTo onto (relation : ARCRelation) currentCvp (priorCvp : CvParam) =
         getRelatedCvParams currentCvp onto
         |> Seq.exists (fun (id,t,r) -> id = priorCvp.Accession && r.HasFlag relation)
 
@@ -69,15 +69,15 @@ module ARCGraph =
         )
 
     /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that don't have the given ArcRelation pointing at them.
-    let getEndpointsBy (arcRelation : ArcRelation) (onto : FGraph<string,OboTerm,ArcRelation>) =
+    let getEndpointsBy (arcRelation : ARCRelation) (onto : FGraph<string,OboTerm,ARCRelation>) =
         onto.Values
         |> Seq.map (fun c -> c |> fun (id,t,e) -> t, FContext.predecessors c)
         |> Seq.map (fun (t,p) -> t, p |> Seq.filter (fun (id,r) -> r.HasFlag arcRelation))
         |> Seq.choose (fun (t,p) -> if Seq.length p = 0 then Some t else None)
 
     /// Takes an ontology-based FGraph and returns a seq of OboTerms that are endpoints. Endpoints are OboTerms that have no part_of relation pointing at them.
-    let getPartOfEndpoints (onto : FGraph<string,OboTerm,ArcRelation>) =
-        getEndpointsBy ArcRelation.PartOf onto
+    let getPartOfEndpoints (onto : FGraph<string,OboTerm,ARCRelation>) =
+        getEndpointsBy ARCRelation.PartOf onto
 
     /// Takes an OboTerm seq of endpoints (that is, any term without part_of predecessors) and filters a list of CvParams where every CvParam that is an endpoint is excluded.
     let deletePartOfEndpointSectionKeys (ontoEndpoints : OboTerm seq) (cvParams : CvParam list) =
@@ -118,7 +118,7 @@ module ARCGraph =
         getPrecedingCvParams cvp onto
         |> Seq.pick (
             fun (id,t,r) -> 
-                if r.HasFlag ArcRelation.Follows then 
+                if r.HasFlag ARCRelation.Follows then 
                     let rowParam = CvParam(Address.row, ParamValue.Value (Param.getValueAsInt cvp["Row"] + 1))
                     let colParam = CvParam(Address.column, ParamValue.Value (Param.getValueAsInt cvp["Column"]))
                     let wsParam = CvParam(Address.worksheet, ParamValue.Value (Param.getValueAsString cvp["Worksheet"]))
@@ -136,7 +136,7 @@ module ARCGraph =
         let follows currentCvp priorCvp =
             hasFollowsTo isaOntology currentCvp priorCvp
 
-        let isaGraph = FGraph.empty<int*string,CvParam,ArcRelation>
+        let isaGraph = FGraph.empty<int*string,CvParam,ARCRelation>
 
         let rec loop (tokens : CvParam list) (stash : CvParam list) (prior : CvParam) parent =
             match tokens with
@@ -157,15 +157,15 @@ module ARCGraph =
                         match nextToSectionHeader h prior with
                         | true ->
                             //printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
-                            FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
+                            FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ARCRelation.PartOf + ARCRelation.Follows) isaGraph |> ignore
                             printfn $"case first term after section header: h: {h.Name}, prior: {prior.Name}"
-                            FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ArcRelation.PartOf + ArcRelation.Follows) isaGraph |> ignore
+                            FGraph.addElement (hash h,h.Name) h (hash prior,prior.Name) prior (ARCRelation.PartOf + ARCRelation.Follows) isaGraph |> ignore
                             loop t (prior :: stash) h h
                         | false ->
                             //printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
-                            FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows isaGraph |> ignore
+                            FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ARCRelation.Follows isaGraph |> ignore
                             printfn $"case new term: h: {h.Name}, prior: {prior.Name}"
-                            FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ArcRelation.Follows isaGraph |> ignore
+                            FGraph.addElement (hash h,h.Name) h (hash parent,parent.Name) parent ARCRelation.Follows isaGraph |> ignore
                             loop t stash h h
                     | false ->
                         match CvParam.equalsTerm (CvParam.getTerm h) prior with
@@ -185,14 +185,14 @@ module ARCGraph =
         isaGraph
 
     /// Takes on ISA-based ontology FGraph and a structural FGraph and closes all loose ends (i.e., creating connected nodes to such nodes that should have a Follows ArcRelation and share the same PartOf ArcRelation) of the latter according to the ontology graph.
-    let completeOpenEnds onto (graph : FGraph<(int * string),CvParam,ArcRelation>) =
+    let completeOpenEnds onto (graph : FGraph<(int * string),CvParam,ARCRelation>) =
 
         let kvs = List.zip (List.ofSeq graph.Keys) (List.ofSeq graph.Values)
         let newGraph = 
             FGraph.toSeq graph
             |> Seq.fold (fun acc (nk1,nd1,nk2,nd2,e) -> FGraph.addElement nk1 nd1 nk2 nd2 e acc) FGraph.empty 
 
-        let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
+        let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ARCRelation>) list) =
             //printfn "inputL: %A" input.Length
             match input with
             | (nk1,c) :: t ->
@@ -203,122 +203,11 @@ module ARCGraph =
                     |> fun (p,nd1,s) ->
                         let newS = createEmptySubsequentFollowsCvParam onto nd1
                         //printfn "newS: %A" newS
-                        if equalsRelation onto ArcRelation.PartOf nd1 newS then
+                        if equalsRelation onto ARCRelation.PartOf nd1 newS then
                             //printfn "addEle\n" 
                             let newSnk = hash newS, newS.Name
                             //printfn "newSnk: %A" newSnk
-                            FGraph.addElement newSnk newS nk1 nd1 ArcRelation.Follows newGraph
-                            |> ignore
-                            let newSnkc = newGraph[newSnk]
-                            let newT = (newSnk, newSnkc) :: t
-                            //printfn "newT: %A" newT
-                            loop newT
-                        else 
-                            //printfn "no addEle\n"
-                            loop t
-                else loop t
-            | [] -> (*printfn "end";*) ()
-        loop kvs
-
-        newGraph
-
-    /// Takes a seq of OboTerms that are part_of endpoints and a list of CvParams and returns the CvParams grouped into lists of sections.
-    let groupWhenHeader partOfEndpoints (cvps : CvParam list) =
-        cvps
-        |> List.groupWhen (isHeader partOfEndpoints)
-    /// Takes on ISA-based ontology FGraph and a structural FGraph and closes all loose ends (i.e., creating connected nodes to such nodes that should have a Follows ArcRelation and share the same PartOf ArcRelation) of the latter according to the ontology graph.
-    let completeOpenEnds onto (graph : FGraph<(int * string),CvParam,ArcRelation>) =
-
-        let kvs = List.zip (List.ofSeq graph.Keys) (List.ofSeq graph.Values)
-        let newGraph = 
-            FGraph.toSeq graph
-            |> Seq.fold (fun acc (nk1,nd1,nk2,nd2,e) -> FGraph.addElement nk1 nd1 nk2 nd2 e acc) FGraph.empty 
-
-        let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
-            //printfn "inputL: %A" input.Length
-            match input with
-            | (nk1,c) :: t ->
-                //printfn "pred: %A" (FContext.predecessors c)
-                if FContext.predecessors c |> Seq.isEmpty then 
-                    //printfn "nk1: %A" nk1
-                    c
-                    |> fun (p,nd1,s) ->
-                        let newS = createEmptySubsequentFollowsCvParam onto nd1
-                        //printfn "newS: %A" newS
-                        if equalsRelation onto ArcRelation.PartOf nd1 newS then
-                            //printfn "addEle\n" 
-                            let newSnk = hash newS, newS.Name
-                            //printfn "newSnk: %A" newSnk
-                            FGraph.addElement newSnk newS nk1 nd1 ArcRelation.Follows newGraph
-                            |> ignore
-                            let newSnkc = newGraph[newSnk]
-                            let newT = (newSnk, newSnkc) :: t
-                            //printfn "newT: %A" newT
-                            loop newT
-                        else 
-                            //printfn "no addEle\n"
-                            loop t
-                else loop t
-            | [] -> (*printfn "end";*) ()
-        loop kvs
-
-        newGraph
-
-    /// Takes a seq of OboTerms that are part_of endpoints and a list of CvParams and returns the CvParams grouped into lists of sections.
-    let groupWhenHeader partOfEndpoints (cvps : CvParam list) =
-        cvps
-        |> List.groupWhen (isHeader partOfEndpoints)
-
-    /// Takes an ISA-based ontology FGraph, an XLSX parsing function and a path to an XLSX file and returns a seq of section-based ISA-structured subgraphs.
-    /// 
-    /// `xlsxParsing` can be any of `Investigation.parseMetadataSheetFromFile`, `Study.parseMetadataSheetFromFile`, or `Assay.parseMetadataSheetFromFile`.
-    let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
-        let endpoints = getPartOfEndpoints onto
-        let cvps = 
-            xlsxParsing xlsxPath 
-            |> List.choose (Param.tryCvParam)
-            |> deletePartOfEndpointSectionKeys endpoints
-            |> groupWhenHeader endpoints
-        cvps
-        |> Seq.map (
-            constructSubgraph onto 
-            >> completeOpenEnds onto
-        )
-
-
-    /// Takes an ISA-based ontology FGraph, an XLSX parsing function and a path to an XLSX file and returns a seq of section-based ISA-structured subgraphs.
-    /// 
-    /// `xlsxParsing` can be any of `Investigation.parseMetadataSheetFromFile`, `Study.parseMetadataSheetFromFile`, or `Assay.parseMetadataSheetFromFile`.
-    let fromXlsxFile onto (xlsxParsing : string -> IParam list) xlsxPath =
-        let endpoints = getPartOfEndpoints onto
-        let cvps = 
-            xlsxParsing xlsxPath 
-            |> List.choose (Param.tryCvParam)
-            |> deletePartOfEndpointSectionKeys endpoints
-            |> groupWhenHeader endpoints
-        cvps
-        |> Seq.map (
-            constructSubgraph onto 
-            >> completeOpenEnds onto
-        )
-
-
-        let rec loop (input : ((int * string) * FContext<(int * string),CvParam,ArcRelation>) list) =
-            //printfn "inputL: %A" input.Length
-            match input with
-            | (nk1,c) :: t ->
-                //printfn "pred: %A" (FContext.predecessors c)
-                if FContext.predecessors c |> Seq.isEmpty then 
-                    //printfn "nk1: %A" nk1
-                    c
-                    |> fun (p,nd1,s) ->
-                        let newS = createEmptySubsequentFollowsCvParam onto nd1
-                        //printfn "newS: %A" newS
-                        if equalsRelation onto ArcRelation.PartOf nd1 newS then
-                            //printfn "addEle\n" 
-                            let newSnk = hash newS, newS.Name
-                            //printfn "newSnk: %A" newSnk
-                            FGraph.addElement newSnk newS nk1 nd1 ArcRelation.Follows newGraph
+                            FGraph.addElement newSnk newS nk1 nd1 ARCRelation.Follows newGraph
                             |> ignore
                             let newSnkc = newGraph[newSnk]
                             let newT = (newSnk, newSnkc) :: t

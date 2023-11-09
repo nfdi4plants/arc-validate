@@ -415,14 +415,6 @@
           "FSharp.Core": "5.0.0"
         }
       },
-      "Giraffe.ViewEngine": {
-        "type": "Transitive",
-        "resolved": "1.4.0",
-        "contentHash": "gWzlp8KGDLaPHMm/xGzfLT1e9wZaJhBKhEuMsPRBSn7wAMkSgMcaqJlWl8mFGCcOOx0r9UyDJvCJJQyljYmo+g==",
-        "dependencies": {
-          "FSharp.Core": "5.0.0"
-        }
-      },
       "Graphoscope": {
         "type": "Transitive",
         "resolved": "0.2.0",
@@ -921,8 +913,7 @@
       "arcexpect": {
         "type": "Project",
         "dependencies": {
-          "ARCTokenization": "[1.0.3, 1.0.3]",
-          "Argu": "[6.1.1, 6.1.1]",
+          "ARCTokenization": "[1.2.0, 1.2.0]",
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
           "FSharp.Core": "[6.0.7, )",

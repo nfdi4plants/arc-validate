@@ -16,16 +16,6 @@
           "FsSpreadsheet.ExcelIO": "[4.1.0]"
         }
       },
-      "Argu": {
-        "type": "Direct",
-        "requested": "[6.1.1, 6.1.1]",
-        "resolved": "6.1.1",
-        "contentHash": "5SBLYihaZ6/YNpRU+0v0QLsCk7ABmOWNOUwkXVUql2w7kJ6Hi4AFhgIv5XLTtxTid5/xrJAL+PglQkNcjANCJg==",
-        "dependencies": {
-          "FSharp.Core": "4.3.2",
-          "System.Configuration.ConfigurationManager": "4.4.0"
-        }
-      },
       "Cytoscape.NET": {
         "type": "Direct",
         "requested": "[0.2.0, 0.2.0]",
