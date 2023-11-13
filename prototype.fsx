@@ -1,10 +1,10 @@
+#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
+#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
+#r "ARCTokenization.dll"
+#r "ControlledVocabulary.dll"
 #I "src/ArcValidation/bin/Debug/netstandard2.0"
 #I "src/ArcValidation/bin/Release/netstandard2.0"
 #r "ARCValidation.dll"
-//#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
-//#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
-//#r "ARCTokenization.dll"
-//#r "ControlledVocabulary.dll"
 
 //#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
@@ -107,6 +107,33 @@ let ontoGraph = ontologyToFGraph obo
 //ontoGraphToFullCyGraph ontoGraph |> CyGraph.show
 
 
+// NEW METADATA GRAPH CREATION FUNCTION(S)
+
+// input: OboGraph, CvParam list
+
+type CvParam with
+
+    member this.ToCvTerm() =
+        CvTerm.create(this.Accession, this.Name, this.RefUri)
+
+    static member toCvTerm (cvp : CvParam) =
+        cvp.ToCvTerm()
+
+
+type CvTerm with
+
+    static member ofCvParam (cvp : CvParam) =
+        cvp.ToCvTerm()
+
+
+let fillMissingTerms (ontoGraph : FGraph<string,OboTerm,ArcRelation>) (cvps : CvParam list) =
+    let setCvps = set (cvps |> List.map CvTerm.ofCvParam)
+    let setOnto = set (ontoGraph.)
+    setCvps
+
+
+
+
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 // Helper functions for ISA graph construction
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -149,7 +176,7 @@ let equalsFollows onto cvp1 cvp2 =
 
 //OboTerm.toCvTerm (ontoGraph.Values |> Seq.head |> fun (_,t,_) -> t)
 
-//cvparamse.[1].Attributes |> Dictionary.item "Row"
+//cvparamse.[1].Attributes |> Dictionary.item "Row" 
 
 //cvparamse[7]["Column"]
 //(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Column"]
