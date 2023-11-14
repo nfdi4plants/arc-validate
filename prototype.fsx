@@ -83,7 +83,7 @@ let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
 
 //let invesContentGraph = fromCvParamList cvparamse
 
-let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
+let onto = ARCTokenization.Terms.InvestigationMetadata.ontology
 
 //let tans = cvparamse |> List.map CvParam.getCvAccession
 
@@ -100,7 +100,7 @@ let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
 //invesContentGraph.Keys |> Seq.head
 //invesContentGraph.Values |> Seq.head
 
-let ontoGraph = ontologyToFGraph obo
+let ontoGraph = ontologyToFGraph onto
 
 //ontoGraph |> printGraph (fun x -> x.Name)
 
@@ -111,25 +111,90 @@ let ontoGraph = ontologyToFGraph obo
 
 // input: OboGraph, CvParam list
 
-type CvParam with
+
+/// Returns the respective Term Source Ref of a given ID (= Term Accession Number).
+let getRef id =
+    String.takeWhile ((<>) ':') id
+
+
+type OboTerm with
 
     member this.ToCvTerm() =
-        CvTerm.create(this.Accession, this.Name, this.RefUri)
+        CvTerm.create(this.Id, this.Name, getRef this.Id)
 
-    static member toCvTerm (cvp : CvParam) =
-        cvp.ToCvTerm()
-
-
-type CvTerm with
-
-    static member ofCvParam (cvp : CvParam) =
-        cvp.ToCvTerm()
+    static member toCvTerm (term : OboTerm) =
+        term.ToCvTerm()
 
 
-let fillMissingTerms (ontoGraph : FGraph<string,OboTerm,ArcRelation>) (cvps : CvParam list) =
-    let setCvps = set (cvps |> List.map CvTerm.ofCvParam)
-    let setOnto = set (ontoGraph.)
-    setCvps
+/// Returns all CvParams whose terms are not present in the given ontology but occur in the given CvParam list.
+let getUnknownTerms (onto : OboOntology) (cvps : CvParam seq) =
+    cvps
+    |> Seq.filter (
+        fun c -> 
+            let cvtCvp = CvParam.getTerm c
+            onto.Terms 
+            |> Seq.exists (fun o -> OboTerm.toCvTerm o = cvtCvp)
+            |> not
+    )
+
+/// Returns all terms that are present in the given ontology but don't occur in the given CvParam list as CvParams.
+let getMissingTerms (onto : OboOntology) (cvps : CvParam seq) =
+    onto.Terms
+    |> Seq.choose (
+        fun o -> 
+            let cvtObo = OboTerm.toCvTerm o
+            if not (cvps |> Seq.exists (fun e -> CvParam.getTerm e = cvtObo)) then
+                Some <| CvParam(cvtObo, Value "")
+            else None
+    )
+
+
+/// Representation of the familiarity of a CvParam's CvTerm. If the CvTerm is known in, e.g., an ontology, use KnownTerm, else use UnknownTerm.
+type TermFamiliarity =
+    | KnownTerm of CvParam
+    | UnknownTerm of CvParam
+
+
+/// Takes an OboOntology and a list of CvParams and returns the list with all CvParams marked as either known in the given ontology or unknown.
+let markUnknownTerms onto cvps =
+    let unknownTerms = getUnknownTerms onto cvps
+    cvps
+    |> Seq.map (fun cvp -> if Seq.contains cvp unknownTerms then UnknownTerm cvp else KnownTerm cvp)
+
+/// Takes an OboOntology and a list of CvParams and returns the list with all OboTerms that are missing in the list appended as empty-value CvParams.
+let addMissingTerms onto cvps =
+    let missingTerms = getMissingTerms onto cvps
+    Seq.append cvps missingTerms
+
+/// Aggregates the given CvParams by their name and groups them together.
+let aggregateTerms (cvps : CvParam seq) =
+    cvps |> Seq.groupBy (fun cvp -> cvp.Name)       // if erroring: change to `.Accession`
+
+
+// SYNONYMS NEED TO BE HANDLED!
+let ontoNoSynos = {
+    onto with 
+        Terms = 
+            let mutable i = 0
+            onto.Terms 
+            |> List.choose (
+                fun o -> 
+                    match o.Synonyms.Length, i with
+                    | 0,_ -> Some o
+                    | x when fst x > 0 && snd x = 0 -> i <- i + 1; Some o
+                    | _ -> None
+            )
+}
+//let cvpsAdded = addMissingTerms onto cvparamse
+let cvpsAdded = addMissingTerms ontoNoSynos cvparamse
+cvpsAdded |> Seq.toList |> List.last
+onto.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
+ontoNoSynos.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
+
+let cvpsMarked = markUnknownTerms onto cvpsAdded
+cvpsMarked |> Seq.iter (fun c -> match c with | KnownTerm x -> () | UnknownTerm x -> printfn "%A" x)
+
+let cvpsAggregated = aggregateTerms
 
 
 
