@@ -58,9 +58,9 @@ open System.Text.RegularExpressions
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
 
 //paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
-paramse |> List.iter (fun p -> printfn "%A" <| p.GetType().ToString())
-paramse |> List.iter (fun p -> printfn "%A" <| (p.Value |> ParamValue.getValueAsString))
-paramse |> List.iter (fun p -> printfn "%A" <| p.Name)
+//paramse |> List.iter (fun p -> printfn "%A" <| p.GetType().ToString())
+//paramse |> List.iter (fun p -> printfn "%A" <| (p.Value |> ParamValue.getValueAsString))
+//paramse |> List.iter (fun p -> printfn "%A" <| p.Name)
 
 //let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
 //let cvparamse = 
@@ -131,35 +131,55 @@ let getUnknownTerms (onto : OboOntology) (cvps : CvParam seq) =
     cvps
     |> Seq.filter (
         fun c -> 
-            let cvtCvp = CvParam.getTerm c
             onto.Terms 
-            |> Seq.exists (fun o -> OboTerm.toCvTerm o = cvtCvp)
+            |> Seq.exists (fun o -> OboTerm.toCvTerm o = CvParam.getTerm c)
             |> not
     )
+
+/// Returns all CvParams whose terms have the `is_obsolete` tag in the given ontology.
+let getObsoleteTerms (onto : OboOntology) (cvps : CvParam seq) =
+    cvps
+    |> Seq.filter (
+        fun c ->
+            onto.Terms
+            |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = CvParam.getTerm c)
+    )
+
+let obsos = getObsoleteTerms onto cvparamse
 
 /// Returns all terms that are present in the given ontology but don't occur in the given CvParam list as CvParams.
 let getMissingTerms (onto : OboOntology) (cvps : CvParam seq) =
     onto.Terms
     |> Seq.choose (
         fun o -> 
-            let cvtObo = OboTerm.toCvTerm o
-            if not (cvps |> Seq.exists (fun e -> CvParam.getTerm e = cvtObo)) then
-                Some <| CvParam(cvtObo, Value "")
-            else None
+            if o.IsObsolete then None
+            else 
+                let cvtObo = OboTerm.toCvTerm o
+                if not (cvps |> Seq.exists (fun e -> CvParam.getTerm e = cvtObo)) then
+                    Some <| CvParam(cvtObo, Value "")
+                else None
     )
 
 
-/// Representation of the familiarity of a CvParam's CvTerm. If the CvTerm is known in, e.g., an ontology, use KnownTerm, else use UnknownTerm.
+/// Representation of the familiarity of a CvParam's CvTerm. If the CvTerm is known in, e.g., an ontology, use KnownTerm, else use UnknownTerm. ObsoleteTerm is for deprecated terms (i.e., OboTerm with `is_obsolete` = `true`).
 type TermFamiliarity =
     | KnownTerm of CvParam
     | UnknownTerm of CvParam
+    | ObsoleteTerm of CvParam
 
 
-/// Takes an OboOntology and a list of CvParams and returns the list with all CvParams marked as either known in the given ontology or unknown.
-let markUnknownTerms onto cvps =
+/// Takes an OboOntology and a list of CvParams and returns the list with all CvParams marked as known in the given ontology, unknown, or obsolete.
+let markTerms onto cvps =
     let unknownTerms = getUnknownTerms onto cvps
+    let obsoleteTerms = getObsoleteTerms onto cvps
     cvps
-    |> Seq.map (fun cvp -> if Seq.contains cvp unknownTerms then UnknownTerm cvp else KnownTerm cvp)
+    |> Seq.map (
+        fun cvp -> 
+            match Seq.contains cvp unknownTerms, Seq.contains cvp obsoleteTerms with
+            | true, _ -> UnknownTerm cvp
+            | _, true -> ObsoleteTerm cvp
+            | _ -> KnownTerm cvp
+    )
 
 /// Takes an OboOntology and a list of CvParams and returns the list with all OboTerms that are missing in the list appended as empty-value CvParams.
 let addMissingTerms onto cvps =
@@ -171,30 +191,40 @@ let aggregateTerms (cvps : CvParam seq) =
     cvps |> Seq.groupBy (fun cvp -> cvp.Name)       // if erroring: change to `.Accession`
 
 
-// SYNONYMS NEED TO BE HANDLED!
-let ontoNoSynos = {
-    onto with 
-        Terms = 
-            let mutable i = 0
-            onto.Terms 
-            |> List.choose (
-                fun o -> 
-                    match o.Synonyms.Length, i with
-                    | 0,_ -> Some o
-                    | x when fst x > 0 && snd x = 0 -> i <- i + 1; Some o
-                    | _ -> None
-            )
-}
-//let cvpsAdded = addMissingTerms onto cvparamse
-let cvpsAdded = addMissingTerms ontoNoSynos cvparamse
-cvpsAdded |> Seq.toList |> List.last
+let cvpsAdded = addMissingTerms onto cvparamse
+cvpsAdded |> Seq.iter (fun c -> c.Name |> printfn "%s")
 onto.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
-ontoNoSynos.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
 
-let cvpsMarked = markUnknownTerms onto cvpsAdded
-cvpsMarked |> Seq.iter (fun c -> match c with | KnownTerm x -> () | UnknownTerm x -> printfn "%A" x)
+let cvpsAggregated = aggregateTerms cvpsAdded
+cvpsAggregated |> Seq.iter (printfn "%A")
 
-let cvpsAggregated = aggregateTerms
+let cvpsMarked = cvpsAggregated |> Seq.map (fun (n,cs) -> n, markTerms onto cs)
+//cvpsMarked |> Seq.iter (fun c -> match c with | KnownTerm x | ObsoleteTerm x -> () | UnknownTerm x -> printfn "%A" x)
+
+type FGraph with
+
+    /// Returns the nodes of a given FGraph.
+    static member getNodes (graph : FGraph<'Nk,'Nd,'Ed>) =
+        graph
+        |> Seq.map (
+           fun kvp ->
+                let nodeKey = kvp.Key
+                let p,nd,s = kvp.Value
+                nodeKey, nd
+           )
+
+
+/// Returns the node in a structured ontology-FGraph that has no other nodes pointing to.
+let getTopNode (ontoGraph : FGraph<string,OboTerm,ArcRelation>) =
+    ontoGraph.Keys
+    |> Seq.find (fun k -> FContext.successors ontoGraph[k] |> Seq.length = 0)
+
+ontoGraph[getTopNode ontoGraph] |> fun (p,nd,s) -> nd
+
+/// Creates
+let createIntermediateGraph (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvps =
+    let topNode = getTopNode ontoGraph
+    let rec loop inputList outputGraph =
 
 
 
