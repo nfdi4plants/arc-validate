@@ -117,15 +117,6 @@ let getRef id =
     String.takeWhile ((<>) ':') id
 
 
-type OboTerm with
-
-    member this.ToCvTerm() =
-        CvTerm.create(this.Id, this.Name, getRef this.Id)
-
-    static member toCvTerm (term : OboTerm) =
-        term.ToCvTerm()
-
-
 /// Returns all CvParams whose terms are not present in the given ontology but occur in the given CvParam list.
 let getUnknownTerms (onto : OboOntology) (cvps : CvParam seq) =
     cvps
@@ -214,18 +205,37 @@ type FGraph with
            )
 
 
-/// Returns the node in a structured ontology-FGraph that has no other nodes pointing to.
-let getTopNode (ontoGraph : FGraph<string,OboTerm,ArcRelation>) =
+/// Returns the key of the node in a structured ontology-FGraph that has no other nodes pointing to.
+let getTopNodeKey (ontoGraph : FGraph<string,OboTerm,ArcRelation>) =
     ontoGraph.Keys
     |> Seq.find (fun k -> FContext.successors ontoGraph[k] |> Seq.length = 0)
 
-ontoGraph[getTopNode ontoGraph] |> fun (p,nd,s) -> nd
+ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
 
-/// Creates
-let createIntermediateGraph (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvps =
-    let topNode = getTopNode ontoGraph
-    let rec loop inputList outputGraph =
+///// Creates an intermediate graph with CvParam seq as nodedata.
+//let createIntermediateGraph (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvps =
+//    let topNodeKey = getTopNodeKey ontoGraph
+//    let rec loop inputList currentKey priorTerm outputGraph =
+//        let _,oboTerm,_ = ontoGraph[currentKey]
+//        let cvtObo = OboTerm.toCvTerm oboTerm
 
+/// Checks if a given CvParam is a header term in a given OboOntology.
+let isHeader (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvp =
+    ontoGraph.Keys
+    |> Seq.choose (
+        fun k -> 
+            let hasPartOfs = 
+                FContext.predecessors ontoGraph[k] 
+                |> Seq.filter (fun (nk,ed) -> ed = ArcRelation.PartOf) 
+                |> Seq.length > 0
+            if hasPartOfs then
+                Some (ontoGraph[k] |> fun (p,nd,s) -> nd)
+            else None
+        )
+    |> Seq.exists (fun term -> OboTerm.toCvTerm term = CvParam.getTerm cvp)
+
+isHeader ontoGraph cvparamse[2]
+isHeader ontoGraph cvparamse[5]
 
 
 
