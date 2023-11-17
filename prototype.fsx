@@ -117,79 +117,80 @@ let getRef id =
     String.takeWhile ((<>) ':') id
 
 
-/// Returns all CvParams whose terms are not present in the given ontology but occur in the given CvParam list.
-let getUnknownTerms (onto : OboOntology) (cvps : CvParam seq) =
-    cvps
+/// Returns all IParams whose terms are not present in the given ontology but occur in the given CvParam list.
+let getUnknownTerms (onto : OboOntology) (ips : IParam seq) =
+    ips
     |> Seq.filter (
-        fun c -> 
+        fun ip -> 
             onto.Terms 
-            |> Seq.exists (fun o -> OboTerm.toCvTerm o = CvParam.getTerm c)
+            |> Seq.exists (fun o -> OboTerm.toCvTerm o = Param.getTerm ip)
             |> not
     )
 
-/// Returns all CvParams whose terms have the `is_obsolete` tag in the given ontology.
-let getObsoleteTerms (onto : OboOntology) (cvps : CvParam seq) =
-    cvps
+/// Returns all IParams whose terms have the `is_obsolete` tag in the given ontology.
+let getObsoleteTerms (onto : OboOntology) (ips : IParam seq) =
+    ips
     |> Seq.filter (
-        fun c ->
+        fun ip ->
             onto.Terms
-            |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = CvParam.getTerm c)
+            |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = Param.getTerm ip)
     )
 
-let obsos = getObsoleteTerms onto cvparamse
+let obsos = getObsoleteTerms onto paramse
 
 /// Returns all terms that are present in the given ontology but don't occur in the given CvParam list as CvParams.
-let getMissingTerms (onto : OboOntology) (cvps : CvParam seq) =
+let getMissingTerms (onto : OboOntology) (ips : IParam seq) =
     onto.Terms
     |> Seq.choose (
         fun o -> 
             if o.IsObsolete then None
             else 
                 let cvtObo = OboTerm.toCvTerm o
-                if not (cvps |> Seq.exists (fun e -> CvParam.getTerm e = cvtObo)) then
-                    Some <| CvParam(cvtObo, Value "")
+                if not (ips |> Seq.exists (fun e -> Param.getTerm e = cvtObo)) then
+                    Some (CvParam(cvtObo, Value "") :> IParam)
                 else None
     )
 
 
 /// Representation of the familiarity of a CvParam's CvTerm. If the CvTerm is known in, e.g., an ontology, use KnownTerm, else use UnknownTerm. ObsoleteTerm is for deprecated terms (i.e., OboTerm with `is_obsolete` = `true`).
 type TermFamiliarity =
-    | KnownTerm of CvParam
-    | UnknownTerm of CvParam
-    | ObsoleteTerm of CvParam
+    | KnownTerm of IParam
+    | UnknownTerm of IParam
+    | ObsoleteTerm of IParam
+    | MisplacedTerm of IParam
 
 
-/// Takes an OboOntology and a list of CvParams and returns the list with all CvParams marked as known in the given ontology, unknown, or obsolete.
-let markTerms onto cvps =
-    let unknownTerms = getUnknownTerms onto cvps
-    let obsoleteTerms = getObsoleteTerms onto cvps
-    cvps
+/// Takes an OboOntology and a list of IParams and returns the list with all IParams marked as known in the given ontology, unknown, or obsolete.
+let markTerms onto ips =
+    let unknownTerms = getUnknownTerms onto ips
+    let obsoleteTerms = getObsoleteTerms onto ips
+    ips
     |> Seq.map (
-        fun cvp -> 
-            match Seq.contains cvp unknownTerms, Seq.contains cvp obsoleteTerms with
-            | true, _ -> UnknownTerm cvp
-            | _, true -> ObsoleteTerm cvp
-            | _ -> KnownTerm cvp
+        fun ip -> 
+            match Seq.contains ip unknownTerms, Seq.contains ip obsoleteTerms with
+            | true, _ -> UnknownTerm ip
+            | _, true -> ObsoleteTerm ip
+            | _ -> KnownTerm ip
     )
 
 /// Takes an OboOntology and a list of CvParams and returns the list with all OboTerms that are missing in the list appended as empty-value CvParams.
-let addMissingTerms onto cvps =
-    let missingTerms = getMissingTerms onto cvps
-    Seq.append cvps missingTerms
+let addMissingTerms onto ips =
+    let missingTerms = getMissingTerms onto ips
+    Seq.append ips missingTerms
 
-/// Aggregates the given CvParams by their name and groups them together.
-let aggregateTerms (cvps : CvParam seq) =
-    cvps |> Seq.groupBy (fun cvp -> cvp.Name)       // if erroring: change to `.Accession`
+/// Aggregates the given IParams by their name and groups them together.
+let aggregateTerms (ips : IParam seq) =
+    ips |> Seq.groupBy (fun ip -> ip.Name)       // if erroring: change to `.Accession`
 
 
-let cvpsAdded = addMissingTerms onto cvparamse
-cvpsAdded |> Seq.iter (fun c -> c.Name |> printfn "%s")
+let ipsAdded = addMissingTerms onto paramse
+ipsAdded |> Seq.iter (fun c -> c.Name |> printfn "%s")
 onto.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
 
-let cvpsAggregated = aggregateTerms cvpsAdded
-cvpsAggregated |> Seq.iter (printfn "%A")
+let ipsAggregated = aggregateTerms ipsAdded
+ipsAggregated |> Seq.iter (printfn "%A")
 
-let cvpsMarked = cvpsAggregated |> Seq.map (fun (n,cs) -> n, markTerms onto cs)
+let cvpsMarked = ipsAggregated |> Seq.map (fun (n,cs) -> n, markTerms onto cs)
 //cvpsMarked |> Seq.iter (fun c -> match c with | KnownTerm x | ObsoleteTerm x -> () | UnknownTerm x -> printfn "%A" x)
 
 type FGraph with
@@ -219,8 +220,8 @@ ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
 //        let _,oboTerm,_ = ontoGraph[currentKey]
 //        let cvtObo = OboTerm.toCvTerm oboTerm
 
-/// Checks if a given CvParam is a header term in a given OboOntology.
-let isHeader (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvp =
+/// Checks if a given IParam is a header term in a given OboOntology.
+let isHeader (ontoGraph : FGraph<string,OboTerm,ArcRelation>) ip =
     ontoGraph.Keys
     |> Seq.choose (
         fun k -> 
@@ -232,11 +233,43 @@ let isHeader (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvp =
                 Some (ontoGraph[k] |> fun (p,nd,s) -> nd)
             else None
         )
-    |> Seq.exists (fun term -> OboTerm.toCvTerm term = CvParam.getTerm cvp)
+    |> Seq.exists (fun term -> OboTerm.toCvTerm term = Param.getTerm ip)
 
 isHeader ontoGraph cvparamse[2]
 isHeader ontoGraph cvparamse[5]
 
+
+/// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
+let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ArcRelation>) (ip : IParam) =
+    ontoGraph[ip.Name]     // change to `.Accession` if required
+    |> FContext.predecessors
+    |> Seq.exists (fun (nk,e) -> nk = header.Name)      // change to `.Accession` if required
+
+let isObsoleteTerm (onto : OboOntology) (ip : IParam) =
+    onto.Terms
+    |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = Param.getTerm ip)
+
+/// Takes an IParam seq and tags them according to their TermFamiliarity using a given OboOntology.
+let matchTerms (onto : OboOntology) (ips : IParam seq) =
+    let ontoGraph = OboGraph.ontologyToFGraph onto      // if time performance is crucial, have this as parameter instead
+    let header = Seq.head ips
+    ips
+    |> Seq.map (
+        fun ip ->
+            if Param.tryUserParam ip |> Option.isSome then UnknownTerm ip
+            elif isObsoleteTerm onto ip then ObsoleteTerm ip
+            elif isPartOfHeader header ontoGraph ip then KnownTerm ip
+            else MisplacedTerm ip
+    )
+
+let partitionedIps = Seq.groupWhen (isHeader ontoGraph) paramse
+partitionedIps |> Seq.map Seq.toList |> Seq.toList
+partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
+
+let groupedIps = partitionedIps |> Seq.map aggregateTerms
+groupedIps|>Seq.iter(fun ips->printfn"";ips|>Seq.iter(fun(ipN,ipEs)->printfn$"{ipN}:";ipEs|>Seq.iter(fun ip->printfn$"\t{ParamValue.getValueAsString ip.Value}")))
+
+let matchedIps = groupedIps |> Seq.map (Seq.map (fun (n,ips) -> n, matchTerms onto ips))
 
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
