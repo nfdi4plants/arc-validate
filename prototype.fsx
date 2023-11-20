@@ -2,9 +2,9 @@
 #I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
 #r "ARCTokenization.dll"
 #r "ControlledVocabulary.dll"
-#I "src/ArcValidation/bin/Debug/netstandard2.0"
-#I "src/ArcValidation/bin/Release/netstandard2.0"
-#r "ARCValidation.dll"
+#I "src/ARCExpect/bin/Debug/netstandard2.0"
+#I "src/ARCExpect/bin/Release/netstandard2.0"
+#r "ARCExpect.dll"
 
 //#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
@@ -25,10 +25,10 @@ open Graphoscope
 open FsOboParser
 open Cytoscape.NET
 
-open ArcValidation
-open ArcValidation.OboGraph
-open ArcValidation.ArcGraph
-open ArcValidation.ArcGraph.Visualization
+open ARCExpect
+open ARCExpect.OboGraph
+open ARCExpect.ARCGraph
+open ARCExpect.ARCGraph.Visualization
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
@@ -100,11 +100,23 @@ let onto = ARCTokenization.Terms.InvestigationMetadata.ontology
 //invesContentGraph.Keys |> Seq.head
 //invesContentGraph.Values |> Seq.head
 
-let ontoGraph = ontologyToFGraph onto
+//let ontoGraph = ontologyToFGraph onto
 
 //ontoGraph |> printGraph (fun x -> x.Name)
 
 //ontoGraphToFullCyGraph ontoGraph |> CyGraph.show
+
+let ontologyToFGraphByName (onto : OboOntology) =
+    OboOntology.getRelations onto
+    |> List.fold (
+        fun acc tr ->
+            match tr with
+            | Empty st -> FGraph.addNode st.Name st acc
+            | TargetMissing (rel,st) -> FGraph.addNode st.Name st acc
+            | Target (rel,st,tt) -> FGraph.addElement st.Name st tt.Name tt (ARCRelation.toARCRelation rel) acc
+    ) FGraph.empty<string,OboTerm,ARCRelation>
+
+let ontoGraph = ontologyToFGraphByName onto
 
 
 // NEW METADATA GRAPH CREATION FUNCTION(S)
@@ -178,19 +190,19 @@ let addMissingTerms onto ips =
     let missingTerms = getMissingTerms onto ips
     Seq.append ips missingTerms
 
-/// Aggregates the given IParams by their name and groups them together.
-let aggregateTerms (ips : IParam seq) =
+/// Groups the given IParams by their name and groups them together.
+let groupTerms (ips : IParam seq) =
     ips |> Seq.groupBy (fun ip -> ip.Name)       // if erroring: change to `.Accession`
 
 
 let ipsAdded = addMissingTerms onto paramse
-ipsAdded |> Seq.iter (fun c -> c.Name |> printfn "%s")
-onto.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
+//ipsAdded |> Seq.iter (fun c -> c.Name |> printfn "%s")
+//onto.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
 
-let ipsAggregated = aggregateTerms ipsAdded
-ipsAggregated |> Seq.iter (printfn "%A")
+//let ipsAggregated = aggregateTerms ipsAdded
+//ipsAggregated |> Seq.iter (printfn "%A")
 
-let cvpsMarked = ipsAggregated |> Seq.map (fun (n,cs) -> n, markTerms onto cs)
+//let cvpsMarked = ipsAggregated |> Seq.map (fun (n,cs) -> n, markTerms onto cs)
 //cvpsMarked |> Seq.iter (fun c -> match c with | KnownTerm x | ObsoleteTerm x -> () | UnknownTerm x -> printfn "%A" x)
 
 type FGraph with
@@ -207,11 +219,11 @@ type FGraph with
 
 
 /// Returns the key of the node in a structured ontology-FGraph that has no other nodes pointing to.
-let getTopNodeKey (ontoGraph : FGraph<string,OboTerm,ArcRelation>) =
+let getTopNodeKey (ontoGraph : FGraph<string,OboTerm,ARCRelation>) =
     ontoGraph.Keys
     |> Seq.find (fun k -> FContext.successors ontoGraph[k] |> Seq.length = 0)
 
-ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
+//ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
 
 ///// Creates an intermediate graph with CvParam seq as nodedata.
 //let createIntermediateGraph (ontoGraph : FGraph<string,OboTerm,ArcRelation>) cvps =
@@ -221,13 +233,13 @@ ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
 //        let cvtObo = OboTerm.toCvTerm oboTerm
 
 /// Checks if a given IParam is a header term in a given OboOntology.
-let isHeader (ontoGraph : FGraph<string,OboTerm,ArcRelation>) ip =
+let isHeader (ontoGraph : FGraph<string,OboTerm,ARCRelation>) ip =
     ontoGraph.Keys
     |> Seq.choose (
         fun k -> 
             let hasPartOfs = 
                 FContext.predecessors ontoGraph[k] 
-                |> Seq.filter (fun (nk,ed) -> ed = ArcRelation.PartOf) 
+                |> Seq.filter (fun (nk,ed) -> ed = ARCRelation.PartOf) 
                 |> Seq.length > 0
             if hasPartOfs then
                 Some (ontoGraph[k] |> fun (p,nd,s) -> nd)
@@ -235,41 +247,85 @@ let isHeader (ontoGraph : FGraph<string,OboTerm,ArcRelation>) ip =
         )
     |> Seq.exists (fun term -> OboTerm.toCvTerm term = Param.getTerm ip)
 
-isHeader ontoGraph cvparamse[2]
-isHeader ontoGraph cvparamse[5]
+//isHeader ontoGraph cvparamse[2]
+//isHeader ontoGraph cvparamse[5]
 
 
 /// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
-let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ArcRelation>) (ip : IParam) =
+let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ip : IParam) =
     ontoGraph[ip.Name]     // change to `.Accession` if required
-    |> FContext.predecessors
-    |> Seq.exists (fun (nk,e) -> nk = header.Name)      // change to `.Accession` if required
+    |> FContext.successors
+    |> Seq.exists (fun (nk,e) -> nk = header.Name && e.HasFlag ARCRelation.PartOf)      // change to `.Accession` if required
 
+/// Checks if the given IParam contains an obsolete term using a given OboOntology.
 let isObsoleteTerm (onto : OboOntology) (ip : IParam) =
     onto.Terms
     |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = Param.getTerm ip)
 
-/// Takes an IParam seq and tags them according to their TermFamiliarity using a given OboOntology.
-let matchTerms (onto : OboOntology) (ips : IParam seq) =
-    let ontoGraph = OboGraph.ontologyToFGraph onto      // if time performance is crucial, have this as parameter instead
-    let header = Seq.head ips
-    ips
-    |> Seq.map (
-        fun ip ->
-            if Param.tryUserParam ip |> Option.isSome then UnknownTerm ip
-            elif isObsoleteTerm onto ip then ObsoleteTerm ip
-            elif isPartOfHeader header ontoGraph ip then KnownTerm ip
-            else MisplacedTerm ip
+/// Takes a seq of grouped IParams and tags them according to their TermFamiliarity using a given OboOntology.
+let matchTerms (onto : OboOntology) (gips : (string * IParam seq) seq) =
+    let ontoGraph = ontologyToFGraphByName onto      // if time performance is crucial, have this as parameter instead
+    let header = Seq.head gips |> snd |> Seq.head
+    printfn $"header: {header.Name}"
+    gips
+    |> Seq.mapi (
+        fun i (n,ips) ->
+            if i = 0 then n, seq {KnownTerm header}
+            else
+                printfn $"ip: {(ips |> Seq.head).Name}"
+                if ips |> Seq.exists (fun ip -> Param.tryUserParam ip |> Option.isSome) then n, ips |> Seq.map UnknownTerm
+                elif ips |> Seq.exists (fun ip -> isObsoleteTerm onto ip) then n, ips |> Seq.map ObsoleteTerm
+                elif ips |> Seq.exists (fun ip -> isPartOfHeader header ontoGraph ip) then n, ips |> Seq.map KnownTerm
+                else n, ips |> Seq.map MisplacedTerm
     )
 
 let partitionedIps = Seq.groupWhen (isHeader ontoGraph) paramse
-partitionedIps |> Seq.map Seq.toList |> Seq.toList
-partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
+//partitionedIps |> Seq.map Seq.toList |> Seq.toList
+//partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
 
-let groupedIps = partitionedIps |> Seq.map aggregateTerms
-groupedIps|>Seq.iter(fun ips->printfn"";ips|>Seq.iter(fun(ipN,ipEs)->printfn$"{ipN}:";ipEs|>Seq.iter(fun ip->printfn$"\t{ParamValue.getValueAsString ip.Value}")))
+let groupedIps = partitionedIps |> Seq.map groupTerms 
+//groupedIps|>Seq.iter(fun ips->printfn"";ips|>Seq.iter(fun(ipN,ipEs)->printfn$"{ipN}:";ipEs|>Seq.iter(fun ip->printfn$"\t{ParamValue.getValueAsString ip.Value}")))
 
-let matchedIps = groupedIps |> Seq.map (Seq.map (fun (n,ips) -> n, matchTerms onto ips))
+// deprecated: (dropped in favor of reworking matchTerms input parameter)
+///// Aggregates groups of IParams together.
+//let aggregateTerms (groupedIps : (string * IParam seq) seq) =
+//    groupedIps
+//    |> Seq.map snd
+//    |> Seq.concat
+
+//let aggregatedIps = Seq.map aggregateTerms groupedIps
+
+//let matchedIps = aggregatedIps |> Seq.map (matchTerms onto)
+let matchedIps = groupedIps |> Seq.map (matchTerms onto)
+matchedIps |> Seq.head
+let header = paramse.Head
+isHeader ontoGraph header
+let ip = paramse[2]
+isPartOfHeader header ontoGraph ip
+//ontoGraph[ip.Name] |> FContext.predecessors |> Seq.exists (fun (nk,e) -> printfn $"nk: {nk}\nheader: {header.Name}"; nk = header.Name)
+ontoGraph[ip.Name] |> FContext.successors |> Seq.exists (fun (nk,e) -> printfn $"nk: {nk}\nheader: {header.Name}"; nk = header.Name)
+onto.Terms[3]
+//matchTerms onto [header; ip]
+let testHead1 = groupedIps |> Seq.head
+//let testHead1a = aggregatedIps |> Seq.head |> Seq.toList
+let testHead1a = groupedIps |> Seq.head |> Seq.toList
+groupedIps |> Seq.item 3 |> Seq.toList
+matchedIps |> Seq.item 3 |> Seq.toList
+matchedIps |> Seq.last |> Seq.toList
+
+let constructSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
+    let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * TermFamiliarity seq) (graph : FGraph<string,IParam,ARCRelation>) =
+        match section with
+        | (hn,hts) :: t ->
+            match hts |> Seq.head with
+            | UnknownTerm ip -> 
+                FGraph.addElement ip.Name hts (fst priorParams) priorParams ARCRelation.Unknown graph
+                |> loop t stash header priorParams
+            | KnownTerm ip ->
+
+    loop 
+
+
 
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
