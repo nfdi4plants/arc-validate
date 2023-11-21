@@ -313,16 +313,66 @@ groupedIps |> Seq.item 3 |> Seq.toList
 matchedIps |> Seq.item 3 |> Seq.toList
 matchedIps |> Seq.last |> Seq.toList
 
+// SSSSSSSSSSSSSSSSSSSSSSSSS
+// altered from ARCGraph.fs:
+
+/// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
+let getRelatedCvParamsBy relating (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
+    relating graph[ip.Accession]
+    |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
+    |> Seq.map (fun ((id,t),r) -> id, t, r)
+
+/// Returns all related terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+let getRelatedCvParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
+    getRelatedCvParamsBy FContext.neighbours ip graph
+
+/// Returns all succeeding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+let getSucceedingCvParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
+    getRelatedCvParamsBy FContext.successors ip graph
+
+/// Returns all preceding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
+let getPrecedingCvParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
+    getRelatedCvParamsBy FContext.predecessors ip graph
+
+/// Checks is a given current CvParam has a given ArcRelation to a given prior CvParam by using a given ontology graph.
+let hasRelationTo onto (relation : ARCRelation) currentIp (priorIp : IParam) =
+    getRelatedCvParams currentIp onto
+    |> Seq.exists (fun (id,t,r) -> id = priorIp.Accession && r.HasFlag relation)
+
+/// Checks is a given current CvParam has a follows relationship to a given prior CvParam by using a given ontology graph.
+let hasFollowsTo onto currentIp priorIp =
+    hasRelationTo onto ARCRelation.Follows currentIp priorIp
+
+/// Checks is a given current CvParam has a part_of relationship to a given prior CvParam by using a given OboOntology.
+let hasPartOfTo onto currentIp priorIp =
+    hasRelationTo onto ARCRelation.PartOf currentIp priorIp
+
+// EEEEEEEEEEEEEEEEEEEEEEEEE
+
+/// Returns the TermFamiliarity's IParam value.
+let deconstructTf tf =
+    match tf with
+    | KnownTerm     ip -> ip
+    | UnknownTerm   ip -> ip
+    | MisplacedTerm ip -> ip
+    | ObsoleteTerm  ip -> ip
+
 let constructSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
-    let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * TermFamiliarity seq) (graph : FGraph<string,IParam,ARCRelation>) =
+    let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
         match section with
         | (hn,hts) :: t ->
             match hts |> Seq.head with
             | UnknownTerm ip -> 
-                FGraph.addElement ip.Name hts (fst priorParams) priorParams ARCRelation.Unknown graph
+                FGraph.addElement hn (hts |> Seq.map deconstructTf) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
                 |> loop t stash header priorParams
             | KnownTerm ip ->
-
+                let priorName,priorIps = priorParams
+                if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
+                    let hips = (hts |> Seq.map deconstructTf)
+                    FGraph.addElement hn hips priorName priorIps ARCRelation.Follows graph
+                    |> loop t stash header (hn, hips)
+                else
+                    loop t ()
     loop 
 
 
