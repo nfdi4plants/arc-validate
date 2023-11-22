@@ -1,9 +1,9 @@
-#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
-#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
+#I "../../../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
+#I "../../../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
 #r "ARCTokenization.dll"
 #r "ControlledVocabulary.dll"
-#I "src/ARCExpect/bin/Debug/netstandard2.0"
-#I "src/ARCExpect/bin/Release/netstandard2.0"
+#I "../../src/ARCExpect/bin/Debug/netstandard2.0"
+#I "../../src/ARCExpect/bin/Release/netstandard2.0"
 #r "ARCExpect.dll"
 
 //#r "nuget: ARCTokenization"
@@ -320,7 +320,7 @@ let deconstructTf tf =
     | MisplacedTerm ip -> ip
     | ObsoleteTerm  ip -> ip
 
-let constructSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
+let constructGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
         match section with
         | (hn,hts) :: t ->
@@ -328,10 +328,14 @@ let constructSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (s
             | UnknownTerm ip -> 
                 FGraph.addElement hn (hts |> Seq.map deconstructTf) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
                 |> loop t stash header priorParams
+            | MisplacedTerm ip ->
+                let priorName,priorIps = priorParams
+                if hasPartOfTo ontoGraph ip header then
+                    let hips = hts |> Seq.map deconstructTf
             | KnownTerm ip ->
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
-                    let hips = (hts |> Seq.map deconstructTf)
+                    let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps ARCRelation.Follows graph
                     |> loop t stash header (hn, hips)
                 else
