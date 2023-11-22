@@ -10,10 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		build.sh = build.sh
 		create-badge.py = create-badge.py
 		Dockerfile = Dockerfile
-		ErrorClassOntology.obo = ErrorClassOntology.obo
 		global.json = global.json
 		README.md = README.md
-		TestOntology.obo = TestOntology.obo
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
@@ -46,15 +44,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds"
 	ProjectSection(SolutionItems) = preProject
 		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
 		playgrounds\argu.fsx = playgrounds\argu.fsx
-		codeGeneratorScripting.fsx = codeGeneratorScripting.fsx
-		errorClassesStatic.fsx = errorClassesStatic.fsx
-		expectoPlayground.fsx = expectoPlayground.fsx
-		getAnnotationTableCvPs.fsx = getAnnotationTableCvPs.fsx
+		playgrounds\codeGeneratorScripting.fsx = playgrounds\codeGeneratorScripting.fsx
+		playgrounds\errorClassesStatic.fsx = playgrounds\errorClassesStatic.fsx
+		playgrounds\ErrorClassOntology.obo = playgrounds\ErrorClassOntology.obo
+		playgrounds\expectoPlayground.fsx = playgrounds\expectoPlayground.fsx
+		playgrounds\getAnnotationTableCvPs.fsx = playgrounds\getAnnotationTableCvPs.fsx
 		playgrounds\github-api.fsx = playgrounds\github-api.fsx
-		graphModelIOTest.fsx = graphModelIOTest.fsx
-		graphoscopePlayground.fsx = graphoscopePlayground.fsx
-		playground.fsx = playground.fsx
-		prototype.fsx = prototype.fsx
+		playgrounds\graphModelIOTest.fsx = playgrounds\graphModelIOTest.fsx
+		playgrounds\graphoscopePlayground.fsx = playgrounds\graphoscopePlayground.fsx
+		playgrounds\playground.fsx = playgrounds\playground.fsx
+		playgrounds\TestOntology.obo = playgrounds\TestOntology.obo
 	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidationPackages", "src\ARCValidationPackages\ARCValidationPackages.fsproj", "{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}"
@@ -66,6 +65,14 @@ EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCExpect", "src\ARCExpect\ARCExpect.fsproj", "{33E89EBC-A0FB-405D-9ED8-756B0CADBB28}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCExpect.Tests", "tests\ARCExpect.Tests\ARCExpect.Tests.fsproj", "{46EA4BDB-095A-4369-AD7E-07E702CD3E38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arcGraph_prototypes", "arcGraph_prototypes", "{02699157-EFC4-4E1A-94CC-B9825E2D1CB8}"
+	ProjectSection(SolutionItems) = preProject
+		playgrounds\arcGraph_playgrounds\prototype_v0.1.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.0.fsx
+		playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx
+		playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx
+		playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -114,6 +121,7 @@ Global
 		{0DBD3705-F884-4D89-BBEC-B5BDC41905FD} = {5C204780-A94B-46A2-B768-B12C7D81DDFC}
 		{33E89EBC-A0FB-405D-9ED8-756B0CADBB28} = {6275F297-567B-421B-B055-4F88B2785765}
 		{46EA4BDB-095A-4369-AD7E-07E702CD3E38} = {5C204780-A94B-46A2-B768-B12C7D81DDFC}
+		{02699157-EFC4-4E1A-94CC-B9825E2D1CB8} = {7994D526-5B21-4EBD-9CCB-EFA04EE303CF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}
