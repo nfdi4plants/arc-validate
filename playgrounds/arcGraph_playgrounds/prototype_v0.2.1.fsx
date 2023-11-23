@@ -260,21 +260,21 @@ let groupedIps = partitionedIps |> Seq.map groupTerms
 
 //let matchedIps = aggregatedIps |> Seq.map (matchTerms onto)
 let matchedIps = groupedIps |> Seq.map (matchTerms onto)
-matchedIps |> Seq.head
-let header = paramse.Head
-isHeader ontoGraph header
-let ip = paramse[2]
-isPartOfHeader header ontoGraph ip
+//matchedIps |> Seq.head
+//let header = paramse.Head
+//isHeader ontoGraph header
+//let ip = paramse[2]
+//isPartOfHeader header ontoGraph ip
 //ontoGraph[ip.Name] |> FContext.predecessors |> Seq.exists (fun (nk,e) -> printfn $"nk: {nk}\nheader: {header.Name}"; nk = header.Name)
-ontoGraph[ip.Name] |> FContext.successors |> Seq.exists (fun (nk,e) -> printfn $"nk: {nk}\nheader: {header.Name}"; nk = header.Name)
-onto.Terms[3]
+//ontoGraph[ip.Name] |> FContext.successors |> Seq.exists (fun (nk,e) -> printfn $"nk: {nk}\nheader: {header.Name}"; nk = header.Name)
+//onto.Terms[3]
 //matchTerms onto [header; ip]
-let testHead1 = groupedIps |> Seq.head
+//let testHead1 = groupedIps |> Seq.head
 //let testHead1a = aggregatedIps |> Seq.head |> Seq.toList
-let testHead1a = groupedIps |> Seq.head |> Seq.toList
-groupedIps |> Seq.item 3 |> Seq.toList
-matchedIps |> Seq.item 3 |> Seq.toList
-matchedIps |> Seq.last |> Seq.toList
+//let testHead1a = groupedIps |> Seq.head |> Seq.toList
+//groupedIps |> Seq.item 3 |> Seq.toList
+//matchedIps |> Seq.item 3 |> Seq.toList
+//matchedIps |> Seq.last |> Seq.toList
 
 // +++++++++++++++++++++++++
 // altered from ARCGraph.fs:
@@ -326,7 +326,7 @@ let constructGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (stri
         | (hn,hts) :: t ->
             match Seq.head hts with
             | UnknownTerm ip -> 
-                FGraph.addElement hn (hts |> Seq.map deconstructTf) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
+                FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
                 |> loop t stash header priorParams
             | MisplacedTerm ip ->
                 let priorName,priorIps = priorParams

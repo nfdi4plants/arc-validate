@@ -72,6 +72,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arcGraph_prototypes", "arcG
 		playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx
+		workingGraph.md = workingGraph.md
 	EndProjectSection
 EndProject
 Global
