@@ -13,14 +13,13 @@ flowchart
 	maps[matched IParams]
 	arcgr["ARC (Metadata) Graph"]
 
-	D[ ]:::empty
-	D2[ ]:::empty
-	D3[ ]:::empty
+	D[ ]
+	D2[ ]
+	D3[ ]
 
-	style D width:0,height:0
-	style D2 width:0,height:0
-	style D3 width:0,height:0
-	classDef empty width:1px,height:0px
+	style D height:0.0000001px,width:0.000001px
+	style D2 height:0.0000001px,width:0.000001px
+	style D3 height:0.0000001px,width:0.000001px
 	style of fill:#333,stroke-width:0,color:#777
 
 	xf -->|parseMetadataSheetFromFile| ips
@@ -36,6 +35,6 @@ flowchart
 	maps & og --- D2
 	D2 -->|constructMetadataGraph| arcgr
 
-	linkStyle 1 stroke:#777,color:#777,arrow:#111
+	linkStyle 1 stroke:#777,color:#777
 
 ```
