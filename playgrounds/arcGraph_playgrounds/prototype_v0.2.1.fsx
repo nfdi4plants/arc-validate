@@ -213,6 +213,10 @@ let isHeader (ontoGraph : FGraph<string,OboTerm,ARCRelation>) ip =
 //isHeader ontoGraph cvparamse[2]
 //isHeader ontoGraph cvparamse[5]
 
+let partitionedIps = Seq.groupWhen (isHeader ontoGraph) paramse
+//partitionedIps |> Seq.map Seq.toList |> Seq.toList
+//partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
+
 
 /// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
 let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ip : IParam) =
@@ -220,14 +224,31 @@ let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelat
     |> FContext.successors
     |> Seq.exists (fun (nk,e) -> nk = header.Name && e.HasFlag ARCRelation.PartOf)      // change to `.Accession` if required
 
+/// 
+let addMissingTermsInGroup (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : IParam seq) =
+    let header = Seq.head ips
+    let headerChildren =
+        ontoGraph[header.Name]
+        |> FContext.predecessors
+        |> Seq.choose (
+            fun (n,e) -> 
+                if e.HasFlag ARCRelation.PartOf then 
+                    ontoGraph[n]
+                    |> fun ()
+                    |> Some
+                else None
+        )
+    headerChildren
+
+let partitionallyFilledIps = partitionedIps |> Seq.map addMissingTermsInGroup
+
 /// Checks if the given IParam contains an obsolete term using a given OboOntology.
 let isObsoleteTerm (onto : OboOntology) (ip : IParam) =
     onto.Terms
     |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = Param.getTerm ip)
 
 /// Takes a seq of grouped IParams and tags them according to their TermFamiliarity using a given OboOntology.
-let matchTerms (onto : OboOntology) (gips : (string * IParam seq) seq) =
-    let ontoGraph = ontologyToFGraphByName onto      // if time performance is crucial, have this as parameter instead
+let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string * IParam seq) seq) =
     let header = Seq.head gips |> snd |> Seq.head
     printfn $"header: {header.Name}"
     gips
@@ -241,10 +262,6 @@ let matchTerms (onto : OboOntology) (gips : (string * IParam seq) seq) =
                 elif ips |> Seq.exists (fun ip -> isPartOfHeader header ontoGraph ip) then n, ips |> Seq.map KnownTerm
                 else n, ips |> Seq.map MisplacedTerm
     )
-
-let partitionedIps = Seq.groupWhen (isHeader ontoGraph) paramse
-//partitionedIps |> Seq.map Seq.toList |> Seq.toList
-//partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
 
 let groupedIps = partitionedIps |> Seq.map groupTerms 
 //groupedIps|>Seq.iter(fun ips->printfn"";ips|>Seq.iter(fun(ipN,ipEs)->printfn$"{ipN}:";ipEs|>Seq.iter(fun ip->printfn$"\t{ParamValue.getValueAsString ip.Value}")))
