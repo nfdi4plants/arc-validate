@@ -218,15 +218,10 @@ let partitionedIps = Seq.groupWhen (isHeader ontoGraph) paramse
 //partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
 
 
-/// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
-let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ip : IParam) =
-    ontoGraph[ip.Name]     // change to `.Accession` if required
-    |> FContext.successors
-    |> Seq.exists (fun (nk,e) -> nk = header.Name && e.HasFlag ARCRelation.PartOf)      // change to `.Accession` if required
-
-/// 
+/// Checks if there are missing terms in a given seq of IParams by using a given ontology-based FGraph and adds them if so. A term is defined as missing if it has a part_of relation to the seq's head term and is not present in the seq's tail.
 let addMissingTermsInGroup (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : IParam seq) =
     let header = Seq.head ips
+    let ipsTail = Seq.tail ips
     let headerChildren =
         ontoGraph[header.Name]
         |> FContext.predecessors
@@ -234,13 +229,30 @@ let addMissingTermsInGroup (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips
             fun (n,e) -> 
                 if e.HasFlag ARCRelation.PartOf then 
                     ontoGraph[n]
-                    |> fun ()
-                    |> Some
+                    |> fun (p,nd,s) ->
+                        if nd.IsObsolete then None
+                        else Some (OboTerm.toCvTerm nd)
                 else None
         )
-    headerChildren
+    let missingParams =
+        headerChildren
+        |> Seq.choose (
+            fun cvt ->
+                let cond = Seq.exists (fun ip -> Param.getTerm ip = cvt) ipsTail
+                if cond then None
+                else Some (CvParam(cvt, "") :> IParam)
+        )
+    Seq.append ips missingParams
 
-let partitionallyFilledIps = partitionedIps |> Seq.map addMissingTermsInGroup
+let partitionallyFilledIps = partitionedIps |> Seq.map (addMissingTermsInGroup ontoGraph)
+
+let groupedIps = partitionallyFilledIps |> Seq.map groupTerms 
+
+/// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
+let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ip : IParam) =
+    ontoGraph[ip.Name]     // change to `.Accession` if required
+    |> FContext.successors
+    |> Seq.exists (fun (nk,e) -> nk = header.Name && e.HasFlag ARCRelation.PartOf)      // change to `.Accession` if required
 
 /// Checks if the given IParam contains an obsolete term using a given OboOntology.
 let isObsoleteTerm (onto : OboOntology) (ip : IParam) =
@@ -262,8 +274,6 @@ let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string 
                 elif ips |> Seq.exists (fun ip -> isPartOfHeader header ontoGraph ip) then n, ips |> Seq.map KnownTerm
                 else n, ips |> Seq.map MisplacedTerm
     )
-
-let groupedIps = partitionedIps |> Seq.map groupTerms 
 //groupedIps|>Seq.iter(fun ips->printfn"";ips|>Seq.iter(fun(ipN,ipEs)->printfn$"{ipN}:";ipEs|>Seq.iter(fun ip->printfn$"\t{ParamValue.getValueAsString ip.Value}")))
 
 // deprecated: (dropped in favor of reworking matchTerms input parameter)
@@ -276,7 +286,7 @@ let groupedIps = partitionedIps |> Seq.map groupTerms
 //let aggregatedIps = Seq.map aggregateTerms groupedIps
 
 //let matchedIps = aggregatedIps |> Seq.map (matchTerms onto)
-let matchedIps = groupedIps |> Seq.map (matchTerms onto)
+let matchedIps = groupedIps |> Seq.map (matchTerms ontoGraph)
 //matchedIps |> Seq.head
 //let header = paramse.Head
 //isHeader ontoGraph header
@@ -337,7 +347,7 @@ let deconstructTf tf =
     | MisplacedTerm ip -> ip
     | ObsoleteTerm  ip -> ip
 
-let constructGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
+let contructMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
         match section with
         | (hn,hts) :: t ->
@@ -358,6 +368,9 @@ let constructGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (stri
                 else
                     loop t ()
     loop 
+
+let constructMetadataGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (matchedIps : (string * TermFamiliarity seq) seq seq) =
+    
 
 
 
