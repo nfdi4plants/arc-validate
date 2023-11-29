@@ -20,7 +20,7 @@ flowchart
 	style D height:0.0000001px,width:0.000001px
 	style D2 height:0.0000001px,width:0.000001px
 	style D3 height:0.0000001px,width:0.000001px
-	style of fill:#AAA,stroke-width:0,color:#777
+	style of fill:#EEE,stroke-width:0,color:#777
 
 	xf -->|parseMetadataSheetFromFile| ips
 	of --> |OboOntology.parseFromFile| onto
@@ -35,6 +35,6 @@ flowchart
 	maps & og --- D2
 	D2 -->|constructMetadataGraph| arcgr
 
-	linkStyle 1 stroke:#999,color:#777
+	linkStyle 1 stroke:#999,color:#777,fill:#EEE
 
 ```
