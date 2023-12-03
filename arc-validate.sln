@@ -10,8 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		build.sh = build.sh
 		create-badge.py = create-badge.py
 		Dockerfile = Dockerfile
+		ErrorClassOntology.obo = ErrorClassOntology.obo
 		global.json = global.json
 		README.md = README.md
+		TestOntology.obo = TestOntology.obo
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
@@ -46,14 +48,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds"
 		playgrounds\argu.fsx = playgrounds\argu.fsx
 		playgrounds\codeGeneratorScripting.fsx = playgrounds\codeGeneratorScripting.fsx
 		playgrounds\errorClassesStatic.fsx = playgrounds\errorClassesStatic.fsx
-		playgrounds\ErrorClassOntology.obo = playgrounds\ErrorClassOntology.obo
 		playgrounds\expectoPlayground.fsx = playgrounds\expectoPlayground.fsx
 		playgrounds\getAnnotationTableCvPs.fsx = playgrounds\getAnnotationTableCvPs.fsx
 		playgrounds\github-api.fsx = playgrounds\github-api.fsx
 		playgrounds\graphModelIOTest.fsx = playgrounds\graphModelIOTest.fsx
 		playgrounds\graphoscopePlayground.fsx = playgrounds\graphoscopePlayground.fsx
 		playgrounds\playground.fsx = playgrounds\playground.fsx
-		playgrounds\TestOntology.obo = playgrounds\TestOntology.obo
 	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidationPackages", "src\ARCValidationPackages\ARCValidationPackages.fsproj", "{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}"
@@ -72,7 +72,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arcGraph_prototypes", "arcG
 		playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx
-		workingGraph.md = workingGraph.md
 	EndProjectSection
 EndProject
 Global
