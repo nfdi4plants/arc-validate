@@ -70,7 +70,7 @@ let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repo
 //            | None -> CvParam(p.ID, p.Name, p.RefUri, p.Value, p :?> CvAttributeCollection)
 //    )
 
-let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
+//let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
 
 //let fromCvParamList cvpList =
 //    cvpList
@@ -350,24 +350,42 @@ let deconstructTf tf =
 let contructMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
         match section with
+        | [] -> 
+            match stash with
+            | [] -> graph, stash    // if section and stash are empty, return graph and empty stash
+            | _ ->
+                if List.forall (fun (sn,stf) -> match Seq.head stf with MisplacedTerm _ -> true | _ -> false) stash then graph, stash   // if section is empty and stash only has MisplacedTerms, return graph and stash
+                else loop stash [] header priorParams graph     // else take stash as section and continue
         | (hn,hts) :: t ->
             match Seq.head hts with
-            | UnknownTerm ip -> 
+            | UnknownTerm ip ->     // if UnknownTerm then add with Unknown relation to prior node
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
                 |> loop t stash header priorParams
-            | MisplacedTerm ip ->
-                let priorName,priorIps = priorParams
-                if hasPartOfTo ontoGraph ip header then
-                    let hips = hts |> Seq.map deconstructTf
             | KnownTerm ip ->
                 let priorName,priorIps = priorParams
-                if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
+                if hasFollowsTo ontoGraph ip (Seq.head priorIps) then   //
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps ARCRelation.Follows graph
                     |> loop t stash header (hn, hips)
                 else
-                    loop t ()
+                    match stash with
+                    | [] -> loop t stash header priorParams graph
+                    | h2 :: t2 -> loop t ((hn,hts) :: stash) header priorParams graph
+            | ObsoleteTerm ip ->
+                let priorName,priorIps = priorParams
+                if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
+                    let hips = hts |> Seq.map deconstructTf
+                    FGraph.addElement hn hips priorName priorIps (ARCRelation.Follows + ARCRelation.Obsolete) graph
+                    |> loop t stash header (hn, hips)
+                else
+                    match stash with
+                    | [] -> loop t stash header priorParams graph
+                    | h2 :: t2 -> loop t ((hn,hts) :: stash) header priorParams graph
+            | MisplacedTerm ip ->
+                FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Misplaced graph
+                |> loop t stash header priorParams
     loop 
+    0
 
 let constructMetadataGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (matchedIps : (string * TermFamiliarity seq) seq seq) =
     
