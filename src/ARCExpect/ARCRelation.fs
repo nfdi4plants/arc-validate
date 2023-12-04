@@ -9,6 +9,8 @@ type ARCRelation =
     | HasA = 4
     | Follows = 8
     | Unknown = 16
+    | Misplaced = 32
+    | Obsolete = 64
 
 /// Functions for working with ARCRelations.
 module ARCRelation =
