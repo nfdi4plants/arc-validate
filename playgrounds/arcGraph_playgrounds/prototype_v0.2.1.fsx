@@ -112,11 +112,20 @@ let ontologyToFGraphByName (onto : OboOntology) =
             match tr with
             | Empty st -> FGraph.addNode st.Name st acc
             | TargetMissing (rel,st) -> FGraph.addNode st.Name st acc
-            | Target (rel,st,tt) -> FGraph.addElement st.Name st tt.Name tt (ARCRelation.toARCRelation rel) acc
+            | Target (rel,st,tt) -> 
+                printfn $"st: {st.Name}\trelation: {rel}\ttt: {tt.Name}"
+                if FGraph.containsEdge st tt acc then
+                FGraph.Edge.
+                FGraph.addElement st.Name st tt.Name tt (ARCRelation.toARCRelation rel) acc
     ) FGraph.empty<string,OboTerm,ARCRelation>
 
-let ontoGraph = ontologyToFGraphByName onto
+OboOntology.getRelations onto |> List.take 10
+OboOntology.getRelations onto |> List.find (fun tr -> match tr with Target (a,b,c) -> a = "follows" | _ -> false)
 
+let ontoGraph = ontologyToFGraphByName onto
+ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.predecessors
+ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.successors
+FGraph.
 
 // NEW METADATA GRAPH CREATION FUNCTION(S)
 
@@ -259,6 +268,14 @@ let isObsoleteTerm (onto : OboOntology) (ip : IParam) =
     onto.Terms
     |> Seq.exists (fun o -> o.IsObsolete && OboTerm.toCvTerm o = Param.getTerm ip)
 
+/// Returns the TermFamiliarity's IParam value.
+let deconstructTf tf =
+    match tf with
+    | KnownTerm     ip -> ip
+    | UnknownTerm   ip -> ip
+    | MisplacedTerm ip -> ip
+    | ObsoleteTerm  ip -> ip
+
 /// Takes a seq of grouped IParams and tags them according to their TermFamiliarity using a given OboOntology.
 let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string * IParam seq) seq) =
     let header = Seq.head gips |> snd |> Seq.head
@@ -307,27 +324,30 @@ let matchedIps = groupedIps |> Seq.map (matchTerms ontoGraph)
 // altered from ARCGraph.fs:
 
 /// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
-let getRelatedCvParamsBy relating (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
-    relating graph[ip.Accession]
+let getRelatedIParamsBy relating (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
+    //relating graph[ip.Accession]
+    printfn $"{graph[ip.Name]}"
+    relating graph[ip.Name]
     |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
     |> Seq.map (fun ((id,t),r) -> id, t, r)
 
 /// Returns all related terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
-let getRelatedCvParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
-    getRelatedCvParamsBy FContext.neighbours ip graph
+let getRelatedIParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
+    getRelatedIParamsBy FContext.neighbours ip graph
 
 /// Returns all succeeding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
 let getSucceedingCvParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
-    getRelatedCvParamsBy FContext.successors ip graph
+    getRelatedIParamsBy FContext.successors ip graph
 
 /// Returns all preceding terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph.
 let getPrecedingCvParams (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
-    getRelatedCvParamsBy FContext.predecessors ip graph
+    getRelatedIParamsBy FContext.predecessors ip graph
 
 /// Checks is a given current CvParam has a given ArcRelation to a given prior CvParam by using a given ontology graph.
 let hasRelationTo onto (relation : ARCRelation) currentIp (priorIp : IParam) =
-    getRelatedCvParams currentIp onto
-    |> Seq.exists (fun (id,t,r) -> id = priorIp.Accession && r.HasFlag relation)
+    getSucceedingCvParams currentIp onto
+    //|> Seq.exists (fun (id,t,r) -> id = priorIp.Accession && r.HasFlag relation)
+    |> Seq.exists (fun (id,t,r) -> id = priorIp.Name && r.HasFlag relation)
 
 /// Checks is a given current CvParam has a follows relationship to a given prior CvParam by using a given ontology graph.
 let hasFollowsTo onto currentIp priorIp =
@@ -337,55 +357,77 @@ let hasFollowsTo onto currentIp priorIp =
 let hasPartOfTo onto currentIp priorIp =
     hasRelationTo onto ARCRelation.PartOf currentIp priorIp
 
+
+let firstIp = Seq.head matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
+let secondIp = Seq.item 1 matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
+FContext.successors ontoGraph[firstIp.Name]
+FContext.successors ontoGraph[secondIp.Name]
+FContext.predecessors ontoGraph[firstIp.Name] |> Seq.toList
+FContext.predecessors ontoGraph[secondIp.Name] |> Seq.toList
+
 // +++++++++++++++++++++++++
 
-/// Returns the TermFamiliarity's IParam value.
-let deconstructTf tf =
-    match tf with
-    | KnownTerm     ip -> ip
-    | UnknownTerm   ip -> ip
-    | MisplacedTerm ip -> ip
-    | ObsoleteTerm  ip -> ip
-
-let contructMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
-    let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (header : IParam) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
+let constructMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
+    let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
+        printfn "next round"
         match section with
         | [] -> 
-            match stash with
-            | [] -> graph, stash    // if section and stash are empty, return graph and empty stash
-            | _ ->
-                if List.forall (fun (sn,stf) -> match Seq.head stf with MisplacedTerm _ -> true | _ -> false) stash then graph, stash   // if section is empty and stash only has MisplacedTerms, return graph and stash
-                else loop stash [] header priorParams graph     // else take stash as section and continue
+            printfn "section empty"
+            //match stash with
+            //| [] -> 
+            //    printfn "stash empty"
+            //    graph, stash    // if section and stash are empty, return graph and empty stash
+            //| _ ->
+            //    printfn "stash not empty"
+            //    if List.forall (fun (sn,stf) -> match Seq.head stf with MisplacedTerm _ -> true | _ -> false) stash then 
+            //        printfn "only MisplacedTerms"
+            //        graph, stash   // if section is empty and stash only has MisplacedTerms, return graph and stash
+            //    else 
+            //        printfn "some non-MisplacedTerms"
+            //        loop stash [] priorParams graph     // else take stash as section and continue
+            graph, stash
         | (hn,hts) :: t ->
+            printfn "section not empty"
             match Seq.head hts with
             | UnknownTerm ip ->     // if UnknownTerm then add with Unknown relation to prior node
+                printfn "UnknownTerm"
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
-                |> loop t stash header priorParams
+                |> loop t stash priorParams
             | KnownTerm ip ->
+                printfn "KnownTerm"
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then   //
+                    printfn "has follows"
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps ARCRelation.Follows graph
-                    |> loop t stash header (hn, hips)
+                    |> loop t stash (hn, hips)
                 else
-                    match stash with
-                    | [] -> loop t stash header priorParams graph
-                    | h2 :: t2 -> loop t ((hn,hts) :: stash) header priorParams graph
+                    printfn "has no follows"
+                    loop t ((hn,hts) :: stash) priorParams graph
             | ObsoleteTerm ip ->
+                printfn "ObsoleteTerm"
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
+                    printfn "has follows"
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps (ARCRelation.Follows + ARCRelation.Obsolete) graph
-                    |> loop t stash header (hn, hips)
+                    |> loop t stash (hn, hips)
                 else
-                    match stash with
-                    | [] -> loop t stash header priorParams graph
-                    | h2 :: t2 -> loop t ((hn,hts) :: stash) header priorParams graph
+                    printfn "has no follows"
+                    loop t ((hn,hts) :: stash) priorParams graph
             | MisplacedTerm ip ->
+                printfn "MisplacedTerm"
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Misplaced graph
-                |> loop t stash header priorParams
-    loop 
-    0
+                |> loop t stash priorParams
+    let ipsList = Seq.toList ips
+    loop ipsList.Tail [] (fst ipsList.Head, (snd >> Seq.map deconstructTf) ipsList.Head) FGraph.empty<string,IParam seq,ARCRelation>
+
+let subgraphs = Seq.map (constructMetadataSubgraph ontoGraph) matchedIps
+subgraphs |> Seq.toList
+let subgraph1, subgraph1stash = Seq.head subgraphs
+Seq.item 1 subgraphs
+Visualization.isaIntermediateGraphToFullCyGraph subgraph1 |> CyGraph.show
+Visualization.printGraph string subgraph1
 
 let constructMetadataGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (matchedIps : (string * TermFamiliarity seq) seq seq) =
     
