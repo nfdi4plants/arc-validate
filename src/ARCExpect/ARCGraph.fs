@@ -295,10 +295,11 @@ module ARCGraph =
                 graph
 
         /// Takes an ISA-based FGraph and returns a CyGraph according to its structure.
-        let isaGraphToFullCyGraph (graph : FGraph<int*string,CvParam,ARCRelation>) =
+        let isaGraphToFullCyGraph (graph : FGraph<string,IParam,ARCRelation>) =
             toFullCyGraph
-                (fun (h,n) -> $"{h}, {n}")
-                (fun (d : CvParam) -> $"{d.Name}: {d.Value |> ParamValue.getValueAsString}")
+                //(fun (h,n) -> $"{h}, {n}")    // when using hash * accession or hash * name
+                id      // when using only accession or name
+                (fun (d : IParam) -> $"{d.Name}: {d.Value |> ParamValue.getValueAsString}")
                 (fun e -> 
                     [
                         CyParam.label <| e.ToString()
@@ -306,6 +307,38 @@ module ARCGraph =
                         | ARCRelation.Follows -> CyParam.color "red"
                         | ARCRelation.PartOf -> CyParam.color "blue"
                         | x when x = ARCRelation.PartOf + ARCRelation.Follows -> CyParam.color "purple"
+                        | ARCRelation.IsA -> CyParam.color "lightblue"
+                        | ARCRelation.Misplaced -> CyParam.color "pink"
+                        | ARCRelation.Obsolete -> CyParam.color "yellow"
+                        | ARCRelation.Unknown -> CyParam.color "black"
+                        | x when x = ARCRelation.Obsolete + ARCRelation.Follows -> CyParam.color "orange"
+                        | ARCRelation.HasA -> CyParam.color "brown"
+                        | _ -> CyParam.color "white"
+                    ]
+                )
+                graph
+                |> CyGraph.withLayout(Layout.initBreadthfirst <| Layout.LayoutOptions.Cose())
+
+        /// Takes an ISA-based FGraph and returns a CyGraph according to its structure.
+        let isaIntermediateGraphToFullCyGraph (graph : FGraph<string,IParam seq,ARCRelation>) =
+            toFullCyGraph
+                //(fun (h,n) -> $"{h}, {n}")    // when using hash * accession or hash * name
+                id      // when using only accession or name
+                (fun (d : IParam seq) -> $"{(Seq.head d).Name}: {(Seq.head d).Value |> ParamValue.getValueAsString}")
+                (fun e -> 
+                    [
+                        CyParam.label <| e.ToString()
+                        match e with
+                        | ARCRelation.Follows -> CyParam.color "red"
+                        | ARCRelation.PartOf -> CyParam.color "blue"
+                        | x when x = ARCRelation.PartOf + ARCRelation.Follows -> CyParam.color "purple"
+                        | ARCRelation.IsA -> CyParam.color "lightblue"
+                        | ARCRelation.Misplaced -> CyParam.color "pink"
+                        | ARCRelation.Obsolete -> CyParam.color "yellow"
+                        | ARCRelation.Unknown -> CyParam.color "black"
+                        | x when x = ARCRelation.Obsolete + ARCRelation.Follows -> CyParam.color "orange"
+                        | ARCRelation.HasA -> CyParam.color "brown"
+                        | _ -> CyParam.color "white"
                     ]
                 )
                 graph
