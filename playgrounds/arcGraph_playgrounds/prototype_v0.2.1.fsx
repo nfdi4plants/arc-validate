@@ -5,11 +5,15 @@
 #I "../../src/ARCExpect/bin/Debug/netstandard2.0"
 #I "../../src/ARCExpect/bin/Release/netstandard2.0"
 #r "ARCExpect.dll"
+#I "../../../../omaus/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
+#I "../../../../omaus/Graphoscope/src/Graphoscope/bin/Release/netstandard2.0"
+#r "Graphoscope.dll"
 
 //#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
-#r "nuget: FSharpAux, 1.1.0"
-#r "nuget: Graphoscope"
+//#r "nuget: FSharpAux, 1.1.0"
+#r "nuget: FSharpAux, 2.0.0"
+//#r "nuget: Graphoscope"
 #r "nuget: Cytoscape.NET"
 #r "nuget: FsOboParser, 0.3.0"
 #r "nuget: FsSpreadsheet.ExcelIO, 4.1.0"
@@ -114,13 +118,13 @@ let ontologyToFGraphByName (onto : OboOntology) =
             | TargetMissing (rel,st) -> FGraph.addNode st.Name st acc
             | Target (rel,st,tt) -> 
                 printfn $"st: {st.Name}\trelation: {rel}\ttt: {tt.Name}"
-                if FGraph.containsEdge st tt acc then
-                FGraph.Edge.
-                FGraph.addElement st.Name st tt.Name tt (ARCRelation.toARCRelation rel) acc
+                if FGraph.containsEdge st.Name tt.Name acc then
+                    FGraph.mapEdgeData acc (fun stn ttn rel2 -> rel2 + ARCRelation.toARCRelation rel)
+                else FGraph.addElement st.Name st tt.Name tt (ARCRelation.toARCRelation rel) acc
     ) FGraph.empty<string,OboTerm,ARCRelation>
 
 OboOntology.getRelations onto |> List.take 10
-OboOntology.getRelations onto |> List.find (fun tr -> match tr with Target (a,b,c) -> a = "follows" | _ -> false)
+OboOntology.getRelations onto |> List.filter (fun tr -> match tr with Target (a,b,c) -> (*a = "follows" &&*) c.Name = "ONTOLOGY SOURCE REFERENCE" | _ -> false)
 
 let ontoGraph = ontologyToFGraphByName onto
 ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.predecessors
@@ -145,7 +149,7 @@ let getMissingTerms (onto : OboOntology) (ips : IParam seq) =
             else 
                 let cvtObo = OboTerm.toCvTerm o
                 if not (ips |> Seq.exists (fun e -> Param.getTerm e = cvtObo)) then
-                    Some (CvParam(cvtObo, Value "") :> IParam)
+                    Some (CvParam(cvtObo, Value "<missing>") :> IParam)
                 else None
     )
 
@@ -367,7 +371,7 @@ FContext.predecessors ontoGraph[secondIp.Name] |> Seq.toList
 
 // +++++++++++++++++++++++++
 
-let constructMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
+let constructMetadataIntermediateSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
         printfn "next round"
         match section with
@@ -422,7 +426,7 @@ let constructMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (
     let ipsList = Seq.toList ips
     loop ipsList.Tail [] (fst ipsList.Head, (snd >> Seq.map deconstructTf) ipsList.Head) FGraph.empty<string,IParam seq,ARCRelation>
 
-let subgraphs = Seq.map (constructMetadataSubgraph ontoGraph) matchedIps
+let subgraphs = Seq.map (constructMetadataIntermediateSubgraph ontoGraph) matchedIps
 subgraphs |> Seq.toList
 let subgraph1, subgraph1stash = Seq.head subgraphs
 Seq.item 1 subgraphs
