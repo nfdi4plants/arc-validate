@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[9.0.4]" />
-    <PackageReference Include="FSharpAux" Version="[1.1.0]" />
+    <PackageReference Include="FSharpAux" Version="[2.0.0]" />
     <PackageReference Include="FsSpreadsheet" Version="[4.1.0]" />
     <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[4.1.0]" />
     <PackageReference Include="ARCTokenization" Version="[1.2.0]" />

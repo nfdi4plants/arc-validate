@@ -349,10 +349,11 @@
       },
       "FSharpAux": {
         "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "lKxo49OYLoI27GVLXJ2sOBGazfUVZ9zowLLPUn6mHYrepaMgEdxxeZpLcQwFIfzicSoi3i09IH114GSIXy/Dgg==",
+        "resolved": "2.0.0",
+        "contentHash": "2gFFDzIVheYO/glZmzyRaol/P60SWPzH7zM7QFZzfkR+rB3F0IdyVQpo3h9eOdsnOVTIYJhiywOaBAtsW0ZFzA==",
         "dependencies": {
-          "FSharp.Core": "6.0.1"
+          "FSharp.Core": "6.0.7",
+          "FSharpAux.Core": "2.0.0"
         }
       },
       "FSharpAux.Core": {
@@ -917,7 +918,7 @@
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
           "FSharp.Core": "[6.0.7, )",
-          "FSharpAux": "[1.1.0, 1.1.0]",
+          "FSharpAux": "[2.0.0, 2.0.0]",
           "FsOboParser": "[0.3.0, 0.3.0]",
           "FsSpreadsheet": "[4.1.0, 4.1.0]",
           "FsSpreadsheet.ExcelIO": "[4.1.0, 4.1.0]",
