@@ -117,19 +117,20 @@ let ontologyToFGraphByName (onto : OboOntology) =
             | Empty st -> FGraph.addNode st.Name st acc
             | TargetMissing (rel,st) -> FGraph.addNode st.Name st acc
             | Target (rel,st,tt) -> 
-                printfn $"st: {st.Name}\trelation: {rel}\ttt: {tt.Name}"
+                //printfn $"st: {st.Name}\trelation: {rel}\ttt: {tt.Name}"
                 if FGraph.containsEdge st.Name tt.Name acc then
-                    FGraph.mapEdgeData acc (fun stn ttn rel2 -> rel2 + ARCRelation.toARCRelation rel)
+                    let _, _, oldRel = FGraph.findEdge st.Name tt.Name acc
+                    let newRel = oldRel + ARCRelation.toARCRelation rel
+                    FGraph.setEdgeData st.Name tt.Name newRel acc
                 else FGraph.addElement st.Name st tt.Name tt (ARCRelation.toARCRelation rel) acc
     ) FGraph.empty<string,OboTerm,ARCRelation>
 
-OboOntology.getRelations onto |> List.take 10
-OboOntology.getRelations onto |> List.filter (fun tr -> match tr with Target (a,b,c) -> (*a = "follows" &&*) c.Name = "ONTOLOGY SOURCE REFERENCE" | _ -> false)
+//OboOntology.getRelations onto |> List.take 10
+//OboOntology.getRelations onto |> List.filter (fun tr -> match tr with Target (a,b,c) -> (*a = "follows" &&*) c.Name = "ONTOLOGY SOURCE REFERENCE" | _ -> false)
 
 let ontoGraph = ontologyToFGraphByName onto
-ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.predecessors
-ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.successors
-FGraph.
+//ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.predecessors
+//ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.successors
 
 // NEW METADATA GRAPH CREATION FUNCTION(S)
 
@@ -364,10 +365,10 @@ let hasPartOfTo onto currentIp priorIp =
 
 let firstIp = Seq.head matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
 let secondIp = Seq.item 1 matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
-FContext.successors ontoGraph[firstIp.Name]
-FContext.successors ontoGraph[secondIp.Name]
-FContext.predecessors ontoGraph[firstIp.Name] |> Seq.toList
-FContext.predecessors ontoGraph[secondIp.Name] |> Seq.toList
+//FContext.successors ontoGraph[firstIp.Name]
+//FContext.successors ontoGraph[secondIp.Name]
+//FContext.predecessors ontoGraph[firstIp.Name] |> Seq.toList
+//FContext.predecessors ontoGraph[secondIp.Name] |> Seq.toList
 
 // +++++++++++++++++++++++++
 
@@ -431,7 +432,13 @@ subgraphs |> Seq.toList
 let subgraph1, subgraph1stash = Seq.head subgraphs
 Seq.item 1 subgraphs
 Visualization.isaIntermediateGraphToFullCyGraph subgraph1 |> CyGraph.show
+Seq.length subgraphs
+Seq.item 3 subgraphs |> snd
+Seq.item 3 subgraphs |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
 Visualization.printGraph string subgraph1
+let subgraphLengths = Seq.map (fun (sg,st) -> Seq.length st) subgraphs
+Seq.toList subgraphLengths
+Seq.iter (fst >> Visualization.isaIntermediateGraphToFullCyGraph >> CyGraph.show) subgraphs
 
 let constructMetadataGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (matchedIps : (string * TermFamiliarity seq) seq seq) =
     
