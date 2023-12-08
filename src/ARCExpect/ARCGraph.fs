@@ -324,7 +324,7 @@ module ARCGraph =
             toFullCyGraph
                 //(fun (h,n) -> $"{h}, {n}")    // when using hash * accession or hash * name
                 id      // when using only accession or name
-                (fun (d : IParam seq) -> $"{(Seq.head d).Name}: {(Seq.head d).Value |> ParamValue.getValueAsString}")
+                (fun (d : IParam seq) -> $"""{(Seq.head d).Name}: {(Seq.map (fun (lil : IParam) -> lil.Value |> ParamValue.getValueAsString) d) |> String.concat "; "}""")
                 (fun e -> 
                     [
                         CyParam.label <| e.ToString()
