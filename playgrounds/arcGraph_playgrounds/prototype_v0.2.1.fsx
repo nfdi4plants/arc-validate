@@ -182,23 +182,10 @@ let ipsAdded = addMissingTerms onto paramse
 //let cvpsMarked = ipsAggregated |> Seq.map (fun (n,cs) -> n, markTerms onto cs)
 //cvpsMarked |> Seq.iter (fun c -> match c with | KnownTerm x | ObsoleteTerm x -> () | UnknownTerm x -> printfn "%A" x)
 
-type FGraph with
-
-    /// Returns the nodes of a given FGraph.
-    static member getNodes (graph : FGraph<'Nk,'Nd,'Ed>) =
-        graph
-        |> Seq.map (
-           fun kvp ->
-                let nodeKey = kvp.Key
-                let p,nd,s = kvp.Value
-                nodeKey, nd
-           )
-
-
 /// Returns the key of the node in a structured ontology-FGraph that has no other nodes pointing to.
-let getTopNodeKey (ontoGraph : FGraph<string,OboTerm,ARCRelation>) =
-    ontoGraph.Keys
-    |> Seq.find (fun k -> FContext.successors ontoGraph[k] |> Seq.length = 0)
+let getTopNodeKey (graph : FGraph<_,_,_>) =
+    graph.Keys
+    |> Seq.find (fun k -> FContext.successors graph[k] |> Seq.length = 0)
 
 //ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
 
@@ -372,12 +359,12 @@ let secondIp = Seq.item 1 matchedIps |> Seq.head |> snd |> Seq.head |> deconstru
 
 // +++++++++++++++++++++++++
 
-let constructMetadataIntermediateSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
+let constructIntermediateMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
-        printfn "next round"
+        //printfn "next round"
         match section with
         | [] -> 
-            printfn "section empty"
+            //printfn "section empty"
             //match stash with
             //| [] -> 
             //    printfn "stash empty"
@@ -392,53 +379,66 @@ let constructMetadataIntermediateSubgraph (ontoGraph : FGraph<string,OboTerm,ARC
             //        loop stash [] priorParams graph     // else take stash as section and continue
             graph, stash
         | (hn,hts) :: t ->
-            printfn "section not empty"
+            //printfn "section not empty"
             match Seq.head hts with
             | UnknownTerm ip ->     // if UnknownTerm then add with Unknown relation to prior node
-                printfn "UnknownTerm"
+                //printfn "UnknownTerm"
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
                 |> loop t stash priorParams
             | KnownTerm ip ->
-                printfn "KnownTerm"
+                //printfn "KnownTerm"
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then   //
-                    printfn "has follows"
+                    //printfn "has follows"
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps ARCRelation.Follows graph
                     |> loop t stash (hn, hips)
                 else
-                    printfn "has no follows"
+                    //printfn "has no follows"
                     loop t ((hn,hts) :: stash) priorParams graph
             | ObsoleteTerm ip ->
-                printfn "ObsoleteTerm"
+                //printfn "ObsoleteTerm"
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
-                    printfn "has follows"
+                    //printfn "has follows"
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps (ARCRelation.Follows + ARCRelation.Obsolete) graph
                     |> loop t stash (hn, hips)
                 else
-                    printfn "has no follows"
+                    //printfn "has no follows"
                     loop t ((hn,hts) :: stash) priorParams graph
             | MisplacedTerm ip ->
-                printfn "MisplacedTerm"
+                //printfn "MisplacedTerm"
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Misplaced graph
                 |> loop t stash priorParams
     let ipsList = Seq.toList ips
     loop ipsList.Tail [] (fst ipsList.Head, (snd >> Seq.map deconstructTf) ipsList.Head) FGraph.empty<string,IParam seq,ARCRelation>
 
-let subgraphs = Seq.map (constructMetadataIntermediateSubgraph ontoGraph) matchedIps
-subgraphs |> Seq.toList
-let subgraph1, subgraph1stash = Seq.head subgraphs
-Seq.item 1 subgraphs
-Visualization.isaIntermediateGraphToFullCyGraph subgraph1 |> CyGraph.show
-Seq.length subgraphs
+let subgraphs = Seq.map (constructIntermediateMetadataSubgraph ontoGraph) matchedIps
+//subgraphs |> Seq.toList
+//let subgraph1, subgraph1stash = Seq.head subgraphs
+//Seq.item 1 subgraphs
+//Visualization.isaIntermediateGraphToFullCyGraph subgraph1 |> CyGraph.show
+//Seq.length subgraphs
 Seq.item 3 subgraphs |> snd
-Seq.item 3 subgraphs |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
-Visualization.printGraph string subgraph1
+//Seq.item 3 subgraphs |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
+//Visualization.printGraph string subgraph1
 let subgraphLengths = Seq.map (fun (sg,st) -> Seq.length st) subgraphs
 Seq.toList subgraphLengths
-Seq.iter (fst >> Visualization.isaIntermediateGraphToFullCyGraph >> CyGraph.show) subgraphs
+(Seq.take 5 >> Seq.iter (fst >> Visualization.isaIntermediateGraphToFullCyGraph >> CyGraph.show)) subgraphs
+
+let splitIntermediateMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (subgraph : FGraph<string,IParam seq, ARCRelation>) =
+    let longestChain = 
+        FGraph.getNodes subgraph
+        |> Seq.maxBy (snd >> Seq.length)
+        |> snd
+        |> Seq.length
+    let header = getTopNodeKey subgraph
+    FGraph.mapNodeData (
+        fun nd ->
+            
+    ) subgraph
+
 
 let constructMetadataGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (matchedIps : (string * TermFamiliarity seq) seq seq) =
     
