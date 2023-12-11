@@ -76,6 +76,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arcGraph_prototypes", "arcG
 		playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo_notebooks", "demo_notebooks", "{A83F65C9-925E-437C-A457-EF8B9C6B154D}"
+	ProjectSection(SolutionItems) = preProject
+		playgrounds\demo_notebooks\demo_ARCGraph.ipynb = playgrounds\demo_notebooks\demo_ARCGraph.ipynb
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +129,7 @@ Global
 		{33E89EBC-A0FB-405D-9ED8-756B0CADBB28} = {6275F297-567B-421B-B055-4F88B2785765}
 		{46EA4BDB-095A-4369-AD7E-07E702CD3E38} = {5C204780-A94B-46A2-B768-B12C7D81DDFC}
 		{02699157-EFC4-4E1A-94CC-B9825E2D1CB8} = {7994D526-5B21-4EBD-9CCB-EFA04EE303CF}
+		{A83F65C9-925E-437C-A457-EF8B9C6B154D} = {B3F07465-2108-4C43-843A-9F503044FDB7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}
