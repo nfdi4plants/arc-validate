@@ -418,13 +418,15 @@
       },
       "Graphoscope": {
         "type": "Transitive",
-        "resolved": "0.2.0",
-        "contentHash": "20mAUZMNyYm2BI2FqPSmcR3Ik/0rYNsRPJExBx6xa24Z6dV/Ow93KKFDaIMPeNRQiqWWXTvAV0MHN1TVPkLUpA==",
+        "resolved": "0.6.0-preview.1",
+        "contentHash": "GBXYdS3y8Yg/0a43/r9JzcFiPs/CbdQF3Ikl20ng/gzxBeKeZv08+m9kEwUIV7MTGuNGQWV1ZS6qoRGt35O6YQ==",
         "dependencies": {
           "FSharp.Core": "6.0.7",
           "FSharp.Data": "6.2.0",
+          "FSharpAux": "2.0.0",
           "FSharpAux.Core": "2.0.0",
-          "FSharpx.Collections": "3.1.0"
+          "FSharpx.Collections": "3.1.0",
+          "OptimizedPriorityQueue": "5.1.0"
         }
       },
       "ISADotNet": {
@@ -604,6 +606,11 @@
         "type": "Transitive",
         "resolved": "6.0.0",
         "contentHash": "XA59hPSbKdExu28TbONlD/BwOkKzjo4u2mkEJIP4wnDz9P65FdM34cVA+2/jztKrKyFmX8jpQW++xOp99mufjw=="
+      },
+      "OptimizedPriorityQueue": {
+        "type": "Transitive",
+        "resolved": "5.1.0",
+        "contentHash": "0AnX6kAs0GiLrSqrHKe5mpQhJSHTmXeqLNucV2CxGATP/I9UzLMc1N4MtS/z8qB6mcgX61OjHdY3YbOmETGs+A=="
       },
       "Semver": {
         "type": "Transitive",
@@ -922,7 +929,7 @@
           "FsOboParser": "[0.3.0, 0.3.0]",
           "FsSpreadsheet": "[4.1.0, 4.1.0]",
           "FsSpreadsheet.ExcelIO": "[4.1.0, 4.1.0]",
-          "Graphoscope": "[0.2.0, 0.2.0]"
+          "Graphoscope": "[0.6.0-preview.1, 0.6.0-preview.1]"
         }
       },
       "arcvalidationpackages": {
