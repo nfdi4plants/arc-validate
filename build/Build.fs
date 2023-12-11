@@ -41,6 +41,8 @@ let _preReleaseNoDocs =
         "PreReleaseNoDocs" 
         [setPrereleaseTag; clean; build; runTests; packPrerelease; createPrereleaseTag; publishNugetPrerelease]
 
+let _releaseNotes = ReleaseNotesTasks.updateReleaseNotes
+
 [<EntryPoint>]
 let main args = 
     runOrDefault build args
