@@ -13,8 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		ErrorClassOntology.obo = ErrorClassOntology.obo
 		global.json = global.json
 		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
 		TestOntology.obo = TestOntology.obo
-		playgrounds\workingGraph.md = playgrounds\workingGraph.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
@@ -55,6 +55,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds"
 		playgrounds\graphModelIOTest.fsx = playgrounds\graphModelIOTest.fsx
 		playgrounds\graphoscopePlayground.fsx = playgrounds\graphoscopePlayground.fsx
 		playgrounds\playground.fsx = playgrounds\playground.fsx
+		playgrounds\workingGraph.md = playgrounds\workingGraph.md
 	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidationPackages", "src\ARCValidationPackages\ARCValidationPackages.fsproj", "{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}"
@@ -69,7 +70,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCExpect.Tests", "tests\AR
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arcGraph_prototypes", "arcGraph_prototypes", "{02699157-EFC4-4E1A-94CC-B9825E2D1CB8}"
 	ProjectSection(SolutionItems) = preProject
-		carepaket.fsx = carepaket.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.1.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.0.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx
 		playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx
