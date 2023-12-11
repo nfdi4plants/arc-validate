@@ -463,7 +463,7 @@ module ARCGraph =
     /// Splits the nodedata of a given intermediate subgraph into single nodes. Nodekey changes from name to name * number (of occurence), 0-based.
     let splitMetadataSubgraph (subgraph : FGraph<string,IParam seq,ARCRelation>) =
         let header = FGraph.getTopNodeKey subgraph
-        printfn $"header: {header}"
+        //printfn $"header: {header}"
         let newGraph =
             subgraph.Keys
             |> Seq.fold (
@@ -488,10 +488,10 @@ module ARCGraph =
                 |> Seq.iter (
                     fun (nk2,e) ->
                         if nk2 = header then
-                            printfn "edge for header"
+                            //printfn "edge for header"
                             FGraph.addEdge (nk,i) (nk2,0) e newGraph
                         else
-                            printfn "edge for non-header"
+                            //printfn "edge for non-header"
                             FGraph.addEdge (nk,i) (nk2,i) e newGraph
                         |> ignore
                 )
