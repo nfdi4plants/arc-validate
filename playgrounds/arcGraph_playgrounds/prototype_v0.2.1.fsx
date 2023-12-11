@@ -187,6 +187,10 @@ let getTopNodeKey (graph : FGraph<_,_,_>) =
     graph.Keys
     |> Seq.find (fun k -> FContext.successors graph[k] |> Seq.length = 0)
 
+/// Returns the nodedata of the given graph by using a given 
+let getNodeData nodeKey (graph : FGraph<_,_,_>) =
+    graph[nodeKey] |> fun (p,nd,s) -> nd
+
 //ontoGraph[getTopNodeKey ontoGraph] |> fun (p,nd,s) -> nd
 
 ///// Creates an intermediate graph with CvParam seq as nodedata.
@@ -283,6 +287,7 @@ let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string 
                 elif ips |> Seq.exists (fun ip -> isPartOfHeader header ontoGraph ip) then n, ips |> Seq.map KnownTerm
                 else n, ips |> Seq.map MisplacedTerm
     )
+
 //groupedIps|>Seq.iter(fun ips->printfn"";ips|>Seq.iter(fun(ipN,ipEs)->printfn$"{ipN}:";ipEs|>Seq.iter(fun ip->printfn$"\t{ParamValue.getValueAsString ip.Value}")))
 
 // deprecated: (dropped in favor of reworking matchTerms input parameter)
@@ -350,8 +355,8 @@ let hasPartOfTo onto currentIp priorIp =
     hasRelationTo onto ARCRelation.PartOf currentIp priorIp
 
 
-let firstIp = Seq.head matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
-let secondIp = Seq.item 1 matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
+//let firstIp = Seq.head matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
+//let secondIp = Seq.item 1 matchedIps |> Seq.head |> snd |> Seq.head |> deconstructTf
 //FContext.successors ontoGraph[firstIp.Name]
 //FContext.successors ontoGraph[secondIp.Name]
 //FContext.predecessors ontoGraph[firstIp.Name] |> Seq.toList
@@ -359,6 +364,7 @@ let secondIp = Seq.item 1 matchedIps |> Seq.head |> snd |> Seq.head |> deconstru
 
 // +++++++++++++++++++++++++
 
+/// Takes an ontology-based FGraph and a seq of termname * matched IParams to create an intermediate subgraph out of it. This subgraph consists of a chain of nodes that have their termname as nodekey and their IParam seq as nodedata. The nodes are ordered by the follows-relationship taken from the ontology-based FGraph.
 let constructIntermediateMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
         //printfn "next round"
@@ -420,26 +426,105 @@ let subgraphs = Seq.map (constructIntermediateMetadataSubgraph ontoGraph) matche
 //Seq.item 1 subgraphs
 //Visualization.isaIntermediateGraphToFullCyGraph subgraph1 |> CyGraph.show
 //Seq.length subgraphs
-Seq.item 3 subgraphs |> snd
+//Seq.item 3 subgraphs |> snd
 //Seq.item 3 subgraphs |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
 //Visualization.printGraph string subgraph1
-let subgraphLengths = Seq.map (fun (sg,st) -> Seq.length st) subgraphs
-Seq.toList subgraphLengths
-(Seq.take 5 >> Seq.iter (fst >> Visualization.isaIntermediateGraphToFullCyGraph >> CyGraph.show)) subgraphs
+//let subgraphLengths = Seq.map (fun (sg,st) -> Seq.length st) subgraphs
+//Seq.toList subgraphLengths
+//(Seq.take 5 >> Seq.iter (fst >> Visualization.isaIntermediateGraphToFullCyGraph >> CyGraph.show)) subgraphs
 
-let splitIntermediateMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (subgraph : FGraph<string,IParam seq, ARCRelation>) =
-    let longestChain = 
+/// Takes a subgraph and adds empty IParams of the respective CvTerm to the nodedata if it is shorter than the longest IParam seq of any nodedata so that all IParam seqs have the same amount of items. Ignores the header.
+let addEmptyIpsToNodeData (subgraph : FGraph<string,IParam seq,ARCRelation>) =
+    let longestChainLength = 
         FGraph.getNodes subgraph
         |> Seq.maxBy (snd >> Seq.length)
         |> snd
         |> Seq.length
     let header = getTopNodeKey subgraph
-    FGraph.mapNodeData (
-        fun nd ->
-            
-    ) subgraph
+    subgraph.Keys   // .mapNodes would be nicer...
+    |> Seq.iter (
+        fun nk ->
+            if nk <> header then
+                let nd = subgraph[nk] |> fun (p,nd,s) -> nd
+                let currLength = Seq.length nd
+                if currLength < longestChainLength then
+                    let emptyIps = Seq.init (longestChainLength - currLength) (fun _ -> CvParam(Seq.head nd |> Param.getTerm, "<empty>") :> IParam)
+                    FGraph.setNodeData nk (Seq.append nd emptyIps) subgraph
+                    |> ignore
+    )
+    subgraph
+
+let filledSubgraphs = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs
+//Seq.item 3 subgraphs |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
+//Seq.item 3 filledSubgraphs |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
+
+let splitMetadataSubgraph (subgraph : FGraph<string,IParam seq,ARCRelation>) =
+    let header = getTopNodeKey subgraph
+    printfn $"header: {header}"
+    let newGraph =
+        subgraph.Keys
+        |> Seq.fold (
+            fun g nk ->
+                if nk = header then
+                    let nd = getNodeData nk subgraph |> Seq.head
+                    FGraph.addNode (nk,0) nd g
+                else
+                    let nds = getNodeData nk subgraph
+                    nds
+                    |> Seq.foldi (
+                        fun i g2 nd ->
+                            FGraph.addNode (nk,i) nd g2 
+                    ) g
+        ) FGraph.empty<string * int,IParam,ARCRelation>
+    newGraph.Keys
+    |> Seq.iter (
+        fun (nk,i) ->
+            //printfn $"nk: {nk}, i: {i}"
+            let succs = FContext.successors subgraph[nk]
+            succs
+            |> Seq.iter (
+                fun (nk2,e) ->
+                    if nk2 = header then
+                        printfn "edge for header"
+                        FGraph.addEdge (nk,i) (nk2,0) e newGraph
+                    else
+                        printfn "edge for non-header"
+                        FGraph.addEdge (nk,i) (nk2,i) e newGraph
+                    |> ignore
+            )
+    )
+    newGraph
+
+let splitSubgraphs = Seq.map splitMetadataSubgraph filledSubgraphs
+
+//splitSubgraphs |> Seq.head |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+//splitSubgraphs |> Seq.item 3 |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+
+let metadataSubgraphToList (subgraph : FGraph<string * int,IParam,ARCRelation>) =
+    let headerN, headerI = getTopNodeKey subgraph
+    let chainMaxNo = subgraph.Keys |> Seq.maxBy snd |> snd
+    Seq.init (chainMaxNo + 1) (fun i ->
+        subgraph.Keys
+        |> Seq.choose (
+            fun (nk,i2) ->
+                if nk = headerN then
+                    ((headerN, headerI), getNodeData (nk,0) subgraph)
+                    |> Some
+                elif i = i2 then
+                    ((nk, i), getNodeData (nk,i) subgraph)
+                    |> Some
+                else None
+        )
+    )
 
 
+metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.head |> Seq.toList
+metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.item 2 |> Seq.toList
+
+let assembleMetadataSubgraphs (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (subgraphs : FGraph<string,IParam seq,ARCRelation> seq) =
+    
+
+// 
 let constructMetadataGraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (matchedIps : (string * TermFamiliarity seq) seq seq) =
     
 
