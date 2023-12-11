@@ -518,8 +518,8 @@ let metadataSubgraphToList (subgraph : FGraph<string * int,IParam,ARCRelation>) 
     )
 
 
-metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.head |> Seq.toList
-metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.item 2 |> Seq.toList
+//metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.head |> Seq.toList
+//metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.item 2 |> Seq.toList
 
 let assembleMetadataSubgraphs (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (subgraphs : FGraph<string,IParam seq,ARCRelation> seq) =
     
