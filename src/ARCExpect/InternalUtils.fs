@@ -2,6 +2,7 @@
 
 
 open System
+open Graphoscope
 
 
 //// this is needed to allow ValidatorTests project to access internal modules
@@ -62,3 +63,15 @@ module InternalUtils =
         static member toCvTerm (term : OboTerm) =
             let ref = String.takeWhile ((<>) ':') term.Id
             CvTerm.create(term.Id, term.Name, ref)
+
+
+    type FGraph with
+
+        /// Returns the key of the node in a structured ontology-FGraph that has no other nodes pointing to.
+        static member getTopNodeKey (graph : FGraph<_,_,_>) =
+            graph.Keys
+            |> Seq.find (fun k -> FContext.successors graph[k] |> Seq.length = 0)
+
+        /// Returns the nodedata of the given graph by using a given nodekey.
+        static member getNodeData nodeKey (graph : FGraph<_,_,_>) =
+            graph[nodeKey] |> fun (p,nd,s) -> nd

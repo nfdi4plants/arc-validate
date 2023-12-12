@@ -46,11 +46,12 @@
       },
       "FSharpAux": {
         "type": "Direct",
-        "requested": "[1.1.0, 1.1.0]",
-        "resolved": "1.1.0",
-        "contentHash": "lKxo49OYLoI27GVLXJ2sOBGazfUVZ9zowLLPUn6mHYrepaMgEdxxeZpLcQwFIfzicSoi3i09IH114GSIXy/Dgg==",
+        "requested": "[2.0.0, 2.0.0]",
+        "resolved": "2.0.0",
+        "contentHash": "2gFFDzIVheYO/glZmzyRaol/P60SWPzH7zM7QFZzfkR+rB3F0IdyVQpo3h9eOdsnOVTIYJhiywOaBAtsW0ZFzA==",
         "dependencies": {
-          "FSharp.Core": "6.0.1"
+          "FSharp.Core": "6.0.7",
+          "FSharpAux.Core": "2.0.0"
         }
       },
       "FsOboParser": {
@@ -86,14 +87,16 @@
       },
       "Graphoscope": {
         "type": "Direct",
-        "requested": "[0.2.0, 0.2.0]",
-        "resolved": "0.2.0",
-        "contentHash": "20mAUZMNyYm2BI2FqPSmcR3Ik/0rYNsRPJExBx6xa24Z6dV/Ow93KKFDaIMPeNRQiqWWXTvAV0MHN1TVPkLUpA==",
+        "requested": "[0.6.0-preview.1, 0.6.0-preview.1]",
+        "resolved": "0.6.0-preview.1",
+        "contentHash": "GBXYdS3y8Yg/0a43/r9JzcFiPs/CbdQF3Ikl20ng/gzxBeKeZv08+m9kEwUIV7MTGuNGQWV1ZS6qoRGt35O6YQ==",
         "dependencies": {
           "FSharp.Core": "6.0.7",
           "FSharp.Data": "6.2.0",
+          "FSharpAux": "2.0.0",
           "FSharpAux.Core": "2.0.0",
-          "FSharpx.Collections": "3.1.0"
+          "FSharpx.Collections": "3.1.0",
+          "OptimizedPriorityQueue": "5.1.0"
         }
       },
       "NETStandard.Library": {
@@ -285,6 +288,11 @@
         "type": "Transitive",
         "resolved": "13.0.1",
         "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+      },
+      "OptimizedPriorityQueue": {
+        "type": "Transitive",
+        "resolved": "5.1.0",
+        "contentHash": "0AnX6kAs0GiLrSqrHKe5mpQhJSHTmXeqLNucV2CxGATP/I9UzLMc1N4MtS/z8qB6mcgX61OjHdY3YbOmETGs+A=="
       },
       "System.Buffers": {
         "type": "Transitive",

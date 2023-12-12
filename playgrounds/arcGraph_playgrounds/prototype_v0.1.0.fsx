@@ -1,10 +1,10 @@
-#I "src/ArcValidation/bin/Debug/netstandard2.0"
-#I "src/ArcValidation/bin/Release/netstandard2.0"
-#r "ARCValidation.dll"
-//#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
-//#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
-//#r "ARCTokenization.dll"
-//#r "ControlledVocabulary.dll"
+#I "../ARCTokenization/src/ARCTokenization/bin/Debug/netstandard2.0"
+#I "../ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0"
+#r "ARCTokenization.dll"
+#r "ControlledVocabulary.dll"
+#I "src/ARCExpect/bin/Debug/netstandard2.0"
+#I "src/ARCExpect/bin/Release/netstandard2.0"
+#r "ARCExpect.dll"
 
 //#r "nuget: ARCTokenization"
 #r "nuget: Expecto"
@@ -25,86 +25,13 @@ open Graphoscope
 open FsOboParser
 open Cytoscape.NET
 
-open ArcValidation
-open ArcValidation.OboGraph
-open ArcValidation.ArcGraph
-open ArcValidation.ArcGraph.Visualization
+open ARCExpect
+open ARCExpect.OboGraph
+open ARCExpect.ARCGraph
+open ARCExpect.ARCGraph.Visualization
 
 open System.Collections.Generic
 open System.Text.RegularExpressions
-
-
-//// from internal module copypasted
-
-//open Impl
-
-//let performTest test =
-//    let w = System.Diagnostics.Stopwatch()
-//    w.Start()
-//    evalTests Tests.defaultConfig test
-//    |> Async.RunSynchronously
-//    |> fun r -> 
-//        w.Stop()
-//        {
-//            results = r
-//            duration = w.Elapsed
-//            maxMemory = 0L
-//            memoryLimit = 0L
-//            timedOut = []
-//        }
-
-
-
-let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
-
-//paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
-paramse |> List.iter (fun p -> printfn "%A" <| p.GetType().ToString())
-paramse |> List.iter (fun p -> printfn "%A" <| (p.Value |> ParamValue.getValueAsString))
-paramse |> List.iter (fun p -> printfn "%A" <| p.Name)
-
-//let cvparamse = paramse |> List.map (CvParam.tryCvParam >> Option.get)
-//let cvparamse = 
-//    paramse 
-//    |> List.map (
-//        fun p -> 
-//            match CvParam.tryCvParam p with
-//            | Some cvp -> cvp
-//            | None -> CvParam(p.ID, p.Name, p.RefUri, p.Value, p :?> CvAttributeCollection)
-//    )
-let cvparamse = paramse |> List.map (Param.tryCvParam >> Option.get)
-
-//let fromCvParamList cvpList =
-//    cvpList
-//    |> List.mapi (
-//        fun i cvp ->
-//            (i,CvBase.getCvName cvp), cvp
-//    )
-//    |> FGraph.createFromNodes<int*string,CvParam,Relation> 
-
-//let invesContentGraph = fromCvParamList cvparamse
-
-let obo = ARCTokenization.Terms.InvestigationMetadata.ontology
-
-//let tans = cvparamse |> List.map CvParam.getCvAccession
-
-//let assTerms = tans |> List.choose (fun tan -> obo.Terms |> List.tryFind (fun term -> term.Id = tan))
-//assTerms |> List.fold (fun acc y -> acc && Option.isSome y) true
-
-//let assTermsRelships = assTerms |> List.collect (fun x -> OboOntology.getRelatedTerms x obo)
-
-//toRelation "part_of" + toRelation "has_a" + toRelation "follows"
-//toRelation "part_of" ||| toRelation "has_a" ||| toRelation "follows"
-
-//let assTermsRels = assTermsRelships |> List.map (fun (o1,rs,o2) -> o1, toRelation rs, o2)
-
-//invesContentGraph.Keys |> Seq.head
-//invesContentGraph.Values |> Seq.head
-
-let ontoGraph = ontologyToFGraph obo
-
-//ontoGraph |> printGraph (fun x -> x.Name)
-
-//ontoGraphToFullCyGraph ontoGraph |> CyGraph.show
 
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -149,7 +76,7 @@ let equalsFollows onto cvp1 cvp2 =
 
 //OboTerm.toCvTerm (ontoGraph.Values |> Seq.head |> fun (_,t,_) -> t)
 
-//cvparamse.[1].Attributes |> Dictionary.item "Row"
+//cvparamse.[1].Attributes |> Dictionary.item "Row" 
 
 //cvparamse[7]["Column"]
 //(createEmptyFollowsCvParam ontoGraph cvparamse[8])["Column"]
@@ -899,184 +826,3 @@ module Expect =
 
 
 
-// !!!!!!!!!!SEHR GUT!!!!!!!!!!!!
-module ArcExpect =
-// alternativ: Expect.ARC.isNonEmpty usw.
-
-    // davon werden wir vllt. 10 Stück oder so brauchen
-    let hasMetadataSectionKey (arcValidateContext : ARCValidateContext) testName key =
-        match Dictionary.tryFind key arcValidateContext.Tokens with
-        | Some value -> 
-            try 
-                getMetadataSectionKey value |> ignore
-                ARCValidateContext.addTestCondition testName true arcValidateContext
-            with
-                | _ -> 
-                    ARCValidateContext.addTestCondition testName false arcValidateContext
-                    failtestf "%s" (createErrorStack arcValidateContext.Filepath)
-        | None -> 
-            ARCValidateContext.addTestCondition testName false arcValidateContext
-            failtestf "%s" (createErrorStack arcValidateContext.Filepath)
-
-    /// 
-    let hasValues (arcValidateContext : ARCValidateContext) testName key =
-        match Dictionary.tryFind key arcValidateContext.Tokens with
-        | Some value -> 
-            let mdsk = getMetadataSectionKey value
-            let row = (mdsk :?> CvParam).GetAttribute(Address.row) |> Param.getValueAsInt
-            let col = ((mdsk :?> CvParam).GetAttribute(Address.column) |> Param.getValueAsInt) + 1
-            let sheet = (mdsk :?> CvParam).GetAttribute(Address.worksheet) |> Param.getValueAsString
-            //let message = Message.Create(invPath, XLSXFileKind, row, col, sheet)
-            value       // hier muss das filtern noch raus, das soll bereits vorher passieren
-            |> List.filter (fun ip -> Param.getValueAsString ip <> (Terms.StructuralTerms.metadataSectionKey |> CvTerm.getName))
-            |> fun res ->
-                match res with
-                | [] ->
-                    ARCValidateContext.addTestCondition testName false arcValidateContext
-                    failtestf "%s" (createErrorStackWithCell invPath sheet row col)
-                | _ -> ARCValidateContext.addTestCondition testName true arcValidateContext
-        | None -> 
-            ARCValidateContext.addTestCondition testName false arcValidateContext
-            failtestf "%s" (createErrorStack arcValidateContext.Filepath)
-
-    let hasAllMetadataSectionKeys (arcValidateContext : ARCValidateContext) testName keyList =
-        keyList
-        |> List.iter (hasMetadataSectionKey arcValidateContext testName)
-
-
-
-let tl = 
-    testSequenced (
-        testList "Critical" [
-            let myArcContext = ARCValidateContext.create invDict (Dictionary()) invPath
-            let areAllMetadataSectionKeysPresentTest =
-                ARCTest.Create(
-                    error = Error.MissingEntity.MissingMetadataKey.name,
-                    position = InvestigationMetadata.name,
-                    arcValidateContext = myArcContext,
-                    test = ArcExpect.hasMetadataSectionKey
-                )
-            let hasMetadataSectionKeyTest = 
-                ARCTest.Create(
-                    error = Error.MissingEntity.MissingMetadataKey.name,
-                    position = InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name,
-                    arcValidateContext = myArcContext,
-                    test = ArcExpect.hasMetadataSectionKey
-                )
-            let hasValuesTest =
-                ARCTest.CreateDependent(
-                    error = Error.MissingEntity.MissingValue.name,
-                    position = InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name,
-                    arcValidateContext = myArcContext,
-                    dependsOnTest = hasMetadataSectionKeyTest.Name,
-                    test = ArcExpect.hasValues
-                )
-            areAllMetadataSectionKeysPresentTest.Test
-            hasMetadataSectionKeyTest.Test
-            hasValuesTest.Test
-        ]
-    )
-
-tl |> performTest
-
-    //testCase $"{Error.MissingEntity.MissingValue.name} test: {InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name}" <| fun () -> 
-    //    ArcExpect.isNotEmpty invDict "Investigation Person First Name"
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //let exists
-
-Error.MissingEntity.MissingValue.name
-
-testList "Critical" [
-    //testCase 
-    testCaseArc 
-        Error.MissingEntity.MissingValue.name 
-        InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name 
-
-        ArcExpect.isNotEmpty
-        //ArcExpect.isNotEmpty invDict "Investigation Person First Name"
-]
-|> performTest
-// !!!!!!!!!!!!!!!!!!!!!!!!!
-
-ArcExpect.isNonEmpty invDict "Investigation Person First Name"
-
-
-// ValidationResult nicht notwendig, stattdessen alles in Expecto-Funktion evaluieren
-// MetadataSection aus dem Dictionary raus
-// Addresse bekommen in eine schmale Funktion / zu einer Funktion machen
-// createErrorStack-Funktion soll CvParam, Pfad und ErrorOntologyTermName als Parameter bekommen und daraus Fehlermeldung zurückgeben
-// "wrong format" fehlt noch in der ErrorOntology
-// Expectos Expect.blabla Funktionen alle für uns so schreiben, dass es von der Message her passt
-
-let hasPersonFirstNames = 
-    if Dictionary.containsKey "Investigation Person First Name" invDict then
-        invDict["Investigation Person First Name"]
-        |> fun ipl -> 
-            let values =
-                ipl
-                |> List.filter (fun ip -> Param.getValueAsString ip <> (Terms.StructuralTerms.metadataSectionKey |> CvTerm.getName))
-            let check = List.isEmpty values |> not
-            if check then
-                Success
-            else
-                let mdsk = getMetadataSectionKey ipl
-                let row = (mdsk :?> CvParam).GetAttribute(Address.row) |> Param.getValueAsInt
-                let col = ((mdsk :?> CvParam).GetAttribute(Address.column) |> Param.getValueAsInt) + 1
-                let sheet = (mdsk :?> CvParam).GetAttribute(Address.worksheet) |> Param.getValueAsString
-                let message = Message.Create(invPath, XLSXFileKind, row, col, sheet)
-                Error message
-    else Error (Message.Create(invPath, XLSXFileKind, 0, 0, ""))
-    |> fun res -> 
-        testCase InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name (fun _ ->
-            res
-            |> throwError (
-                fun m -> 
-                    createErrorStackXlsxFile 
-                        m 
-                        InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name 
-                        Error.MissingEntity.MissingValue.name
-            )
-        )
-
-
-
-let case = 
-    testCase InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name (fun _ ->
-        hasPersonFirstNames
-        |> throwError (
-            fun m -> 
-                createErrorStackXlsxFile 
-                    m 
-                    InvestigationMetadata.InvestigationContacts.InvestigationPersonFirstName.name 
-                    Error.MissingEntity.MissingValue.name
-        )
-    )
-
-
-
-
-case |> performTest
-
-//let ups = inv |> List.choose UserParam.tryUserParam
-//let cvpsEmptyVals = inv |> List.choose CvParam.tryCvParam |> List.filter (Param.getValueAsString >> (=) "")
-
-//let inv = ARCTokenization.Investigation.parseMetadataRowsFromFile @"C:/Repos/gitlab.nfdi4plants.org/ArcPrototype/isa.investigation.xlsx"
-
-//inv[20]
-
-//Param.getValueAsTerm (CvParam("1", "2", "3", ParamValue.Value ""))
-//Param.getValueAsString (CvParam("1", "2", "3", ParamValue.Value ""))
-//Param.getValueAsString (CvParam("1", "2", "3", ParamValue.CvValue ("1", "Pimmel", "3")))
-//Param.getValueAsTerm (CvParam("1", "2", "3", ParamValue.CvValue ("1", "Pimmel", "3")))
