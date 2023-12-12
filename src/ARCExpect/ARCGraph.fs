@@ -78,7 +78,7 @@ module ARCGraph =
     /// Returns all terms (as ID * OboTerm * ArcRelation) of a given CvParam by using a given ontology graph via a given relating function.
     let getRelatedIParamsBy relating (ip : IParam) (graph : FGraph<string,OboTerm,ARCRelation>) =
         //relating graph[ip.Accession]
-        printfn $"{graph[ip.Name]}"
+        //printfn $"{graph[ip.Name]}"
         relating graph[ip.Name]
         |> Seq.map (fun (id,rel) -> FGraph.findNode id graph, rel)
         |> Seq.map (fun ((id,t),r) -> id, t, r)
