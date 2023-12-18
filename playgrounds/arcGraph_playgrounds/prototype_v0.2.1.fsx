@@ -58,7 +58,11 @@ open System.Text.RegularExpressions
 //        }
 
 let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\isa.investigation.xlsx"
+let paramse2 = ARCTokenization.Study.parseMetadataSheetfromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\studies\experiment1_material\isa.study.xlsx"
+let paramse3 = ARCTokenization.Assay.parseMetadataSheetFromFile @"C:\Repos\git.nfdi4plants.org\ArcPrototype\assays\measurement1\isa.assay.xlsx"
 
+//paramse3 |> List.find (fun ip -> ip.Name = "User Comment")
+//paramse2 |> List.iter (fun x -> printfn $"Name: {x.Name}\tValue: {x.Value |> ParamValue.getValueAsString}")
 //paramse |> List.map (fun p -> p.ToString() |> String.contains "CvParam") |> List.reduce (&&)
 //paramse |> List.iter (fun p -> printfn "%A" <| p.GetType().ToString())
 //paramse |> List.iter (fun p -> printfn "%A" <| (p.Value |> ParamValue.getValueAsString))
@@ -87,6 +91,8 @@ let paramse = ARCTokenization.Investigation.parseMetadataSheetFromFile @"C:\Repo
 //let invesContentGraph = fromCvParamList cvparamse
 
 let onto = ARCTokenization.Terms.InvestigationMetadata.ontology
+let onto2 = ARCTokenization.Terms.StudyMetadata.ontology
+let onto3 = ARCTokenization.Terms.AssayMetadata.ontology
 
 //let tans = cvparamse |> List.map CvParam.getCvAccession
 
@@ -129,6 +135,9 @@ let ontologyToFGraphByName (onto : OboOntology) =
 //OboOntology.getRelations onto |> List.filter (fun tr -> match tr with Target (a,b,c) -> (*a = "follows" &&*) c.Name = "ONTOLOGY SOURCE REFERENCE" | _ -> false)
 
 let ontoGraph = ontologyToFGraphByName onto
+let ontoGraph2 = ontologyToFGraphByName onto2
+let ontoGraph3 = ontologyToFGraphByName onto3
+//ontoGraph2 |> Visualization.ontoGraphToFullCyGraph |> CyGraph.show
 //ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.predecessors
 //ontoGraph["ONTOLOGY SOURCE REFERENCE"] |> FContext.successors
 
@@ -173,6 +182,8 @@ let groupTerms (ips : IParam seq) =
 
 
 let ipsAdded = addMissingTerms onto paramse
+let ipsAdded2 = addMissingTerms onto2 paramse2
+let ipsAdded3 = addMissingTerms onto2 paramse3
 //ipsAdded |> Seq.iter (fun c -> c.Name |> printfn "%s")
 //onto.Terms |> List.filter (fun o -> o.Synonyms.Length > 0)
 
@@ -210,8 +221,11 @@ let isHeader (ontoGraph : FGraph<string,OboTerm,ARCRelation>) ip =
                 |> Seq.filter (fun (nk,ed) -> ed = ARCRelation.PartOf) 
                 |> Seq.length > 0
             if hasPartOfs then
+                //printfn "key: %s hasPartOfs" k
                 Some (ontoGraph[k] |> fun (p,nd,s) -> nd)
-            else None
+            else 
+                //printfn "key: %s !hasPartOfs" k
+                None
         )
     |> Seq.exists (fun term -> OboTerm.toCvTerm term = Param.getTerm ip)
 
@@ -219,6 +233,10 @@ let isHeader (ontoGraph : FGraph<string,OboTerm,ARCRelation>) ip =
 //isHeader ontoGraph cvparamse[5]
 
 let partitionedIps = Seq.groupWhen (isHeader ontoGraph) paramse
+let partitionedIps2 = Seq.groupWhen (isHeader ontoGraph2) paramse2
+let partitionedIps3 = Seq.groupWhen (isHeader ontoGraph3) paramse3
+//partitionedIps2 |> Seq.last |> Seq.iter (fun x -> printfn $"{x.Name}\t{x.Value |> ParamValue.getValueAsString}")
+//partitionedIps2 |> Seq.iter (fun y -> printfn ""; y |> Seq.iter (fun x -> printfn $"{x.Name}\t{x.Value |> ParamValue.getValueAsString}"))
 //partitionedIps |> Seq.map Seq.toList |> Seq.toList
 //partitionedIps |> Seq.iter (fun ips -> printfn ""; ips |> Seq.iter (fun ip -> printfn "%s" ip.Name))
 
@@ -250,8 +268,12 @@ let addMissingTermsInGroup (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips
     Seq.append ips missingParams
 
 let partitionallyFilledIps = partitionedIps |> Seq.map (addMissingTermsInGroup ontoGraph)
+let partitionallyFilledIps2 = partitionedIps2 |> Seq.map (addMissingTermsInGroup ontoGraph2)
+let partitionallyFilledIps3 = partitionedIps3 |> Seq.map (addMissingTermsInGroup ontoGraph3)
 
 let groupedIps = partitionallyFilledIps |> Seq.map groupTerms 
+let groupedIps2 = partitionallyFilledIps2 |> Seq.map groupTerms 
+let groupedIps3 = partitionallyFilledIps3 |> Seq.map groupTerms 
 
 /// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
 let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ip : IParam) =
@@ -273,7 +295,8 @@ let deconstructTf tf =
     | ObsoleteTerm  ip -> ip
 
 /// Takes a seq of grouped IParams and tags them according to their TermFamiliarity using a given OboOntology.
-let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string * IParam seq) seq) =
+let matchTerms (onto : OboOntology) (gips : (string * IParam seq) seq) =
+    let ontoGraph = OboGraph.ontologyToFGraphByName onto    // make this instead a parameter when facing performance issues!
     let header = Seq.head gips |> snd |> Seq.head
     printfn $"header: {header.Name}"
     gips
@@ -282,7 +305,7 @@ let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string 
             if i = 0 then n, seq {KnownTerm header}
             else
                 printfn $"ip: {(ips |> Seq.head).Name}"
-                if ips |> Seq.exists (fun ip -> Param.tryUserParam ip |> Option.isSome) then n, ips |> Seq.map UnknownTerm
+                if ips |> Seq.exists (fun ip -> Param.tryUserParam ip |> Option.isSome || Param.getCvName ip = "User Comment") then n, ips |> Seq.map UnknownTerm
                 elif ips |> Seq.exists (fun ip -> isObsoleteTerm onto ip) then n, ips |> Seq.map ObsoleteTerm
                 elif ips |> Seq.exists (fun ip -> isPartOfHeader header ontoGraph ip) then n, ips |> Seq.map KnownTerm
                 else n, ips |> Seq.map MisplacedTerm
@@ -300,7 +323,10 @@ let matchTerms (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (gips : (string 
 //let aggregatedIps = Seq.map aggregateTerms groupedIps
 
 //let matchedIps = aggregatedIps |> Seq.map (matchTerms onto)
-let matchedIps = groupedIps |> Seq.map (matchTerms ontoGraph)
+let matchedIps = groupedIps |> Seq.map (matchTerms onto)
+let matchedIps2 = groupedIps2 |> Seq.map (matchTerms onto2)
+let matchedIps3 = groupedIps3 |> Seq.map (matchTerms onto3)
+//matchedIps2 |> Seq.head
 //matchedIps |> Seq.head
 //let header = paramse.Head
 //isHeader ontoGraph header
@@ -367,7 +393,7 @@ let hasPartOfTo onto currentIp priorIp =
 /// Takes an ontology-based FGraph and a seq of termname * matched IParams to create an intermediate subgraph out of it. This subgraph consists of a chain of nodes that have their termname as nodekey and their IParam seq as nodedata. The nodes are ordered by the follows-relationship taken from the ontology-based FGraph.
 let constructIntermediateMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ips : (string * TermFamiliarity seq) seq) =
     let rec loop (section : (string * TermFamiliarity seq) list) (stash : (string * TermFamiliarity seq) list) (priorParams : string * IParam seq) (graph : FGraph<string,IParam seq,ARCRelation>) =
-        //printfn "next round"
+        printfn "next round"
         match section with
         | [] -> 
             //printfn "section empty"
@@ -385,42 +411,45 @@ let constructIntermediateMetadataSubgraph (ontoGraph : FGraph<string,OboTerm,ARC
             //        loop stash [] priorParams graph     // else take stash as section and continue
             graph, stash
         | (hn,hts) :: t ->
-            //printfn "section not empty"
+            printfn "section not empty"
             match Seq.head hts with
             | UnknownTerm ip ->     // if UnknownTerm then add with Unknown relation to prior node
                 //printfn "UnknownTerm"
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Unknown graph
                 |> loop t stash priorParams
             | KnownTerm ip ->
-                //printfn "KnownTerm"
+                printfn "KnownTerm"
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then   //
-                    //printfn "has follows"
+                    printfn "has follows"
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps ARCRelation.Follows graph
                     |> loop t stash (hn, hips)
                 else
-                    //printfn "has no follows"
+                    printfn "has no follows"
                     loop t ((hn,hts) :: stash) priorParams graph
             | ObsoleteTerm ip ->
-                //printfn "ObsoleteTerm"
+                printfn "ObsoleteTerm"
                 let priorName,priorIps = priorParams
                 if hasFollowsTo ontoGraph ip (Seq.head priorIps) then
-                    //printfn "has follows"
+                    printfn "has follows"
                     let hips = hts |> Seq.map deconstructTf
                     FGraph.addElement hn hips priorName priorIps (ARCRelation.Follows + ARCRelation.Obsolete) graph
                     |> loop t stash (hn, hips)
                 else
-                    //printfn "has no follows"
+                    printfn "has no follows"
                     loop t ((hn,hts) :: stash) priorParams graph
             | MisplacedTerm ip ->
-                //printfn "MisplacedTerm"
+                printfn "MisplacedTerm"
                 FGraph.addElement hn (Seq.map deconstructTf hts) (fst priorParams) (snd priorParams) ARCRelation.Misplaced graph
                 |> loop t stash priorParams
     let ipsList = Seq.toList ips
     loop ipsList.Tail [] (fst ipsList.Head, (snd >> Seq.map deconstructTf) ipsList.Head) FGraph.empty<string,IParam seq,ARCRelation>
 
 let subgraphs = Seq.map (constructIntermediateMetadataSubgraph ontoGraph) matchedIps
+let subgraphs2 = Seq.map (constructIntermediateMetadataSubgraph ontoGraph2) matchedIps2
+let subgraphs3 = Seq.map (constructIntermediateMetadataSubgraph ontoGraph3) matchedIps3
+//subgraphs2 |> Seq.head |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
 //subgraphs |> Seq.toList
 //let subgraph1, subgraph1stash = Seq.head subgraphs
 //Seq.item 1 subgraphs
@@ -455,6 +484,8 @@ let addEmptyIpsToNodeData (subgraph : FGraph<string,IParam seq,ARCRelation>) =
     subgraph
 
 let filledSubgraphs = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs
+let filledSubgraphs2 = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs2
+let filledSubgraphs3 = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs3
 //Seq.item 3 subgraphs |> fst |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
 //Seq.item 3 filledSubgraphs |> Visualization.isaIntermediateGraphToFullCyGraph |> CyGraph.show
 
@@ -496,9 +527,17 @@ let splitMetadataSubgraph (subgraph : FGraph<string,IParam seq,ARCRelation>) =
     newGraph
 
 let splitSubgraphs = Seq.map splitMetadataSubgraph filledSubgraphs
+let splitSubgraphs2 = Seq.map splitMetadataSubgraph filledSubgraphs2
+let splitSubgraphs3 = Seq.map splitMetadataSubgraph filledSubgraphs3
 
 //splitSubgraphs |> Seq.head |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
 //splitSubgraphs |> Seq.item 3 |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+//splitSubgraphs2 |> Seq.head |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+//splitSubgraphs2 |> Seq.last |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+//splitSubgraphs2 |> Seq.iter (Visualization.isaSplitGraphToFullCyGraph >> CyGraph.show)
+//splitSubgraphs3 |> Seq.head |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+//splitSubgraphs3 |> Seq.last |> Visualization.isaSplitGraphToFullCyGraph |> CyGraph.show
+//splitSubgraphs3 |> Seq.length
 
 let metadataSubgraphToList (subgraph : FGraph<string * int,IParam,ARCRelation>) =
     let headerN, headerI = getTopNodeKey subgraph
@@ -516,6 +555,11 @@ let metadataSubgraphToList (subgraph : FGraph<string * int,IParam,ARCRelation>) 
                 else None
         )
     )
+
+let backToLists = Seq.map metadataSubgraphToList splitSubgraphs
+let backToLists2 = Seq.map metadataSubgraphToList splitSubgraphs2
+let backToLists3 = Seq.map metadataSubgraphToList splitSubgraphs3
+//backToLists2 |> Seq.map (Seq.map (Seq.toList) >> Seq.toList) |> Seq.toList
 
 
 //metadataSubgraphToList (Seq.item 3 splitSubgraphs) |> Seq.head |> Seq.toList
