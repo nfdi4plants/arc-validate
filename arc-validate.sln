@@ -83,7 +83,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo_notebooks", "demo_note
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qcPackage_prototypes", "qcPackage_prototypes", "{9B3B6E39-DB2F-4A91-944B-EFAAD961FCE7}"
 	ProjectSection(SolutionItems) = preProject
-		invenio_prototype_v0.1.0.fsx = invenio_prototype_v0.1.0.fsx
+		playgrounds\qcPackage_prototypes\invenio_prototype_v0.1.0.fsx = playgrounds\qcPackage_prototypes\invenio_prototype_v0.1.0.fsx
 	EndProjectSection
 EndProject
 Global
