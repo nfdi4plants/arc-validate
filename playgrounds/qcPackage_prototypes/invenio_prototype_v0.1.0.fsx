@@ -37,6 +37,7 @@ let outDir = arcDir
 // <<<<<<<<<<<<<<<<<
 // Helper Functions:
 
+// <--- into ARCTokenization:
 let parseIsaMetadataSheetFromCvp isaFileName isaMdsParsingF absFileTokens =
     absFileTokens
     |> Seq.choose (
@@ -69,17 +70,19 @@ let tryParseIsaMetadataSheetFromCvp isaFileName isaMdsParsingF absFileTokens =
             else None
     )
 
-let tryParseInvestigationMetadataSheetFromCvp absFileTokens =
+let tryParseInvestigationMetadataSheetFromCvp (absFileTokens : #IParam seq) =
     try tryParseIsaMetadataSheetFromCvp "isa.investigation.xlsx" ARCTokenization.Investigation.parseMetadataSheetFromFile absFileTokens 
         |> Seq.concat
     with _ -> Seq.empty
 
-let tryParseStudyMetadataSheetFromCvp absFileTokens =
+let tryParseStudyMetadataSheetFromCvp (absFileTokens : #IParam seq) =
     tryParseIsaMetadataSheetFromCvp "isa.study.xlsx" ARCTokenization.Study.parseMetadataSheetfromFile absFileTokens
 
-let tryParseAssayMetadataSheetFromCvp absFileTokens =
+let tryParseAssayMetadataSheetFromCvp (absFileTokens : #IParam seq) =
     tryParseIsaMetadataSheetFromCvp "isa.assay.xlsx" ARCTokenization.Assay.parseMetadataSheetFromFile absFileTokens
+// --->
 
+// <--- into ARCGRaph.fs:
 let fillTokenList onto tokens =
     let ontoGraph = OboGraph.ontologyToFGraphByName onto
     let ipsAdded = ARCGraph.addMissingTerms onto tokens
@@ -91,13 +94,13 @@ let fillTokenList onto tokens =
     let filledSubgraphs = Seq.map (fst >> ARCGraph.addEmptyIpsToNodeData) subgraphs
     let splitSubgraphs = Seq.map ARCGraph.splitMetadataSubgraph filledSubgraphs
     Seq.map ARCGraph.metadataSubgraphToList splitSubgraphs
+// --->
 
 // End of Helper Functions:
 // >>>>>>>>>>>>>>>>>>>>>>>>
 
-let fsTokensRelDirs = ARCTokenization.FileSystem.parseRelativeDirectoryPaths arcDir
-let fsTokensAbsDirs = ARCTokenization.FileSystem.parseAbsoluteDirectoryPaths arcDir
-let fsTokensRelFils = ARCTokenization.FileSystem.parseAbsoluteFilePaths arcDir
+// make this a single function
+
 let fsTokensAbsFils = ARCTokenization.FileSystem.parseAbsoluteFilePaths arcDir
 
 let invesTokens = tryParseInvestigationMetadataSheetFromCvp fsTokensAbsFils
@@ -109,18 +112,25 @@ let filledStudyTokens = studyTokens |> Seq.map (fillTokenList Terms.StudyMetadat
 let filledAssayTokens = assayTokens |> Seq.map (fillTokenList Terms.AssayMetadata.ontology)
 
 // Validation cases:
+//ARCExpect.ARCExpect.ByTerm.forallBy INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person First Name`` ARCExpect.ByValue.notEmpty invesTokens
+let forallBy term action ip =
+    r
 
 let invesCases = testList "" [
     testList INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person First Name``.Name (
-        invesTokens 
+        filledInvesTokens 
         |> Seq.filter (fun ip -> ip.Name = "Investigation Person First Name")
         |> Seq.map (
             fun ip ->
-                let thisTest = test "is not empty"
-                thisTest.Run (fun _ ->
-                    try ip :?> CvParam |> Validate.ByValue.notEmpty
+                ARCExpect.test (Name "is not empty") {
+                    try ip :?> CvParam |> ARCExpect.ByValue.notEmpty
                     with :? System.InvalidCastException -> ()
-                )
+                }
+                //let thisTest = test "is not empty"
+                //thisTest.Run (fun _ ->
+                //    try ip :?> CvParam |> ARCExpect.ByValue.notEmpty
+                //    with :? System.InvalidCastException -> ()
+                //)
         )
         |> Seq.toList
     )
@@ -249,5 +259,7 @@ let validate (verbose: bool) arcDir outDir =
 // End of Copypaste
 // >>>>>>>>>>>>>>>>
 
+
+ARCValidate.API.ValidateAPI.validate
 
 validate true @"C:\Repos\git.nfdi4plants.org\ArcPrototype" @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
