@@ -516,6 +516,19 @@ module ARCGraph =
             )
         )
 
+    /// Takes a structural ontology and a seq of IParams, fills in all missing IParams, and returns the IParam seq but grouped by term name (most inner seq) and divided into sections (middle seq).
+    let fillTokenList (onto : OboOntology) (tokens : IParam seq) =
+        let ontoGraph = OboGraph.ontologyToFGraphByName onto
+        let ipsAdded = addMissingTerms onto tokens
+        let partitionedIps = Seq.groupWhen (isHeader ontoGraph) ipsAdded
+        let partitionallyFilledIps = partitionedIps |> Seq.map (addMissingTermsInGroup ontoGraph)
+        let groupedIps = partitionallyFilledIps |> Seq.map groupTerms
+        let matchedIps = groupedIps |> Seq.map (matchTerms onto)
+        let subgraphs = Seq.map (constructIntermediateMetadataSubgraph ontoGraph) matchedIps
+        let filledSubgraphs = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs
+        let splitSubgraphs = Seq.map splitMetadataSubgraph filledSubgraphs
+        Seq.map metadataSubgraphToList splitSubgraphs
+
 
     /// Functions for visualizing ARC FGraphs.
     module Visualization =
