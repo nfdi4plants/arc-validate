@@ -96,6 +96,29 @@ let fillTokenList onto tokens =
     Seq.map ARCGraph.metadataSubgraphToList splitSubgraphs
 // --->
 
+let mock =
+    ARCTokenization.ARCMock.InvestigationMetadataTokens(
+        Investigation_Identifier = ["iid"],
+        Investigation_Title = ["ititle"],
+        Investigation_Description = ["idesc"],
+        Investigation_Person_Last_Name = ["Maus"; "Keider"; "müller"; ""; "oih"],
+        Investigation_Person_First_Name = ["Oliver"; ""; "andreas";],
+        Investigation_Person_Mid_Initials = ["L. I."; "C."],
+        Investigation_Person_Email = ["maus@nfdi4plants.org"],
+        Investigation_Person_Affiliation = [""; "Affe"],
+        Study_Identifier = ["sid"],
+        Study_Title = ["stitle"],
+        Study_Description = ["sdesc"],
+        Study_File_Name = [@"sid\isa.study.xlsx"],
+        Study_Assay_File_Name = [@"aid\isa.assay.xlsx"; @"aid2\isa.assay.xlsx"],
+        Study_Person_Last_Name = ["weil"],
+        Study_Person_First_Name = [""; "lukas"]
+    )
+    |> List.concat // use flat list
+    |> Seq.map (fun cvp -> cvp :> IParam)
+
+let output = fillTokenList Terms.InvestigationMetadata.ontology mock 
+
 // End of Helper Functions:
 // >>>>>>>>>>>>>>>>>>>>>>>>
 

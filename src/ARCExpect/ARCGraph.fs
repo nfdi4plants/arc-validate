@@ -16,9 +16,9 @@ module ARCGraph =
 
     /// Representation of the familiarity of a CvParam's CvTerm. If the CvTerm is known in, e.g., an ontology, use KnownTerm, else use UnknownTerm. ObsoleteTerm is for deprecated terms (i.e., OboTerm with `is_obsolete` = `true`).
     type TermFamiliarity =
-        | KnownTerm of IParam
-        | UnknownTerm of IParam
-        | ObsoleteTerm of IParam
+        | KnownTerm     of IParam
+        | UnknownTerm   of IParam
+        | ObsoleteTerm  of IParam
         | MisplacedTerm of IParam
 
     /// Takes a list of CvParams and returns the ArcGraph as an FGraph consisting of Nodes only.

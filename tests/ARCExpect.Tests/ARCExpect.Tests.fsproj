@@ -17,6 +17,7 @@
     <Compile Include="CvParamExtensionsTest.fs" />
     <Compile Include="ParamCollectionTests.fs" />
     <Compile Include="ARCExpectTests.fs" />
+    <Compile Include="ARCGraphTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
