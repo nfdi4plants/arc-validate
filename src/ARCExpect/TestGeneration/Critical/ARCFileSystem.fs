@@ -24,7 +24,7 @@ module FileSystem =
         // we need a structuralontology here as well (e.g. terms for 'Investigation File', 'Study File')
         testList "FileSystem" [
             testList "Investigation" [
-                ARCExpect.validate (TestID.Name "Investigation File") {
+                validationCase (TestID.Name "Investigation File") {
                     relativeFilePaths |> Validate.ByValue.contains "isa.investigation.xlsx"
                 }
             ]

@@ -22,11 +22,11 @@ module ISA =
 
         testList INVMSO.``Investigation Metadata``.key.Name [
             testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
-                ARCExpect.validate (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
+                validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
                     cvParams
                     |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
                 }
-                ARCExpect.validate (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
+                validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
                     cvParams
                     |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
                 }

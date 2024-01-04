@@ -69,9 +69,9 @@ let ``ByTerm tests`` =
 [<Tests>]
 let ``Valid tests`` =
     testList "ArcExpect.Valid" [
-        test "valid email is valid" {Validate.email ReferenceObjects.CvParams.``Investigation Person Email (valid)``}
+        test "valid email is valid" {Validate.ByObject.email ReferenceObjects.CvParams.``Investigation Person Email (valid)``}
         test "invalid email is invalid" {
             Expect.throws 
-                (fun () -> Validate.email ReferenceObjects.CvParams.``Investigation Person Email (invalid)``) 
+                (fun () -> Validate.ByObject.email ReferenceObjects.CvParams.``Investigation Person Email (invalid)``) 
                 "invalid email was not correctly detected as invalid"}
     ]

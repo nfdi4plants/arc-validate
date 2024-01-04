@@ -9,23 +9,24 @@
   <ItemGroup>
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="InternalUtils.fs" />
+    <Compile Include="BadgeCreation.fs" />
     <Compile Include="StringValidationPattern.fs" />
     <Compile Include="ParamCollection.fs" />
     <Compile Include="CVExtensions.fs" />
     <Compile Include="ErrorMessage.fs" />
     <Compile Include="ExpectoExtensions.fs" />
-    <Compile Include="ARCExpect.fs" />
     <Compile Include="ARCRelation.fs" />
     <Compile Include="OboGraph.fs" />
     <Compile Include="ARCGraph.fs" />
+    <Compile Include="ARCExpect.fs" />
+    <Compile Include="ValidationFunctions.fs" />
+    <Compile Include="TopLevelAPI.fs" />
     <Compile Include="Configs\PathConfig.fs" />
     <Compile Include="Configs\ARCConfig.fs" />
     <Compile Include="TestGeneration\NonCritical\ARCISA.fs" />
     <Compile Include="TestGeneration\Critical\ARCFileSystem.fs" />
     <Compile Include="TestGeneration\Critical\ARCISA.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[9.0.4]" />
@@ -36,5 +37,6 @@
     <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]" />
     <PackageReference Include="FsOboParser" Version="[0.3.0]" />
     <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
+    <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
   </ItemGroup>
 </Project>
