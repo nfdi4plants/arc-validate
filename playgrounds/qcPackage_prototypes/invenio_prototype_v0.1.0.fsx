@@ -1,5 +1,5 @@
-#I "../../src/arc-validate/bin/Debug/net6.0"
-#I "../../src/arc-validate/bin/Release/net6.0"
+#I "../../src/arc-validate/bin/Debug/net8.0"
+#I "../../src/arc-validate/bin/Release/net8.0"
 #r "ARCExpect.dll"
 #r "ARCTokenization.dll"
 #r "ControlledVocabulary.dll"
@@ -118,7 +118,7 @@ let invesCases = testList "" [
             fun ip ->
                 let thisTest = test "is not empty"
                 thisTest.Run (fun _ ->
-                    try ip :?> CvParam |> ARCExpect.ByValue.notEmpty
+                    try ip :?> CvParam |> Validate.ByValue.notEmpty
                     with :? System.InvalidCastException -> ()
                 )
         )
@@ -131,7 +131,7 @@ let invesCases = testList "" [
             fun ip ->
                 let thisTest = test "is not empty"
                 thisTest.Run (fun _ ->
-                    try ip :?> CvParam |> ARCExpect.ByValue.notEmpty
+                    try ip :?> CvParam |> Validate.ByValue.notEmpty
                     with :? System.InvalidCastException -> ()
                 )
         )
@@ -144,7 +144,7 @@ let invesCases = testList "" [
             fun ip ->
                 let thisTest = test "is not empty"
                 thisTest.Run (fun _ ->
-                    try ip :?> CvParam |> ARCExpect.ByValue.notEmpty
+                    try ip :?> CvParam |> Validate.ByValue.notEmpty
                     with :? System.InvalidCastException -> ()
                 )
         )
@@ -157,7 +157,7 @@ let invesCases = testList "" [
             fun ip ->
                 let thisTest = test "is not empty"
                 thisTest.Run (fun _ ->
-                    try ip :?> CvParam |> ARCExpect.ByValue.notEmpty
+                    try ip :?> CvParam |> Validate.ByValue.notEmpty
                     with :? System.InvalidCastException -> ()
                 )
         )
@@ -170,7 +170,7 @@ let invesCases = testList "" [
             fun ip ->
                 let thisTest = test "is not empty"
                 thisTest.Run (fun _ ->
-                    try ip :?> CvParam |> ARCExpect.Valid.email
+                    try ip :?> CvParam |> Validate.email
                     with :? System.InvalidCastException -> ()
                 )
         )
