@@ -2,7 +2,8 @@
 
 ⚠️ 🚧
 
-arc-validate is undergoing a significant re-write. The main branch will only be patched with the absolute necessary hotfixes for production
+arc-validate is undergoing a significant re-write. The main branch will only be patched with the absolute necessary hotfixes for production.
+
 to get up-to-date info on the development process, take a look at the [V2 branch](https://github.com/nfdi4plants/arc-validate/tree/V2)
 
 ⚠️ 🚧
