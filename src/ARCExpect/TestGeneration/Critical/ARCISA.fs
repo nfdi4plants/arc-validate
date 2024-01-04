@@ -22,13 +22,13 @@ module ISA =
 
         testList INVMSO.``Investigation Metadata``.key.Name [
             testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
-                ARCExpect.test (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
+                ARCExpect.validate (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
                     cvParams
-                    |> ARCExpect.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
+                    |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
                 }
-                ARCExpect.test (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
+                ARCExpect.validate (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
                     cvParams
-                    |> ARCExpect.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
+                    |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
                 }
             ]
         ]

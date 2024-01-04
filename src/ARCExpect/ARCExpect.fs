@@ -1,19 +1,20 @@
 ﻿namespace ARCExpect
+open Expecto
 
 module ARCExpect =
 
-    open ControlledVocabulary
-
-    open ARCTokenization.StructuralOntology
+    /// <summary>
+    /// Computation expression for creating ARC validation cases.
+    /// </summary>
+    /// <param name="id">id of the test. can either be a guid or a string. Must be unique in the given context.</param>
+    let validate (id:TestID) = 
+        TestCaseBuilderSp(id)
 
     /// <summary>
-    /// 
+    /// Passes if one of the given actions passes, and fails if both fail.
     /// </summary>
-    /// <param name="id"> </param>
-    let test (id:TestID) = 
-        TestCaseBuilderSp(id)
-    
-
+    /// <param name="arcExpect1"></param>
+    /// <param name="arcExpect2"></param>
     let either arcExpect1 arcExpect2 = 
         try
             arcExpect1 () 
@@ -25,8 +26,15 @@ module ARCExpect =
             | ex2 ->                          
                 Expecto.Tests.failtestNoStackf "%s or %s" ex1.Message ex2.Message
 
+module Validate =
 
+    open ControlledVocabulary
 
+    open ARCTokenization.StructuralOntology
+
+    /// <summary>
+    /// Validation functions to perform value-based validation on CvParams
+    /// </summary>
     type ByValue() =
         static member notEmpty (cvp:CvParam) =
             match CvParam.isEmpty cvp with
@@ -116,6 +124,9 @@ module ARCExpect =
                     |> ErrorMessage.ofCvParam "is invalid."               
                     |> Expecto.Tests.failtestNoStackf "%s"    
 
+    /// <summary>
+    /// Validation functions to perform term-based validation on CvParams
+    /// </summary>
     type ByTerm() =
         
         /// Compares by Term 
@@ -164,12 +175,9 @@ module ARCExpect =
                     |> ErrorMessage.ofCvParam "is missing."
                     |> Expecto.Tests.failtestNoStackf "%s"
 
-    /// <summary>
-    /// composite validation function based on ArcExpect.ByValue and ArcExpect.ByTerm
-    /// </summary>
-    type Valid =
+// <--- Functions directly in the `Validate` module come here, these are funcxtions that are either composite or do not fit in the `ByValue` or `ByTerm` modules
 
-        static member email (cvp:CvParam) = 
-            cvp |> ByValue.isMatch StringValidationPattern.email
-            cvp |> ByTerm.equals INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
+    let email (cvp:CvParam) = 
+        cvp |> ByValue.isMatch StringValidationPattern.email
+        cvp |> ByTerm.equals INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
 
