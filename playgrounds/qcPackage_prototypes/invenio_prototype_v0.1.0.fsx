@@ -118,6 +118,15 @@ let mock =
     |> Seq.map (fun cvp -> cvp :> IParam)
 
 let output = fillTokenList Terms.InvestigationMetadata.ontology mock 
+Seq.head output
+Seq.item 1 output
+
+let actual = output
+let act3 = actual |> Seq.tryItem 1 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Investigation Title", 1))))
+let act4 = 
+    Option.defaultValue Seq.empty act3 
+    |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
+    |> Seq.tryItem 2
 
 // End of Helper Functions:
 // >>>>>>>>>>>>>>>>>>>>>>>>
