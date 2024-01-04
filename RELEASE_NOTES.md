@@ -1,3 +1,12 @@
+### 0.0.1+
+
+Starting from 1.0.0, Versions of the packages in this project are decoupled, meaning this single release notes page does not work anymore.
+
+For the individual package release notes, please refer to these files:
+- [ARCExpect](./src/ARCExpect/RELEASE_NOTES.md) - the base validation library
+- [ARCValidationPackages](./src/ARCValidationPackages/RELEASE_NOTES.md) - validation package library
+- [arc-validate](./src/arc-validate/RELEASE_NOTES.md) - validation CLI tool
+
 ### 0.0.1+6c5010d (Released 2023-12-11)
 * Additions:
     * [[#f034fe0](https://github.com/nfdi4plants/arc-validate/commit/f034fe0b6ff43dc02c050f5576283ee4ef8aa272)] Add demo notebook(s) (to sln file)

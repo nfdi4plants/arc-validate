@@ -20,7 +20,13 @@ let ``ValidateCommand CLI Tests`` =
     testList "arc validate CLI tests" [
         testSequenced (
             testList "arc-validate validate -i fixtures/arcs/inveniotestarc" [
-                let proc = runTool "arc-validate" [|"validate"; "-i"; "fixtures/arcs/inveniotestarc"|] 
+
+                printfn "%s" (Path.GetFullPath("fixtures/arcs/inveniotestarc"))
+
+                let proc = runTool "../../../../../publish/arc-validate" [|"validate"; "-i"; "fixtures/arcs/inveniotestarc"|] 
+
+                printfn "%s" proc.Result.Output
+                printfn "%s" proc.Result.Error
 
                 test "exit code is 0 (Success)" {
                     Expect.equal proc.ExitCode 0 $"incorrect exit code: {proc.Result.Error} | {proc.Result.Output}"

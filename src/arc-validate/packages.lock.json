@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    "net8.0": {
       "AnyBadge.NET": {
         "type": "Direct",
         "requested": "[1.0.0, 1.0.0]",
@@ -14,9 +14,9 @@
       },
       "Argu": {
         "type": "Direct",
-        "requested": "[6.1.1, 6.1.1]",
-        "resolved": "6.1.1",
-        "contentHash": "5SBLYihaZ6/YNpRU+0v0QLsCk7ABmOWNOUwkXVUql2w7kJ6Hi4AFhgIv5XLTtxTid5/xrJAL+PglQkNcjANCJg==",
+        "requested": "[6.1.4, 6.1.4]",
+        "resolved": "6.1.4",
+        "contentHash": "tYK5fxBgF8DJSvrI4KseqEwMA3Mcee+bgP2EcimxTqiiFSpZLgSbBG7yU22xb78CXMX40sb0OaLshZReObNGRw==",
         "dependencies": {
           "FSharp.Core": "4.3.2",
           "System.Configuration.ConfigurationManager": "4.4.0"
@@ -34,9 +34,9 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[6.0.7, )",
-        "resolved": "6.0.7",
-        "contentHash": "e6wGrq5smV3Yk2fBE/Y0nBG5oFyF59k5Je0a0QDydUpg6liyaafGjD3xvutciKepCP2knspZ/sWViC/F1OyyQQ=="
+        "requested": "[8.0.100, )",
+        "resolved": "8.0.100",
+        "contentHash": "ZOVZ/o+jI3ormTZOa28Wh0tSRoyle1f7lKFcUN61sPiXI7eDZu8eSveFybgTeyIEyW0ujjp31cp7GOglDgsNEg=="
       },
       "ARCTokenization": {
         "type": "Transitive",
@@ -924,7 +924,7 @@
           "ARCTokenization": "[1.2.0, 1.2.0]",
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
-          "FSharp.Core": "[6.0.7, )",
+          "FSharp.Core": "[8.0.100, )",
           "FSharpAux": "[2.0.0, 2.0.0]",
           "FsOboParser": "[0.3.0, 0.3.0]",
           "FsSpreadsheet": "[4.1.0, 4.1.0]",
@@ -935,7 +935,7 @@
       "arcvalidationpackages": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[6.0.7, )",
+          "FSharp.Core": "[8.0.100, )",
           "Fake.DotNet.Cli": "[6.0.0, 6.0.0]",
           "FsHttp": "[11.0.0, 11.0.0]"
         }

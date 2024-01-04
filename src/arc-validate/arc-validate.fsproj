@@ -2,11 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!--<PublishSingleFile>true</PublishSingleFile>-->
+    <!--<PackAsTool>true</PackAsTool>-->
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="RELEASE_NOTES.md" />
     <Compile Include="BadgeCreation.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\LegacyArgs.fs" />
@@ -23,13 +26,28 @@
 
   <ItemGroup>
     <PackageReference Include="AnyBadge.NET" Version="[1.0.0]" />
-    <PackageReference Include="Argu" Version="[6.1.1]" />
+    <PackageReference Include="Argu" Version="[6.1.4]" />
     <PackageReference Include="Expecto" Version="[9.0.4]" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" />
-    <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" />
+    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[1.0.0, 2.0.0)"/>
+    <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" PackageVersion="[1.0.0, 2.0.0)" />
   </ItemGroup>
+
+  <Target Name="UseExplicitPackageVersions" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_ProjectReferenceWithExplicitPackageVersion Include="@(ProjectReference->'%(FullPath)')" Condition="'%(ProjectReference.PackageVersion)' != ''" />
+      <_ProjectReferenceWithExactPackageVersion Include="@(ProjectReference->'%(FullPath)')" Condition="'%(ProjectReference.ExactVersion)' == 'true'" />
+      <_ProjectReferenceWithReassignedVersion Include="@(_ProjectReferencesWithVersions)" Condition="'%(Identity)' != '' And '@(_ProjectReferenceWithExplicitPackageVersion)' == '@(_ProjectReferencesWithVersions)'">
+        <ProjectVersion>@(_ProjectReferenceWithExplicitPackageVersion->'%(PackageVersion)')</ProjectVersion>
+      </_ProjectReferenceWithReassignedVersion>
+      <_ProjectReferenceWithReassignedVersion Include="@(_ProjectReferencesWithVersions)" Condition="'%(Identity)' != '' And '@(_ProjectReferenceWithExactPackageVersion)' == '@(_ProjectReferencesWithVersions)'">
+        <ProjectVersion>[@(_ProjectReferencesWithVersions->'%(ProjectVersion)')]</ProjectVersion>
+      </_ProjectReferenceWithReassignedVersion>
+      <_ProjectReferencesWithVersions Remove="@(_ProjectReferenceWithReassignedVersion)" />
+      <_ProjectReferencesWithVersions Include="@(_ProjectReferenceWithReassignedVersion)" />
+    </ItemGroup>
+  </Target>
 
 </Project>

@@ -27,7 +27,7 @@ let ``PackageCommand CLI Tests`` =
                     test "arc-validate package install test" {
 
                         resetConfigEnvironment() // make sure to remove any caching before running these tests
-                        let proc = runTool "arc-validate" [|"package"; "install"; "test"|]
+                        let proc = runTool "../../../../../publish/arc-validate" [|"package"; "install"; "test"|]
 
                         let package = 
                             Path.Combine(
@@ -51,7 +51,7 @@ let ``PackageCommand CLI Tests`` =
 
                         Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
 
-                        let proc = runTool "arc-validate" [|"package"; "uninstall"; "test"|]
+                        let proc = runTool "../../../../../publish/arc-validate" [|"package"; "uninstall"; "test"|]
 
                         Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output}"
                         Expect.isFalse (File.Exists(package)) "package file was not deleted"
