@@ -138,6 +138,7 @@ module ARCGraph =
     /// Returns all terms that are present in the given ontology but don't occur in the given CvParam list as CvParams.
     let getMissingTerms (onto : OboOntology) (ips : IParam seq) =
         onto.Terms
+        |> Seq.skip 1
         |> Seq.choose (
             fun o -> 
                 if o.IsObsolete then None
