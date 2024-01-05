@@ -58,13 +58,13 @@ let parseStudyMetadataSheetFromCvp absFileTokens =
 let parseAssayMetadataSheetFromCvp absFileTokens =
     parseIsaMetadataSheetFromCvp "isa.assay.xlsx" ARCTokenization.Assay.parseMetadataSheetFromFile absFileTokens
 
-let tryParseIsaMetadataSheetFromCvp isaFileName isaMdsParsingF absFileTokens =
+let tryParseIsaMetadataSheetFromCvp (isaFileName : string) isaMdsParsingF absFileTokens =
     absFileTokens
     |> Seq.choose (
         fun cvp ->
             let cvpStr = Param.getValueAsString cvp
             //printfn $"cvpStr: {cvpStr}"
-            if String.contains isaFileName cvpStr then
+            if String.contains isaFileName (Path.GetFileName cvpStr) then
                 try Some (isaMdsParsingF cvpStr)
                 with _ -> None
             else None
@@ -80,20 +80,6 @@ let tryParseStudyMetadataSheetFromCvp (absFileTokens : #IParam seq) =
 
 let tryParseAssayMetadataSheetFromCvp (absFileTokens : #IParam seq) =
     tryParseIsaMetadataSheetFromCvp "isa.assay.xlsx" ARCTokenization.Assay.parseMetadataSheetFromFile absFileTokens
-// --->
-
-// <--- into ARCGRaph.fs:
-let fillTokenList onto tokens =
-    let ontoGraph = OboGraph.ontologyToFGraphByName onto
-    let ipsAdded = ARCGraph.addMissingTerms onto tokens
-    let partitionedIps = Seq.groupWhen (ARCGraph.isHeader ontoGraph) ipsAdded
-    let partitionallyFilledIps = partitionedIps |> Seq.map (ARCGraph.addMissingTermsInGroup ontoGraph)
-    let groupedIps = partitionallyFilledIps |> Seq.map ARCGraph.groupTerms
-    let matchedIps = groupedIps |> Seq.map (ARCGraph.matchTerms onto)
-    let subgraphs = Seq.map (ARCGraph.constructIntermediateMetadataSubgraph ontoGraph) matchedIps
-    let filledSubgraphs = Seq.map (fst >> ARCGraph.addEmptyIpsToNodeData) subgraphs
-    let splitSubgraphs = Seq.map ARCGraph.splitMetadataSubgraph filledSubgraphs
-    Seq.map ARCGraph.metadataSubgraphToList splitSubgraphs
 // --->
 
 let mock =
@@ -117,16 +103,35 @@ let mock =
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
 
-let output = fillTokenList Terms.InvestigationMetadata.ontology mock 
+let output = ARCGraph.fillTokenList Terms.InvestigationMetadata.ontology mock 
 Seq.head output
-Seq.item 1 output
+Seq.item 10 output
 
 let actual = output
-let act3 = actual |> Seq.tryItem 1 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Investigation Title", 1))))
+let act3 = actual |> Seq.tryItem 10 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Study Person Last Name", 1))))
 let act4 = 
     Option.defaultValue Seq.empty act3 
     |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
-    |> Seq.tryItem 2
+    |> Seq.tryItem 0
+
+let mockStu =
+    ARCMock.StudyMetadataTokens(
+        Study_Identifier = ["sid"]
+    )
+    |> List.concat // use flat list
+    |> Seq.map (fun cvp -> cvp :> IParam)
+
+let actual = ARCGraph.fillTokenList Terms.StudyMetadata.ontology mockStu
+let act1 = actual |> Seq.tryItem 0 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Study Identifier", 1))))
+Expect.isSome act1 "missing Study Identifier"
+let act2 = 
+    Option.defaultValue Seq.empty act1 
+    |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
+    |> Seq.tryItem 0
+    |> Option.defaultValue ""
+let exp2 = "sid"
+Expect.equal act2 exp2 "wrong Study Identifier"
+
 
 // End of Helper Functions:
 // >>>>>>>>>>>>>>>>>>>>>>>>
