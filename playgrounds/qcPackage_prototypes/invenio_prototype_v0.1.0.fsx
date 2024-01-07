@@ -82,55 +82,87 @@ let tryParseAssayMetadataSheetFromCvp (absFileTokens : #IParam seq) =
     tryParseIsaMetadataSheetFromCvp "isa.assay.xlsx" ARCTokenization.Assay.parseMetadataSheetFromFile absFileTokens
 // --->
 
-let mock =
-    ARCTokenization.ARCMock.InvestigationMetadataTokens(
-        Investigation_Identifier = ["iid"],
-        Investigation_Title = ["ititle"],
-        Investigation_Description = ["idesc"],
-        Investigation_Person_Last_Name = ["Maus"; "Keider"; "müller"; ""; "oih"],
-        Investigation_Person_First_Name = ["Oliver"; ""; "andreas";],
-        Investigation_Person_Mid_Initials = ["L. I."; "C."],
-        Investigation_Person_Email = ["maus@nfdi4plants.org"],
-        Investigation_Person_Affiliation = [""; "Affe"],
-        Study_Identifier = ["sid"],
-        Study_Title = ["stitle"],
-        Study_Description = ["sdesc"],
-        Study_File_Name = [@"sid\isa.study.xlsx"],
-        Study_Assay_File_Name = [@"aid\isa.assay.xlsx"; @"aid2\isa.assay.xlsx"],
-        Study_Person_Last_Name = ["weil"],
-        Study_Person_First_Name = [""; "lukas"]
+let mockInv = 
+    ARCMock.InvestigationMetadataTokens(
+        Investigation_Identifier = ["ArcPrototype"],
+        Investigation_Title = ["ArcPrototype"],
+        Investigation_Description = ["A prototypic ARC that implements all specification standards accordingly"],
+        Investigation_Person_Last_Name = ["Mühlhaus"; "Garth"; "Maus"],
+        Investigation_Person_First_Name = ["Timo"; "Christoph"; "Oliver";],
+        Investigation_Person_Email = ["timo.muehlhaus@rptu.de"; "garth@rptu.de"; "maus@nfdi4plants.org"],
+        Investigation_Person_Affiliation = ["RPTU University of Kaiserslautern"; "RPTU University of Kaiserslautern"; "RPTU University of Kaiserslautern"],
+        Investigation_Person_Phone = ["0 49 (0)631 205 4657"],
+        Investigation_Person_Address = ["RPTU University of Kaiserslautern, Paul-Ehrlich-Str. 23 , 67663 Kaiserslautern"; ""; "RPTU University of Kaiserslautern, Erwin-Schrödinger-Str. 56 , 67663 Kaiserslautern"],
+        Investigation_Person_Roles = ["principal investigator"; "principal investigator"; "research assistant"],
+        Investigation_Person_Roles_Term_Source_REF = ["scoro"; "scoro"; "scoro"],
+        Investigation_Person_Roles_Term_Accession_Number = ["http://purl.org/spar/scoro/principal-investigator"; "http://purl.org/spar/scoro/principal-investigator"; "http://purl.org/spar/scoro/research-assistant"],
+        Comment_ORCID = ["http://orcid.org/0000-0003-3925-6778"; ""; "0000-0002-8241-5300"],
+        Study_Identifier = ["experiment1_material"; "experiment2"],
+        Study_File_Name = [@"experiment1_material\isa.study.xlsx"; @"experiment2\isa.study.xlsx"],
+        Study_Assay_File_Name = [@"measurement1\isa.assay.xlsx"; @"measurement2\isa.assay.xlsx"]
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
-
-let output = ARCGraph.fillTokenList Terms.InvestigationMetadata.ontology mock 
-Seq.head output
-Seq.item 10 output
-
-let actual = output
-let act3 = actual |> Seq.tryItem 10 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Study Person Last Name", 1))))
-let act4 = 
-    Option.defaultValue Seq.empty act3 
-    |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
-    |> Seq.tryItem 0
 
 let mockStu =
     ARCMock.StudyMetadataTokens(
-        Study_Identifier = ["sid"]
+        Study_Identifier = ["experiment1_material"],
+        Study_Title = ["Prototype for experimental data"],
+        Study_Description = ["In this a devised study to have an exemplary experimental material description."],
+        Study_File_Name = [@"experiment1_material\isa.study.xlsx"]
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
 
-let actual = ARCGraph.fillTokenList Terms.StudyMetadata.ontology mockStu
-let act1 = actual |> Seq.tryItem 0 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Study Identifier", 1))))
-Expect.isSome act1 "missing Study Identifier"
+let mockAss =
+    ARCMock.AssayMetadataTokens(
+        Assay_File_Name = [@"measurement1\isa.assay.xlsx"],
+        Assay_Performer_Last_Name = ["Maus"; "Katz"],
+        Assay_Performer_First_Name = ["Oliver"; "Marius"],
+        Assay_Performer_Mid_Initials = [""; "G."],
+        Assay_Performer_Email = ["maus@nfdi4plants.org"],
+        Assay_Performer_Affiliation = ["RPTU University of Kaiserslautern"],
+        Assay_Performer_Roles = ["research assistant"],
+        Assay_Performer_Roles_Term_Accession_Number = ["http://purl.org/spar/scoro/research-assistant"],
+        Assay_Performer_Roles_Term_Source_REF = ["scoro"]
+    )
+    |> List.concat // use flat list
+    |> Seq.map (fun cvp -> cvp :> IParam)
+
+mockAss |> Seq.iter (fun ip -> ip.Name |> printfn "%s")
+mockAss |> Seq.iter (fun ip -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri)
+
+open ARCGraph
+let onto = Terms.AssayMetadata.ontology
+//let onto = Terms.StudyMetadata.ontology
+let ontoGraph = OboGraph.ontologyToFGraphByName onto
+let ipsAdded = addMissingTerms onto mockAss
+//let ipsAdded = addMissingTerms onto mockStu
+ipsAdded |> Seq.iter (fun ip -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri)
+let partitionedIps = Seq.groupWhen (isHeader ontoGraph) ipsAdded
+partitionedIps |> Seq.iter (fun  l -> printfn "\ns1:"; l |> Seq.iter (fun ip -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri))
+let partitionallyFilledIps = partitionedIps |> Seq.map (addMissingTermsInGroup ontoGraph)
+partitionallyFilledIps |> Seq.iter (fun  l -> printfn "\ns1:"; l |> Seq.iter (fun ip -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri))
+let groupedIps = partitionallyFilledIps |> Seq.map groupTerms
+groupedIps |> Seq.iter (fun l -> printfn "\ns1:"; l |> Seq.iter (fun (j,k) -> printfn "s2:"; k |> Seq.iter (fun ip -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri)))
+let matchedIps = groupedIps |> Seq.map (matchTerms onto)
+matchedIps |> Seq.iter (fun l -> printfn "\ns1:"; l |> Seq.iter (fun (j,k) -> printfn "s2:"; k |> Seq.iter (fun ip -> printfn "%s, %s, %s" (deconstructTf ip).Name (deconstructTf ip).Accession (deconstructTf ip).RefUri)))
+let subgraphs = Seq.map (constructIntermediateMetadataSubgraph ontoGraph) matchedIps
+let filledSubgraphs = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs
+let splitSubgraphs = Seq.map splitMetadataSubgraph filledSubgraphs
+Seq.map metadataSubgraphToList splitSubgraphs |> Seq.iter (fun l -> printfn "\ns1:"; l |> Seq.iter (fun k -> printfn "s2:"; k |> Seq.iter (fun ((_,_),ip) -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri)))
+
+let actual = ARCGraph.fillTokenList Terms.AssayMetadata.ontology mockAss
+actual |> Seq.length
+actual |> Seq.iter (fun s1 -> printfn "\ns1:"; s1 |> Seq.iter (printfn "s2:"; Seq.iter (fun ((s,d),f) -> printfn $"{s}")))
+let act1 = actual |> Seq.tryItem 3 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay Filename", 0))))
+Expect.isSome act1 "missing Assay Filename"
 let act2 = 
     Option.defaultValue Seq.empty act1 
     |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
     |> Seq.tryItem 0
     |> Option.defaultValue ""
-let exp2 = "sid"
-Expect.equal act2 exp2 "wrong Study Identifier"
+actual |> Seq.map (fun c -> Seq.head )
 
 
 // End of Helper Functions:

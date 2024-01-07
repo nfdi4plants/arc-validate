@@ -100,15 +100,15 @@ let ``fillTokenList tests`` =
             let exp8 = "Garth"
             Expect.equal act8 exp8 "wrong Investigation Person Last Name"
 
-            let act9 = actual |> Seq.tryItem 10 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Study Person Last Name", 1))))
-            Expect.isSome act9 "missing Study Person Last Name"
+            let act9 = actual |> Seq.tryItem 4 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Study Identifier", 1))))
+            Expect.isSome act9 "missing Study Identifier"
             let act10 = 
                 Option.defaultValue Seq.empty act9
                 |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
                 |> Seq.tryItem 0
                 |> Option.defaultValue ""
-            let exp10 = "Mühlhaus"
-            Expect.equal act10 exp10 "wrong Study Person Last Name"
+            let exp10 = "experiment1_material"
+            Expect.equal act10 exp10 "wrong Study Identifier"
         )
 
         testCase "Study" (fun _ ->
@@ -125,8 +125,8 @@ let ``fillTokenList tests`` =
         )
 
         testCase "Assay" (fun _ ->
-            let actual = ARCGraph.fillTokenList Terms.StudyMetadata.ontology mockStu
-            let act1 = actual |> Seq.tryItem 0 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay Filename", 0))))
+            let actual = ARCGraph.fillTokenList Terms.AssayMetadata.ontology mockAss
+            let act1 = actual |> Seq.tryItem 2 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay Filename", 0))))
             Expect.isSome act1 "missing Assay Filename"
             let act2 = 
                 Option.defaultValue Seq.empty act1 
