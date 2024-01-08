@@ -4,9 +4,9 @@
     ".NETStandard,Version=v2.0": {
       "ARCTokenization": {
         "type": "Direct",
-        "requested": "[1.4.0, 1.4.0]",
-        "resolved": "1.4.0",
-        "contentHash": "lziUUPqLNXNB1atEg4jgShaFdwp5mWaM56xIvnobmkVFG3msbuzD1BJ2+6fWwF4QjYx0Ylkv9v9UqW4hk5bDfA==",
+        "requested": "[2.0.0, 2.0.0]",
+        "resolved": "2.0.0",
+        "contentHash": "t0NUB1/MIcjHwy+qZ3yh1C33o40sIN5wEo2zoUHqnqTOjSaVB5zl1fn12EE+9hHGHPNirt581lisR5Guu0X4bQ==",
         "dependencies": {
           "ControlledVocabulary": "[1.0.0, 2.0.0)",
           "FSharp.Core": "8.0.100",
