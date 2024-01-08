@@ -12,6 +12,7 @@
 #r "nuget: Anybadge.NET"
 #r "nuget: FSharpAux"
 #r "nuget: Graphoscope"
+#r "nuget: Cytoscape.NET"
 
 open ARCExpect
 open ARCTokenization
@@ -23,6 +24,7 @@ open AnyBadge.NET
 open ARCValidate
 open FSharpAux
 open Graphoscope
+open Cytoscape
 
 open System.IO
 
@@ -148,21 +150,22 @@ groupedIps |> Seq.iter (fun l -> printfn "\ns1:"; l |> Seq.iter (fun (j,k) -> pr
 let matchedIps = groupedIps |> Seq.map (matchTerms onto)
 matchedIps |> Seq.iter (fun l -> printfn "\ns1:"; l |> Seq.iter (fun (j,k) -> printfn "s2:"; k |> Seq.iter (fun ip -> printfn "%s, %s, %s" (deconstructTf ip).Name (deconstructTf ip).Accession (deconstructTf ip).RefUri)))
 let subgraphs = Seq.map (constructIntermediateMetadataSubgraph ontoGraph) matchedIps
+subgraphs |> Seq.iter (fst >> ARCGraph.Visualization.isaIntermediateGraphToFullCyGraph >> Cytoscape.NET.CyGraph.show)
 let filledSubgraphs = Seq.map (fst >> addEmptyIpsToNodeData) subgraphs
 let splitSubgraphs = Seq.map splitMetadataSubgraph filledSubgraphs
 Seq.map metadataSubgraphToList splitSubgraphs |> Seq.iter (fun l -> printfn "\ns1:"; l |> Seq.iter (fun k -> printfn "s2:"; k |> Seq.iter (fun ((_,_),ip) -> printfn "%s, %s, %s" ip.Name ip.Accession ip.RefUri)))
 
 let actual = ARCGraph.fillTokenList Terms.AssayMetadata.ontology mockAss
 actual |> Seq.length
-actual |> Seq.iter (fun s1 -> printfn "\ns1:"; s1 |> Seq.iter (printfn "s2:"; Seq.iter (fun ((s,d),f) -> printfn $"{s}")))
-let act1 = actual |> Seq.tryItem 3 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay Filename", 0))))
-Expect.isSome act1 "missing Assay Filename"
+actual |> Seq.iter (fun s1 -> printfn "\ns1:"; s1 |> Seq.iter (printfn "s2:"; Seq.iter (fun ((s,d),f) -> printfn $"{s}; {f.Value |> ParamValue.getValueAsString}")))
+let act1 = actual |> Seq.tryItem 0 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay File Name", 1))))
+act1 |> Option.defaultValue Seq.empty |> Seq.iter (fun (s,f) -> printfn $"{fst s}; {f.Value |> ParamValue.getValueAsString}")
+Expect.isSome act1 "missing Assay File Name"
 let act2 = 
     Option.defaultValue Seq.empty act1 
     |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
-    |> Seq.tryItem 0
+    |> Seq.tryItem 8
     |> Option.defaultValue ""
-actual |> Seq.map (fun c -> Seq.head )
 
 
 // End of Helper Functions:

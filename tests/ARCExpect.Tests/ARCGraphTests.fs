@@ -126,12 +126,12 @@ let ``fillTokenList tests`` =
 
         testCase "Assay" (fun _ ->
             let actual = ARCGraph.fillTokenList Terms.AssayMetadata.ontology mockAss
-            let act1 = actual |> Seq.tryItem 2 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay Filename", 0))))
+            let act1 = actual |> Seq.tryItem 0 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("Assay File Name", 1))))
             Expect.isSome act1 "missing Assay Filename"
             let act2 = 
                 Option.defaultValue Seq.empty act1 
                 |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
-                |> Seq.tryItem 0
+                |> Seq.tryItem 8
                 |> Option.defaultValue ""
             let exp2 = @"measurement1\isa.assay.xlsx"
             Expect.equal act2 exp2 "wrong Assay Filename"
