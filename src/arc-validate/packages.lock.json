@@ -40,11 +40,11 @@
       },
       "ARCTokenization": {
         "type": "Transitive",
-        "resolved": "1.2.0",
-        "contentHash": "0pVnsXxTa1Mu0lJHyYnLeA+yVZGg4VWxtN3pI1OM4XnbeVLTc/2qpkC0PB2WBRcnHACzd53T4KwoU1Xno0empQ==",
+        "resolved": "2.0.0",
+        "contentHash": "t0NUB1/MIcjHwy+qZ3yh1C33o40sIN5wEo2zoUHqnqTOjSaVB5zl1fn12EE+9hHGHPNirt581lisR5Guu0X4bQ==",
         "dependencies": {
           "ControlledVocabulary": "[1.0.0, 2.0.0)",
-          "FSharp.Core": "6.0.7",
+          "FSharp.Core": "8.0.100",
           "FSharpAux.Core": "[2.0.0]",
           "FsOboParser": "[0.3.0]",
           "FsSpreadsheet": "[4.1.0]",
@@ -921,7 +921,7 @@
       "arcexpect": {
         "type": "Project",
         "dependencies": {
-          "ARCTokenization": "[1.2.0, 1.2.0]",
+          "ARCTokenization": "[2.0.0, 2.0.0]",
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
           "FSharp.Core": "[8.0.100, )",
