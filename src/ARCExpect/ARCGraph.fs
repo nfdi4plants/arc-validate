@@ -1,7 +1,7 @@
 ﻿namespace ARCExpect
 
 
-open FsOboParser
+open OBO.NET
 open ControlledVocabulary
 open ARCTokenization
 open Graphoscope

@@ -6,7 +6,7 @@
 #r "arc-validate.dll"
 #r "Anybadge.NET.dll"
 #r "Expecto.dll"
-#r "FsOboParser.dll"
+#r "OBO.NET.dll"
 
 //#r "nuget: ARCExpect"
 #r "nuget: Anybadge.NET"

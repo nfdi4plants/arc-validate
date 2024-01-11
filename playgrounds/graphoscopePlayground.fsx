@@ -1,11 +1,11 @@
 //#I "../../fslaborg/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
 #I "../../omaus/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
 #r "Graphoscope.dll"
-#r "nuget: FsOboParser"
+#r "nuget: OBO.NET"
 
 
 open Graphoscope
-open FsOboParser
+open OBO.NET
 
 
 let testTerms = [

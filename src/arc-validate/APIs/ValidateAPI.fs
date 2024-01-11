@@ -33,7 +33,8 @@ module ValidateAPI =
 
         let investigationTokens = 
             if hasInvFile then 
-                Investigation.parseMetadataSheetFromFile (Path.Combine(root, "isa.investigation.xlsx"))
+                (Path.Combine(root, "isa.investigation.xlsx"))
+                |> Investigation.parseMetadataSheetFromFile()
                 |> List.filter (fun p ->
                     Param.getValueAsTerm p <> Terms.StructuralTerms.metadataSectionKey // filter these out to get only value-holding cells
                 )

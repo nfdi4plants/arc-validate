@@ -11,7 +11,7 @@
 #r "nuget: FSharpAux, 1.1.0"
 #r "nuget: Graphoscope"
 #r "nuget: Cytoscape.NET"
-#r "nuget: FsOboParser, 0.3.0"
+#r "nuget: OBO.NET, 0.3.0"
 #r "nuget: FsSpreadsheet.ExcelIO, 4.1.0"
 
 

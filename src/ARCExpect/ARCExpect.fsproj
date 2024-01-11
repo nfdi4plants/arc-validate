@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="packages.lock.json" />
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="InternalUtils.fs" />
     <Compile Include="BadgeCreation.fs" />
@@ -31,11 +32,11 @@
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[9.0.4]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
-    <PackageReference Include="FsSpreadsheet" Version="[4.1.0]" />
-    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[4.1.0]" />
-    <PackageReference Include="ARCTokenization" Version="[2.0.0]" />
+    <PackageReference Include="FsSpreadsheet" Version="[5.0.2]" />
+    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[5.0.2]" />
+    <PackageReference Include="ARCTokenization" Version="[3.0.0]" />
     <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]" />
-    <PackageReference Include="FsOboParser" Version="[0.3.0]" />
+    <PackageReference Include="OBO.NET" Version="[0.4.2]" />
     <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
     <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
   </ItemGroup>

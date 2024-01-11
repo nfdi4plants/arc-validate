@@ -3,7 +3,7 @@
 
 open ARCExpect.ARCRelation
 
-open FsOboParser
+open OBO.NET
 open Graphoscope
 
 

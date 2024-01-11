@@ -4,7 +4,7 @@
 open Expecto
 open FSharpAux
 open ControlledVocabulary
-open FsOboParser
+open OBO.NET
 
 open ARCExpect
 open ARCExpect.StringValidationPattern.Orcid

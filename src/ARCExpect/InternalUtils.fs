@@ -17,7 +17,7 @@ module InternalUtils =
     //open ARCGraphModel
     //open ARCGraphModel.IO
     open System.IO
-    open FsOboParser
+    open OBO.NET
     open ControlledVocabulary
 
 

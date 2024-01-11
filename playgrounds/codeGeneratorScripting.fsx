@@ -1,11 +1,11 @@
 //#I "../../fslaborg/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
 //#I "../../omaus/Graphoscope/src/Graphoscope/bin/Debug/netstandard2.0"
 //#r "Graphoscope.dll"
-#r "nuget: FsOboParser"
+#r "nuget: OBO.NET"
 #r "nuget: FSharpAux"
 #r "nuget: Graphoscope"
 
-open FsOboParser
+open OBO.NET
 open FSharpAux
 open Graphoscope
 
