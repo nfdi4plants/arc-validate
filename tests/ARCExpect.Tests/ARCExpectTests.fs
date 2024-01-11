@@ -13,10 +13,10 @@ let ``ByValue tests`` =
                 "inequal values were not correctly detected as inequal"
         }
 
-        test "contained value is detected" {Validate.ByValue.contains "Kevin" [ReferenceObjects.CvParams.``Investigation Person First Name``]}
+        test "contained value is detected" {Validate.ByValue.containsValue "Kevin" [ReferenceObjects.CvParams.``Investigation Person First Name``]}
         test "non-contained value is detected" {
             Expect.throws 
-                (fun () -> Validate.ByValue.contains "Kevin2" [ReferenceObjects.CvParams.``Investigation Person First Name``]) 
+                (fun () -> Validate.ByValue.containsValue "Kevin2" [ReferenceObjects.CvParams.``Investigation Person First Name``]) 
                 "non-contained value was not correctly detected as not contained"
         }
 
