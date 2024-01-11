@@ -2,16 +2,6 @@
   "version": 1,
   "dependencies": {
     "net8.0": {
-      "AnyBadge.NET": {
-        "type": "Direct",
-        "requested": "[1.0.0, 1.0.0]",
-        "resolved": "1.0.0",
-        "contentHash": "JuHMr4Onoj1h6KXgysWw4FvM/7zxwc/RfRV4KD/v9tg5v68jDbckloSuayNQefpUaUd0/ITLd3L7hkx4d66DYA==",
-        "dependencies": {
-          "FSharp.Core": "6.0.7",
-          "Semver": "2.3.0"
-        }
-      },
       "Argu": {
         "type": "Direct",
         "requested": "[6.1.4, 6.1.4]",
@@ -37,6 +27,15 @@
         "requested": "[8.0.100, )",
         "resolved": "8.0.100",
         "contentHash": "ZOVZ/o+jI3ormTZOa28Wh0tSRoyle1f7lKFcUN61sPiXI7eDZu8eSveFybgTeyIEyW0ujjp31cp7GOglDgsNEg=="
+      },
+      "AnyBadge.NET": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "dsXHmay3/XAn6iXs4n1UqfEb2Qo9b2jdpLmyU+0RgizRwhHSU8FodTQo6tGVOLXT49fGrRdLYCKdyyVQ3q/qpw==",
+        "dependencies": {
+          "FSharp.Core": "8.0.100",
+          "Semver": "2.3.0"
+        }
       },
       "ARCTokenization": {
         "type": "Transitive",
@@ -922,6 +921,7 @@
         "type": "Project",
         "dependencies": {
           "ARCTokenization": "[2.0.0, 2.0.0]",
+          "AnyBadge.NET": "[2.0.0, 2.0.0]",
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
           "FSharp.Core": "[8.0.100, )",

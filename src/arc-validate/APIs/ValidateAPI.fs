@@ -11,6 +11,7 @@ open System.IO
 open Argu
 
 open ControlledVocabulary
+open AnyBadge.NET
 
 module ValidateAPI = 
 
@@ -46,9 +47,7 @@ module ValidateAPI =
                 TestGeneration.Critical.ARC.ISA.generateISATests investigationTokens
             ]
 
-        let criticalTestResults =
-            criticalTests
-            |> performTest
+        let criticalTestResults = ARCExpect.Execute.Validation criticalTests
 
         if criticalTestResults.failed |> List.isEmpty && criticalTestResults.errored |> List.isEmpty then // if no critical tests failed or errored
             
@@ -58,22 +57,23 @@ module ValidateAPI =
                     TestGeneration.NonCritical.ARC.ISA.generateISATests investigationTokens
                 ]
 
-            let nonCriticalTestResults =
-                nonCriticalTests
-                |> performTest
+            let nonCriticalTestResults = ARCExpect.Execute.Validation nonCriticalTests
 
             let combinedTestResults = 
                 [criticalTestResults; nonCriticalTestResults] 
                 |> combineTestRunSummaries // aggregate critical and non-critical test results
 
-            let badge = 
-                combinedTestResults
-                |> BadgeCreation.createSuccessBadge "ARC quality"
-            
-            badge.WriteBadge(Path.Combine(outPath, "arc-quality.svg"))
-
             combinedTestResults
-            |> writeJUnitSummary verbose (Path.Combine(outPath, "arc-validate-results.xml")) // write the combined result to a single file
+            |> Execute.BadgeCreation(
+                path = (Path.Combine(outPath, "arc-quality.svg")),
+                labelText = "ARC quality"
+            )
+            
+            combinedTestResults
+            |> Execute.JUnitSummaryCreation(
+                path = (Path.Combine(outPath, "arc-validate-results.xml")),
+                Verbose = verbose
+            )
 
             ExitCode.Success // critical tests passed, non-critical tests have been performed. Success!
 
@@ -85,7 +85,20 @@ module ValidateAPI =
             
             badge.WriteBadge(Path.Combine(outPath, "arc-quality.svg"))
 
+            let testAmnt = criticalTestResults.failed.Length + criticalTestResults.errored.Length
+
             criticalTestResults
-            |> Expecto.writeJUnitSummary verbose (Path.Combine(outPath, "arc-validate-results.xml"))
+            |> Execute.BadgeCreation(
+                path = (Path.Combine(outPath, "arc-quality.svg")),
+                labelText = "ARC quality",
+                ValueSuffix = $"/{testAmnt} critical tests passed",
+                DefaultColor = Color.RED
+            )
+
+            criticalTestResults
+            |> Execute.JUnitSummaryCreation(
+                path = (Path.Combine(outPath, "arc-validate-results.xml")),
+                Verbose = verbose
+            )
 
             ExitCode.CriticalTestFailure

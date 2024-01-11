@@ -2,6 +2,16 @@
   "version": 1,
   "dependencies": {
     ".NETStandard,Version=v2.0": {
+      "AnyBadge.NET": {
+        "type": "Direct",
+        "requested": "[2.0.0, 2.0.0]",
+        "resolved": "2.0.0",
+        "contentHash": "dsXHmay3/XAn6iXs4n1UqfEb2Qo9b2jdpLmyU+0RgizRwhHSU8FodTQo6tGVOLXT49fGrRdLYCKdyyVQ3q/qpw==",
+        "dependencies": {
+          "FSharp.Core": "8.0.100",
+          "Semver": "2.3.0"
+        }
+      },
       "ARCTokenization": {
         "type": "Direct",
         "requested": "[2.0.0, 2.0.0]",
@@ -293,6 +303,11 @@
         "type": "Transitive",
         "resolved": "5.1.0",
         "contentHash": "0AnX6kAs0GiLrSqrHKe5mpQhJSHTmXeqLNucV2CxGATP/I9UzLMc1N4MtS/z8qB6mcgX61OjHdY3YbOmETGs+A=="
+      },
+      "Semver": {
+        "type": "Transitive",
+        "resolved": "2.3.0",
+        "contentHash": "4vYo1zqn6pJ1YrhjuhuOSbIIm0CpM47grbpTJ5ABjOlfGt/EhMEM9ed4MRK5Jr6gVnntWDqOUzGeUJp68PZGjw=="
       },
       "System.Buffers": {
         "type": "Transitive",
