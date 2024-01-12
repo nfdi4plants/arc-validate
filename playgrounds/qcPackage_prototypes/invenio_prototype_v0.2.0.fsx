@@ -46,6 +46,11 @@ let invFileTokens =
     |> ARCGraph.fillTokenList Terms.InvestigationMetadata.ontology
     |> Seq.concat
     |> Seq.concat
+    |> Seq.map snd
+
+let invFileTokensNoMdSecKeys =
+    invFileTokens
+    |> Seq.filter (Param.getTerm >> (<>) Terms.StructuralTerms.metadataSectionKey) 
 
 
 // Validation Cases:
@@ -53,13 +58,13 @@ let invFileTokens =
 let cases = [
     testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
-            invFileTokens
-            |> Validate.ParamCollection.ContainsParamWithTerm 
+            invFileTokensNoMdSecKeys
+            |> Validate.ByTerm.contains
                 INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
         }
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
-            invFileTokens
-            |> Validate.ParamCollection.ContainsParamWithTerm 
+            invFileTokensNoMdSecKeys
+            |> Validate.ByTerm.contains
                 INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
         }
     ]
