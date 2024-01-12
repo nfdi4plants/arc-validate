@@ -24,11 +24,11 @@ module ISA =
             testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
                 validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
                     cvParams
-                    |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
+                    |> Validate.ParamCollection.ContainsParamWithTerm INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
                 }
                 validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
                     cvParams
-                    |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
+                    |> Validate.ParamCollection.ContainsParamWithTerm INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
                 }
             ]
         ]

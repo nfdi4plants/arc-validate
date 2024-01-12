@@ -25,7 +25,7 @@ module FileSystem =
         testList "FileSystem" [
             testList "Investigation" [
                 validationCase (TestID.Name "Investigation File") {
-                    relativeFilePaths |> Validate.ByValue.containsValue "isa.investigation.xlsx"
+                    relativeFilePaths |> Validate.ParamCollection.ContainsParamWithValue "isa.investigation.xlsx"
                 }
             ]
         ]

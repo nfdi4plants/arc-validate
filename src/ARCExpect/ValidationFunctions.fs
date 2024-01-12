@@ -1,165 +1,163 @@
-﻿namespace ARCExpect.Validate
+﻿namespace ARCExpect
 
 open ControlledVocabulary
 open ARCExpect
 open ARCTokenization.StructuralOntology
 
-
 /// <summary>
-/// Validation functions to perform value-based validation on IParams
+/// Top level API for performing validation.
 /// </summary>
-type ByValue =
-    static member notEmpty (cvp:CvParam) =
-        match CvParam.isEmpty cvp with
-        | false -> ()
-        | true ->
-            cvp
-            |> ErrorMessage.ofCvParam "is empty."                
-            |> Expecto.Tests.failtestNoStackf "%s"
-
-    static member notEmpty (ip : #IParam) =
-        match Param.isEmpty ip with
-        | false -> ()
-        | true ->
-            ip
-            |> ErrorMessage.ofIParam "is empty."                
-            |> Expecto.Tests.failtestNoStackf "%s"
-
-    static member equals (targetValue : System.IConvertible) (ip : #IParam) =
-        let act = Param.getValue ip
-        match targetValue = act with
-        | true  -> ()
-        | false -> 
-            ip
-            |> ErrorMessage.ofIParam $"should equal {targetValue}."
-            |> Expecto.Tests.failtestNoStackf "%s"
-
+module Validate =
+    
     /// <summary>
-    /// tests wether any of the CvParams in the given collection has the expectedValue
+    /// Validation functions to perform on any type implementing the `IParam` interface.
     /// </summary>
-    /// <param name="expectedValue">the value expected to occur in at least 1 CvParam in the given collection</param>
-    static member containsValue (expectedValue : #System.IConvertible) (set : #seq<#IParam>) =
-        match Seq.exists (fun (ip : #IParam)-> (ip.Value |> ParamValue.getValue) = (expectedValue :> System.IConvertible)) set with
-        | true  -> ()
-        | false ->
-        expectedValue
-        |> ErrorMessage.ofValue $"does not exist"
-        |> Expecto.Tests.failtestNoStackf "%s"
+    type Param = 
 
-    /// <summary>
-    /// tests wether any of the CvParams equal the expectedParam by value
-    /// </summary>
-    /// <param name="expectedParam">the Cvparam for which it is expected to share it's value with at least one Cvparam in the collection</param>
-    static member containsParam (expectedParam : #IParam) (set : #seq<#IParam>) =
-        let tmp = 
-            Param.getParamValue expectedParam
-            |> ParamValue.getValue                
-        match Seq.exists (fun (ip : #IParam)-> (ip.Value |> ParamValue.getValue) = tmp) set with
-        | true  -> ()
-        | false ->
-        expectedParam
-        |> ErrorMessage.ofIParam $"does not exist"
-        |> Expecto.Tests.failtestNoStackf "%s"
-        
+        /// <summary>
+        /// Validates that the value of the given Param is not empty (meaning it is not an empty string: "").
+        /// </summary>
+        /// <param name="param">The param to validate</param>
+        static member ValueIsNotEmpty (param : #IParam) =
+            match Param.isEmpty param with
+            | false -> ()
+            | true ->
+                param
+                |> ErrorMessage.ofIParam "is empty."                
+                |> Expecto.Tests.failtestNoStackf "%s"
 
-    static member isMatch (pattern:string) =
-        fun (ip : #IParam) ->
+        /// <summary>
+        /// Validates if the value of the given Param is equal to the expected value.
+        /// </summary>
+        /// <param name="expectedValue">The expected value to validate against</param>
+        /// <param name="param">The param to validate</param>
+        static member ValueIsEqualTo (targetValue : System.IConvertible) (param : #IParam) =
+            let act = Param.getValue param
+            match targetValue = act with
+            | true  -> ()
+            | false -> 
+                param
+                |> ErrorMessage.ofIParam $"should equal {targetValue}."
+                |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if the term of the given Param is equal to the expected term.
+        /// </summary>
+        /// <param name="expectedTerm">The expected term to validate against</param>
+        /// <param name="param">The param to validate</param>
+        static member TermIsEqualTo (expectedTerm:CvTerm) (param : #IParam) =
+            match (Param.getTerm param) = expectedTerm with
+            | true -> ()
+            | false ->
+                param
+                |> ErrorMessage.ofIParam $"should equal {expectedTerm}."              
+                |> Expecto.Tests.failtestNoStackf "%s"                        
+
+        /// <summary>
+        /// Validates if the value of the given Param matches a regex pattern.
+        /// </summary>
+        /// <param name="pattern">The regex pattern that the value should match</param>
+        /// <param name="param">The param to validate</param>
+        static member ValueMatchesPattern (pattern:string) (param : #IParam) =
             let tmp = 
-                Param.getParamValue ip
+                Param.getParamValue param
                 |> ParamValue.getValue
                 |> string
             match System.Text.RegularExpressions.Regex.IsMatch(tmp,pattern) with
             | true -> ()
             | false ->
-                ip
+                param
                 |> ErrorMessage.ofIParam "is invalid."               
                 |> Expecto.Tests.failtestNoStackf "%s"                   
 
-
-    static member isMatch (regex:System.Text.RegularExpressions.Regex) =
-        fun (ip : #IParam) ->
+        /// <summary>
+        /// Validates if the value of the given Param matches a regex.
+        /// </summary>
+        /// <param name="pattern">The regex that the value should match</param>
+        /// <param name="param">The param to validate</param>
+        static member ValueMatchesRegex (regex:System.Text.RegularExpressions.Regex) (param : #IParam) =
             let tmp = 
-                Param.getParamValue ip
+                Param.getParamValue param
                 |> ParamValue.getValue
                 |> string
             match regex.IsMatch(tmp) with
             | true -> ()
             | false ->
-                ip
+                param
                 |> ErrorMessage.ofIParam "is invalid."              
                 |> Expecto.Tests.failtestNoStackf "%s"                   
-        
-        
-    static member isMatchBy (validator:string -> bool) =
-        fun (ip : #IParam) ->
+
+        /// <summary>
+        /// Validates if the value of the given Param satisfies a predicate (meaning a function that for a given Param returns either true or false)
+        /// </summary>
+        /// <param name="predicate">The predicate that the Param should satisfy</param>
+        /// <param name="param">The param to validate</param>
+        static member ValueSatisfiesPredicate (predicate: System.IConvertible -> bool) (param : #IParam) =
             let tmp = 
-                Param.getParamValue ip
+                Param.getParamValue param
                 |> ParamValue.getValue
-                |> string
-            match validator tmp with
-            | true -> ()
-            | false ->
-                ip
-                |> ErrorMessage.ofIParam "is invalid."               
-                |> Expecto.Tests.failtestNoStackf "%s"    
 
-/// <summary>
-/// Validation functions to perform term-based validation on IParams
-/// </summary>
-type ByTerm =
-        
-    /// Compares by Term 
-    static member equals (target:CvTerm) = 
-        fun (ip : #IParam) ->
-            match (Param.getTerm ip) = target with
-            | true -> ()
-            | false ->
-                ip
-                |> ErrorMessage.ofIParam $"should equal {target}."              
-                |> Expecto.Tests.failtestNoStackf "%s"                        
+            if not (predicate tmp) then
+                param
+                |> ErrorMessage.ofIParam "is invalid."
+                |> Expecto.Tests.failtestNoStackf "%s"
 
-    /// Compares by Term 
-    static member equals (target:CvParam) = 
-        fun (ip : #IParam) ->
-            match (Param.getTerm ip) = (CvParam.getTerm target) with
-            | true -> ()
-            | false ->
-                ip
-                |> ErrorMessage.ofIParam $"should equal {target}."              
-                |> Expecto.Tests.failtestNoStackf "%s"              
-        
     /// <summary>
-    /// tests wether any of the CvParams in the given collection is annotated with the expectedTerm
+    /// Validation functions to perform on a collection containing any type implementing the `IParam` interface.
     /// </summary>
-    /// <param name="expectedTerm">the term expected to occur in at least 1 CvParam in the given collection</param>
-    static member contains (expectedTerm:CvTerm) =
-        fun (set : #seq<#IParam>) -> 
-            match Seq.exists (fun e -> Param.getTerm e = expectedTerm) set with
+    type ParamCollection =
+
+        /// <summary>
+        /// Validates if at least one Param with the expected value in the given collection exists.
+        /// </summary>
+        /// <param name="expectedValue">the value expected to occur in at least 1 Param in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsParamWithValue (expectedValue : #System.IConvertible) (paramCollection : #seq<#IParam>) =
+            match Seq.exists (fun (param : #IParam)-> (param.Value |> ParamValue.getValue) = (expectedValue :> System.IConvertible)) paramCollection with
+            | true  -> ()
+            | false ->
+                expectedValue
+                |> ErrorMessage.ofValue $"does not exist"
+                |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if at least one Param with the expected term in the given collection exists.
+        /// </summary>
+        /// <param name="expectedTerm">the term expected to occur in at least 1 Param in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsParamWithTerm (expectedTerm : CvTerm) (paramCollection: #seq<#IParam>) =
+            match Seq.exists (fun e -> Param.getTerm e = expectedTerm) paramCollection with
             | true  -> ()
             | false ->
                 expectedTerm
-                |> ErrorMessage.ofCvTerm "is missing."
+                |> ErrorMessage.ofCvTerm $"does not exist"
                 |> Expecto.Tests.failtestNoStackf "%s"
 
-    /// <summary>
-    /// tests wether any of the CvParams equal the expectedParam by term
-    /// </summary>
-    /// <param name="expectedParam">the Cvparam for which it is expected to share it's term with at least one Cvparam in the collection</param>
-    static member contains (expectedParam : IParam) =            
-        fun (set: #seq<#IParam>) -> 
-            match Seq.exists (fun e -> Param.getTerm e = Param.getTerm expectedParam) set with
+        /// <summary>
+        /// Validates if the given Param is contained in the given collection át least once.
+        /// </summary>
+        /// <param name="expectedParam">the param expected to occur at least once in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsParam (expectedParam : #IParam) (paramCollection : #seq<#IParam>) =
+
+            let tmp = 
+                Param.getParamValue expectedParam
+                |> ParamValue.getValue
+            // this is incomplete and does not exactly perform what the name advertises 
+            // (e.g., it only checks value but not term, or even if the Params are Cv or User)
+            match Seq.exists (fun (param : #IParam)-> (param.Value |> ParamValue.getValue) = tmp) paramCollection with
             | true  -> ()
             | false ->
-                expectedParam
-                |> ErrorMessage.ofIParam "is missing."
-                |> Expecto.Tests.failtestNoStackf "%s"
+            expectedParam
+            |> ErrorMessage.ofIParam $"does not exist"
+            |> Expecto.Tests.failtestNoStackf "%s"
 
 
-/// <summary>
-/// Validation functions to perform context-dependent tests on CvParams representing a special kind of object (e.g. multiple properties of a Person, an Email, etc.)
-/// </summary>
-type ByObject =
-
-    static member email (ip : #IParam) = 
-        ip |> ByValue.isMatch StringValidationPattern.email
-        ip |> ByTerm.equals INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
+    /// <summary>
+    /// Validates wether the given Param's value is an email that matches a pre-defined regex pattern ("^[^@\s]+@[^@\s]+\.[^@\s]+$") 
+    /// and wether the param is annotated with the term `Investigation Person Email`
+    /// </summary>
+    /// <param name="param"></param>
+    let email (param : #IParam) = 
+        param |> Param.ValueMatchesRegex StringValidationPattern.email
+        param |> Param.TermIsEqualTo INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``

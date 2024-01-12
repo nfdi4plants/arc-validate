@@ -39,6 +39,7 @@ let outDir = arcDir
 
 let absoluteDirectoryPaths = FileSystem.parseRelativeDirectoryPaths arcDir
 let absoluteFilePaths = FileSystem.parseRelativeFilePaths arcDir
+
 let invFileTokens = 
     Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths 
     |> List.concat
@@ -51,13 +52,15 @@ let invFileTokens =
 
 let cases = [
     testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
-        ARCExpect.validate (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
             invFileTokens
-            |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
+            |> Validate.ParamCollection.ContainsParamWithTerm 
+                INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
         }
-        ARCExpect.validate (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
-            cvParams
-            |> Validate.ByTerm.contains INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
+            invFileTokens
+            |> Validate.ParamCollection.ContainsParamWithTerm 
+                INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
         }
     ]
 ]
