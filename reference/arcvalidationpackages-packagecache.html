@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/arc-validate/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="ARCValidationPackages" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="arc-validate">
+    <meta property="og:title" content="PackageCache (arc-validate)" />
+    <meta property="og:url" content="/arc-validate/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/arc-validate/">
+    <meta name="twitter:title" content="PackageCache (arc-validate)">
+    
+    <title>PackageCache (arc-validate) | arc-validate</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/arc-validate/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <link href="/arc-validate/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/arc-validate/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="{{fsdocs-license-link}}">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="{{fsdocs-release-notes-link}}">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
+                    Repository</a></li>
+                
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/arc-validate/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/arc-validate/">
+            <img alt="Header menu logo" src="/arc-validate/img/logo.png">
+            <strong>arc-validate</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="{{fsdocs-repository-link}}" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="{{fsdocs-license-link}}">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="{{fsdocs-release-notes-link}}">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
+            Repository</a></li>
+        
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/arc-validate/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h2>
+    PackageCache Type
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="/arc-validate/reference/arcvalidationpackages.html">
+        ARCValidationPackages
+      </a>
+    </dt>
+    <dt>
+      Assembly: ARCValidationPackages.dll
+    </dt>
+    <dt>
+      Base Type: 
+      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2">Dictionary</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span></code>
+    </dt>
+    <dt>
+      All Interfaces: 
+      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span></code>
+      , 
+      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;<span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span>&gt;</span></code>
+      , 
+      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span></code>
+      , 
+      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span>&gt;</span></code>
+      , 
+      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span>&gt;</span></code>
+      , 
+      <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.idictionary">IDictionary</a></code>
+      , 
+      <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.icollection">ICollection</a></code>
+      , 
+      <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></code>
+      , 
+      <code><a href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.ideserializationcallback">IDeserializationCallback</a></code>
+      , 
+      <code><a href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></code>
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <p class="fsdocs-summary">
+        
+      </p>
+    </div>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div>
+    <h3>
+      Constructors
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Constructor
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
+                <p>
+                  <a id="``.ctor``">
+                    <a href="#``.ctor``">
+                      <code><span>PackageCache<span><span>(<span>packages</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="218">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache<span><span>(<span>packages</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        packages
+                      </b>
+                      :
+                      <code><span><span>(<span>string&#32;*&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>)</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  packages
+                </span>
+                :
+                <code><span><span>(<span>string&#32;*&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>)</span>&#32;seq</span></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '219', 219)" onmouseover="showTip(event, '219', 219)">
+                <p>
+                  <a id="``.ctor``">
+                    <a href="#``.ctor``">
+                      <code><span>PackageCache<span><span>(<span>cache</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="219">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache<span><span>(<span>cache</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '220', 220)" onmouseover="showTip(event, '220', 220)">
+                <p>
+                  <a id="``.ctor``">
+                    <a href="#``.ctor``">
+                      <code><span>PackageCache<span><span>(<span>packages</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="220">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache<span><span>(<span>packages</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        packages
+                      </b>
+                      :
+                      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  packages
+                </span>
+                :
+                <code><span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<span><a href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>&gt;</span>&gt;</span></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '221', 221)" onmouseover="showTip(event, '221', 221)">
+                <p>
+                  <a id="``.ctor``">
+                    <a href="#``.ctor``">
+                      <code><span>PackageCache<span>()</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="221">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache<span>()</span></span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+  <div>
+    <h3>
+      Static members
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Static member
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '222', 222)" onmouseover="showTip(event, '222', 222)">
+                <p>
+                  <a id="addPackage">
+                    <a href="#addPackage">
+                      <code><span>PackageCache.addPackage&#32;<span>package&#32;cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="222">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.addPackage&#32;<span>package&#32;cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        package
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  package
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '223', 223)" onmouseover="showTip(event, '223', 223)">
+                <p>
+                  <a id="cachePackageByName">
+                    <a href="#cachePackageByName">
+                      <code><span>PackageCache.cachePackageByName&#32;<span><span>(<span>packageName,&#32;?Path,&#32;?Date</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="223">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.cachePackageByName&#32;<span><span>(<span>packageName,&#32;?Path,&#32;?Date</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        packageName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Date
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a>&#32;->&#32;<a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  packageName
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Path
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Date
+                </span>
+                :
+                <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a>&#32;->&#32;<a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '224', 224)" onmouseover="showTip(event, '224', 224)">
+                <p>
+                  <a id="cachePackageOfIndex">
+                    <a href="#cachePackageOfIndex">
+                      <code><span>PackageCache.cachePackageOfIndex&#32;<span><span>(<span>packageIndex,&#32;?Date</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="224">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.cachePackageOfIndex&#32;<span><span>(<span>packageIndex,&#32;?Date</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        packageIndex
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackageindex.html">ValidationPackageIndex</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Date
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a>&#32;->&#32;<a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  packageIndex
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackageindex.html">ValidationPackageIndex</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Date
+                </span>
+                :
+                <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a>&#32;->&#32;<a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '225', 225)" onmouseover="showTip(event, '225', 225)">
+                <p>
+                  <a id="create">
+                    <a href="#create">
+                      <code><span>PackageCache.create&#32;<span>packages</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="225">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.create&#32;<span>packages</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        packages
+                      </b>
+                      :
+                      <code><span><span>(<span>string&#32;*&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>)</span>&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  packages
+                </span>
+                :
+                <code><span><span>(<span>string&#32;*&#32;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></span>)</span>&#32;seq</span></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '226', 226)" onmouseover="showTip(event, '226', 226)">
+                <p>
+                  <a id="exists">
+                    <a href="#exists">
+                      <code><span>PackageCache.exists&#32;<span>?Path</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="226">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.exists&#32;<span>?Path</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?Path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>bool</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Path
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '227', 227)" onmouseover="showTip(event, '227', 227)">
+                <p>
+                  <a id="get">
+                    <a href="#get">
+                      <code><span>PackageCache.get&#32;<span>?Path</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="227">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.get&#32;<span>?Path</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?Path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Path
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '228', 228)" onmouseover="showTip(event, '228', 228)">
+                <p>
+                  <a id="getPackage">
+                    <a href="#getPackage">
+                      <code><span>PackageCache.getPackage&#32;<span>name&#32;cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="228">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.getPackage&#32;<span>name&#32;cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        name
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  name
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '229', 229)" onmouseover="showTip(event, '229', 229)">
+                <p>
+                  <a id="getPackages">
+                    <a href="#getPackages">
+                      <code><span>PackageCache.getPackages&#32;<span>cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="229">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.getPackages&#32;<span>cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;list</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;list</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '230', 230)" onmouseover="showTip(event, '230', 230)">
+                <p>
+                  <a id="read">
+                    <a href="#read">
+                      <code><span>PackageCache.read&#32;<span>?Path</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="230">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.read&#32;<span>?Path</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?Path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Path
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '231', 231)" onmouseover="showTip(event, '231', 231)">
+                <p>
+                  <a id="removePackage">
+                    <a href="#removePackage">
+                      <code><span>PackageCache.removePackage&#32;<span>name&#32;cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="231">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.removePackage&#32;<span>name&#32;cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        name
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  name
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '232', 232)" onmouseover="showTip(event, '232', 232)">
+                <p>
+                  <a id="tryGetPackage">
+                    <a href="#tryGetPackage">
+                      <code><span>PackageCache.tryGetPackage&#32;<span>name&#32;cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="232">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.tryGetPackage&#32;<span>name&#32;cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        name
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  name
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;option</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '233', 233)" onmouseover="showTip(event, '233', 233)">
+                <p>
+                  <a id="tryUpdateCacheDate">
+                    <a href="#tryUpdateCacheDate">
+                      <code><span>PackageCache.tryUpdateCacheDate&#32;<span>name&#32;date&#32;cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="233">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.tryUpdateCacheDate&#32;<span>name&#32;date&#32;cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        name
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        date
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  name
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  date
+                </span>
+                :
+                <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '234', 234)" onmouseover="showTip(event, '234', 234)">
+                <p>
+                  <a id="updateCacheDate">
+                    <a href="#updateCacheDate">
+                      <code><span>PackageCache.updateCacheDate&#32;<span>name&#32;date&#32;cache</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="234">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.updateCacheDate&#32;<span>name&#32;date&#32;cache</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        name
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        date
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        cache
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  name
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  date
+                </span>
+                :
+                <code><a href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  cache
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '235', 235)" onmouseover="showTip(event, '235', 235)">
+                <p>
+                  <a id="write">
+                    <a href="#write">
+                      <code><span>PackageCache.write&#32;<span>?Path</span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="235">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>PackageCache.write&#32;<span>?Path</span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?Path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a>&#32;->&#32;unit</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Path
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a>&#32;->&#32;unit</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/arc-validate/content/fsdocs-tips.js"></script>
+<script type="module" src="/arc-validate/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/arc-validate/content/fsdocs-theme.js"></script>
+<script type="module" src="/arc-validate/content/fsdocs-search.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+:root {
+    /* fslab colors */
+    --dataplant-mint: #1fc2a7;
+    --dataplant-lightblue: #4FB3D9;
+    --dataplant-darkblue: #2D3E50;
+    --dataplant-yellow: #F9CD69;
+    --dataplant-olive: #b4ce82;
+    --dataplant-red: #c21f3a;
+    /* light theme */
+    --primary: var(--dataplant-mint);
+    --text-color: var(--dataplant-darkblue);
+    --text-hover: var(--dataplant-lightblue);
+    --heading-color: var(--dataplant-mint);
+    --code-color: var(--dataplant-red);
+    --header-border: var(--dataplant-darkblue);
+    --menu-item-hover-background: var(--dataplant-mint);
+    --mobile-menu-background: var(--header-background);
+    --link-color: var(--dataplant-lightblue);
+    --link-hover: var(--dataplant-mint);
+    --nav-category: rgb(156, 163, 175);
+    --aside-background: var(--header-background);
+    --menu-color: var(--text-color);
+    --fsdocs-theme-toggle-light-color: var(--dataplant-mint);
+    --fsdocs-theme-toggle-dark-color: #FFF;
+    --header-link-color: var(--dataplant-darkblue);
+    --nav-item-active-border-color: var(--dataplant-mint);
+    /* --code-strings-color: #0093A1;
+    --code-printf-color: #6B2FBA;
+    --code-escaped-color: #EA8675;
+    --code-identifiers-color: #6B2FBA;
+    --code-module-color: #009999;
+    --code-reference-color: #4974D1;
+    --code-value-color: #1B6600;
+    --code-interface-color: #43AEC6;
+    --code-typearg-color: #43AEC6;
+    --code-disposable-color: #43AEC6;
+    --code-property-color: #43AEC6;
+    --code-punctuation-color: #43AEC6;
+    --code-punctuation2-color: var(--text-color);
+    --code-function-color: #6B2FBA;
+    --code-function2-color: #6B2FBA;
+    --code-activepattern-color: #4ec9b0;
+    --code-unioncase-color: #4ec9b0;
+    --code-enumeration-color: #8C6C41;
+    --code-keywords-color: #0F54D6;
+    --code-comment-color: #707070;
+    --code-operators-color: #0F54D6;
+    --code-numbers-color: #009999;
+    --code-linenumbers-color: #80b0b0;
+    --code-mutable-color: #1b6600;
+    --code-inactive-color: #808080;
+    --code-preprocessor-color: #af75c1;
+    --code-fsioutput-color: #808080;
+    --code-tooltip-color: #d1d1d1; */
+}
+
+table.pre, #content > pre.fssnip {
+    border: 1px solid var(--dataplant-darkblue);
+}
+
+:not(td) > .fssnip {
+    border: 1px solid var(--dataplant-darkblue);
+}
+
+[data-theme=dark] {
+    --text-color: #F7F7F7;
+    --heading-color: var(--dataplant-mint);
+    --header-border: var(--dataplant-lightblue);
+    --code-color: var(--dataplant-yellow);
+    --menu-item-hover-background: var(--dataplant-lightblue);
+    --doc-tip-background: #2e293a;
+    --search-background: #020202;
+    --nav-category: rgb(207, 211, 215);
+    --header-link-color: var(--dataplant-lightblue);
+    --nav-item-active-border-color: var(--dataplant-lightblue);
+    /* --code-strings-color: #86b4b9;
+    --code-printf-color: #6B2FBA;
+    --code-escaped-color: #EA8675;
+    --code-identifiers-color: #d1b3f5;
+    --code-module-color: #15e1e1;
+    --code-reference-color: #40fddd;
+    --code-value-color: #ffb4e9;
+    --code-interface-color: #43AEC6;
+    --code-typearg-color: #43AEC6;
+    --code-disposable-color: #6dd6f1;
+    --code-property-color: #6acfe7;
+    --code-punctuation-color: #43AEC6;
+    --code-punctuation2-color: var(--text-color);
+    --code-function-color: #6B2FBA;
+    --code-function2-color: #cbda9d;
+    --code-activepattern-color: #4ec9b0;
+    --code-unioncase-color: #4ec9b0;
+    --code-enumeration-color: #8C6C41;
+    --code-keywords-color: #a7c2f8;
+    --code-comment-color: #84d16e;
+    --code-operators-color: #b4c6ee;
+    --code-numbers-color: #009999;
+    --code-linenumbers-color: #80b0b0;
+    --code-mutable-color: #1b6600;
+    --code-inactive-color: #808080;
+    --code-preprocessor-color: #af75c1;
+    --code-fsioutput-color: #808080;
+    --code-tooltip-color: #d1d1d1; */
+
+    table .pre, #content > pre.fssnip {
+        border: 1px solid var(--dataplant-lightblue);
+    }
+
+:not(td) > .fssnip {
+    border: 1px solid var(--dataplant-lightblue);
+}
+}
