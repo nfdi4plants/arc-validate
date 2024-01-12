@@ -7,6 +7,18 @@
       "commands": [
         "docfx"
       ]
+    },
+    "fsdocs-tool": {
+      "version": "20.0.0-alpha-018",
+      "commands": [
+        "fsdocs"
+      ]
+    },
+    "dotnet-repl": {
+      "version": "0.1.208",
+      "commands": [
+        "dotnet-repl"
+      ]
     }
   }
 }

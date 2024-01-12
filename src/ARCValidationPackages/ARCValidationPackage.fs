@@ -23,7 +23,7 @@ type ARCValidationPackage =
         /// Creates a new ARCValidationPackage from a ValidationPackageIndex, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default cache folder or custom folder.
         /// </summary>
         /// <param name="packageIndex">The input package index entry</param>
-        /// yparam name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
+        /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
         static member ofPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset, ?Path: string) =
             let path = defaultArg Path (Defaults.PACKAGE_CACHE_FOLDER())
             ARCValidationPackage.create(

@@ -353,3 +353,5 @@ test/arc-validate-results.xml
 /src/arc-validate/Properties/launchSettings.json
 /tests/fixtures/arcs/invenio-test-arc/*
 !/tests/fixtures/arcs/invenio-test-arc/.gitkeep
+/tmp/watch
+/.fsdocs

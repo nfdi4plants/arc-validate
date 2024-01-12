@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    "net8.0": {
       "Fake.DotNet.Cli": {
         "type": "Direct",
         "requested": "[6.0.0, 6.0.0]",
