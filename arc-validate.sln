@@ -84,6 +84,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qcPackage_prototypes", "qcP
 	ProjectSection(SolutionItems) = preProject
 		playgrounds\qcPackage_prototypes\invenio_prototype_v0.1.0.fsx = playgrounds\qcPackage_prototypes\invenio_prototype_v0.1.0.fsx
 		playgrounds\qcPackage_prototypes\invenio_prototype_v0.2.0.fsx = playgrounds\qcPackage_prototypes\invenio_prototype_v0.2.0.fsx
+		playgrounds\qcPackage_prototypes\pride_prototype_v0.1.0.fsx = playgrounds\qcPackage_prototypes\pride_prototype_v0.1.0.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DB01DF70-3713-4445-AC79-A09ECE093294}"
