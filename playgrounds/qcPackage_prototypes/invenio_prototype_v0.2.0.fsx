@@ -54,6 +54,14 @@ let invFileTokensNoMdSecKeys =
     invFileTokens
     |> Seq.filter (Param.getValue >> (<>) Terms.StructuralTerms.metadataSectionKey.Name) 
 
+let contactsFns =
+    invFileTokensNoMdSecKeys
+    |> Seq.filter (Param.getTerm >> (=) INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person First Name``)
+
+let contactsLns =
+    invFileTokensNoMdSecKeys
+    |> Seq.filter (Param.getTerm >> (=) INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Last Name``)
+
 let contactsAffs =
     invFileTokensNoMdSecKeys
     |> Seq.filter (Param.getTerm >> (=) INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Affiliation``)
@@ -76,6 +84,14 @@ let cases =
             invFileTokensNoMdSecKeys
             |> Validate.ParamCollection.ContainsParamWithTerm
                 INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
+        }
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person First Name``.Name) {
+            contactsFns
+            |> Seq.iter Validate.Param.ValueIsNotEmpty
+        }
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Last Name``.Name) {
+            contactsLns
+            |> Seq.iter Validate.Param.ValueIsNotEmpty
         }
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Affiliation``.Name) {
             contactsAffs
