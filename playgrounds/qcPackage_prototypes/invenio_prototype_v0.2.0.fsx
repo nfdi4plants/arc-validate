@@ -29,16 +29,18 @@ open Cytoscape
 open System.IO
 
 
-// input:
+// Input:
 
 let arcDir = @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
 let outDir = arcDir
+let outDirBadge = Path.Combine(arcDir, "Invenio_badge.svg")
+let outDirResXml = Path.Combine(arcDir, "Invenio_results.xml")
 
 
-// values:
+// Values:
 
-let absoluteDirectoryPaths = FileSystem.parseRelativeDirectoryPaths arcDir
-let absoluteFilePaths = FileSystem.parseRelativeFilePaths arcDir
+let absoluteDirectoryPaths = FileSystem.parseAbsoluteDirectoryPaths arcDir
+let absoluteFilePaths = FileSystem.parseAbsoluteFilePaths arcDir
 
 let invFileTokens = 
     Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths 
@@ -50,22 +52,42 @@ let invFileTokens =
 
 let invFileTokensNoMdSecKeys =
     invFileTokens
-    |> Seq.filter (Param.getTerm >> (<>) Terms.StructuralTerms.metadataSectionKey) 
+    |> Seq.filter (Param.getValue >> (<>) Terms.StructuralTerms.metadataSectionKey.Name) 
+
+let contactsAffs =
+    invFileTokensNoMdSecKeys
+    |> Seq.filter (Param.getTerm >> (=) INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Affiliation``)
+
+let contactsEmails =
+    invFileTokensNoMdSecKeys
+    |> Seq.filter (Param.getTerm >> (=) INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``)
 
 
 // Validation Cases:
 
-let cases = [
+let cases = 
     testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
             invFileTokensNoMdSecKeys
-            |> Validate.ByTerm.contains
+            |> Validate.ParamCollection.ContainsParamWithTerm
                 INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``
         }
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``.Name) {
             invFileTokensNoMdSecKeys
-            |> Validate.ByTerm.contains
+            |> Validate.ParamCollection.ContainsParamWithTerm
                 INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
         }
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Affiliation``.Name) {
+            contactsAffs
+            |> Seq.iter Validate.Param.ValueIsNotEmpty
+        }
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Email``.Name) {
+            contactsEmails
+            |> Seq.iter (Validate.Param.ValueMatchesRegex StringValidationPattern.email)
+        }
     ]
-]
+
+
+// Execution:
+
+Execute.ValidationPipeline(outDirResXml, outDirBadge, "Invenio") cases
