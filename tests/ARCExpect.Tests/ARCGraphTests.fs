@@ -28,6 +28,9 @@ let mockInv =
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
+    |> fun r ->
+        let r1 = Seq.take 11 r
+        let r2 = Seq.skip 11 
 
 let mockStu =
     ARCMock.StudyMetadataTokens(
