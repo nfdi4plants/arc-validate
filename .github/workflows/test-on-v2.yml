@@ -2,9 +2,17 @@ name: "test on V2"
 
 on:
   push:
-    branches: [ V2 ]
+    paths:
+# this ensures that tests are run when adding new tests, but docker image is only published with the other pipeline when source code is changed
+      - 'tests/**'
+      - 'build/**'
   pull_request:
-    branches: [ V2 ]
+    branches: [ main ]
+    paths:
+# here, also run tests when a pr targets source files
+      - 'tests/**'
+      - 'src/**'
+      - 'build/**'
 
 jobs:
   build-and-test-linux:
@@ -16,7 +24,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.x.x
+        dotnet-version: 8.x.x
     - name: make script executable
       run: chmod u+x build.sh
     - name: Build and test
@@ -32,7 +40,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.x.x
+        dotnet-version: 8.x.x
     - name: Build and test
       working-directory: ./
       run: ./build.cmd runtests
