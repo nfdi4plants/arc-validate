@@ -24,9 +24,27 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[8.0.100, )",
-        "resolved": "8.0.100",
-        "contentHash": "ZOVZ/o+jI3ormTZOa28Wh0tSRoyle1f7lKFcUN61sPiXI7eDZu8eSveFybgTeyIEyW0ujjp31cp7GOglDgsNEg=="
+        "requested": "[8.0.101, )",
+        "resolved": "8.0.101",
+        "contentHash": "sOLz3O4BOxnTKfd5OChdRmDUy4Id0GfoEClRG4nzIod8LY1LJZcNyygKAV0A78XOLh8yvhA5hsDYKZXGCR9blw=="
+      },
+      "Spectre.Console": {
+        "type": "Direct",
+        "requested": "[0.48.0, )",
+        "resolved": "0.48.0",
+        "contentHash": "4Mc1UT7Azgtyb8FyNwK5FZmoZbKuT5PmY7ZwaKUytjD5kGFMNBACpOZTwYtkuY377YkYtZYBeDDTJUwTW86QXw==",
+        "dependencies": {
+          "System.Memory": "4.5.5"
+        }
+      },
+      "Spectre.Console.Cli": {
+        "type": "Direct",
+        "requested": "[0.48.0, )",
+        "resolved": "0.48.0",
+        "contentHash": "HNoDxAOTODQ9h+4K5Cs2caW8kIicRKw5SS4vgEEkJtnTp7/4XR8OIGvCjVi09w3m+xn4lTlkS0ENy2ktGz4HRw==",
+        "dependencies": {
+          "Spectre.Console": "0.48.0"
+        }
       },
       "AnyBadge.NET": {
         "type": "Transitive",
@@ -947,8 +965,8 @@
       },
       "System.Memory": {
         "type": "Transitive",
-        "resolved": "4.5.4",
-        "contentHash": "1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw=="
+        "resolved": "4.5.5",
+        "contentHash": "XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw=="
       },
       "System.ObjectModel": {
         "type": "Transitive",
@@ -1252,7 +1270,7 @@
           "AnyBadge.NET": "[2.0.0, 2.0.0]",
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
-          "FSharp.Core": "[8.0.100, )",
+          "FSharp.Core": "[8.0.101, )",
           "FSharpAux": "[2.0.0, 2.0.0]",
           "FsSpreadsheet": "[5.0.2, 5.0.2]",
           "FsSpreadsheet.ExcelIO": "[5.0.2, 5.0.2]",
@@ -1263,7 +1281,7 @@
       "arcvalidationpackages": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.100, )",
+          "FSharp.Core": "[8.0.101, )",
           "Fake.DotNet.Cli": "[6.0.0, 6.0.0]",
           "FsHttp": "[11.0.0, 11.0.0]"
         }

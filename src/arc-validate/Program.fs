@@ -6,11 +6,11 @@ open System.IO
 open ARCExpect
 open ARCExpect.Configs
 
-open LegacyArgs
 open ARCValidate
 open ARCValidate.CLICommands
 open ARCValidate.CLIArguments
 open ARCValidate.CommandHandling
+open Spectre.Console
 
 [<EntryPoint>]
 let main argv =
@@ -29,24 +29,21 @@ let main argv =
         | :? ArguParseException as ex ->
             match ex.ErrorCode with
             | ErrorCode.HelpText  -> 
-                printfn "%s" (parser.PrintUsage())
+                (parser.PrintUsage()) |> AnsiConsole.MarkupLine
                 ExitCode.Success |> int // printing usage is not an error
 
             | ErrorCode.CommandLine ->
-                printfn "Argument parsing error:"
-                printfn "%s" ex.Message
-                printfn "%A" ex.StackTrace // might want to add verbosity level to hide this
+                "[red]Argument parsing error:[/]" |> AnsiConsole.MarkupLine
+                AnsiConsole.WriteException(ex) // might want to add verbosity level to hide this
                 ExitCode.ArgParseError |> int
 
             | _ -> 
-                printfn "Internal Error:"
-                printfn "%s" ex.Message
-                printfn "%A" ex.StackTrace // might want to add verbosity level to hide this
+                "[red]Internal Error:[/]" |> AnsiConsole.MarkupLine
+                AnsiConsole.WriteException(ex) // might want to add verbosity level to hide this
                 ExitCode.InternalError |> int
         | ex ->
-            printfn "Internal Error:"
-            printfn "%s" ex.Message
-            printfn "%A" ex.StackTrace // might want to add verbosity level to hide this
+            "[red]Internal Error:[/]" |> AnsiConsole.MarkupLine
+            AnsiConsole.WriteException(ex) // might want to add verbosity level to hide this
 
             ExitCode.InternalError |> int
             

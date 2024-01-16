@@ -12,7 +12,6 @@
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="BadgeCreation.fs" />
     <Compile Include="ExitCodes.fs" />
-    <Compile Include="CLIArgs\LegacyArgs.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
     <Compile Include="Commands\PackageCommand.fs" />
@@ -27,10 +26,12 @@
   <ItemGroup>
     <PackageReference Include="Argu" Version="[6.1.4]" />
     <PackageReference Include="Expecto" Version="[9.0.4]" />
+    <PackageReference Include="Spectre.Console" Version="0.48.0" />
+    <PackageReference Include="Spectre.Console.CLI" Version="0.48.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[1.0.0, 2.0.0)"/>
+    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[1.0.0, 2.0.0)" />
     <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" PackageVersion="[1.0.0, 2.0.0)" />
   </ItemGroup>
 

@@ -5,10 +5,13 @@ open ARCValidate.CLIArguments
 open ARCExpect
 open ARCExpect.Configs
 open ARCTokenization
+open ARCValidationPackages
 
 open Expecto
 open System.IO
 open Argu
+
+open Spectre.Console
 
 open ControlledVocabulary
 open AnyBadge.NET
@@ -29,77 +32,60 @@ module ValidateAPI =
             args.TryGetResult(Out_Directory)
             |> Option.defaultValue root
 
-        let hasInvFile = File.Exists(Path.Combine(root, "isa.investigation.xlsx"))
+        let package = 
+            args.TryGetResult(Package)
 
-        let investigationTokens = 
-            if hasInvFile then 
-                (Path.Combine(root, "isa.investigation.xlsx"))
-                |> Investigation.parseMetadataSheetFromFile()
-                |> List.filter (fun p ->
-                    Param.getValueAsTerm p <> Terms.StructuralTerms.metadataSectionKey // filter these out to get only value-holding cells
-                )
-            else 
-                []
+        match package with
 
-        /// these tests MUST pass for an ARC to be considered for publishing
-        let criticalTests =
-            testList "Critical" [
-                TestGeneration.Critical.ARC.FileSystem.generateARCFileSystemTests root
-                TestGeneration.Critical.ARC.ISA.generateISATests investigationTokens
+        | None -> // Default call means validate schema conformity
+            [
+                ""
+                "[yellow]running `arc-validate validate` without a validation package defaults to validating against the ARC specification.[/]"
+                "If you want to validate against a specific validation packaget, you can:"
+                "   - run [green]arc-validate package list[/] to get a list of installable packages."
+                "   - run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package."
+                "   - run [green]arc-validate validate -p <your-desired-package-name>[/] to validate agaionst a validation package."
             ]
+            |> List.iter AnsiConsole.MarkupLine
 
-        let criticalTestResults = ARCExpect.Execute.Validation criticalTests
+        | Some packageName -> // Validate against a specific package
 
-        if criticalTestResults.failed |> List.isEmpty && criticalTestResults.errored |> List.isEmpty then // if no critical tests failed or errored
-            
-            /// these tests SHOULD pass for an ARC to be considered of high quality
-            let nonCriticalTests =
-                testList "Non-critical" [
-                    TestGeneration.NonCritical.ARC.ISA.generateISATests investigationTokens
-                ]
+            let status = AnsiConsole.Status()
+            let mutable exitCode = ExitCode.Success
 
-            let nonCriticalTestResults = ARCExpect.Execute.Validation nonCriticalTests
+            status.Start($"Performing validation against the {packageName} package", fun ctx ->
 
-            let combinedTestResults = 
-                [criticalTestResults; nonCriticalTestResults] 
-                |> combineTestRunSummaries // aggregate critical and non-critical test results
+                if verbose then
+                    AnsiConsole.MarkupLine("LOG: Running in:")
+                    AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
+                    AnsiConsole.MarkupLine("")
+                
+                let config, cache = PackageAPI.getSyncedConfigAndCache()
 
-            combinedTestResults
-            |> Execute.BadgeCreation(
-                path = (Path.Combine(outPath, "arc-quality.svg")),
-                labelText = "ARC quality"
+                match PackageCache.tryGetPackage packageName cache with
+                | Some validationPackage ->
+                    if verbose then
+                        AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally.[/]");
+                        AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].");
+                        AnsiConsole.MarkupLine($"LOG: Output path is:");
+                        AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
+                        AnsiConsole.MarkupLine("")
+
+                    let result = ScriptExecution.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
+
+                    if result.OK then
+                        
+                        exitCode <- ExitCode.Success
+                    else
+                        exitCode <- ExitCode.InternalError
+
+                | None -> 
+                    AnsiConsole.MarkupLine($"[red]Package {packageName} not installed. You can run run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package.[/]")
+                    exitCode <- ExitCode.InternalError
             )
-            
-            combinedTestResults
-            |> Execute.JUnitSummaryCreation(
-                path = (Path.Combine(outPath, "arc-validate-results.xml")),
-                Verbose = verbose
-            )
+        try
 
-            ExitCode.Success // critical tests passed, non-critical tests have been performed. Success!
+            ExitCode.Success
 
-        else // one or more critical tests failed or errored.
-
-            let badge = 
-                criticalTestResults
-                |> BadgeCreation.createCriticalFailBadge "ARC quality"
-            
-            badge.WriteBadge(Path.Combine(outPath, "arc-quality.svg"))
-
-            let testAmnt = criticalTestResults.failed.Length + criticalTestResults.errored.Length
-
-            criticalTestResults
-            |> Execute.BadgeCreation(
-                path = (Path.Combine(outPath, "arc-quality.svg")),
-                labelText = "ARC quality",
-                ValueSuffix = $"/{testAmnt} critical tests passed",
-                DefaultColor = Color.RED
-            )
-
-            criticalTestResults
-            |> Execute.JUnitSummaryCreation(
-                path = (Path.Combine(outPath, "arc-validate-results.xml")),
-                Verbose = verbose
-            )
-
+        with e ->
             ExitCode.CriticalTestFailure

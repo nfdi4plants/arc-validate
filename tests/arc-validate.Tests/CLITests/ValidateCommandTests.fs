@@ -19,7 +19,7 @@ let runTool (tool: string) (args: string []) =
 let ``ValidateCommand CLI Tests`` =
     testList "arc validate CLI tests" [
         testSequenced (
-            testList "arc-validate validate -i fixtures/arcs/inveniotestarc" [
+            ptestList "arc-validate validate -i fixtures/arcs/inveniotestarc" [
 
                 printfn "%s" (Path.GetFullPath("fixtures/arcs/inveniotestarc"))
 
