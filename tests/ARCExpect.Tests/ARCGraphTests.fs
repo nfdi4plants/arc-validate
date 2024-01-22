@@ -23,28 +23,30 @@ let mockInv =
         Investigation_Person_Roles_Term_Accession_Number = ["http://purl.org/spar/scoro/principal-investigator"; "http://purl.org/spar/scoro/principal-investigator"; "http://purl.org/spar/scoro/research-assistant"],
         Comment_ORCID = ["http://orcid.org/0000-0003-3925-6778"; ""; "0000-0002-8241-5300"],
         Study_Identifier = ["experiment1_material"; "experiment2"],
-        Study_File_Name = [@"experiment1_material\isa.study.xlsx"; "experiment2\isa.study.xlsx"],
+        Study_File_Name = [@"experiment1_material\isa.study.xlsx"; @"experiment2\isa.study.xlsx"],
         Study_Assay_File_Name = [@"measurement1\isa.assay.xlsx"; @"measurement2\isa.assay.xlsx"]
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
     |> fun r ->
-        let r1 = Seq.take 11 r
-        let r2 = Seq.skip 11 
+        let userComment1 = CvParam(Terms.StructuralTerms.userComment, Value "") :> IParam
+        let userComment2 = CvParam(Terms.StructuralTerms.userComment, Value "Keywords") :> IParam
+        Seq.insertAt 12 userComment1 r
+        |> Seq.insertAt 13 userComment2
 
 let mockStu =
     ARCMock.StudyMetadataTokens(
         Study_Identifier = ["experiment1_material"],
         Study_Title = ["Prototype for experimental data"],
         Study_Description = ["In this a devised study to have an exemplary experimental material description."],
-        Study_File_Name = ["experiment1_material\isa.study.xlsx"]
+        Study_File_Name = [@"experiment1_material\isa.study.xlsx"]
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
 
 let mockAss =
     ARCMock.AssayMetadataTokens(
-        Assay_File_Name = ["measurement1\isa.assay.xlsx"],
+        Assay_File_Name = [@"measurement1\isa.assay.xlsx"],
         Assay_Performer_Last_Name = ["Maus"; "Katz"],
         Assay_Performer_First_Name = ["Oliver"; "Marius"],
         Assay_Performer_Mid_Initials = [""; "G."],
@@ -112,6 +114,9 @@ let ``fillTokenList tests`` =
                 |> Option.defaultValue ""
             let exp10 = "experiment1_material"
             Expect.equal act10 exp10 "wrong Study Identifier"
+
+            let act11 = actual |> Seq.tryItem 2 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("UserComment", 1))))
+            Expect.isSome act11 "missing UserComment"
         )
 
         testCase "Study" (fun _ ->
