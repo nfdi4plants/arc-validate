@@ -50,7 +50,6 @@ let invFileTokens =
     |> Seq.concat
     |> Seq.map snd
 
-invFileTokens |> Seq.iter (fun t -> printfn $"{Param.getCvName t}:\t{Param.getValueAsString t}")
 Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths |> List.concat |> Seq.iter (Param.getCvName >> printfn "%s")
 Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths |> List.concat |> Seq.iter (Param.getTerm >> printfn "%A")
 
