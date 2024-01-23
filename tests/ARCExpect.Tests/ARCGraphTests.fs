@@ -8,6 +8,8 @@ open ControlledVocabulary
 
 
 let mockInv = 
+    let userComment1 = CvParam(Terms.StructuralTerms.userComment, CvValue Terms.StructuralTerms.metadataSectionKey) :> IParam
+    let userComment2 = CvParam(Terms.StructuralTerms.userComment, Value "Keywords") :> IParam
     ARCMock.InvestigationMetadataTokens(
         Investigation_Identifier = ["ArcPrototype"],
         Investigation_Title = ["ArcPrototype"],
@@ -28,11 +30,8 @@ let mockInv =
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
-    |> fun r ->
-        let userComment1 = CvParam(Terms.StructuralTerms.userComment, Value "") :> IParam
-        let userComment2 = CvParam(Terms.StructuralTerms.userComment, Value "Keywords") :> IParam
-        Seq.insertAt 12 userComment1 r
-        |> Seq.insertAt 13 userComment2
+    |> Seq.insertAt 12 userComment1
+    |> Seq.insertAt 13 userComment2
 
 let mockStu =
     ARCMock.StudyMetadataTokens(
@@ -115,8 +114,15 @@ let ``fillTokenList tests`` =
             let exp10 = "experiment1_material"
             Expect.equal act10 exp10 "wrong Study Identifier"
 
-            let act11 = actual |> Seq.tryItem 2 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("UserComment", 1))))
-            Expect.isSome act11 "missing UserComment"
+            let act11 = actual |> Seq.tryItem 1 |> Option.bind (Seq.tryFind (fun t -> t |> Seq.exists (fun (t1,t2) -> t1 = ("User Comment", 1))))
+            Expect.isSome act11 "missing User Comment"
+            let act12 = 
+                Option.defaultValue Seq.empty act11
+                |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
+                |> Seq.tryItem 4
+                |> Option.defaultValue ""
+            let exp12 = "Keywords"
+            Expect.equal act12 exp12 "wrong User Comment"
         )
 
         testCase "Study" (fun _ ->
