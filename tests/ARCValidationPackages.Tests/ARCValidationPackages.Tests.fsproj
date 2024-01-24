@@ -16,6 +16,7 @@
     <Compile Include="PackageCacheTests.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="ScriptExecutionTests.fs" />
+    <Compile Include="TopLevelAPITests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 

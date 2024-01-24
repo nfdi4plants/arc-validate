@@ -10,8 +10,8 @@
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="Results.fs" />
     <Compile Include="Defaults.fs" />
+    <Compile Include="Domain.fs" />
     <Compile Include="GitHubAPI.fs" />
-    <Compile Include="ARCValidationPackage.fs" />
     <Compile Include="PackageCache.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="ScriptExecution.fs" />

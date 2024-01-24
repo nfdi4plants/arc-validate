@@ -6,32 +6,6 @@ open System.IO
 open System.Text
 open System.Text.Json
 
-type ValidationPackageIndex =
-    {
-        RepoPath: string
-        Name:string
-        LastUpdated: System.DateTimeOffset
-    } with
-        static member create (
-            repoPath: string, 
-            name: string, 
-            lastUpdated: System.DateTimeOffset
-        ) = 
-            { 
-                RepoPath = repoPath 
-                Name = name
-                LastUpdated = lastUpdated 
-            }
-        static member create (
-            repoPath: string, 
-            lastUpdated: System.DateTimeOffset
-        ) = 
-            ValidationPackageIndex.create(
-                repoPath = repoPath,
-                name = Path.GetFileNameWithoutExtension(repoPath),
-                lastUpdated = lastUpdated
-            )
-
 type GitHubAPI =
     static member getRepositoryContent(
         owner: string,
