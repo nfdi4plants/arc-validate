@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Playground.fsx" />
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="Results.fs" />
     <Compile Include="Defaults.fs" />

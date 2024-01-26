@@ -20,6 +20,12 @@ module Defaults =
 
     let [<Literal>] GITHUB_API_ACCEPT_HEADER = "application/vnd.github+json"
 
+    let [<Literal>] CONFIG_FILE_NAME = "validation-packages-config.json"
+
+    let [<Literal>] PACKAGE_CACHE_FOLDER_NAME = "package-cache"
+
+    let [<Literal>] PACKAGE_CACHE_FILE_NAME = "validation-packages-cache.json"
+
     let CONFIG_FOLDER() = 
         let path = 
             GetFolderPath(
@@ -33,18 +39,18 @@ module Defaults =
         path
 
     let CONFIG_FILE_PATH () = 
-        Path.Combine(CONFIG_FOLDER(), "packages-config.json")
+        Path.Combine(CONFIG_FOLDER(), CONFIG_FILE_NAME)
             .Replace("\\", "/")
 
     let PACKAGE_CACHE_FOLDER () = 
         let path = 
-            Path.Combine(CONFIG_FOLDER(), "arc-validation-packages-cache")
+            Path.Combine(CONFIG_FOLDER(), PACKAGE_CACHE_FOLDER_NAME)
                 .Replace("\\", "/")
         Directory.CreateDirectory(path) |> ignore
         path
 
     let PACKAGE_CACHE_FILE_PATH () = 
-        Path.Combine(PACKAGE_CACHE_FOLDER(), "packages-cache.json")
+        Path.Combine(PACKAGE_CACHE_FOLDER(), PACKAGE_CACHE_FILE_NAME)
             .Replace("\\", "/")
 
     let SERIALIZATION_OPTIONS =  JsonSerializerOptions(WriteIndented = true)

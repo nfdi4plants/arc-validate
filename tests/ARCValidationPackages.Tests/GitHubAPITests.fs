@@ -38,6 +38,10 @@ let ``GitHubAPI tests`` =
             GitHubAPI.getPackageIndex()
             |> ignore
         }
+        test "getPackageIndex contains test script" {
+            let indexedPackages = GitHubAPI.getPackageIndex()
+            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "arc-validate-packages/test.fsx")) "package index did not contain test script"
+        }
         test "getScriptContent terminates" {
             GitHubAPI.downloadPackageScript("arc-validate-packages/test.fsx")
             |> ignore

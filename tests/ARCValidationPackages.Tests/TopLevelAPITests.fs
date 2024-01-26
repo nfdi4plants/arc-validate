@@ -4,10 +4,58 @@ open ARCValidationPackages
 open Expecto
 open System.IO
 
+open TestUtils
 open ReferenceObjects
+
+let token = 
+    let t = System.Environment.GetEnvironmentVariable("ARC_VALIDATE_GITHUB_API_TEST_TOKEN")
+    if isNull(t) then None else Some t
 
 [<Tests>]
 let ``Toplevel API tests`` =
-    testList "Toplevel API tests" [
-        
-    ]
+    testSequenced (testList "Toplevel API tests" [
+
+        test "getSyncedConfigAndCache returns OK" {
+            resetConfigEnvironment()
+            let syncResult = API.GetSyncedConfigAndCache(?Token = token)
+            Expect.isOk (syncResult) "updateIndex did not return OK"
+        }
+
+        testSequenced (testList "getSyncedConfigAndCache" [
+
+            yield! testFixture (Fixtures.withFreshConfigAndCache token) [
+                "Fresh config filepath",
+                    fun (freshConfig, _) ->
+                        Expect.equal freshConfig.ConfigFilePath expected_config_file_path "config file path is not correct"
+
+                "Fresh package cache folder",
+                    fun (freshConfig, _) ->
+                        Expect.equal freshConfig.PackageCacheFolder expected_package_cache_folder_path "package cache folder path is not correct"
+
+                "Fresh config package index contains packages",
+                    fun (freshConfig, _) ->
+                        Expect.isGreaterThan freshConfig.PackageIndex.Length 0 "fresh config package index was empty"
+
+                "Fresh config package index contains test package",
+                    fun (freshConfig, _) ->
+                        Expect.isTrue (Array.exists (fun x -> x.FileName = "test") freshConfig.PackageIndex) "fresh config package index was empty"
+                "Fresh package cache is empty",
+
+                    fun (_, freshCache) ->
+                        Expect.equal freshCache.Count 0 "fresh cache was not empty"
+            ]
+
+        ])
+
+        testSequenced (testList "updateIndex" [
+            yield! testFixture (Fixtures.withFreshConfigAndCache token) [
+                "updateIndex returns OK",
+                    fun (freshConfig, _) ->
+                        Expect.isOk (API.UpdateIndex(freshConfig, ?Token = token)) "updateIndex did not return OK"
+            ]   
+        ])
+
+        testSequenced (testList "saveAndCachePackage" [
+          
+        ])
+    ])

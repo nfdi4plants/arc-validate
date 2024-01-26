@@ -18,7 +18,7 @@ open AnyBadge.NET
 
 module ValidateAPI = 
 
-    let validate (verbose: bool) (args: ParseResults<ValidateArgs>)=
+    let validate (verbose: bool) (token: string option) (args: ParseResults<ValidateArgs>)=
 
         let root = 
             args.TryGetResult(ARC_Directory)
@@ -60,28 +60,32 @@ module ValidateAPI =
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
                 
-                let config, cache = PackageAPI.getSyncedConfigAndCache()
-
-                match PackageCache.tryGetPackage packageName cache with
-                | Some validationPackage ->
-                    if verbose then
-                        AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally.[/]");
-                        AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].");
-                        AnsiConsole.MarkupLine($"LOG: Output path is:");
-                        AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
-                        AnsiConsole.MarkupLine("")
-
-                    let result = ScriptExecution.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
-
-                    if result.OK then
-                        
-                        exitCode <- ExitCode.Success
-                    else
-                        exitCode <- ExitCode.InternalError
-
-                | None -> 
-                    AnsiConsole.MarkupLine($"[red]Package {packageName} not installed. You can run run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package.[/]")
+                match ARCValidationPackages.API.GetSyncedConfigAndCache(?Token = token) with
+                | Error e -> 
+                    PackageAPI.printGetSyncedConfigAndCacheError e
                     exitCode <- ExitCode.InternalError
+
+                | Ok (config, cache) -> 
+
+                    match PackageCache.tryGetPackage packageName cache with
+                    | Some validationPackage ->
+                        if verbose then
+                            AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally.[/]");
+                            AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].");
+                            AnsiConsole.MarkupLine($"LOG: Output path is:");
+                            AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
+                            AnsiConsole.MarkupLine("")
+
+                        let result = ScriptExecution.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
+
+                        if result.OK then
+                            exitCode <- ExitCode.Success
+                        else
+                            exitCode <- ExitCode.InternalError
+
+                    | None -> 
+                        AnsiConsole.MarkupLine($"[red]Package {packageName} not installed. You can run run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package.[/]")
+                        exitCode <- ExitCode.InternalError
             )
         try
 

@@ -4,14 +4,8 @@ open System
 open System.IO
 open type System.Environment
 open ARCValidationPackages
+open TestUtils
 
-let application_data_path = Environment.GetFolderPath(SpecialFolder.ApplicationData, SpecialFolderOption.Create)
-
-let expected_config_folder_path = Path.Combine(application_data_path, "nfdi4plants/arc-validate").Replace("\\", "/")
-let expected_config_file_path = Path.Combine(expected_config_folder_path, "packages-config.json").Replace("\\", "/")
-
-let expected_package_cache_folder_path = Path.Combine(expected_config_folder_path, "arc-validation-packages-cache").Replace("\\", "/")
-let expected_package_cache_file_path = Path.Combine(expected_package_cache_folder_path, "packages-cache.json").Replace("\\", "/")
 
 let testDate1 = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 let testDate2 = System.DateTimeOffset.ParseExact("2023-08-15 11:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
@@ -21,7 +15,7 @@ let testPackageIndex =
     [|
         ValidationPackageIndex.create(
             repoPath = "arc-validate-packages/test.fsx", 
-            name = "test",
+            fileName = "test",
             lastUpdated = testDate1,
             metadata = ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", 1, 0, 0)
         )

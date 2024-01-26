@@ -45,20 +45,20 @@ type ValidationPackageMetadata() =
 type ValidationPackageIndex =
     {
         RepoPath: string
-        Name:string
+        FileName:string
         LastUpdated: System.DateTimeOffset
         Metadata: ValidationPackageMetadata
     } with
         static member create (
             repoPath: string, 
-            name: string, 
+            fileName: string, 
             lastUpdated: System.DateTimeOffset,
             metadata: ValidationPackageMetadata
 
         ) = 
             { 
                 RepoPath = repoPath 
-                Name = name
+                FileName = fileName
                 LastUpdated = lastUpdated 
                 Metadata = metadata
             }
@@ -69,7 +69,7 @@ type ValidationPackageIndex =
         ) = 
             ValidationPackageIndex.create(
                 repoPath = repoPath,
-                name = Path.GetFileNameWithoutExtension(repoPath),
+                fileName = Path.GetFileNameWithoutExtension(repoPath),
                 lastUpdated = lastUpdated,
                 metadata = metadata
             )
@@ -102,12 +102,12 @@ type ARCValidationPackage =
         /// </summary>
         /// <param name="packageIndex">The input package index entry</param>
         /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
-        static member ofPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset, ?Path: string) =
-            let path = defaultArg Path (Defaults.PACKAGE_CACHE_FOLDER())
+        static member ofPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
+            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER())
             ARCValidationPackage.create(
-                name = packageIndex.Name,
+                name = packageIndex.FileName,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = (System.IO.Path.Combine(path, $"{packageIndex.Name}.fsx").Replace("\\","/")),
+                localPath = (System.IO.Path.Combine(path, $"{packageIndex.FileName}.fsx").Replace("\\","/")),
                 metadata = packageIndex.Metadata
             )
 

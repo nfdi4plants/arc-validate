@@ -1,10 +1,17 @@
 ﻿module internal TestUtils
 
-open ReferenceObjects
-
 open System
 open System.IO
 open type System.Environment
+open ARCValidationPackages
+
+let application_data_path = Environment.GetFolderPath(SpecialFolder.ApplicationData, SpecialFolderOption.Create)
+
+let expected_config_folder_path = Path.Combine(application_data_path, "nfdi4plants/arc-validate").Replace("\\", "/")
+let expected_config_file_path = Path.Combine(expected_config_folder_path, "validation-packages-config.json").Replace("\\", "/")
+
+let expected_package_cache_folder_path = Path.Combine(expected_config_folder_path, "package-cache").Replace("\\", "/")
+let expected_package_cache_file_path = Path.Combine(expected_package_cache_folder_path, "validation-packages-cache.json").Replace("\\", "/")
 
 let resetConfigEnvironment() =
 
@@ -20,3 +27,21 @@ let deleteDefaultPackageCache() =
 
 let deleteDefaultConfig() =
     if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
+
+module Result =
+    
+    let okValue = function
+        | Ok value -> value
+        | Error error -> failwithf "%A" error
+
+module Fixtures =
+
+    let withFreshConfigAndCache (token:string option) (f: Config * PackageCache -> unit) () =
+        resetConfigEnvironment()
+        let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
+        f (freshConfig, freshCache)
+
+    //let saveAndCachePackage (token:string option) (package:Package) =
+    //    let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
+    //    let updatedCache = API.SaveAndCachePackage(freshConfig, freshCache, package) |> Result.okValue
+    //    updatedCache

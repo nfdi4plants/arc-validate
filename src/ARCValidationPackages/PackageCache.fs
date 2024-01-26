@@ -70,14 +70,20 @@ type PackageCache =
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<PackageCache>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
-    static member get (?Path: string) =
-        if PackageCache.exists(?Path = Path) then
-            PackageCache.read()
+    static member get (?Folder: string, ?FileName: string) =
+        let fileName = defaultArg FileName (Defaults.PACKAGE_CACHE_FILE_NAME)
+        let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER())
+        let path = Path.Combine(folder, fileName)
+        if PackageCache.exists(path) then
+            PackageCache.read(path)
         else
             PackageCache.create([])
 
-    static member write (?Path: string) =
+    static member write (?Folder: string, ?FileName: string) =
         fun (cache: PackageCache) ->
-            let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+            let fileName = defaultArg FileName (Defaults.PACKAGE_CACHE_FILE_NAME)
+            let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER())
+            let path = Path.Combine(folder, fileName)
+            System.IO.FileInfo(path).Directory.Create(); // ensures directory exists
             JsonSerializer.Serialize(cache, Defaults.SERIALIZATION_OPTIONS)
             |> fun json -> File.WriteAllText(path, json)

@@ -97,6 +97,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{588E
 		docs\content\fsdocs-theme.css = docs\content\fsdocs-theme.css
 	EndProjectSection
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharpConsole", "tests\FSharpConsole\FSharpConsole.fsproj", "{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,10 @@ Global
 		{46EA4BDB-095A-4369-AD7E-07E702CD3E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46EA4BDB-095A-4369-AD7E-07E702CD3E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46EA4BDB-095A-4369-AD7E-07E702CD3E38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,6 +154,7 @@ Global
 		{A83F65C9-925E-437C-A457-EF8B9C6B154D} = {B3F07465-2108-4C43-843A-9F503044FDB7}
 		{9B3B6E39-DB2F-4A91-944B-EFAAD961FCE7} = {7994D526-5B21-4EBD-9CCB-EFA04EE303CF}
 		{588EA1DC-90EB-4827-B3D1-B89C27776E58} = {DB01DF70-3713-4445-AC79-A09ECE093294}
+		{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F} = {5C204780-A94B-46A2-B768-B12C7D81DDFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}

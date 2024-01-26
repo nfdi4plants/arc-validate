@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
-    <Compile Include="ReferenceObjects.fs" />
     <Compile Include="TestUtils.fs" />
+    <Compile Include="ReferenceObjects.fs" />
     <Compile Include="DefaultsTests.fs" />
     <Compile Include="GitHubAPITests.fs" />
     <Compile Include="ARCValidationPackageTests.fs" />

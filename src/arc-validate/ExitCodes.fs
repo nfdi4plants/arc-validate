@@ -1,5 +1,6 @@
 ﻿namespace ARCValidate
-open ARCValidationPackages.Errors
+open ARCValidationPackages
+
 /// Enum to model different exit codes to be returned by the cli tool.
 [<Struct>]
 type ExitCode =

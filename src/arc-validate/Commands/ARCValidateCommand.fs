@@ -6,7 +6,8 @@ open Argu
 [<HelpFlags([|"--help"; "-h"|])>]
 type ARCValidateCommand =
     // Parameters
-    | [<AltCommandLine("-v")>] Verbose
+    | [<AltCommandLine("-v")>] Verbose    
+    | [<AltCommandLine("-t")>] Token of string
 
     //Commands
     | [<CliPrefix(CliPrefix.None); AltCommandLine("v")>] Validate of ParseResults<ValidateArgs>
@@ -18,6 +19,7 @@ type ARCValidateCommand =
         member s.Usage =
             match s with
             | Verbose         -> "Use verbose error messages (with full error stack)."
+            | Token _         -> "The token to use for authentication with github."
             | Validate _      -> "command for performing arc validation"
             | Package _       -> "subcommands for validation packages"
 

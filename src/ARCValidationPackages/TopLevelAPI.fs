@@ -1,29 +1,48 @@
 ﻿namespace ARCValidationPackages
-
 open System.IO
 
-module Errors =     
+type GetSyncedConfigAndCacheError =
+| SyncError of msg: string
 
-    type UpdateIndexError =
-    | DownloadError of msg: string
+type UpdateIndexError =
+| DownloadError of msg: string
 
-    type PackageInstallError = 
-    | PackageNotFound of package: string
-    | DownloadError of package: string * msg: string
+type PackageInstallError = 
+| PackageNotFound of package: string
+| DownloadError of package: string * msg: string
 
-    type PackageUninstallError =
-    | PackageNotInstalled of msg: string
-    | IOError of msg: string
+type PackageUninstallError =
+| PackageNotInstalled of msg: string
+| IOError of msg: string
 
+type API =
 
-module API = 
+    static member GetSyncedConfigAndCache(
+        ?ConfigPath: string,
+        ?CacheFolder: string,
+        ?CacheFileName: string,
+        ?Token: string
+    ) =
+        try
+            let config = Config.get(?Path = ConfigPath, ?CacheFolder= CacheFolder, ?Token = Token)
+            config |> Config.write(?Path = ConfigPath)
+            let cache = PackageCache.get(?Folder = CacheFolder, ?FileName = CacheFileName)
+            cache |> PackageCache.write(?Folder = CacheFolder, ?FileName = CacheFileName)
 
-    open Errors
+            Ok (config, cache)
+        with e ->
+            Error (GetSyncedConfigAndCacheError.SyncError(e.Message))
 
-    let saveAndCachePackage (cache: PackageCache) indexedPackage =
-        let package = ARCValidationPackage.ofPackageIndex indexedPackage
+    static member SaveAndCachePackage (
+        cache: PackageCache,
+        indexedPackage: ValidationPackageIndex,
+        ?CacheFolder: string,
+        ?Token: string
+    ) =
+
+        let package = ARCValidationPackage.ofPackageIndex(indexedPackage, ?CacheFolder = CacheFolder)
         try 
-            GitHubAPI.downloadPackageScript(indexedPackage)
+            GitHubAPI.downloadPackageScript(indexedPackage, ?Token = Token)
             |> fun script -> 
                 File.WriteAllText(
                     package.LocalPath,
@@ -39,9 +58,12 @@ module API =
         with e ->
             Error (PackageInstallError.DownloadError(package.Name, e.Message))
 
-    let updateIndex (config: Config) : Result<Config, UpdateIndexError> =
+    static member UpdateIndex (
+        config: Config,
+        ?Token: string
+    ) =
         try 
-            let updatedIndex = GitHubAPI.getPackageIndex()
+            let updatedIndex = GitHubAPI.getPackageIndex(?Token = Token)
 
             let updatedConfig = 
                 config
@@ -54,7 +76,14 @@ module API =
         with e ->
             Error (UpdateIndexError.DownloadError(e.Message))
 
-    let installPackage (verbose: bool) (config: Config) (cache: PackageCache) (packageName: string) : Result<string, PackageInstallError> =
+    static member InstallPackage(
+        config: Config,
+        cache: PackageCache,
+        packageName: string,
+        ?Verbose: bool,
+        ?Token: string
+    ) =
+        let verbose = defaultArg Verbose false
 
         if (Config.indexContainsPackage packageName config) then
             // package exists on the local index
@@ -67,30 +96,43 @@ module API =
                 if verbose then printfn $"package {packageName} is already cached locally from {cachedPackage.CacheDate}"
                 if verbose then printfn $"updating package index and looking for a newer version..."
 
-                match updateIndex config with
+                match API.UpdateIndex(config, ?Token = Token) with
                 | Ok updatedConfig -> 
                     let updatedIndexPackage = Config.getIndexedPackageByName packageName updatedConfig
                     if updatedIndexPackage.LastUpdated > indexedPackage.LastUpdated then
                         // package on remote index is newer, download package and cache.
                         if verbose then printfn $"package {packageName} is available in a newer version({updatedIndexPackage.LastUpdated} vs {indexedPackage.LastUpdated}). downloading..."
-                        saveAndCachePackage cache updatedIndexPackage
+                        API.SaveAndCachePackage(
+                            cache = cache,
+                            indexedPackage = updatedIndexPackage,
+                            ?Token = Token
+                        )
 
                     else
                         // package is installed with latest version
-                        Ok ($"package {indexedPackage.Name} is already installed with the latest version.")
+                        Ok ($"package {indexedPackage.FileName} is already installed with the latest version.")
 
                 | Error e -> 
                     Error (PackageInstallError.DownloadError(packageName, $"failed to update package index: {e}"))
 
             else 
                 // not cached -> download and cache
-                saveAndCachePackage cache indexedPackage
+                API.SaveAndCachePackage(
+                    cache = cache,
+                    indexedPackage = indexedPackage,
+                    ?Token = Token
+                )
 
         else    
             // package does not exists on the local index
             Error (PackageNotFound packageName)
 
-    let uninstallPackage (verbose: bool) (config: Config) (cache: PackageCache) (packageName: string) : Result<string, PackageUninstallError> = 
+    static member UninstallPackage(
+        cache: PackageCache,
+        packageName: string,
+        ?Verbose: bool
+    ) =
+        let verbose = defaultArg Verbose false
 
         if verbose then printfn $"uninstalling package {packageName}..."
         if cache.ContainsKey(packageName) then
@@ -110,7 +152,10 @@ module API =
             if verbose then printfn $"package {packageName} is not installed."
             Error (PackageNotInstalled packageName)
 
-    let listCachedPackages (verbose: bool) (cache: PackageCache) : Result<ARCValidationPackage list, string> = 
+    static member ListCachedPackages(
+        cache: PackageCache,
+        ?Verbose: bool
+    ) =
         try
             cache 
             |> PackageCache.getPackages
@@ -119,7 +164,10 @@ module API =
         with e ->
             Error e.Message
 
-    let listIndexedPackages (verbose: bool) (config: Config) : Result<ValidationPackageIndex list, string> = 
+    static member ListIndexedPackages(
+        config: Config,
+        ?Verbose: bool
+    ) =
         try
             config.PackageIndex
             |> Array.toList
