@@ -7,23 +7,19 @@ open System.IO
 open TestUtils
 open ReferenceObjects
 
-let token = 
-    let t = System.Environment.GetEnvironmentVariable("ARC_VALIDATE_GITHUB_API_TEST_TOKEN")
-    if isNull(t) then None else Some t
-
 [<Tests>]
 let ``Toplevel API tests`` =
     testSequenced (testList "Toplevel API tests" [
 
         test "getSyncedConfigAndCache returns OK" {
             resetConfigEnvironment()
-            let syncResult = API.GetSyncedConfigAndCache(?Token = token)
+            let syncResult = API.GetSyncedConfigAndCache(?Token = get_gh_api_token())
             Expect.isOk (syncResult) "updateIndex did not return OK"
         }
 
         testSequenced (testList "getSyncedConfigAndCache" [
 
-            yield! testFixture (Fixtures.withFreshConfigAndCache token) [
+            yield! testFixture (Fixtures.withFreshConfigAndCache (get_gh_api_token())) [
                 "Fresh config filepath",
                     fun (freshConfig, _) ->
                         Expect.equal freshConfig.ConfigFilePath expected_config_file_path "config file path is not correct"
@@ -48,10 +44,10 @@ let ``Toplevel API tests`` =
         ])
 
         testSequenced (testList "updateIndex" [
-            yield! testFixture (Fixtures.withFreshConfigAndCache token) [
+            yield! testFixture (Fixtures.withFreshConfigAndCache (get_gh_api_token())) [
                 "updateIndex returns OK",
                     fun (freshConfig, _) ->
-                        Expect.isOk (API.UpdateIndex(freshConfig, ?Token = token)) "updateIndex did not return OK"
+                        Expect.isOk (API.UpdateIndex(freshConfig, ?Token = get_gh_api_token())) "updateIndex did not return OK"
             ]   
         ])
 

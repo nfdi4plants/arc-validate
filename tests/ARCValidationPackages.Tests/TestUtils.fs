@@ -28,6 +28,10 @@ let deleteDefaultPackageCache() =
 let deleteDefaultConfig() =
     if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
 
+let get_gh_api_token() = 
+    let t = System.Environment.GetEnvironmentVariable("ARC_VALIDATE_GITHUB_API_TEST_TOKEN")
+    if isNull(t) then None else Some t
+
 module Result =
     
     let okValue = function
