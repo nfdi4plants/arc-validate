@@ -8,12 +8,10 @@ open System.IO
 open System.Diagnostics
 open Fake.Core
 
-open JUnit
+open Common.TestUtils
+open TestUtils
 
-let runTool (tool: string) (args: string []) =
-    CreateProcess.fromRawCommand tool args
-    |> CreateProcess.redirectOutput
-    |> Proc.run
+open JUnit
 
 [<Tests>]
 let ``ValidateCommand CLI Tests`` =

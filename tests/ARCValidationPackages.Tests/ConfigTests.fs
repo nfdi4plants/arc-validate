@@ -5,6 +5,7 @@ open Expecto
 open System.IO
 
 open ReferenceObjects
+open Common.TestUtils
 open TestUtils
 
 

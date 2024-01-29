@@ -7,57 +7,34 @@ open Expecto.Logging
 open System.IO
 open System.Diagnostics
 open Fake.Core
+open Common.TestUtils
 open TestUtils
 open ReferenceObjects
 
 open JUnit
 
-let runTool (tool: string) (args: string []) =
-    CreateProcess.fromRawCommand tool args
-    |> CreateProcess.redirectOutput
-    |> Proc.run
-
-
 [<Tests>]
 let ``PackageCommand CLI Tests`` =
-    ptestList "arc validate CLI tests" [
-        testSequenced (
-            testList "arc-validate package CLI tests" [
-                testSequenced (
-                    test "arc-validate package install test" {
+    testSequenced (testList "arc-validate package" [
+        testSequenced (testList "install" [
+            yield! 
+                testFixture (Fixtures.withToolExecution 
+                    "../../../../../publish/arc-validate" 
+                    [|"-v"; "package"; "install"; "test"|]
+                    (get_gh_api_token())
+                ) [
+                    "Exit code is 0" , 
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args})"
+                    "Cache folder exists" ,  
+                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) $"package cache folder was not created at {expected_package_cache_folder_path} (tool: {tool} args: {args})"
+                    "Cache exists" ,  
+                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) $"package cache was not created at {expected_package_cache_file_path} (tool: {tool} args: {args})"
+                    "Package script exists" ,  
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) "package file was not installed at expected location (tool: {tool} args: {args})"
+                ]
+        ])
 
-                        resetConfigEnvironment() // make sure to remove any caching before running these tests
-                        let proc = runTool "../../../../../publish/arc-validate" [|"-v"; "package"; "install"; "test"|]
-
-                        let package = 
-                            Path.Combine(
-                                expected_package_cache_folder_path,
-                                "test.fsx"
-                            )
-
-                        Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output}"
-                        Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) "package cache folder was not created"
-                        Expect.isTrue (File.Exists(expected_package_cache_file_path)) "package cache was not created at expected location"
-                        Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
-                    }
-                )
-                testSequenced (
-                    test "arc-validate package uninstall test" {
-                        let package = 
-                            Path.Combine(
-                                expected_package_cache_folder_path,
-                                "test.fsx"
-                            )
-
-                        Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
-
-                        let proc = runTool "../../../../../publish/arc-validate" [|"-v"; "package"; "uninstall"; "test"|]
-
-                        Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output}"
-                        Expect.isFalse (File.Exists(package)) "package file was not deleted"
-                
-                    }
-                )
-            ]
-        )
-    ]
+        testSequenced (testList "update" [])
+        testSequenced (testList "delete" [])
+        testSequenced (testList "update-index" [])
+    ])

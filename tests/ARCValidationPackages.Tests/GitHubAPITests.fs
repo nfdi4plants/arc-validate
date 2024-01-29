@@ -5,6 +5,8 @@ open ARCValidationPackages
 open FsHttp
 open System
 open System.Text
+open Common.TestUtils
+open TestUtils
 
 [<Tests>]
 let ``GitHubAPI tests`` = 

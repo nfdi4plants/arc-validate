@@ -5,6 +5,8 @@ open ARCValidationPackages
 open System.IO
 open ReferenceObjects
 open TestUtils
+open Common.TestUtils
+open TestUtils
 
 [<Tests>]
 let tests =

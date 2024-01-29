@@ -3,6 +3,8 @@
 open Expecto
 open ARCValidationPackages
 open ReferenceObjects
+open Common.TestUtils
+open TestUtils
 
 [<Tests>]
 let tests =

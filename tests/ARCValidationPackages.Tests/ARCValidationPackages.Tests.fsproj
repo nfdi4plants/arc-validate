@@ -26,5 +26,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
     <PackageReference Update="FSharp.Core" Version="8.*" />
     <ProjectReference Include="..\..\src\ARCValidationPackages\ARCValidationPackages.fsproj" />
+    <ProjectReference Include="..\Common\Common.fsproj" />
   </ItemGroup>
 </Project>

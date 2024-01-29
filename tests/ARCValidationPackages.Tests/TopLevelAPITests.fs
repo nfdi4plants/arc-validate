@@ -4,6 +4,7 @@ open ARCValidationPackages
 open Expecto
 open System.IO
 
+open Common.TestUtils
 open TestUtils
 open ReferenceObjects
 

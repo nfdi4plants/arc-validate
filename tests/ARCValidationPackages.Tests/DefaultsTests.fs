@@ -7,6 +7,7 @@ open System.IO
 open type System.Environment
 
 open ReferenceObjects
+open Common.TestUtils
 open TestUtils
 
 [<Tests>]

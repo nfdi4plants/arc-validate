@@ -4,6 +4,7 @@ open System
 open System.IO
 open type System.Environment
 open ARCValidationPackages
+open Common.TestUtils
 open TestUtils
 
 
