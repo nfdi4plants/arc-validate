@@ -24,13 +24,13 @@ let ``PackageCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args})"
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
                     "Cache folder exists" ,  
-                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) $"package cache folder was not created at {expected_package_cache_folder_path} (tool: {tool} args: {args})"
+                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) $"""package cache folder was not created at {expected_package_cache_folder_path} (tool: {tool} args: {args |> String.concat " "})"""
                     "Cache exists" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) $"package cache was not created at {expected_package_cache_file_path} (tool: {tool} args: {args})"
+                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) $"""package cache was not created at {expected_package_cache_file_path} (tool: {tool} args: {args |> String.concat " "})"""
                     "Package script exists" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) "package file was not installed at expected location (tool: {tool} args: {args})"
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) $"""package file was not installed at expected location (tool: {tool} args: {args |> String.concat " "})"""
                 ]
         ])
 
