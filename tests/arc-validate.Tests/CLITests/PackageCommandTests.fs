@@ -23,7 +23,7 @@ let ``PackageCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "-package"; "list";|]
+                    [|"-v"; "package"; "list";|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0 (before install)" , 
