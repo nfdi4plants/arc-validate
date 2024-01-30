@@ -23,7 +23,7 @@ OPTIONS:
     --help, -h            display this list of options.
 ```
 
-### The `validate` command
+### The validate command
 
 ```
 USAGE: arc-validate validate [--help] [--arc-directory <path>] [--out-directory <path>] [--package <package name>]
@@ -42,7 +42,7 @@ OPTIONS:
     --help, -h            display this list of options.
 ```
 
-### The `package` command
+### The package command
 
 ```
 USAGE: arc-validate package [--help] [<subcommand> [<options>]]
@@ -62,7 +62,7 @@ OPTIONS:
     --help, -h            display this list of options.
 ```
 
-#### The `package install` subcommand
+#### The package install subcommand
 
 ```
 USAGE: arc-validate package install [--help] <package name>
@@ -76,7 +76,7 @@ OPTIONS:
     --help, -h            display this list of options.
 ```
 
-#### The `package uninstall` subcommand
+#### The package uninstall subcommand
 
 ```
 USAGE: arc-validate package uninstall [--help] <package name>
@@ -90,7 +90,7 @@ OPTIONS:
     --help, -h            display this list of options.
 ```
 
-#### The `package list` subcommand
+#### The package list subcommand
 
 ```
 USAGE: arc-validate package list [--help] [--installed] [--indexed]
