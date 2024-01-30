@@ -7,9 +7,11 @@ open Expecto.Logging
 open System.IO
 open System.Diagnostics
 open Fake.Core
+open ReferenceObjects
+
+open Common
 open Common.TestUtils
 open TestUtils
-open ReferenceObjects
 
 open JUnit
 
@@ -21,17 +23,17 @@ let ``PackageCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "list";|]
+                    [|"-v"; "-package"; "list";|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0 (before install)" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
                     "test package is not listed (before install)" , 
-                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("test")) $"""Console output {proc.Result.Output} did not contain the package (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("test")) (ErrorMessage.withProcessDiagnostics $"Console output {proc.Result.Output} did contain the package" proc tool args)
                 
                 ]
         ])
-        testSequenced (testList "install" [
+        testSequenced (testList "install test" [
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     true
@@ -40,13 +42,13 @@ let ``PackageCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
                     "Cache folder exists" ,  
-                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) $"""package cache folder was not created at {expected_package_cache_folder_path} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) (ErrorMessage.withCLIDiagnostics $"package cache folder was not created at {expected_package_cache_folder_path}." tool args)
                     "Cache exists" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) $"""package cache was not created at {expected_package_cache_file_path} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) (ErrorMessage.withCLIDiagnostics $"package cache was not created at {expected_package_cache_file_path}." tool args)
                     "Package script exists" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) $"""package file was not installed at expected location (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) (ErrorMessage.withCLIDiagnostics $"package file was not installed at expected location." tool args)
                 ]
         ])
         testSequenced (testList "list" [
@@ -58,12 +60,12 @@ let ``PackageCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0 (after install)" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
                     "test package is listed (after install)" , 
-                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Name: test")) $"""Console output {proc.Result.Output} did not contain the package (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Name: test")) (ErrorMessage.withProcessDiagnostics $"Console output {proc.Result.Output} did not contain the package" proc tool args)
                 ]
         ])
-        testSequenced (testList "uninstall" [
+        testSequenced (testList "uninstall test" [
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     false
@@ -72,13 +74,13 @@ let ``PackageCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
                     "Cache folder still exists" ,  
-                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) $"""package cache folder was not created at {expected_package_cache_folder_path} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) (ErrorMessage.withCLIDiagnostics $"package cache folder was not created at {expected_package_cache_folder_path}." tool args)
                     "Cache still exists" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) $"""package cache was not created at {expected_package_cache_file_path} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) (ErrorMessage.withCLIDiagnostics $"package cache was not created at {expected_package_cache_file_path}." tool args)
                     "test package script does not exist anymore" ,  
-                        fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) $"""package file was not uninstalled at expected location (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) (ErrorMessage.withCLIDiagnostics $"package file was not uninstalled at expected location." tool args)
                 ]
         ])
         testSequenced (testList "list" [
@@ -90,9 +92,9 @@ let ``PackageCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0 (after uninstall)" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
                     "test package is not listed (after uninstall)" , 
-                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Name: test")) $"""Console output {proc.Result.Output} did not contain the package (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Name: test")) (ErrorMessage.withProcessDiagnostics $"Console output {proc.Result.Output} did contain the package" proc tool args)
                 ]
         ])
         testSequenced (testList "update-index" [
@@ -104,7 +106,7 @@ let ``PackageCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
                 ]
         ])
     ])

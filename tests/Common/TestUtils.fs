@@ -5,6 +5,14 @@ open System.IO
 open type System.Environment
 open Fake.Core
 
+module ErrorMessage =
+    let withProcessDiagnostics (message: string) proc (tool:string) (args: seq<string>) =
+        $"""{message}{System.Environment.NewLine}O: {proc.Result.Output}E: {System.Environment.NewLine}{proc.Result.Error}{System.Environment.NewLine}(tool: {tool} args: {args |> String.concat " "})"""
+    
+    let withCLIDiagnostics (message: string) (tool:string) (args: seq<string>) =
+        $"""{message}{System.Environment.NewLine}(tool: {tool} args: {args |> String.concat " "})"""
+
+
 module TestUtils =
  
     let application_data_path = Environment.GetFolderPath(SpecialFolder.ApplicationData, SpecialFolderOption.Create)

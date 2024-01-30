@@ -31,4 +31,4 @@ module CommandHandling =
             if verbose then printfn "Subcommand: package"
             handlePackageSubCommand verbose token (subcommand.GetSubCommand())
 
-        | _ -> ExitCode.ArgParseError
+        | _ -> failwith $"unrecognized command '{command}"
