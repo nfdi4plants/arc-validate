@@ -42,7 +42,27 @@
                     Notes</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
                     Repository</a></li>
-                
+                <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>
                 <li class="nav-header">
   API Reference
 </li>             
@@ -76,7 +96,27 @@
             Notes</a></li>
         <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
             Repository</a></li>
-        
+        <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>
         <li class="nav-header">
   API Reference
 </li>             
@@ -112,18 +152,12 @@
       <code><span><a href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&gt;</span></code>
       , 
       <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralequatable">IStructuralEquatable</a></code>
-      , 
-      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.icomparable-1">IComparable</a>&lt;<a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&gt;</span></code>
-      , 
-      <code><a href="https://learn.microsoft.com/dotnet/api/system.icomparable">IComparable</a></code>
-      , 
-      <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralcomparable">IStructuralComparable</a></code>
     </dt>
   </dl>
   <div class="fsdocs-xmldoc">
     <div>
       <p class="fsdocs-summary">
-        
+         represents the locally installed version of a validation package, e.g. the path to the local file and the date it was cached.
       </p>
     </div>
   </div>
@@ -150,7 +184,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
+              <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
                 <p>
                   <a id="CacheDate">
                     <a href="#CacheDate">
@@ -159,7 +193,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="193">
+              <div class="fsdocs-tip" id="192">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code>CacheDate</code>
@@ -189,7 +223,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+              <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
                 <p>
                   <a id="LocalPath">
                     <a href="#LocalPath">
@@ -198,7 +232,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="194">
+              <div class="fsdocs-tip" id="193">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code>LocalPath</code>
@@ -220,6 +254,45 @@
                   Field type: 
                 </span>
                 <code>string</code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+                <p>
+                  <a id="Metadata">
+                    <a href="#Metadata">
+                      <code>Metadata</code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="194">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code>Metadata</code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Field type: 
+                    <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackagemetadata.html">ValidationPackageMetadata</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Field type: 
+                </span>
+                <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackagemetadata.html">ValidationPackageMetadata</a></code>
               </dt>
               <dd class="fsdocs-return-docs"></dd>
             </dl>
@@ -293,7 +366,7 @@
                 <p>
                   <a id="create">
                     <a href="#create">
-                      <code><span>ARCValidationPackage.create&#32;<span><span>(<span>name,&#32;cacheDate,&#32;localPath</span>)</span></span></span></code>
+                      <code><span>ARCValidationPackage.create&#32;<span><span>(<span>name,&#32;cacheDate,&#32;localPath,&#32;metadata</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
@@ -301,7 +374,7 @@
               <div class="fsdocs-tip" id="196">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>ARCValidationPackage.create&#32;<span><span>(<span>name,&#32;cacheDate,&#32;localPath</span>)</span></span></span></code>
+                  <code><span>ARCValidationPackage.create&#32;<span><span>(<span>name,&#32;cacheDate,&#32;localPath,&#32;metadata</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -328,6 +401,14 @@
                       </b>
                       :
                       <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        metadata
+                      </b>
+                      :
+                      <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackagemetadata.html">ValidationPackageMetadata</a></code>
                     </span>
                     <br/>
                   </ul>
@@ -367,6 +448,14 @@
                 <code>string</code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  metadata
+                </span>
+                :
+                <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackagemetadata.html">ValidationPackageMetadata</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
             </dl>
             <dl class="fsdocs-returns">
               <dt>
@@ -386,7 +475,7 @@
                 <p>
                   <a id="ofPackageIndex">
                     <a href="#ofPackageIndex">
-                      <code><span>ARCValidationPackage.ofPackageIndex&#32;<span><span>(<span>packageIndex,&#32;?Date,&#32;?Path</span>)</span></span></span></code>
+                      <code><span>ARCValidationPackage.ofPackageIndex&#32;<span><span>(<span>packageIndex,&#32;?Date,&#32;?CacheFolder</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
@@ -394,7 +483,7 @@
               <div class="fsdocs-tip" id="197">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>ARCValidationPackage.ofPackageIndex&#32;<span><span>(<span>packageIndex,&#32;?Date,&#32;?Path</span>)</span></span></span></code>
+                  <code><span>ARCValidationPackage.ofPackageIndex&#32;<span><span>(<span>packageIndex,&#32;?Date,&#32;?CacheFolder</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -421,7 +510,7 @@
                     <br/>
                     <span>
                       <b>
-                        ?Path
+                        ?CacheFolder
                       </b>
                       :
                       <code>string</code>
@@ -482,7 +571,7 @@
                 </dd>
                 <dt class="fsdocs-param">
                   <span class="fsdocs-param-name">
-                    ?Path
+                    ?CacheFolder
                   </span>
                   :
                   <code>string</code>

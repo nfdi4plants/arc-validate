@@ -42,7 +42,27 @@
                     Notes</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
                     Repository</a></li>
-                
+                <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>
                 <li class="nav-header">
   API Reference
 </li>             
@@ -76,7 +96,27 @@
             Notes</a></li>
         <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
             Repository</a></li>
-        
+        <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>
         <li class="nav-header">
   API Reference
 </li>             
@@ -91,7 +131,7 @@
     <div id="content">
         <div>
   <h2>
-    API Module
+    API Type
   </h2>
   <dl class="fsdocs-metadata">
     <dt>
@@ -103,6 +143,10 @@
     <dt>
       Assembly: ARCValidationPackages.dll
     </dt>
+    <dt>
+      Base Type: 
+      <code>obj</code>
+    </dt>
   </dl>
   <div class="fsdocs-xmldoc">
     <div>
@@ -111,15 +155,23 @@
       </p>
     </div>
   </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
   <div>
     <h3>
-      Functions and values
+      Static members
     </h3>
     <table class="table outer-list fsdocs-member-list">
       <thead>
         <tr>
           <td class="fsdocs-member-list-header">
-            Function or value
+            Static member
           </td>
           <td class="fsdocs-member-list-header">
             Description
@@ -130,31 +182,132 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+              <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
                 <p>
-                  <a id="installPackage">
-                    <a href="#installPackage">
-                      <code><span>installPackage&#32;<span>verbose&#32;config&#32;cache&#32;packageName</span></span></code>
+                  <a id="GetSyncedConfigAndCache">
+                    <a href="#GetSyncedConfigAndCache">
+                      <code><span>API.GetSyncedConfigAndCache<span><span>(<span>?ConfigPath,&#32;?CacheFolder,&#32;?CacheFileName,&#32;?Token</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="70">
+              <div class="fsdocs-tip" id="185">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>installPackage&#32;<span>verbose&#32;config&#32;cache&#32;packageName</span></span></code>
+                  <code><span>API.GetSyncedConfigAndCache<span><span>(<span>?ConfigPath,&#32;?CacheFolder,&#32;?CacheFileName,&#32;?Token</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
                   <ul>
                     <span>
                       <b>
-                        verbose
+                        ?ConfigPath
                       </b>
                       :
-                      <code>bool</code>
+                      <code>string</code>
                     </span>
                     <br/>
+                    <span>
+                      <b>
+                        ?CacheFolder
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?CacheFileName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Token
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><span>(<span><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>&#32;*&#32;<a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></span>)</span>,&#32;<a href="/arc-validate/reference/arcvalidationpackages-getsyncedconfigandcacheerror.html">GetSyncedConfigAndCacheError</a></span>&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?ConfigPath
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?CacheFolder
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?CacheFileName
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Token
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
+            <dl class="fsdocs-returns">
+              <dt>
+                <span class="fsdocs-return-name">
+                  Returns: 
+                </span>
+                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><span>(<span><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>&#32;*&#32;<a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></span>)</span>,&#32;<a href="/arc-validate/reference/arcvalidationpackages-getsyncedconfigandcacheerror.html">GetSyncedConfigAndCacheError</a></span>&gt;</span></code>
+              </dt>
+              <dd class="fsdocs-return-docs"></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
+                <p>
+                  <a id="InstallPackage">
+                    <a href="#InstallPackage">
+                      <code><span>API.InstallPackage<span><span>(<span>config,&#32;cache,&#32;packageName,&#32;?Verbose,&#32;?Token</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div class="fsdocs-tip" id="186">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>API.InstallPackage<span><span>(<span>config,&#32;cache,&#32;packageName,&#32;?Verbose,&#32;?Token</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
                     <span>
                       <b>
                         config
@@ -179,11 +332,27 @@
                       <code>string</code>
                     </span>
                     <br/>
+                    <span>
+                      <b>
+                        ?Verbose
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Token
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
                   </ul>
                   <br/>
                   <span>
                     Returns: 
-                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
                   </span>
                   <br/>
                 </div>
@@ -192,14 +361,6 @@
           </td>
           <td class="fsdocs-member-xmldoc">
             <dl class="fsdocs-params">
-              <dt class="fsdocs-param">
-                <span class="fsdocs-param-name">
-                  verbose
-                </span>
-                :
-                <code>bool</code>
-              </dt>
-              <dd class="fsdocs-param-docs"></dd>
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
                   config
@@ -224,13 +385,29 @@
                 <code>string</code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Verbose
+                </span>
+                :
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Token
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
             </dl>
             <dl class="fsdocs-returns">
               <dt>
                 <span class="fsdocs-return-name">
                   Returns: 
                 </span>
-                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
+                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
               </dt>
               <dd class="fsdocs-return-docs"></dd>
             </dl>
@@ -239,37 +416,37 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+              <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
                 <p>
-                  <a id="listCachedPackages">
-                    <a href="#listCachedPackages">
-                      <code><span>listCachedPackages&#32;<span>verbose&#32;cache</span></span></code>
+                  <a id="ListCachedPackages">
+                    <a href="#ListCachedPackages">
+                      <code><span>API.ListCachedPackages<span><span>(<span>cache,&#32;?Verbose</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="71">
+              <div class="fsdocs-tip" id="187">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>listCachedPackages&#32;<span>verbose&#32;cache</span></span></code>
+                  <code><span>API.ListCachedPackages<span><span>(<span>cache,&#32;?Verbose</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
                   <ul>
                     <span>
                       <b>
-                        verbose
-                      </b>
-                      :
-                      <code>bool</code>
-                    </span>
-                    <br/>
-                    <span>
-                      <b>
                         cache
                       </b>
                       :
                       <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Verbose
+                      </b>
+                      :
+                      <code>bool</code>
                     </span>
                     <br/>
                   </ul>
@@ -287,18 +464,18 @@
             <dl class="fsdocs-params">
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
-                  verbose
-                </span>
-                :
-                <code>bool</code>
-              </dt>
-              <dd class="fsdocs-param-docs"></dd>
-              <dt class="fsdocs-param">
-                <span class="fsdocs-param-name">
                   cache
                 </span>
                 :
                 <code><a href="/arc-validate/reference/arcvalidationpackages-packagecache.html">PackageCache</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Verbose
+                </span>
+                :
+                <code>bool</code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
             </dl>
@@ -316,37 +493,37 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+              <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
                 <p>
-                  <a id="listIndexedPackages">
-                    <a href="#listIndexedPackages">
-                      <code><span>listIndexedPackages&#32;<span>verbose&#32;config</span></span></code>
+                  <a id="ListIndexedPackages">
+                    <a href="#ListIndexedPackages">
+                      <code><span>API.ListIndexedPackages<span><span>(<span>config,&#32;?Verbose</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="72">
+              <div class="fsdocs-tip" id="188">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>listIndexedPackages&#32;<span>verbose&#32;config</span></span></code>
+                  <code><span>API.ListIndexedPackages<span><span>(<span>config,&#32;?Verbose</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
                   <ul>
                     <span>
                       <b>
-                        verbose
-                      </b>
-                      :
-                      <code>bool</code>
-                    </span>
-                    <br/>
-                    <span>
-                      <b>
                         config
                       </b>
                       :
                       <code><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Verbose
+                      </b>
+                      :
+                      <code>bool</code>
                     </span>
                     <br/>
                   </ul>
@@ -364,18 +541,18 @@
             <dl class="fsdocs-params">
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
-                  verbose
-                </span>
-                :
-                <code>bool</code>
-              </dt>
-              <dd class="fsdocs-param-docs"></dd>
-              <dt class="fsdocs-param">
-                <span class="fsdocs-param-name">
                   config
                 </span>
                 :
                 <code><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a></code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Verbose
+                </span>
+                :
+                <code>bool</code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
             </dl>
@@ -393,19 +570,19 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+              <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
                 <p>
-                  <a id="saveAndCachePackage">
-                    <a href="#saveAndCachePackage">
-                      <code><span>saveAndCachePackage&#32;<span>cache&#32;indexedPackage</span></span></code>
+                  <a id="SaveAndCachePackage">
+                    <a href="#SaveAndCachePackage">
+                      <code><span>API.SaveAndCachePackage<span><span>(<span>cache,&#32;indexedPackage,&#32;?CacheFolder,&#32;?Token</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="73">
+              <div class="fsdocs-tip" id="189">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>saveAndCachePackage&#32;<span>cache&#32;indexedPackage</span></span></code>
+                  <code><span>API.SaveAndCachePackage<span><span>(<span>cache,&#32;indexedPackage,&#32;?CacheFolder,&#32;?Token</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -426,11 +603,27 @@
                       <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackageindex.html">ValidationPackageIndex</a></code>
                     </span>
                     <br/>
+                    <span>
+                      <b>
+                        ?CacheFolder
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Token
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
                   </ul>
                   <br/>
                   <span>
                     Returns: 
-                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
                   </span>
                   <br/>
                 </div>
@@ -455,13 +648,29 @@
                 <code><a href="/arc-validate/reference/arcvalidationpackages-validationpackageindex.html">ValidationPackageIndex</a></code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?CacheFolder
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Token
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
             </dl>
             <dl class="fsdocs-returns">
               <dt>
                 <span class="fsdocs-return-name">
                   Returns: 
                 </span>
-                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
+                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-packageinstallerror.html">PackageInstallError</a></span>&gt;</span></code>
               </dt>
               <dd class="fsdocs-return-docs"></dd>
             </dl>
@@ -470,39 +679,23 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+              <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
                 <p>
-                  <a id="uninstallPackage">
-                    <a href="#uninstallPackage">
-                      <code><span>uninstallPackage&#32;<span>verbose&#32;config&#32;cache&#32;packageName</span></span></code>
+                  <a id="UninstallPackage">
+                    <a href="#UninstallPackage">
+                      <code><span>API.UninstallPackage<span><span>(<span>cache,&#32;packageName,&#32;?Verbose</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="74">
+              <div class="fsdocs-tip" id="190">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>uninstallPackage&#32;<span>verbose&#32;config&#32;cache&#32;packageName</span></span></code>
+                  <code><span>API.UninstallPackage<span><span>(<span>cache,&#32;packageName,&#32;?Verbose</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
                   <ul>
-                    <span>
-                      <b>
-                        verbose
-                      </b>
-                      :
-                      <code>bool</code>
-                    </span>
-                    <br/>
-                    <span>
-                      <b>
-                        config
-                      </b>
-                      :
-                      <code><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a></code>
-                    </span>
-                    <br/>
                     <span>
                       <b>
                         cache
@@ -519,11 +712,19 @@
                       <code>string</code>
                     </span>
                     <br/>
+                    <span>
+                      <b>
+                        ?Verbose
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
                   </ul>
                   <br/>
                   <span>
                     Returns: 
-                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-packageuninstallerror.html">PackageUninstallError</a></span>&gt;</span></code>
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-packageuninstallerror.html">PackageUninstallError</a></span>&gt;</span></code>
                   </span>
                   <br/>
                 </div>
@@ -532,22 +733,6 @@
           </td>
           <td class="fsdocs-member-xmldoc">
             <dl class="fsdocs-params">
-              <dt class="fsdocs-param">
-                <span class="fsdocs-param-name">
-                  verbose
-                </span>
-                :
-                <code>bool</code>
-              </dt>
-              <dd class="fsdocs-param-docs"></dd>
-              <dt class="fsdocs-param">
-                <span class="fsdocs-param-name">
-                  config
-                </span>
-                :
-                <code><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a></code>
-              </dt>
-              <dd class="fsdocs-param-docs"></dd>
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
                   cache
@@ -564,13 +749,21 @@
                 <code>string</code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Verbose
+                </span>
+                :
+                <code>bool</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
             </dl>
             <dl class="fsdocs-returns">
               <dt>
                 <span class="fsdocs-return-name">
                   Returns: 
                 </span>
-                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-packageuninstallerror.html">PackageUninstallError</a></span>&gt;</span></code>
+                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span>string,&#32;<a href="/arc-validate/reference/arcvalidationpackages-packageuninstallerror.html">PackageUninstallError</a></span>&gt;</span></code>
               </dt>
               <dd class="fsdocs-return-docs"></dd>
             </dl>
@@ -579,19 +772,19 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+              <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
                 <p>
-                  <a id="updateIndex">
-                    <a href="#updateIndex">
-                      <code><span>updateIndex&#32;<span>config</span></span></code>
+                  <a id="UpdateIndex">
+                    <a href="#UpdateIndex">
+                      <code><span>API.UpdateIndex<span><span>(<span>config,&#32;?Token</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="75">
+              <div class="fsdocs-tip" id="191">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>updateIndex&#32;<span>config</span></span></code>
+                  <code><span>API.UpdateIndex<span><span>(<span>config,&#32;?Token</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -604,11 +797,19 @@
                       <code><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a></code>
                     </span>
                     <br/>
+                    <span>
+                      <b>
+                        ?Token
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
                   </ul>
                   <br/>
                   <span>
                     Returns: 
-                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-updateindexerror.html">UpdateIndexError</a></span>&gt;</span></code>
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>,&#32;<a href="/arc-validate/reference/arcvalidationpackages-updateindexerror.html">UpdateIndexError</a></span>&gt;</span></code>
                   </span>
                   <br/>
                 </div>
@@ -625,13 +826,21 @@
                 <code><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a></code>
               </dt>
               <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Token
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
             </dl>
             <dl class="fsdocs-returns">
               <dt>
                 <span class="fsdocs-return-name">
                   Returns: 
                 </span>
-                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>,&#32;<a href="/arc-validate/reference/arcvalidationpackages-errors-updateindexerror.html">UpdateIndexError</a></span>&gt;</span></code>
+                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>,&#32;<a href="/arc-validate/reference/arcvalidationpackages-updateindexerror.html">UpdateIndexError</a></span>&gt;</span></code>
               </dt>
               <dd class="fsdocs-return-docs"></dd>
             </dl>
@@ -640,14 +849,6 @@
       </tbody>
     </table>
   </div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
 </div>
         
     </div>

@@ -42,7 +42,27 @@
                     Notes</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
                     Repository</a></li>
-                
+                <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>
                 <li class="nav-header">
   API Reference
 </li>             
@@ -76,7 +96,27 @@
             Notes</a></li>
         <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
             Repository</a></li>
-        
+        <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>
         <li class="nav-header">
   API Reference
 </li>             
@@ -112,12 +152,6 @@
       <code><span><a href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>&gt;</span></code>
       , 
       <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralequatable">IStructuralEquatable</a></code>
-      , 
-      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.icomparable-1">IComparable</a>&lt;<a href="/arc-validate/reference/arcvalidationpackages-config.html">Config</a>&gt;</span></code>
-      , 
-      <code><a href="https://learn.microsoft.com/dotnet/api/system.icomparable">IComparable</a></code>
-      , 
-      <code><a href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralcomparable">IStructuralComparable</a></code>
     </dt>
   </dl>
   <div class="fsdocs-xmldoc">
@@ -502,7 +536,7 @@
                 <p>
                   <a id="get">
                     <a href="#get">
-                      <code><span>Config.get&#32;<span>?Path</span></span></code>
+                      <code><span>Config.get&#32;<span><span>(<span>?Path,&#32;?CacheFolder,&#32;?Token</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
@@ -510,7 +544,7 @@
               <div class="fsdocs-tip" id="206">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>Config.get&#32;<span>?Path</span></span></code>
+                  <code><span>Config.get&#32;<span><span>(<span>?Path,&#32;?CacheFolder,&#32;?Token</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -518,6 +552,22 @@
                     <span>
                       <b>
                         ?Path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?CacheFolder
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?Token
                       </b>
                       :
                       <code>string</code>
@@ -539,6 +589,22 @@
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
                   ?Path
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?CacheFolder
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Token
                 </span>
                 :
                 <code>string</code>
@@ -717,7 +783,7 @@
                 <p>
                   <a id="initDefault">
                     <a href="#initDefault">
-                      <code><span>Config.initDefault&#32;<span>()</span></span></code>
+                      <code><span>Config.initDefault&#32;<span><span>(<span>?Token,&#32;?ConfigPath,&#32;?CacheFolder</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
@@ -725,8 +791,36 @@
               <div class="fsdocs-tip" id="209">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>Config.initDefault&#32;<span>()</span></span></code>
+                  <code><span>Config.initDefault&#32;<span><span>(<span>?Token,&#32;?ConfigPath,&#32;?CacheFolder</span>)</span></span></span></code>
                   <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?Token
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?ConfigPath
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?CacheFolder
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
                   <br/>
                   <span>
                     Returns: 
@@ -738,6 +832,32 @@
             </div>
           </td>
           <td class="fsdocs-member-xmldoc">
+            <dl class="fsdocs-params">
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?Token
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?ConfigPath
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
+                  ?CacheFolder
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+            </dl>
             <dl class="fsdocs-returns">
               <dt>
                 <span class="fsdocs-return-name">
