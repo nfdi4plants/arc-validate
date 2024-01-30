@@ -24,8 +24,11 @@ let ``PackageCommand CLI Tests`` =
                     [|"-v"; "package"; "list";|]
                     (get_gh_api_token())
                 ) [
-                    "Exit code is 0" , 
+                    "Exit code is 0 (before install)" , 
                         fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                    "test package is not listed (before install)" , 
+                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("test")) $"""Console output {proc.Result.Output} did not contain the package (tool: {tool} args: {args |> String.concat " "})"""
+                
                 ]
         ])
         testSequenced (testList "install" [
@@ -54,8 +57,10 @@ let ``PackageCommand CLI Tests`` =
                     [|"-v"; "package"; "list";|]
                     (get_gh_api_token())
                 ) [
-                    "package is listed after install" , 
+                    "Exit code is 0 (after install)" , 
                         fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                    "test package is listed (after install)" , 
+                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Name: test")) $"""Console output {proc.Result.Output} did not contain the package (tool: {tool} args: {args |> String.concat " "})"""
                 ]
         ])
         testSequenced (testList "uninstall" [
@@ -70,10 +75,10 @@ let ``PackageCommand CLI Tests`` =
                         fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
                     "Cache folder still exists" ,  
                         fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) $"""package cache folder was not created at {expected_package_cache_folder_path} (tool: {tool} args: {args |> String.concat " "})"""
-                    "Cache exists" ,  
+                    "Cache still exists" ,  
                         fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) $"""package cache was not created at {expected_package_cache_file_path} (tool: {tool} args: {args |> String.concat " "})"""
-                    "Package script exists" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) $"""package file was not installed at expected location (tool: {tool} args: {args |> String.concat " "})"""
+                    "test package script does not exist anymore" ,  
+                        fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx"))) $"""package file was not uninstalled at expected location (tool: {tool} args: {args |> String.concat " "})"""
                 ]
         ])
         testSequenced (testList "list" [
@@ -84,8 +89,10 @@ let ``PackageCommand CLI Tests`` =
                     [|"-v"; "package"; "list";|]
                     (get_gh_api_token())
                 ) [
-                    "package is not listed anymore after install" , 
+                    "Exit code is 0 (after uninstall)" , 
                         fun tool args proc -> Expect.equal proc.ExitCode 0 $"""incorrect exit code.{System.Environment.NewLine}{proc.Result.Output} (tool: {tool} args: {args |> String.concat " "})"""
+                    "test package is not listed (after uninstall)" , 
+                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Name: test")) $"""Console output {proc.Result.Output} did not contain the package (tool: {tool} args: {args |> String.concat " "})"""
                 ]
         ])
         testSequenced (testList "update-index" [
