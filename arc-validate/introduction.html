@@ -133,9 +133,93 @@
 <main>
     <div id="content">
         <h1><a name="arc-validate" class="anchor" href="#arc-validate">arc-validate</a></h1>
-<p>docs comming msoon</p>
+<p><code>arc-validate</code> is a CLI tool for validating ARCs and managing validation packages.</p>
+<h2><a name="Installation" class="anchor" href="#Installation">Installation</a></h2>
+<h2><a name="Command-Line-Usage" class="anchor" href="#Command-Line-Usage">Command Line Usage</a></h2>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">verbose</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">token</span> <span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">string</span><span class="pn">&gt;]</span> <span class="pn">[&lt;</span><span class="id">subcommand</span><span class="pn">&gt;</span> <span class="pn">[&lt;</span><span class="id">options</span><span class="pn">&gt;]</span><span class="pn">]</span>
 
-        
+<span class="id">SUBCOMMANDS</span><span class="pn">:</span>
+
+    <span class="id">validate</span><span class="pn">,</span> <span class="id">v</span> <span class="pn">&lt;</span><span class="id">options</span><span class="pn">&gt;</span> <span class="id">command</span> <span class="k">for</span> <span class="id">performing</span> <span class="id">arc</span> <span class="id">validation</span>
+    <span class="id">package</span><span class="pn">,</span> <span class="id">p</span> <span class="pn">&lt;</span><span class="id">options</span><span class="pn">&gt;</span>  <span class="id">subcommands</span> <span class="k">for</span> <span class="id">validation</span> <span class="id">packages</span>
+
+    <span class="id">Use</span> <span class="id">&#39;</span><span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="pn">&lt;</span><span class="id">subcommand</span><span class="pn">&gt;</span> <span class="o">--</span><span class="id">help&#39;</span> <span class="k">for</span> <span class="id">additional</span> <span class="id">information</span><span class="pn">.</span>
+
+<span class="id">OPTIONS</span><span class="pn">:</span>
+
+    <span class="o">--</span><span class="id">verbose</span><span class="pn">,</span> <span class="o">-</span><span class="id">v</span>         <span class="id">Use</span> <span class="id">verbose</span> <span class="id">error</span> <span class="id">messages</span> <span class="pn">(</span><span class="k">with</span> <span class="id">full</span> <span class="id">error</span> <span class="id">stack</span><span class="pn">)</span><span class="pn">.</span>
+    <span class="o">--</span><span class="id">token</span><span class="pn">,</span> <span class="o">-</span><span class="id">t</span> <span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">string</span><span class="pn">&gt;</span>  <span class="id">The</span> <span class="id">token</span> <span class="k">to</span> <span class="k">use</span> <span class="k">for</span> <span class="id">authentication</span> <span class="k">with</span> <span class="id">github</span><span class="pn">.</span>
+    <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
+</code></pre>
+<h3><a name="The-command" class="anchor" href="#The-command">The <code>validate</code> command</a></h3>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">validate</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">arc</span><span class="o">-</span><span class="id">directory</span> <span class="pn">&lt;</span><span class="id">path</span><span class="pn">&gt;]</span> <span class="pn">[</span><span class="o">--</span><span class="id">out</span><span class="o">-</span><span class="id">directory</span> <span class="pn">&lt;</span><span class="id">path</span><span class="pn">&gt;]</span> <span class="pn">[</span><span class="o">--</span><span class="id">package</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;]</span>
+
+<span class="id">OPTIONS</span><span class="pn">:</span>
+
+    <span class="o">--</span><span class="id">arc</span><span class="o">-</span><span class="id">directory</span><span class="pn">,</span> <span class="o">-</span><span class="id">i</span> <span class="pn">&lt;</span><span class="id">path</span><span class="pn">&gt;</span>
+                          <span class="id">Optional</span><span class="pn">.</span> <span class="id">Specify</span> <span class="id">a</span> <span class="id">directory</span> <span class="id">that</span> <span class="id">contains</span> <span class="id">the</span> <span class="id">arc</span> <span class="k">to</span> <span class="id">convert</span><span class="pn">.</span> <span class="id">Default</span><span class="pn">:</span> <span class="id">content</span> <span class="k">of</span> <span class="id">the</span> <span class="id">ARC_PATH</span>
+                          <span class="id">environment</span> <span class="id">variable</span><span class="pn">.</span> <span class="id">If</span> <span class="id">ARC_PATH</span> <span class="id">is</span> <span class="id">not</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">set</span><span class="pn">:</span> <span class="id">current</span> <span class="id">directory</span><span class="pn">.</span>
+    <span class="o">--</span><span class="id">out</span><span class="o">-</span><span class="id">directory</span><span class="pn">,</span> <span class="o">-</span><span class="id">o</span> <span class="pn">&lt;</span><span class="id">path</span><span class="pn">&gt;</span>
+                          <span class="id">Optional</span><span class="pn">.</span> <span class="id">Specify</span> <span class="id">a</span> <span class="id">output</span> <span class="id">directory</span> <span class="k">for</span> <span class="id">the</span> <span class="id">test</span> <span class="id">results</span> <span class="id">file</span> <span class="pn">(</span><span class="id">arc</span><span class="o">-</span><span class="id">validate</span><span class="o">-</span><span class="id">results</span><span class="pn">.</span><span class="id">xml</span><span class="pn">)</span><span class="pn">.</span>
+                          <span class="id">Default</span><span class="pn">:</span> <span class="id">file</span> <span class="id">gets</span> <span class="id">written</span> <span class="k">to</span> <span class="id">the</span> <span class="id">arc</span> <span class="id">root</span> <span class="id">folder</span><span class="pn">.</span>
+    <span class="o">--</span><span class="id">package</span><span class="pn">,</span> <span class="o">-</span><span class="id">p</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>
+                          <span class="id">Optional</span><span class="pn">.</span> <span class="id">Specify</span> <span class="id">a</span> <span class="id">validation</span> <span class="id">package</span> <span class="k">to</span> <span class="k">use</span> <span class="id">on</span> <span class="id">top</span> <span class="k">of</span> <span class="id">the</span> <span class="k">default</span> <span class="id">validation</span> <span class="k">for</span> <span class="id">invenio</span>
+                          <span class="id">export</span><span class="pn">.</span> <span class="id">Default</span><span class="pn">:</span> <span class="id">no</span> <span class="id">package</span> <span class="id">is</span> <span class="id">used</span><span class="pn">,</span> <span class="id">only</span> <span class="id">structural</span> <span class="id">validation</span> <span class="k">for</span> <span class="id">invenio</span> <span class="id">export</span><span class="pn">.</span>
+    <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
+</code></pre>
+<h3><a name="The-command-1" class="anchor" href="#The-command-1">The <code>package</code> command</a></h3>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[&lt;</span><span class="id">subcommand</span><span class="pn">&gt;</span> <span class="pn">[&lt;</span><span class="id">options</span><span class="pn">&gt;]</span><span class="pn">]</span>
+
+<span class="id">SUBCOMMANDS</span><span class="pn">:</span>
+
+    <span class="id">install</span><span class="pn">,</span> <span class="id">i</span> <span class="pn">&lt;</span><span class="id">options</span><span class="pn">&gt;</span>  <span class="id">install</span> <span class="id">valiation</span> <span class="id">packages</span>
+    <span class="id">uninstall</span><span class="pn">,</span> <span class="id">u</span> <span class="pn">&lt;</span><span class="id">options</span><span class="pn">&gt;</span>
+                          <span class="id">uninstall</span> <span class="id">valiation</span> <span class="id">packages</span>
+    <span onmouseout="hideTip(event, 'fs2', 6)" onmouseover="showTip(event, 'fs2', 6)" class="id">list</span><span class="pn">,</span> <span class="id">l</span> <span class="pn">&lt;</span><span class="id">options</span><span class="pn">&gt;</span>     <span onmouseout="hideTip(event, 'fs2', 7)" onmouseover="showTip(event, 'fs2', 7)" class="id">list</span> <span class="id">packages</span> <span class="id">from</span> <span class="id">available</span> <span class="id">soures</span>
+    <span class="id">update</span><span class="o">-</span><span class="id">index</span><span class="pn">,</span> <span class="id">c</span>       <span class="id">update</span> <span class="id">the</span> <span class="id">locally</span> <span class="id">chached</span> <span class="id">package</span> <span class="id">index</span>
+
+    <span class="id">Use</span> <span class="id">&#39;</span><span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="pn">&lt;</span><span class="id">subcommand</span><span class="pn">&gt;</span> <span class="o">--</span><span class="id">help&#39;</span> <span class="k">for</span> <span class="id">additional</span> <span class="id">information</span><span class="pn">.</span>
+
+<span class="id">OPTIONS</span><span class="pn">:</span>
+
+    <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 8)" onmouseover="showTip(event, 'fs2', 8)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
+</code></pre>
+<h4><a name="The-subcommand" class="anchor" href="#The-subcommand">The <code>package install</code> subcommand</a></h4>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span class="id">install</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>
+
+<span class="id">PACKAGE</span><span class="pn">:</span>
+
+    <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>        <span class="id">name</span> <span class="k">of</span> <span class="id">the</span> <span class="id">validation</span> <span class="id">package</span> <span class="k">to</span> <span class="id">install</span>
+
+<span class="id">OPTIONS</span><span class="pn">:</span>
+
+    <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 9)" onmouseover="showTip(event, 'fs2', 9)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
+</code></pre>
+<h4><a name="The-subcommand-1" class="anchor" href="#The-subcommand-1">The <code>package uninstall</code> subcommand</a></h4>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span class="id">uninstall</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>
+
+<span class="id">PACKAGE</span><span class="pn">:</span>
+
+    <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>        <span class="id">name</span> <span class="k">of</span> <span class="id">the</span> <span class="id">validation</span> <span class="id">package</span> <span class="k">to</span> <span class="id">uninstall</span>
+
+<span class="id">OPTIONS</span><span class="pn">:</span>
+
+    <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 10)" onmouseover="showTip(event, 'fs2', 10)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
+</code></pre>
+<h4><a name="The-subcommand-2" class="anchor" href="#The-subcommand-2">The <code>package list</code> subcommand</a></h4>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span onmouseout="hideTip(event, 'fs2', 11)" onmouseover="showTip(event, 'fs2', 11)" class="id">list</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">installed</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">indexed</span><span class="pn">]</span>
+
+<span class="id">OPTIONS</span><span class="pn">:</span>
+
+    <span class="o">--</span><span class="id">installed</span><span class="pn">,</span> <span class="o">-</span><span class="id">i</span>       <span onmouseout="hideTip(event, 'fs2', 12)" onmouseover="showTip(event, 'fs2', 12)" class="id">list</span> <span class="id">installed</span> <span class="id">packages</span> <span class="id">from</span> <span class="id">the</span> <span class="id">package</span> <span class="id">cache</span>
+    <span class="o">--</span><span class="id">indexed</span><span class="pn">,</span> <span class="o">-</span><span class="id">c</span>         <span onmouseout="hideTip(event, 'fs2', 13)" onmouseover="showTip(event, 'fs2', 13)" class="id">list</span> <span class="id">indexed</span> <span class="id">packages</span> <span class="id">from</span> <span class="id">the</span> <span class="id">cached</span> <span class="id">package</span> <span class="id">index</span>
+    <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 14)" onmouseover="showTip(event, 'fs2', 14)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
+</code></pre>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = System.String</div>
+<div class="fsdocs-tip" id="fs2">type &#39;T list = List&lt;&#39;T&gt;</div>
+<div class="fsdocs-tip" id="fs3">val set: elements: &#39;T seq -&gt; Set&lt;&#39;T&gt; (requires comparison)</div>
+
     </div>
 </main>
 <aside id="fsdocs-page-menu">
@@ -144,6 +228,16 @@
   <li class="level-1">
     <a href="#arc-validate">
       arc-validate
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Installation">
+      Installation
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Command-Line-Usage">
+      Command Line Usage
     </a>
   </li>
 </ul>
