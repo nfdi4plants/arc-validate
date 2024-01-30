@@ -49,12 +49,6 @@
   Documentation
 </li>             
 <li class="nav-item ">
-  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
-    ARCExpect
-
-  </a>
-</li>             
-<li class="nav-item ">
   <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
     ARCValidationPackages
 
@@ -63,6 +57,12 @@
 <li class="nav-item active">
   <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
     arc-validate
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
 
   </a>
 </li>
@@ -103,12 +103,6 @@
   Documentation
 </li>             
 <li class="nav-item ">
-  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
-    ARCExpect
-
-  </a>
-</li>             
-<li class="nav-item ">
   <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
     ARCValidationPackages
 
@@ -117,6 +111,12 @@
 <li class="nav-item active">
   <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
     arc-validate
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
 
   </a>
 </li>
@@ -151,7 +151,7 @@
     <span class="o">--</span><span class="id">token</span><span class="pn">,</span> <span class="o">-</span><span class="id">t</span> <span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">string</span><span class="pn">&gt;</span>  <span class="id">The</span> <span class="id">token</span> <span class="k">to</span> <span class="k">use</span> <span class="k">for</span> <span class="id">authentication</span> <span class="k">with</span> <span class="id">github</span><span class="pn">.</span>
     <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
 </code></pre>
-<h3><a name="The-command" class="anchor" href="#The-command">The <code>validate</code> command</a></h3>
+<h3><a name="The-validate-command" class="anchor" href="#The-validate-command">The validate command</a></h3>
 <pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">validate</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">arc</span><span class="o">-</span><span class="id">directory</span> <span class="pn">&lt;</span><span class="id">path</span><span class="pn">&gt;]</span> <span class="pn">[</span><span class="o">--</span><span class="id">out</span><span class="o">-</span><span class="id">directory</span> <span class="pn">&lt;</span><span class="id">path</span><span class="pn">&gt;]</span> <span class="pn">[</span><span class="o">--</span><span class="id">package</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;]</span>
 
 <span class="id">OPTIONS</span><span class="pn">:</span>
@@ -167,7 +167,7 @@
                           <span class="id">export</span><span class="pn">.</span> <span class="id">Default</span><span class="pn">:</span> <span class="id">no</span> <span class="id">package</span> <span class="id">is</span> <span class="id">used</span><span class="pn">,</span> <span class="id">only</span> <span class="id">structural</span> <span class="id">validation</span> <span class="k">for</span> <span class="id">invenio</span> <span class="id">export</span><span class="pn">.</span>
     <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
 </code></pre>
-<h3><a name="The-command-1" class="anchor" href="#The-command-1">The <code>package</code> command</a></h3>
+<h3><a name="The-package-command" class="anchor" href="#The-package-command">The package command</a></h3>
 <pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[&lt;</span><span class="id">subcommand</span><span class="pn">&gt;</span> <span class="pn">[&lt;</span><span class="id">options</span><span class="pn">&gt;]</span><span class="pn">]</span>
 
 <span class="id">SUBCOMMANDS</span><span class="pn">:</span>
@@ -184,7 +184,7 @@
 
     <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 8)" onmouseover="showTip(event, 'fs2', 8)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
 </code></pre>
-<h4><a name="The-subcommand" class="anchor" href="#The-subcommand">The <code>package install</code> subcommand</a></h4>
+<h4><a name="The-package-install-subcommand" class="anchor" href="#The-package-install-subcommand">The package install subcommand</a></h4>
 <pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span class="id">install</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>
 
 <span class="id">PACKAGE</span><span class="pn">:</span>
@@ -195,7 +195,7 @@
 
     <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 9)" onmouseover="showTip(event, 'fs2', 9)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
 </code></pre>
-<h4><a name="The-subcommand-1" class="anchor" href="#The-subcommand-1">The <code>package uninstall</code> subcommand</a></h4>
+<h4><a name="The-package-uninstall-subcommand" class="anchor" href="#The-package-uninstall-subcommand">The package uninstall subcommand</a></h4>
 <pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span class="id">uninstall</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">&lt;</span><span class="id">package</span> <span class="id">name</span><span class="pn">&gt;</span>
 
 <span class="id">PACKAGE</span><span class="pn">:</span>
@@ -206,7 +206,7 @@
 
     <span class="o">--</span><span class="id">help</span><span class="pn">,</span> <span class="o">-</span><span class="id">h</span>            <span class="id">display</span> <span class="id">this</span> <span onmouseout="hideTip(event, 'fs2', 10)" onmouseover="showTip(event, 'fs2', 10)" class="id">list</span> <span class="k">of</span> <span class="id">options</span><span class="pn">.</span>
 </code></pre>
-<h4><a name="The-subcommand-2" class="anchor" href="#The-subcommand-2">The <code>package list</code> subcommand</a></h4>
+<h4><a name="The-package-list-subcommand" class="anchor" href="#The-package-list-subcommand">The package list subcommand</a></h4>
 <pre class="fssnip highlighted"><code lang="fsharp"><span class="id">USAGE</span><span class="pn">:</span> <span class="id">arc</span><span class="o">-</span><span class="id">validate</span> <span class="id">package</span> <span onmouseout="hideTip(event, 'fs2', 11)" onmouseover="showTip(event, 'fs2', 11)" class="id">list</span> <span class="pn">[</span><span class="o">--</span><span class="id">help</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">installed</span><span class="pn">]</span> <span class="pn">[</span><span class="o">--</span><span class="id">indexed</span><span class="pn">]</span>
 
 <span class="id">OPTIONS</span><span class="pn">:</span>
@@ -238,6 +238,31 @@
   <li class="level-2">
     <a href="#Command-Line-Usage">
       Command Line Usage
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#The-validate-command">
+      The validate command
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#The-package-command">
+      The package command
+    </a>
+  </li>
+  <li class="level-4">
+    <a href="#The-package-install-subcommand">
+      The package install subcommand
+    </a>
+  </li>
+  <li class="level-4">
+    <a href="#The-package-uninstall-subcommand">
+      The package uninstall subcommand
+    </a>
+  </li>
+  <li class="level-4">
+    <a href="#The-package-list-subcommand">
+      The package list subcommand
     </a>
   </li>
 </ul>
