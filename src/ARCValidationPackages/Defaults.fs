@@ -6,13 +6,13 @@ open type System.Environment
 
 module Defaults =
 
-    let [<Literal>] PACKAGE_INDEX_URL = "https://github.com/nfdi4plants/arc-validate-packages"
+    let [<Literal>] PACKAGE_INDEX_URL = "https://github.com/nfdi4plants/arc-validate-package-registry"
 
     let [<Literal>] PACKAGE_INDEX_OWNER = "nfdi4plants"
 
-    let [<Literal>] PACKAGE_INDEX_REPO = "arc-validate-packages"
+    let [<Literal>] PACKAGE_INDEX_REPO = "arc-validate-package-registry"
 
-    let [<Literal>] PACKAGE_INDEX_FILE_NAME = "arc-validate-package-index.json"
+    let [<Literal>] PACKAGE_INDEX_FILE_NAME = "src/PackageRegistryService/Data/arc-validate-package-index.json"
 
     let [<Literal>] GITHUB_API_BASE_URL = "https://api.github.com"
 

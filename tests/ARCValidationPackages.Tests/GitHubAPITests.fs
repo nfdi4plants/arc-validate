@@ -8,15 +8,18 @@ open System.Text
 open Common.TestUtils
 open TestUtils
 
+let token = get_gh_api_token()
+
 [<Tests>]
 let ``GitHubAPI tests`` = 
     testList "GitHubAPI tests" [
         test "getRepositoryContent terminates" {
             GitHubAPI.getRepositoryContent(
                 owner = "nfdi4plants",
-                repo = "arc-validate-packages",
+                repo = "arc-validate-package-registry",
                 path = "README.md",
-                userAgent = "arc-validate-test"
+                userAgent = "arc-validate-test",
+                ?Token = token
             )
             |> ignore
         }
@@ -25,9 +28,10 @@ let ``GitHubAPI tests`` =
                 (
                     GitHubAPI.getRepositoryContent(
                         owner = "nfdi4plants",
-                        repo = "arc-validate-packages",
-                        path = "arc-validate-packages/test.fsx",
-                        userAgent = "arc-validate-test"
+                        repo = "arc-validate-package-registry",
+                        path = "src/PackageRegistryService/StagingArea/test.fsx",
+                        userAgent = "arc-validate-test",
+                        ?Token = token
                     )
                     |> fun json -> (json?content).GetString()
                     |> fun content -> Convert.FromBase64String(content)
@@ -37,21 +41,27 @@ let ``GitHubAPI tests`` =
                 "repository content was not correct"
         }
         test "getPackageIndex terminates" {
-            GitHubAPI.getPackageIndex()
+            GitHubAPI.getPackageIndex(?Token = token)
             |> ignore
         }
         test "getPackageIndex contains test script" {
-            let indexedPackages = GitHubAPI.getPackageIndex()
-            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "arc-validate-packages/test.fsx")) "package index did not contain test script"
+            let indexedPackages = GitHubAPI.getPackageIndex(?Token = token)
+            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "src/PackageRegistryService/StagingArea/test.fsx")) "package index did not contain test script"
         }
         test "getScriptContent terminates" {
-            GitHubAPI.downloadPackageScript("arc-validate-packages/test.fsx")
+            GitHubAPI.downloadPackageScript(
+                "src/PackageRegistryService/StagingArea/test.fsx",
+                ?Token = token
+            )
             |> ignore
         }
         test "getScriptContent returns correct content" {
             Expect.equal 
                 (
-                    GitHubAPI.downloadPackageScript("arc-validate-packages/test.fsx")
+                    GitHubAPI.downloadPackageScript(
+                        "src/PackageRegistryService/StagingArea/test.fsx",
+                        ?Token = token
+                    )
                     |> fun content -> content.ReplaceLineEndings()
                 )
                 ReferenceObjects.testScriptContent
