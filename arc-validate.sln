@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{B3F07465-210
 		Dockerfile = Dockerfile
 		ErrorClassOntology.obo = ErrorClassOntology.obo
 		global.json = global.json
+		playground.fsx = playground.fsx
 		README.md = README.md
 		TestOntology.obo = TestOntology.obo
-		playgrounds\workingGraph.md = playgrounds\workingGraph.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6275F297-567B-421B-B055-4F88B2785765}"
@@ -41,24 +41,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{66A8015E-565
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-and-deploy-docs.yml = .github\workflows\build-and-deploy-docs.yml
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
-		.github\workflows\pipeline-on-v2.yml = .github\workflows\pipeline-on-v2.yml
 		.github\workflows\pipeline.yml = .github\workflows\pipeline.yml
-		.github\workflows\test-on-v2.yml = .github\workflows\test-on-v2.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds", "{7994D526-5B21-4EBD-9CCB-EFA04EE303CF}"
-	ProjectSection(SolutionItems) = preProject
-		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
-		playgrounds\argu.fsx = playgrounds\argu.fsx
-		playgrounds\codeGeneratorScripting.fsx = playgrounds\codeGeneratorScripting.fsx
-		playgrounds\errorClassesStatic.fsx = playgrounds\errorClassesStatic.fsx
-		playgrounds\expectoPlayground.fsx = playgrounds\expectoPlayground.fsx
-		playgrounds\getAnnotationTableCvPs.fsx = playgrounds\getAnnotationTableCvPs.fsx
-		playgrounds\github-api.fsx = playgrounds\github-api.fsx
-		playgrounds\graphModelIOTest.fsx = playgrounds\graphModelIOTest.fsx
-		playgrounds\graphoscopePlayground.fsx = playgrounds\graphoscopePlayground.fsx
-		playgrounds\playground.fsx = playgrounds\playground.fsx
-	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidationPackages", "src\ARCValidationPackages\ARCValidationPackages.fsproj", "{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}"
 EndProject
@@ -71,50 +57,24 @@ EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCExpect.Tests", "tests\ARCExpect.Tests\ARCExpect.Tests.fsproj", "{46EA4BDB-095A-4369-AD7E-07E702CD3E38}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arcGraph_prototypes", "arcGraph_prototypes", "{02699157-EFC4-4E1A-94CC-B9825E2D1CB8}"
-	ProjectSection(SolutionItems) = preProject
-		carepaket.fsx = carepaket.fsx
-		playgrounds\arcGraph_playgrounds\prototype_v0.1.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.0.fsx
-		playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.1.1.fsx
-		playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.0.fsx
-		playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx = playgrounds\arcGraph_playgrounds\prototype_v0.2.1.fsx
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo_notebooks", "demo_notebooks", "{A83F65C9-925E-437C-A457-EF8B9C6B154D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qcPackage_prototypes", "qcPackage_prototypes", "{9B3B6E39-DB2F-4A91-944B-EFAAD961FCE7}"
-	ProjectSection(SolutionItems) = preProject
-		playgrounds\qcPackage_prototypes\invenio_prototype_v0.1.0.fsx = playgrounds\qcPackage_prototypes\invenio_prototype_v0.1.0.fsx
-		playgrounds\qcPackage_prototypes\invenio_prototype_v0.2.0.fsx = playgrounds\qcPackage_prototypes\invenio_prototype_v0.2.0.fsx
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DB01DF70-3713-4445-AC79-A09ECE093294}"
-	ProjectSection(SolutionItems) = preProject
-		docs\index.md = docs\index.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{588EA1DC-90EB-4827-B3D1-B89C27776E58}"
-	ProjectSection(SolutionItems) = preProject
-		docs\content\fsdocs-theme.css = docs\content\fsdocs-theme.css
-	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharpConsole", "tests\FSharpConsole\FSharpConsole.fsproj", "{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Common", "tests\Common\Common.fsproj", "{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arc-validate", "arc-validate", "{E6A037FA-C367-4C2A-9B87-2A04CA25D3C9}"
-	ProjectSection(SolutionItems) = preProject
-		docs\arc-validate\introduction.md = docs\arc-validate\introduction.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ARCExpect", "ARCExpect", "{AE7B2617-6AD7-4A90-84A4-7EE29B1BD94F}"
-	ProjectSection(SolutionItems) = preProject
-		docs\ARCExpect\introduction.ipynb = docs\ARCExpect\introduction.ipynb
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ARCValidationPackages", "ARCValidationPackages", "{DEC9AEAB-AF5A-4290-9889-A6457C2687E6}"
-	ProjectSection(SolutionItems) = preProject
-		docs\ARCValidationPackages\introduction.md = docs\ARCValidationPackages\introduction.md
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
