@@ -25,8 +25,8 @@ let mockInv =
         Investigation_Person_Roles_Term_Accession_Number = ["http://purl.org/spar/scoro/principal-investigator"; "http://purl.org/spar/scoro/principal-investigator"; "http://purl.org/spar/scoro/research-assistant"],
         Comment_ORCID = ["http://orcid.org/0000-0003-3925-6778"; ""; "0000-0002-8241-5300"],
         Study_Identifier = ["experiment1_material"; "experiment2"],
-        Study_File_Name = [@"experiment1_material\isa.study.xlsx"; @"experiment2\isa.study.xlsx"],
-        Study_Assay_File_Name = [@"measurement1\isa.assay.xlsx"; @"measurement2\isa.assay.xlsx"]
+        Study_File_Name = ["experiment1_material/isa.study.xlsx"; "experiment2/isa.study.xlsx"],
+        Study_Assay_File_Name = ["measurement1/isa.assay.xlsx"; "measurement2/isa.assay.xlsx"]
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
@@ -38,14 +38,14 @@ let mockStu =
         Study_Identifier = ["experiment1_material"],
         Study_Title = ["Prototype for experimental data"],
         Study_Description = ["In this a devised study to have an exemplary experimental material description."],
-        Study_File_Name = [@"experiment1_material\isa.study.xlsx"]
+        Study_File_Name = ["experiment1_material/isa.study.xlsx"]
     )
     |> List.concat // use flat list
     |> Seq.map (fun cvp -> cvp :> IParam)
 
 let mockAss =
     ARCMock.AssayMetadataTokens(
-        Assay_File_Name = [@"measurement1\isa.assay.xlsx"],
+        Assay_File_Name = ["measurement1/isa.assay.xlsx"],
         Assay_Performer_Last_Name = ["Maus"; "Katz"],
         Assay_Performer_First_Name = ["Oliver"; "Marius"],
         Assay_Performer_Mid_Initials = [""; "G."],
