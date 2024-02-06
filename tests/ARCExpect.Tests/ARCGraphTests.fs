@@ -147,7 +147,7 @@ let ``fillTokenList tests`` =
                 |> Seq.map (fun (t1,t2) -> t2.Value |> ParamValue.getValueAsString) 
                 |> Seq.tryItem 8
                 |> Option.defaultValue ""
-            let exp2 = @"measurement1\isa.assay.xlsx"
+            let exp2 = "measurement1/isa.assay.xlsx"
             Expect.equal act2 exp2 "wrong Assay Filename"
         )
     ]
