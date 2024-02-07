@@ -50,6 +50,9 @@ let invFileTokens =
     |> Seq.concat
     |> Seq.map snd
 
+Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths |> List.concat |> Seq.iter (Param.getCvName >> printfn "%s")
+Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths |> List.concat |> Seq.iter (Param.getTerm >> printfn "%A")
+
 let invFileTokensNoMdSecKeys =
     invFileTokens
     |> Seq.filter (Param.getValue >> (<>) Terms.StructuralTerms.metadataSectionKey.Name) 
@@ -69,6 +72,10 @@ let contactsAffs =
 let contactsEmails =
     invFileTokensNoMdSecKeys
     |> Seq.filter (Param.getTerm >> (=) INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``)
+
+let commis =
+    invFileTokensNoMdSecKeys
+    |> Seq.filter (Param.getTerm >> (=) Terms.StructuralTerms.userComment)
 
 
 // Validation Cases:
@@ -102,6 +109,10 @@ let cases =
             |> Seq.iter (Validate.Param.ValueMatchesRegex StringValidationPattern.email)
         }
         // missing: how to get specific comment? (here: Keywords Comment)
+        //ARCExpect.validationCase (TestID.Name "Comment: Keywords") {
+        //    commis
+        //    |> Seq.iter (Validate.Param.ValueMatchesRegex StringValidationPattern.email)    // needs special Regex
+        //}
     ]
 
 

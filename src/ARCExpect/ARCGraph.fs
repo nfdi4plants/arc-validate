@@ -350,6 +350,7 @@ module ARCGraph =
 
     /// Checks if a given IParam has a part_of relation to a given header term using an ontology-based FGraph.
     let isPartOfHeader (header : IParam) (ontoGraph : FGraph<string,OboTerm,ARCRelation>) (ip : IParam) =
+        Param.getTerm ip <> Terms.StructuralTerms.userComment &&
         ontoGraph[ip.Name]     // change to `.Accession` if required
         |> FContext.successors
         |> Seq.exists (fun (nk,e) -> nk = header.Name && e.HasFlag ARCRelation.PartOf)      // change to `.Accession` if required
