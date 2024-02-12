@@ -28,21 +28,50 @@ type Config = {
             packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
             configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH())
         )
+    static member indexContainsPackages (packageName: string) (config: Config) =
+        config.PackageIndex |> Array.exists (fun package -> package.Metadata.Name = packageName)
 
-    static member indexContainsPackage (packageName: string) (config: Config) =
-        config.PackageIndex |> Array.exists (fun package -> package.FileName = packageName)
+    static member indexContainsPackage (packageName: string) (semverString: string) (config: Config) =
+        config.PackageIndex 
+        |> Array.exists (fun package -> 
+            package.Metadata.Name = packageName 
+            && (ValidationPackageIndex.getSemanticVersionString package = semverString)
 
-    static member tryGetIndexedPackageByName (packageName: string) (config: Config) =
-        if Config.indexContainsPackage packageName config then
-            Some (config.PackageIndex |> Array.find (fun package -> package.FileName = packageName))
+        )
+
+    static member getIndexedPackagesByName (packageName: string) (config: Config) =
+        config.PackageIndex |> Array.filter (fun package -> package.Metadata.Name = packageName)
+
+    static member tryGetLatestPackage (packageName: string) (config: Config) =
+        if Config.indexContainsPackages packageName config then
+            config 
+            |> Config.getIndexedPackagesByName packageName
+            |> Array.maxBy ValidationPackageIndex.getSemanticVersionString
+            |> Some
+        else None
+
+    static member tryGetIndexedPackageByNameAndVersion (packageName: string) (semverString: string) (config: Config) =
+        if Config.indexContainsPackage packageName semverString config then
+            config.PackageIndex 
+            |> Array.find (fun package -> 
+                package.Metadata.Name = packageName
+                && (ValidationPackageIndex.getSemanticVersionString package = semverString)
+            )
+            |> Some
         else
             None
 
-    static member getIndexedPackageByName (packageName: string) (config: Config) =
-        if Config.indexContainsPackage packageName config then
-            config.PackageIndex |> Array.find (fun package -> package.FileName = packageName)
-        else
-            failwithf "Package %s not found in index" packageName
+    static member getLatestPackage (packageName: string) (config: Config) =
+        config 
+        |> Config.getIndexedPackagesByName packageName
+        |> Array.maxBy ValidationPackageIndex.getSemanticVersionString
+
+    static member getIndexedPackageByNameAndVersion (packageName: string) (semverString: string) (config: Config) =
+        config.PackageIndex 
+        |> Array.find (fun package -> 
+            package.Metadata.Name = packageName
+            && (ValidationPackageIndex.getSemanticVersionString package = semverString)
+        )
 
     static member withIndex (index: ValidationPackageIndex []) (config: Config) =
         {

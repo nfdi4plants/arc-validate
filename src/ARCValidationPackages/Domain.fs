@@ -39,6 +39,8 @@ type ValidationPackageMetadata() =
         tmp.PatchVersion <- patchVersion
         tmp
 
+    static member getSemanticVersionString(m: ValidationPackageMetadata) = $"{m.MajorVersion}.{m.MinorVersion}.{m.PatchVersion}";
+
 /// <summary>
 /// represents a remotely available version of a validation package, e.g. the path to the file on GitHub and the date it was last updated.
 /// </summary>
@@ -74,24 +76,26 @@ type ValidationPackageIndex =
                 metadata = metadata
             )
 
+        static member getSemanticVersionString(i: ValidationPackageIndex) = $"{i.Metadata.MajorVersion}.{i.Metadata.MinorVersion}.{i.Metadata.PatchVersion}";
+
 /// <summary>
 /// represents the locally installed version of a validation package, e.g. the path to the local file and the date it was cached.
 /// </summary>
 type ARCValidationPackage =
     {
-        Name: string
+        FileName: string
         CacheDate: System.DateTimeOffset
         LocalPath: string
         Metadata: ValidationPackageMetadata
     } with
         static member create (
-            name: string, 
+            fileName: string, 
             cacheDate: System.DateTimeOffset, 
             localPath: string,
             metadata: ValidationPackageMetadata
         ) = 
             { 
-                Name = name
+                FileName = fileName
                 CacheDate = cacheDate
                 LocalPath = localPath
                 Metadata = metadata
@@ -105,7 +109,7 @@ type ARCValidationPackage =
         static member ofPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
             let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER())
             ARCValidationPackage.create(
-                name = packageIndex.FileName,
+                fileName = packageIndex.FileName,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
                 localPath = (System.IO.Path.Combine(path, $"{packageIndex.FileName}.fsx").Replace("\\","/")),
                 metadata = packageIndex.Metadata
@@ -120,7 +124,7 @@ type ARCValidationPackage =
         static member ofPackageName (packageName: string, ?Date: System.DateTimeOffset, ?Path: string) =
             let path = defaultArg Path (Defaults.PACKAGE_CACHE_FOLDER())
             ARCValidationPackage.create(
-                name = packageName,
+                fileName = packageName,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
                 localPath = (System.IO.Path.Combine(path, $"{packageName}.fsx").Replace("\\","/")),
                 metadata = ValidationPackageMetadata()
@@ -133,3 +137,5 @@ type ARCValidationPackage =
         /// <param name="package">The input package</param>
         static member updateCacheDate (date: System.DateTimeOffset) (package: ARCValidationPackage) =
             {package with CacheDate = date}
+
+        static member getSemanticVersionString(vp: ARCValidationPackage) = $"{vp.Metadata.MajorVersion}.{vp.Metadata.MinorVersion}.{vp.Metadata.PatchVersion}";

@@ -35,7 +35,7 @@ let ``Toplevel API tests`` =
 
                 "Fresh config package index contains test package",
                     fun (freshConfig, _) ->
-                        Expect.isTrue (Array.exists (fun x -> x.FileName = "test") freshConfig.PackageIndex) "fresh config package index was empty"
+                        Expect.isTrue (Array.exists (fun (x:ValidationPackageIndex) -> x.Metadata.Name = "test") freshConfig.PackageIndex) "fresh config package index was empty"
                 "Fresh package cache is empty",
 
                     fun (_, freshCache) ->

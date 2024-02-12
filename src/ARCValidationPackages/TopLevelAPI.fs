@@ -1,19 +1,28 @@
 ﻿namespace ARCValidationPackages
 open System.IO
 
+type APIError = 
+| RateLimitExceeded of msg: string
+| SerializationError of msg: string
+
 type GetSyncedConfigAndCacheError =
 | SyncError of msg: string
+| APIError of APIError
 
 type UpdateIndexError =
 | DownloadError of msg: string
+| APIError of APIError
 
 type PackageInstallError = 
 | PackageNotFound of package: string
+| PackageVersionNotFound of package: string * version: string
 | DownloadError of package: string * msg: string
+| APIError of APIError
 
 type PackageUninstallError =
 | PackageNotInstalled of msg: string
 | IOError of msg: string
+| APIError of APIError
 
 type API =
 
@@ -53,10 +62,19 @@ type API =
             |> PackageCache.addPackage package
             |> PackageCache.write()
 
-            Ok ($"installed package {package.Name} at {package.LocalPath}")
+            Ok ($"installed package {package.FileName} at {package.LocalPath}")
                 
         with e ->
-            Error (PackageInstallError.DownloadError(package.Name, e.Message))
+            match e with
+            | :? GitHubAPI.Errors.RateLimitError as e -> 
+                (RateLimitExceeded e.Message)
+                |> PackageInstallError.APIError
+                |> Error
+            | :? GitHubAPI.Errors.SerializationError as e ->
+                (SerializationError e.Message)
+                |> PackageInstallError.APIError
+                |> Error
+            | _ -> Error (PackageInstallError.DownloadError(package.FileName, e.Message))
 
     static member UpdateIndex (
         config: Config,
@@ -74,55 +92,79 @@ type API =
             Ok updatedConfig
 
         with e ->
-            Error (UpdateIndexError.DownloadError(e.Message))
+            match e with
+            | :? GitHubAPI.Errors.RateLimitError as e -> 
+                (RateLimitExceeded e.Message)
+                |> UpdateIndexError.APIError
+                |> Error
+
+            | :? GitHubAPI.Errors.SerializationError as e ->
+                (SerializationError e.Message)
+                |> UpdateIndexError.APIError
+                |> Error
+
+            | _ -> Error (UpdateIndexError.DownloadError(e.Message))
 
     static member InstallPackage(
         config: Config,
         cache: PackageCache,
         packageName: string,
+        ?SemVer: string,
         ?Verbose: bool,
         ?Token: string
     ) =
         let verbose = defaultArg Verbose false
-
-        if (Config.indexContainsPackage packageName config) then
+        if (Config.indexContainsPackages packageName config) then
             // package exists on the local index
-            let indexedPackage = Config.getIndexedPackageByName packageName config
 
-            if cache.ContainsKey(packageName) then
-                //already cached -> update index and check if newer package is available
-                let cachedPackage = cache.[packageName]
+            let indexedPackage = 
+                match SemVer with
+                | None ->
+                    Config.tryGetLatestPackage packageName config
+                | Some version ->
+                    Config.tryGetIndexedPackageByNameAndVersion packageName version config
+            
+            match indexedPackage with
+            | None -> Error (PackageVersionNotFound (packageName,(defaultArg SemVer "latest")))
+            | Some indexedPackage ->
+                match 
+                    cache
+                    |> PackageCache.tryGetPackage 
+                        indexedPackage.Metadata.Name
+                        (ValidationPackageIndex.getSemanticVersionString indexedPackage)
+                with
+                | Some cachedPackage ->
+                    //already cached -> update index and check if newer package is available
 
-                if verbose then printfn $"package {packageName} is already cached locally from {cachedPackage.CacheDate}"
-                if verbose then printfn $"updating package index and looking for a newer version..."
+                    if verbose then printfn $"package {packageName} is already cached locally from {cachedPackage.CacheDate}"
+                    if verbose then printfn $"updating package index and looking for a newer version..."
 
-                match API.UpdateIndex(config, ?Token = Token) with
-                | Ok updatedConfig -> 
-                    let updatedIndexPackage = Config.getIndexedPackageByName packageName updatedConfig
-                    if updatedIndexPackage.LastUpdated > indexedPackage.LastUpdated then
-                        // package on remote index is newer, download package and cache.
-                        if verbose then printfn $"package {packageName} is available in a newer version({updatedIndexPackage.LastUpdated} vs {indexedPackage.LastUpdated}). downloading..."
-                        API.SaveAndCachePackage(
-                            cache = cache,
-                            indexedPackage = updatedIndexPackage,
-                            ?Token = Token
-                        )
+                    match API.UpdateIndex(config, ?Token = Token) with
+                    | Ok updatedConfig -> 
+                        let updatedIndexPackage = Config.getIndexedPackageByNameAndVersion packageName (ARCValidationPackage.getSemanticVersionString cachedPackage) updatedConfig
+                        if updatedIndexPackage.LastUpdated > indexedPackage.LastUpdated then
+                            // package on remote index is newer, download package and cache.
+                            if verbose then printfn $"package {packageName} is available in a newer version({updatedIndexPackage.LastUpdated} vs {indexedPackage.LastUpdated}). downloading..."
+                            API.SaveAndCachePackage(
+                                cache = cache,
+                                indexedPackage = updatedIndexPackage,
+                                ?Token = Token
+                            )
 
-                    else
-                        // package is installed with latest version
-                        Ok ($"package {indexedPackage.FileName} is already installed with the latest version.")
+                        else
+                            // package is installed with latest version
+                            Ok ($"package {indexedPackage.FileName} is already installed with the latest version.")
 
-                | Error e -> 
-                    Error (PackageInstallError.DownloadError(packageName, $"failed to update package index: {e}"))
+                    | Error e -> 
+                        Error (PackageInstallError.DownloadError(packageName, $"failed to update package index: {e}"))
 
-            else 
-                // not cached -> download and cache
-                API.SaveAndCachePackage(
-                    cache = cache,
-                    indexedPackage = indexedPackage,
-                    ?Token = Token
-                )
-
+                |None -> 
+                    // not cached -> download and cache
+                    API.SaveAndCachePackage(
+                        cache = cache,
+                        indexedPackage = indexedPackage,
+                        ?Token = Token
+                    )
         else    
             // package does not exists on the local index
             Error (PackageNotFound packageName)
@@ -130,27 +172,53 @@ type API =
     static member UninstallPackage(
         cache: PackageCache,
         packageName: string,
+        ?Version: string,
         ?Verbose: bool
     ) =
         let verbose = defaultArg Verbose false
 
-        if verbose then printfn $"uninstalling package {packageName}..."
-        if cache.ContainsKey(packageName) then
-            if verbose then printfn $"package {packageName} is installed. removing..."
-            let package = cache.[packageName]
+        match Version with
+        | None ->
+
+            if verbose then printfn $"uninstalling all package versions of {packageName}..."
+
             try
-                if verbose then printfn $"removing {package.LocalPath}..."
-                File.Delete(package.LocalPath)
-                cache
-                |> PackageCache.removePackage packageName
-                |> PackageCache.write()
-                Ok ($"uninstalled package {packageName} from {package.LocalPath}")
+                PackageCache.getPackages packageName cache
+                |> Seq.iter (fun kv -> 
+                    let version, package = kv.Key, kv.Value
+                    if verbose then printfn $"package {packageName}@{version} is installed. removing..."
+                    if verbose then printfn $"removing {package.LocalPath}..."
+                    File.Delete(package.LocalPath)
+                    cache
+                    |> PackageCache.removePackage packageName version
+                    |> PackageCache.write()
+                )
+                Ok ($"uninstalled all package versions of {packageName}")
             with e ->
-                if verbose then printfn $"failed to remove {package.LocalPath}: {e.Message}"
+                if verbose then printfn $"failed to remove a package: {e.Message}"
                 Error (IOError e.Message)
-        else
-            if verbose then printfn $"package {packageName} is not installed."
-            Error (PackageNotInstalled packageName)
+
+        | Some semver ->
+            if verbose then printfn $"uninstalling all package versions of {packageName}..."
+
+            match PackageCache.tryGetPackage packageName semver cache with
+            | Some p -> 
+                if verbose then printfn $"package {packageName}@{semver} is installed. removing..."
+                try
+                    if verbose then printfn $"removing {p.LocalPath}..."
+                    File.Delete(p.LocalPath)
+                    cache
+                    |> PackageCache.removePackage packageName semver
+                    |> PackageCache.write()
+                    Ok ($"uninstalled package {packageName}@{semver} from {p.LocalPath}")
+                with e ->
+                    if verbose then printfn $"failed to remove {p.LocalPath}: {e.Message}"
+                    Error (IOError e.Message)
+
+            | None -> 
+                if verbose then printfn $"package {packageName} is not installed."
+                Error (PackageNotInstalled packageName)
+
 
     static member ListCachedPackages(
         cache: PackageCache,
@@ -158,7 +226,7 @@ type API =
     ) =
         try
             cache 
-            |> PackageCache.getPackages
+            |> PackageCache.getAllPackages
             |> Ok
         
         with e ->
