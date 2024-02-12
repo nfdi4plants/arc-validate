@@ -13,6 +13,7 @@
 #r "nuget: FSharpAux"
 #r "nuget: Graphoscope"
 #r "nuget: Cytoscape.NET"
+#r "nuget: ARCtrl"
 
 open ARCExpect
 open ARCTokenization
@@ -25,6 +26,7 @@ open ARCValidate
 open FSharpAux
 open Graphoscope
 open Cytoscape
+open ARCtrl
 
 open System.IO
 
