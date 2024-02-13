@@ -4,6 +4,7 @@ open System.IO
 type APIError = 
 | RateLimitExceeded of msg: string
 | SerializationError of msg: string
+| NotFoundError of msg: string
 
 type GetSyncedConfigAndCacheError =
 | SyncError of msg: string
@@ -74,6 +75,10 @@ type API =
                 (SerializationError e.Message)
                 |> PackageInstallError.APIError
                 |> Error
+            | :? GitHubAPI.Errors.NotFoundError as e ->
+                (NotFoundError e.Message)
+                |> PackageInstallError.APIError
+                |> Error
             | _ -> Error (PackageInstallError.DownloadError(package.FileName, e.Message))
 
     static member UpdateIndex (
@@ -100,6 +105,11 @@ type API =
 
             | :? GitHubAPI.Errors.SerializationError as e ->
                 (SerializationError e.Message)
+                |> UpdateIndexError.APIError
+                |> Error
+
+            | :? GitHubAPI.Errors.NotFoundError as e ->
+                (NotFoundError e.Message)
                 |> UpdateIndexError.APIError
                 |> Error
 

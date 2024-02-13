@@ -11,7 +11,15 @@ type PackageCache =
 
     new (packages: IEnumerable<KeyValuePair<string, Dictionary<string,ARCValidationPackage>>>) = { inherit Dictionary<string, Dictionary<string,ARCValidationPackage>>(packages) }
 
-    new (cache: PackageCache) = { inherit Dictionary<string, Dictionary<string,ARCValidationPackage>>(cache) }
+    new (cache: PackageCache) = 
+        let kv = 
+            cache
+            |> Seq.map (fun innerKV -> 
+                innerKV.Key, Dictionary(innerKV.Value)
+            )
+            |> Seq.map (fun (name,versions) -> KeyValuePair.Create(name,versions))
+        PackageCache(kv)
+        
 
     new(packages: seq<ARCValidationPackage>) = 
         let kv = 
@@ -25,6 +33,29 @@ type PackageCache =
             )
             |> Seq.map (fun (name,versions) -> KeyValuePair.Create(name,versions))
         PackageCache(kv)
+
+    //override this.Equals(obj: obj) =
+    //    match obj with
+    //    | :? PackageCache as other -> 
+    //        let countIsEqual = this.Count = other.Count
+    //        let KeysAreEqual = 
+    //            Seq.zip (this.Keys |> Seq.sort) (other.Keys |> Seq.sort)
+    //            |> Seq.forall (fun (a,b) -> a = b)
+    //        if KeysAreEqual && countIsEqual then
+    //            [for key in this.Keys -> this[key], other[key]]
+    //            |> Seq.forall(fun (v1, v2) ->
+    //                let countIsEqual = v1.Count = v2.Count
+    //                let KeysAreEqual = 
+    //                    Seq.zip (v1.Keys |> Seq.sort) (v2.Keys |> Seq.sort)
+    //                    |> Seq.forall (fun (a,b) -> a = b)
+    //                let valuesAreEqual = 
+    //                    [for key in v1.Keys -> v1[key], v2[key]]
+    //                    |> Seq.forall(fun (v1, v2) -> v1 = v2)
+    //                countIsEqual && KeysAreEqual && valuesAreEqual
+    //            )
+    //        else
+    //            false
+    //    | _ -> false
 
     static member create (packages: seq<ARCValidationPackage>) =
         new PackageCache(packages)

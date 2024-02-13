@@ -14,6 +14,8 @@ module Defaults =
 
     let [<Literal>] PACKAGE_INDEX_FILE_NAME = "src/PackageRegistryService/Data/arc-validate-package-index.json"
 
+    let [<Literal>] PACKAGE_STAGING_AREA = "src/PackageRegistryService/StagingArea"
+
     let [<Literal>] GITHUB_API_BASE_URL = "https://api.github.com"
 
     let [<Literal>] GITHUB_API_USER_AGENT = "arc-validate"

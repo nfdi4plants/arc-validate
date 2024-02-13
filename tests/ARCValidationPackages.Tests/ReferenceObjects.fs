@@ -16,7 +16,7 @@ let testPackageIndex =
     [|
         ValidationPackageIndex.create(
             repoPath = "arc-validate-packages/test.fsx", 
-            fileName = "test",
+            fileName = "test@1.0.0.fsx",
             lastUpdated = testDate1,
             metadata = ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", 1, 0, 0)
         )
@@ -28,18 +28,18 @@ Name: test
 Description: this package is here for testing purposes only.
 MajorVersion: 1
 MinorVersion: 0
-PatchVersion: 1
+PatchVersion: 0
 ---
 *)
 
 // this file is intended for testing purposes only.
-printfn \"Hello, world!\"".ReplaceLineEndings()
+printfn \"Hello, world!\" ".ReplaceLineEndings()
 
 let testValidationPackage1 =
     ARCValidationPackage.create(
         "test@1.0.0.fsx",
         testDate1,
-        (Path.Combine(expected_package_cache_folder_path, "test.fsx").Replace("\\","/")),
+        (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
         ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", 1, 0, 0)
     )
 
@@ -47,7 +47,7 @@ let testValidationPackage2 =
     ARCValidationPackage.create(
         "test@1.0.0.fsx",
         testDate2,
-        (Path.Combine(expected_package_cache_folder_path, "test.fsx").Replace("\\","/")),
+        (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
         ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", 1, 0, 0)
     )
 

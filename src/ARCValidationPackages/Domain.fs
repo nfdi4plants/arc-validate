@@ -111,7 +111,7 @@ type ARCValidationPackage =
             ARCValidationPackage.create(
                 fileName = packageIndex.FileName,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = (System.IO.Path.Combine(path, $"{packageIndex.FileName}.fsx").Replace("\\","/")),
+                localPath = (System.IO.Path.Combine(path, packageIndex.FileName).Replace("\\","/")),
                 metadata = packageIndex.Metadata
             )
 

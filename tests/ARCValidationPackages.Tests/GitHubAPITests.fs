@@ -24,21 +24,23 @@ let ``GitHubAPI tests`` =
             |> ignore
         }
         test "getRepositoryContent returns correct content" {
+            let response = 
+                GitHubAPI.getRepositoryContent(
+                    owner = "nfdi4plants",
+                    repo = "arc-validate-package-registry",
+                    path = $"src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx",
+                    userAgent = "arc-validate-test",
+                    ?Token = token
+                )
             Expect.equal 
                 (
-                    GitHubAPI.getRepositoryContent(
-                        owner = "nfdi4plants",
-                        repo = "arc-validate-package-registry",
-                        path = "src/PackageRegistryService/StagingArea/test.fsx",
-                        userAgent = "arc-validate-test",
-                        ?Token = token
-                    )
+                    response
                     |> fun json -> (json?content).GetString()
                     |> fun content -> Convert.FromBase64String(content)
                     |> fun bytes -> Encoding.UTF8.GetString(bytes).ReplaceLineEndings()
                 )
                 ReferenceObjects.testScriptContent
-                "repository content was not correct"
+                $"repository content was not correct{System.Environment.NewLine}{response}"
         }
         test "getPackageIndex terminates" {
             GitHubAPI.getPackageIndex(?Token = token)
@@ -46,11 +48,11 @@ let ``GitHubAPI tests`` =
         }
         test "getPackageIndex contains test script" {
             let indexedPackages = GitHubAPI.getPackageIndex(?Token = token)
-            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "src/PackageRegistryService/StagingArea/test.fsx")) "package index did not contain test script"
+            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx")) "package index did not contain test script"
         }
         test "getScriptContent terminates" {
             GitHubAPI.downloadPackageScript(
-                "src/PackageRegistryService/StagingArea/test.fsx",
+                "src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx",
                 ?Token = token
             )
             |> ignore
@@ -59,7 +61,7 @@ let ``GitHubAPI tests`` =
             Expect.equal 
                 (
                     GitHubAPI.downloadPackageScript(
-                        "src/PackageRegistryService/StagingArea/test.fsx",
+                        "src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx",
                         ?Token = token
                     )
                     |> fun content -> content.ReplaceLineEndings()

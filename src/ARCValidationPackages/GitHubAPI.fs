@@ -19,6 +19,9 @@ module GitHubAPI =
         type BadCredentialsError(msg : string) =
             inherit Exception(msg)
 
+        type NotFoundError(msg : string) =
+            inherit Exception(msg)
+
 type GitHubAPI =
     static member getRepositoryContent(
         owner: string,
@@ -27,9 +30,10 @@ type GitHubAPI =
         userAgent: string,
         ?Token: string
     ) = 
+        let url = $"{Defaults.GITHUB_API_BASE_URL}/repos/{owner}/{repo}/contents/{path}"
         let response = 
             http {
-                GET $"{Defaults.GITHUB_API_BASE_URL}/repos/{owner}/{repo}/contents/{path}"
+                GET url
                 UserAgent Defaults.GITHUB_API_USER_AGENT
                 Accept Defaults.GITHUB_API_ACCEPT_HEADER
                 headers [ 
@@ -39,10 +43,13 @@ type GitHubAPI =
             |> Request.send
 
         if response.reasonPhrase = "rate limit exceeded" && response.statusCode = Net.HttpStatusCode.Forbidden then
-            raise (GitHubAPI.Errors.RateLimitError($"{response.reasonPhrase}:{System.Environment.NewLine}{response |> Response.toJson}"))
+            raise (GitHubAPI.Errors.RateLimitError($"{response.reasonPhrase}:{System.Environment.NewLine}at: {url}{System.Environment.NewLine}{response |> Response.toJson}"))
 
         elif response.statusCode = Net.HttpStatusCode.Unauthorized then
-            raise (GitHubAPI.Errors.BadCredentialsError($"{response.reasonPhrase}:{System.Environment.NewLine}{response |> Response.toJson}"))
+            raise (GitHubAPI.Errors.BadCredentialsError($"{response.reasonPhrase}:{System.Environment.NewLine}at: {url}{System.Environment.NewLine}{response |> Response.toJson}"))
+
+        elif response.statusCode = Net.HttpStatusCode.NotFound then
+            raise (GitHubAPI.Errors.NotFoundError($"{response.reasonPhrase}:{System.Environment.NewLine}at: {url}{System.Environment.NewLine}{response |> Response.toJson}"))
 
         else 
             try
