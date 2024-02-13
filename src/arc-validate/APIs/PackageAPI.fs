@@ -14,10 +14,21 @@ type PackageAPI =
         match e with
         | PackageNotFound p -> printfn $"Package {p} not found. Your package index might be out of date. Consider updating the index via arc-validate package update-index."
         | DownloadError (p, msg) -> printfn $"Error downloading package {p}: {msg}."
+        | PackageVersionNotFound (p, v) -> printfn $"Package {p} version {v} not found."
+        | PackageInstallError.APIError e -> 
+            match e with
+            | RateLimitExceeded msg -> printfn $"Rate limit exceeded: {msg}"
+            | SerializationError msg -> printfn $"Serialization error: {msg}"
+            | NotFoundError msg -> printfn $"Not found: {msg}"
 
     static member printGetSyncedConfigAndCacheError (e: GetSyncedConfigAndCacheError) =
          match e with
          | SyncError msg -> printfn $"Error syncing config and cache: {msg}"
+         | GetSyncedConfigAndCacheError.APIError e -> 
+            match e with
+            | RateLimitExceeded msg -> printfn $"Rate limit exceeded: {msg}"
+            | SerializationError msg -> printfn $"Serialization error: {msg}"
+            | NotFoundError msg -> printfn $"Not found: {msg}"
 
     static member Install(
         args: ParseResults<PackageInstallArgs>,
@@ -32,8 +43,9 @@ type PackageAPI =
         | Ok (config, cache) -> 
 
             let packageName = args.TryGetResult(PackageInstallArgs.Package).Value
+            let version = args.TryGetResult(PackageInstallArgs.PackageVersion)
 
-            match (API.InstallPackage(config, cache, packageName, ?Verbose = Verbose, ?Token = Token)) with
+            match (API.InstallPackage(config, cache, packageName, ?SemVer = version, ?Verbose = Verbose, ?Token = Token)) with
             | Ok msg ->
                 printfn $"{msg}"
                 ExitCode.Success
@@ -56,8 +68,9 @@ type PackageAPI =
         | Ok (config, cache) -> 
             let verbose = defaultArg Verbose false
             let packageName = args.TryGetResult(PackageUninstallArgs.Package).Value
+            let version = args.TryGetResult(PackageUninstallArgs.PackageVersion)
 
-            match (API.UninstallPackage(cache, packageName, verbose)) with
+            match (API.UninstallPackage(cache, packageName, ?SemVer = version, Verbose = verbose)) with
             | Ok msg ->
                 printfn $"{msg}"
                 ExitCode.Success
@@ -85,13 +98,13 @@ type PackageAPI =
         | Ok (config, cache) -> 
             let verbose = defaultArg Verbose false
 
-            let printCachedPackageList (packages: ARCValidationPackage list) =
+            let printCachedPackageList (packages: seq<ARCValidationPackage>) =
                 packages
                 |> fun p -> 
-                    if p.Length = 0 then 
+                    if Seq.length p = 0 then 
                         printfn $"No validation packages installed."
                     else 
-                        p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]:\tName: {p.Name}{System.Environment.NewLine}\tInstalled on: {p.CacheDate}{System.Environment.NewLine}\tat: {p.LocalPath}")
+                        p |> Seq.iteri (fun i p -> printfn $"""{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}""")
 
             let printIndexedPackageList (packages: ValidationPackageIndex list) =
                 packages
@@ -99,7 +112,7 @@ type PackageAPI =
                     if p.Length = 0 then 
                         printfn $"No validation packages indexed."
                     else 
-                        p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]:\tName: {p.FileName}{System.Environment.NewLine}\tLast updated: {p.LastUpdated}")
+                        p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}")
 
             match (args.TryGetResult(Installed), args.TryGetResult(Indexed)) with
             | None, None | Some Installed, None | None, Some Installed->

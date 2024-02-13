@@ -35,6 +35,9 @@ module ValidateAPI =
         let package = 
             args.TryGetResult(Package)
 
+        let version = 
+            args.TryGetResult(PackageVersion)
+
         match package with
 
         | None -> // Default call means validate schema conformity
@@ -66,13 +69,18 @@ module ValidateAPI =
                     exitCode <- ExitCode.InternalError
 
                 | Ok (config, cache) -> 
+                    let package = 
+                        match version with 
+                        | Some semver -> PackageCache.tryGetPackage packageName semver cache
+                        | None -> PackageCache.tryGetLatestPackage packageName cache
 
-                    match PackageCache.tryGetPackage packageName cache with
+                    match package with
                     | Some validationPackage ->
                         if verbose then
-                            AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally.[/]");
-                            AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].");
-                            AnsiConsole.MarkupLine($"LOG: Output path is:");
+                            AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally:[/]")
+                            AnsiConsole.MarkupLine($"LOG: {validationPackage.PrettyPrint()}")
+                            AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].")
+                            AnsiConsole.MarkupLine($"LOG: Output path is:")
                             AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                             AnsiConsole.MarkupLine("")
 

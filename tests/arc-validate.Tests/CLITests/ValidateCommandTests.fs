@@ -17,26 +17,58 @@ open JUnit
 [<Tests>]
 let ``ValidateCommand CLI Tests`` =
     testSequenced (testList "arc-validate validate" [
+        testSequenced (testList "package test -pv 2 -i fixtures/arcs/inveniotestarc" [
+            yield! 
+                testFixture (Fixtures.withToolExecution 
+                    true
+                    "../../../../../publish/arc-validate" 
+                    [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"|]
+                    (get_gh_api_token())
+                ) [
+                    "Package script exists after running package install test" ,  
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                ]
+            yield! 
+                testFixture (Fixtures.withToolExecution 
+                    false
+                    "../../../../../publish/arc-validate" 
+                    [|"-v"; "validate"; "-p"; "test"; "-pv"; "2.0.0"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                    (get_gh_api_token())
+                ) [
+                    "Exit code is 0" , 
+                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                    "Console output does not indicate that package is not installed" , 
+                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                    "Console Output is correct" ,
+                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Hello, world!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+
+                    ]
+        ])
         testSequenced (testList "package test -i fixtures/arcs/inveniotestarc" [
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test"|]
+                    [|"-v"; "package"; "install"; "test";|]
                     (get_gh_api_token())
                 ) [
                     "Package script exists after running package install test" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                 ]
             yield! 
                 testFixture (Fixtures.withToolExecution 
-                    true
+                    false
                     "../../../../../publish/arc-validate" 
                     [|"-v"; "validate"; "-p"; "test"; "-i"; "fixtures/arcs/inveniotestarc"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
                         fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                    "Console output does not indicate that package is not installed" , 
+                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                    "Console Output is correct" ,
+                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Hello, world!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+
                     ]
         ])
 

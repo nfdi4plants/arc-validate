@@ -63,11 +63,19 @@ type PackageCache =
     static member getPackage (name: string) (semVerString: string) (cache: PackageCache) =
         cache[name][semVerString]
 
+    static member getLatestPackage (name: string) (cache: PackageCache) =
+        cache[name]
+        |> Seq.maxBy (fun (kv:KeyValuePair<string,ARCValidationPackage>) -> kv.Key)
+        |> fun x -> x.Value
+
     static member getPackages (name: string) (cache: PackageCache) =
         cache[name]
 
     static member getAllPackages (cache: PackageCache) =
-        cache.Values |> Seq.toList
+        cache.Values 
+        |> Seq.toList
+        |> Seq.map (fun x -> x.Values)
+        |> Seq.concat
 
     static member tryGetPackage (name: string) (semVerString: string) (cache: PackageCache) =
         if cache.ContainsKey(name) then
@@ -78,6 +86,14 @@ type PackageCache =
             else 
                 None
         else
+            None
+
+    static member tryGetLatestPackage (name: string) (cache: PackageCache) =
+        if cache.ContainsKey(name) then
+            cache
+            |> PackageCache.getLatestPackage name
+            |> Some
+        else 
             None
 
     static member tryGetPackages (name: string) (cache: PackageCache) =

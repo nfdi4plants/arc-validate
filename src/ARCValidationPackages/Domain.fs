@@ -78,6 +78,9 @@ type ValidationPackageIndex =
 
         static member getSemanticVersionString(i: ValidationPackageIndex) = $"{i.Metadata.MajorVersion}.{i.Metadata.MinorVersion}.{i.Metadata.PatchVersion}";
 
+        member this.PrettyPrint() =
+            $" {this.Metadata.Name} @ version {this.Metadata.MajorVersion}.{this.Metadata.MinorVersion}.{this.Metadata.PatchVersion}{System.Environment.NewLine}{_.Metadata.Description}{System.Environment.NewLine}Last Updated: {this.LastUpdated}{System.Environment.NewLine}"
+
 /// <summary>
 /// represents the locally installed version of a validation package, e.g. the path to the local file and the date it was cached.
 /// </summary>
@@ -139,3 +142,6 @@ type ARCValidationPackage =
             {package with CacheDate = date}
 
         static member getSemanticVersionString(vp: ARCValidationPackage) = $"{vp.Metadata.MajorVersion}.{vp.Metadata.MinorVersion}.{vp.Metadata.PatchVersion}";
+
+        member this.PrettyPrint() =
+            $" {this.Metadata.Name} @ version {this.Metadata.MajorVersion}.{this.Metadata.MinorVersion}.{this.Metadata.PatchVersion}{System.Environment.NewLine}{this.Metadata.Description}{System.Environment.NewLine}CacheDate: {this.CacheDate}{System.Environment.NewLine}Installed at: {this.LocalPath}{System.Environment.NewLine}"

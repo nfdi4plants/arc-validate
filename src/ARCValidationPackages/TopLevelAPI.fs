@@ -182,12 +182,12 @@ type API =
     static member UninstallPackage(
         cache: PackageCache,
         packageName: string,
-        ?Version: string,
+        ?SemVer: string,
         ?Verbose: bool
     ) =
         let verbose = defaultArg Verbose false
 
-        match Version with
+        match SemVer with
         | None ->
 
             if verbose then printfn $"uninstalling all package versions of {packageName}..."
