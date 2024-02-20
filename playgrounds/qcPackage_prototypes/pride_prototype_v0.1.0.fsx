@@ -79,11 +79,62 @@ let commis =
     invFileTokensNoMdSecKeys
     |> Seq.filter (Param.getTerm >> (=) Terms.StructuralTerms.userComment)
 
+let stdFileProcTokens =
+    absoluteFilePaths
+    |> Seq.choose (
+        fun cvp ->
+            let cvpV = CvParam.getValueAsString cvp
+            if String.contains "isa.study.xlsx" cvpV then
+                ARCTokenization.Study.parseProcessGraphColumnsFromFile cvpV
+                |> Some
+            else None
+    )
+
+let stdFileMdsTokens =
+    Study.parseMetadataSheetsFromTokens () absoluteFilePaths
+    |> List.concat
+    |> ARCGraph.fillTokenList Terms.StudyMetadata.ontology
+    |> Seq.concat
+    |> Seq.concat
+    |> Seq.map snd
+
+let stdFileMdsTokensNoMdSecKeys =
+    stdFileMdsTokens
+    |> Seq.filter (Param.getValue >> (<>) Terms.StructuralTerms.metadataSectionKey.Name) 
+
+let stdProtocols =
+    stdFileMdsTokensNoMdSecKeys
+    |> Seq.filter (Param.getTerm >> (=) STDMSO.``Study Metadata``.``STUDY PROTOCOLS``.key)
+
+let allGraphTokens = 
+    stdFileProcTokens
+    |> Seq.collect Map.values
+    |> List.concat
+    |> List.concat
+
+let organismTokens =
+    stdFileProcTokens
+    |> Seq.collect Map.values
+    |> List.concat
+    |> List.tryFind (fun cvpList -> cvpList.Head |> Param.getTerm = (CvTerm.create("OBI:0100026","organism","OBI")))
+
+stdFileProcTokens |> Seq.map Map.toSeq
+
+
+// Helper functions (to deposit in ARCExpect later):
+
+let characterLimit (lowerLimit : int option) (upperLimit : int option) =
+    match lowerLimit, upperLimit with
+    | None, None -> System.Text.RegularExpressions.Regex(@"^.{0,}$")
+    | Some ll, None -> System.Text.RegularExpressions.Regex($"^.{{{ll},}}$")
+    | None, Some ul -> System.Text.RegularExpressions.Regex($"^.{{0,{ul}}}$")
+    | Some ll, Some ul -> System.Text.RegularExpressions.Regex($"^.{{{ll},{ul}}}$")
+
 
 // Validation Cases:
 
 let cases = 
-    testList INVMSO.``Investigation Metadata``.INVESTIGATION.key.Name [
+    testList "cases" [  // naming is difficult here
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Title``.Name) {
             invFileTokensNoMdSecKeys
             |> Validate.ParamCollection.ContainsParamWithTerm
@@ -94,17 +145,21 @@ let cases =
             |> Validate.ParamCollection.ContainsParamWithTerm
                 INVMSO.``Investigation Metadata``.INVESTIGATION.``Investigation Description``
         }
-        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person First Name``.Name) {
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person First Name``.Name) {
             contactsFns
             |> Seq.iter Validate.Param.ValueIsNotEmpty
         }
-        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Last Name``.Name) {
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Last Name``.Name) {
             contactsLns
             |> Seq.iter Validate.Param.ValueIsNotEmpty
         }
-        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Affiliation``.Name) {
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Affiliation``.Name) {
             contactsAffs
             |> Seq.iter Validate.Param.ValueIsNotEmpty
+        }
+        ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``.Name) {
+            contactsEmails
+            |> Validate.ParamCollection.ContainsParamWithTerm INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
         }
         ARCExpect.validationCase (TestID.Name INVMSO.``Investigation Metadata``. ``INVESTIGATION CONTACTS``.``Investigation Person Email``.Name) {
             contactsEmails
@@ -115,6 +170,18 @@ let cases =
         //    commis
         //    |> Seq.iter (Validate.Param.ValueMatchesRegex StringValidationPattern.email)    // needs special Regex
         //}
+        ARCExpect.validationCase (TestID.Name STDMSO.``Study Metadata``.``STUDY PROTOCOLS``.key.Name) {
+            stdProtocols
+            |> Validate.ParamCollection.ContainsParamWithTerm STDMSO.``Study Metadata``.``STUDY PROTOCOLS``.key
+        }
+        ARCExpect.validationCase (TestID.Name STDMSO.``Study Metadata``.``STUDY PROTOCOLS``.key.Name) {
+            stdProtocols
+            |> Seq.iter (Validate.Param.ValueMatchesRegex (characterLimit (Some 50) (Some 500)))
+        }
+        ARCExpect.validationCase (TestID.Name "organism") {
+            allGraphTokens
+            |> Validate.ParamCollection.ContainsParamWithTerm (CvTerm.create("OBI:0100026","organism","OBI"))
+        }
     ]
 
 
