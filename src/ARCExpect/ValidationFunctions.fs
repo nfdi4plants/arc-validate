@@ -134,7 +134,7 @@ module Validate =
                 |> Expecto.Tests.failtestNoStackf "%s"
 
         /// <summary>
-        /// Validates if the given Param is contained in the given collection át least once.
+        /// Validates if the given Param is contained in the given collection at least once.
         /// </summary>
         /// <param name="expectedParam">the param expected to occur at least once in the given collection</param>
         /// <param name="paramCollection">The param collection to validate</param>
@@ -151,6 +151,18 @@ module Validate =
             expectedParam
             |> ErrorMessage.ofIParam $"does not exist"
             |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if all elements in the given IParam collection satisfy the projection function.
+        /// </summary>
+        /// <param name="projection">A function that evaluates to true if the element satisfies the requirements.</param>
+        /// <param name="paramCollection">The IParam collection to validate.</param>
+        static member forAll (projection : #IParam -> bool) (paramCollection : #seq<#IParam>) =
+            match Seq.forall projection paramCollection with
+            | true  -> ()
+            | false ->
+                ErrorMessage.ofIParamCollection $"does not exist" paramCollection
+                |> Expecto.Tests.failtestNoStackf "%s"
 
 
     /// <summary>
