@@ -179,7 +179,7 @@ type Validate.ParamCollection with
         match Seq.forall projection paramCollection with
         | true  -> ()
         | false ->
-            ErrorMessage.ofIParamCollection $"does not exist" paramCollection
+            ErrorMessage.ofIParamCollection $"does not satisfy the requirements" paramCollection
             |> Expecto.Tests.failtestNoStackf "%s"
 
 
