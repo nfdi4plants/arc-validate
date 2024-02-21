@@ -116,7 +116,7 @@ let organismTokens =
     stdFileProcTokens
     |> Seq.collect Map.values
     |> List.concat
-    |> List.tryFind (fun cvpList -> cvpList.Head |> Param.getTerm = (CvTerm.create("OBI:0100026","organism","OBI")))
+    |> List.tryFind (fun cvpList -> cvpList.Head |> Param.getValueAsTerm = (CvTerm.create("OBI:0100026","organism","OBI")))
 
 stdFileProcTokens |> Seq.map Map.toSeq
 
@@ -129,6 +129,58 @@ let characterLimit (lowerLimit : int option) (upperLimit : int option) =
     | Some ll, None -> System.Text.RegularExpressions.Regex($"^.{{{ll},}}$")
     | None, Some ul -> System.Text.RegularExpressions.Regex($"^.{{0,{ul}}}$")
     | Some ll, Some ul -> System.Text.RegularExpressions.Regex($"^.{{{ll},{ul}}}$")
+
+
+open System.Text
+
+type ErrorMessage with
+
+    static member ofIParamCollection error iParamCollection =
+
+        let iParam = Seq.head iParamCollection
+
+        let str = new StringBuilder()    
+        str.AppendFormat("['{0}', ..] {1}\n",  Param.getCvName iParam, error) |> ignore 
+
+        match Param.tryGetValueOfCvParamAttr "FilePath" iParam with
+        | Some path ->
+            str.AppendFormat(" > filePath '{0}'\n", path) |> ignore         
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Worksheet" iParam with
+        | Some sheet ->
+            str.AppendFormat(" > sheet '{0}'", sheet) |> ignore         
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Row" iParam with
+        | Some row -> 
+            str.AppendFormat(" > row '{0}'", row) |> ignore
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Column" iParam with
+        | Some column -> 
+            str.AppendFormat(" > column '{0}'", column) |> ignore
+        | None -> ()        
+                
+        match Param.tryGetValueOfCvParamAttr "Line" iParam with
+        | Some line ->
+            str.AppendFormat(" > line '{0}'", line) |> ignore
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Position" iParam with
+        | Some position -> 
+            str.AppendFormat(" > position '{0}'", position) |> ignore
+        | None -> ()
+        str.ToString()
+
+type Validate.ParamCollection with
+
+    static member forAll (projection : #IParam -> bool) (paramCollection : #seq<#IParam>) =
+        match Seq.forall projection paramCollection with
+        | true  -> ()
+        | false ->
+            ErrorMessage.ofIParamCollection $"does not exist" paramCollection
+            |> Expecto.Tests.failtestNoStackf "%s"
 
 
 // Validation Cases:
@@ -181,6 +233,10 @@ let cases =
         ARCExpect.validationCase (TestID.Name "organism") {
             allGraphTokens
             |> Validate.ParamCollection.ContainsParamWithTerm (CvTerm.create("OBI:0100026","organism","OBI"))
+        }
+        ARCExpect.validationCase (TestID.Name "organism terms") {
+            allGraphTokens
+            |> Validate.ParamCollection.forAll (fun ip -> match ip.Value with CvValue _ -> true | _ -> false)
         }
     ]
 
