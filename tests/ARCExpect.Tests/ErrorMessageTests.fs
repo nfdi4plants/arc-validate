@@ -7,13 +7,15 @@ open ControlledVocabulary
 
 
 let dummyIParam = CvParam("test:0", "testTerm", "test", ParamValue.Value "no val")
-dummyIParam.AddAttribute(CvParam())
+let dummyIParamColl = List.init 3 (fun _ -> dummyIParam)
 
 
 [<Tests>]
 let ``ErrorMessage tests`` =
     testList "ErrorMessage" [
         testList "ofIParamCollection" [
-            testCase "resolves correctly"
+            testCase "resolves correctly" <| fun _ ->
+                let eMsg = ErrorMessage.ofIParamCollection "does not satisfy" dummyIParamColl
+                Expect.equal eMsg "['testTerm', ..] does not satisfy\n" "resolved incorrectly"
         ]
     ]
