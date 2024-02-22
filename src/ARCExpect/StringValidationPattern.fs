@@ -10,6 +10,14 @@ module StringValidationPattern =
     let email = Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     let orcid = Regex(@"^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
 
+    /// Creates a Regex that matches for the given lower and upper character limit. Input may be None if there shall be no upper or lower limit.
+    let characterLimit (lowerLimit : int option) (upperLimit : int option) =
+        match lowerLimit, upperLimit with
+        | None, None -> Regex(@"^.{0,}$")
+        | Some ll, None -> Regex($"^.{{{ll},}}$")
+        | None, Some ul -> Regex($"^.{{0,{ul}}}$")
+        | Some ll, Some ul -> Regex($"^.{{{ll},{ul}}}$")
+
     /// Functions to work with ORCID numbers.
     module Orcid =
 
