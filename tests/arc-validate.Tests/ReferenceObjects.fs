@@ -14,6 +14,7 @@ Description: this package is here for testing purposes only.
 MajorVersion: 1
 MinorVersion: 0
 PatchVersion: 0
+Publish: true
 ---
 *)
 
@@ -26,6 +27,7 @@ Name: test
 MajorVersion: 2
 MinorVersion: 0
 PatchVersion: 0
+Publish: true
 Description: this package is here for testing purposes only.
 Authors:
   - FullName: John Doe
