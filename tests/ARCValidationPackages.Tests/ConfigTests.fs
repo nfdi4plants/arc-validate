@@ -18,7 +18,7 @@ let ``Config tests`` =
                 Config.create(
                     packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER(),
                     configFilePath = Defaults.CONFIG_FILE_PATH(),
-                    isAPI = false,
+                    isPreview = true,
                     packageIndex = testPackageIndex,
                     indexLastUpdated = testDate1
                 )

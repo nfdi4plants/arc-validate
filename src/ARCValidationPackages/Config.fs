@@ -7,49 +7,49 @@ type Config = {
     IndexLastUpdated: System.DateTimeOffset option
     PackageCacheFolder: string
     ConfigFilePath: string
-    IsAPI: bool
+    IsPreview: bool
 } with
     static member create (
         packageCacheFolder: string,
         configFilePath: string,
-        isAPI: bool,
+        isPreview: bool,
         ?packageIndex: ValidationPackageIndex [],
         ?indexLastUpdated: System.DateTimeOffset
     ) =
-        if (not isAPI && (packageIndex.IsNone || indexLastUpdated.IsNone)) then
+        if (not isPreview && (packageIndex.IsNone || indexLastUpdated.IsNone)) then
             failwith "packageIndex and indexLastUpdated must be provided if the github API is used"
         {
             PackageIndex = packageIndex
             IndexLastUpdated = indexLastUpdated
             PackageCacheFolder = packageCacheFolder
             ConfigFilePath = configFilePath
-            IsAPI = isAPI
+            IsPreview = isPreview
         }
 
-    static member initDefault(IsAPI: bool, ?Token, ?ConfigPath, ?CacheFolder) = 
-        if IsAPI then
+    static member initDefault(isPreview: bool, ?Token, ?ConfigPath, ?CacheFolder) = 
+        if isPreview then
             Config.create(
                 packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
                 configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH()),
-                isAPI = true
+                isPreview = true
             )
         else
             Config.create(
                 packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
                 configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH()),
-                isAPI = false,
+                isPreview = false,
                 packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
                 indexLastUpdated = System.DateTimeOffset.Now
             )
     static member indexContainsPackages (packageName: string) (config: Config) =
-        if config.IsAPI then
+        if not config.IsPreview then
             printfn "Warning: Your Config does not contain an Index"
             false
         else
             config.PackageIndex.Value |> Array.exists (fun package -> package.Metadata.Name = packageName)
 
     static member indexContainsPackage (packageName: string) (semverString: string) (config: Config) =
-        if config.IsAPI then
+        if not config.IsPreview then
             printfn "Warning: Your Config does not contain an Index"
             false
         else
@@ -60,7 +60,7 @@ type Config = {
             )
 
     static member getIndexedPackagesByName (packageName: string) (config: Config) =
-        if config.IsAPI then
+        if not config.IsPreview then
             printfn "Warning: Your Config does not contain an Index"
             [||]
         else
@@ -117,7 +117,7 @@ type Config = {
         if Config.exists(?Path = Path) then
             Config.read(?Path = Path)
         else
-            Config.initDefault(IsAPI = false, ?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
+            Config.initDefault(isPreview = false, ?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
 
     static member write (?Path: string) =
         fun (config: Config) ->
