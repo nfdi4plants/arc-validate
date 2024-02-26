@@ -16,10 +16,11 @@ let ``Config tests`` =
 
             let testConfig =
                 Config.create(
-                    packageIndex = testPackageIndex,
-                    indexLastUpdated = testDate1,
+                    packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER(),
                     configFilePath = Defaults.CONFIG_FILE_PATH(),
-                    packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER()
+                    isAPI = false,
+                    packageIndex = testPackageIndex,
+                    indexLastUpdated = testDate1
                 )
 
             test "config file path is correct" {

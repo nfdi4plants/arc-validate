@@ -31,11 +31,11 @@ let ``Toplevel API tests`` =
 
                 "Fresh config package index contains packages",
                     fun (freshConfig, _) ->
-                        Expect.isGreaterThan freshConfig.PackageIndex.Length 0 "fresh config package index was empty"
+                        Expect.isGreaterThan freshConfig.PackageIndex.Value.Length 0 "fresh config package index was empty"
 
                 "Fresh config package index contains test package",
                     fun (freshConfig, _) ->
-                        Expect.isTrue (Array.exists (fun (x:ValidationPackageIndex) -> x.Metadata.Name = "test") freshConfig.PackageIndex) "fresh config package index was empty"
+                        Expect.isTrue (Array.exists (fun (x:ValidationPackageIndex) -> x.Metadata.Name = "test") freshConfig.PackageIndex.Value) "fresh config package index was empty"
                 "Fresh package cache is empty",
 
                     fun (_, freshCache) ->

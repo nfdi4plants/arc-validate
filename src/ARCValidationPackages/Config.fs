@@ -3,44 +3,68 @@ open System.IO
 open System.Text.Json
 
 type Config = {
-    PackageIndex: ValidationPackageIndex []
-    IndexLastUpdated: System.DateTimeOffset
+    PackageIndex: ValidationPackageIndex [] option
+    IndexLastUpdated: System.DateTimeOffset option
     PackageCacheFolder: string
     ConfigFilePath: string
+    IsAPI: bool
 } with
     static member create (
-        packageIndex: ValidationPackageIndex [],
-        indexLastUpdated: System.DateTimeOffset,
         packageCacheFolder: string,
-        configFilePath: string
+        configFilePath: string,
+        isAPI: bool,
+        ?packageIndex: ValidationPackageIndex [],
+        ?indexLastUpdated: System.DateTimeOffset
     ) =
+        if (not isAPI && (packageIndex.IsNone || indexLastUpdated.IsNone)) then
+            failwith "packageIndex and indexLastUpdated must be provided if the github API is used"
         {
             PackageIndex = packageIndex
             IndexLastUpdated = indexLastUpdated
             PackageCacheFolder = packageCacheFolder
             ConfigFilePath = configFilePath
+            IsAPI = isAPI
         }
 
-    static member initDefault(?Token, ?ConfigPath, ?CacheFolder) = 
-        Config.create(
-            packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
-            indexLastUpdated = System.DateTimeOffset.Now,
-            packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
-            configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH())
-        )
+    static member initDefault(IsAPI: bool, ?Token, ?ConfigPath, ?CacheFolder) = 
+        if IsAPI then
+            Config.create(
+                packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
+                configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH()),
+                isAPI = true
+            )
+        else
+            Config.create(
+                packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
+                configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH()),
+                isAPI = false,
+                packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
+                indexLastUpdated = System.DateTimeOffset.Now
+            )
     static member indexContainsPackages (packageName: string) (config: Config) =
-        config.PackageIndex |> Array.exists (fun package -> package.Metadata.Name = packageName)
+        if config.IsAPI then
+            printfn "Warning: Your Config does not contain an Index"
+            false
+        else
+            config.PackageIndex.Value |> Array.exists (fun package -> package.Metadata.Name = packageName)
 
     static member indexContainsPackage (packageName: string) (semverString: string) (config: Config) =
-        config.PackageIndex 
-        |> Array.exists (fun package -> 
-            package.Metadata.Name = packageName 
-            && (ValidationPackageIndex.getSemanticVersionString package = semverString)
-
-        )
+        if config.IsAPI then
+            printfn "Warning: Your Config does not contain an Index"
+            false
+        else
+            config.PackageIndex.Value
+            |> Array.exists (fun package -> 
+                package.Metadata.Name = packageName 
+                && (ValidationPackageIndex.getSemanticVersionString package = semverString)
+            )
 
     static member getIndexedPackagesByName (packageName: string) (config: Config) =
-        config.PackageIndex |> Array.filter (fun package -> package.Metadata.Name = packageName)
+        if config.IsAPI then
+            printfn "Warning: Your Config does not contain an Index"
+            [||]
+        else
+            config.PackageIndex.Value |> Array.filter (fun package -> package.Metadata.Name = packageName)
 
     static member tryGetLatestPackage (packageName: string) (config: Config) =
         if Config.indexContainsPackages packageName config then
@@ -52,7 +76,7 @@ type Config = {
 
     static member tryGetIndexedPackageByNameAndVersion (packageName: string) (semverString: string) (config: Config) =
         if Config.indexContainsPackage packageName semverString config then
-            config.PackageIndex 
+            config.PackageIndex.Value
             |> Array.find (fun package -> 
                 package.Metadata.Name = packageName
                 && (ValidationPackageIndex.getSemanticVersionString package = semverString)
@@ -67,7 +91,7 @@ type Config = {
         |> Array.maxBy ValidationPackageIndex.getSemanticVersionString
 
     static member getIndexedPackageByNameAndVersion (packageName: string) (semverString: string) (config: Config) =
-        config.PackageIndex 
+        config.PackageIndex.Value
         |> Array.find (fun package -> 
             package.Metadata.Name = packageName
             && (ValidationPackageIndex.getSemanticVersionString package = semverString)
@@ -76,7 +100,7 @@ type Config = {
     static member withIndex (index: ValidationPackageIndex []) (config: Config) =
         {
             config with
-                PackageIndex = index
+                PackageIndex = Some index
         }
 
     static member exists (?Path: string) =
@@ -93,7 +117,7 @@ type Config = {
         if Config.exists(?Path = Path) then
             Config.read(?Path = Path)
         else
-            Config.initDefault(?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
+            Config.initDefault(IsAPI = false, ?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
 
     static member write (?Path: string) =
         fun (config: Config) ->

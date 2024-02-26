@@ -97,4 +97,4 @@ type GitHubAPI =
             raise (GitHubAPI.Errors.SerializationError($"{e.Message}{System.Environment.NewLine}{json}"))
 
     static member downloadPackageScript (packageIndex: ValidationPackageIndex, ?Token: string) =
-        GitHubAPI.downloadPackageScript(packageIndex.RepoPath, ?Token = Token)
+        GitHubAPI.downloadPackageScript(packageIndex.RepoPath.Value, ?Token = Token)

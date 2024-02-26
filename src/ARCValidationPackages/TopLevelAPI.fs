@@ -247,7 +247,7 @@ type API =
         ?Verbose: bool
     ) =
         try
-            config.PackageIndex
+            config.PackageIndex.Value
             |> Array.toList
             |> Ok
         

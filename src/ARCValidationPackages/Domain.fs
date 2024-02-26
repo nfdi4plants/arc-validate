@@ -126,16 +126,16 @@ type ValidationPackageMetadata() =
 /// </summary>
 type ValidationPackageIndex =
     {
-        RepoPath: string
+        RepoPath: string option
         FileName:string
         LastUpdated: System.DateTimeOffset
         Metadata: ValidationPackageMetadata
     } with
         static member create (
-            repoPath: string, 
             fileName: string, 
             lastUpdated: System.DateTimeOffset,
-            metadata: ValidationPackageMetadata
+            metadata: ValidationPackageMetadata,
+            ?repoPath: string
 
         ) = 
             { 
@@ -145,16 +145,16 @@ type ValidationPackageIndex =
                 Metadata = metadata
             }
         static member create (
-            repoPath: string, 
             lastUpdated: System.DateTimeOffset,
-            metadata: ValidationPackageMetadata
+            metadata: ValidationPackageMetadata,
+            ?repoPath: string
         ) = 
-            ValidationPackageIndex.create(
-                repoPath = repoPath,
-                fileName = Path.GetFileNameWithoutExtension(repoPath),
-                lastUpdated = lastUpdated,
-                metadata = metadata
-            )
+            {
+                RepoPath = repoPath
+                FileName = Path.GetFileNameWithoutExtension(repoPath.Value)
+                LastUpdated = lastUpdated
+                Metadata = metadata
+            }
 
         static member getSemanticVersionString(i: ValidationPackageIndex) = $"{i.Metadata.MajorVersion}.{i.Metadata.MinorVersion}.{i.Metadata.PatchVersion}";
 
