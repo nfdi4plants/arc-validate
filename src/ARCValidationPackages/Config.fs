@@ -16,7 +16,7 @@ type Config = {
         ?packageIndex: ValidationPackageIndex [],
         ?indexLastUpdated: System.DateTimeOffset
     ) =
-        if (not isPreview && (packageIndex.IsNone || indexLastUpdated.IsNone)) then
+        if (isPreview && (packageIndex.IsNone || indexLastUpdated.IsNone)) then
             failwith "packageIndex and indexLastUpdated must be provided if the github API is used"
         {
             PackageIndex = packageIndex
@@ -27,17 +27,17 @@ type Config = {
         }
 
     static member initDefault(isPreview: bool, ?Token, ?ConfigPath, ?CacheFolder) = 
-        if isPreview then
+        if not isPreview then
             Config.create(
                 packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
                 configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH()),
-                isPreview = true
+                isPreview = false
             )
         else
             Config.create(
                 packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
                 configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH()),
-                isPreview = false,
+                isPreview = true,
                 packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
                 indexLastUpdated = System.DateTimeOffset.Now
             )
@@ -117,7 +117,7 @@ type Config = {
         if Config.exists(?Path = Path) then
             Config.read(?Path = Path)
         else
-            Config.initDefault(isPreview = false, ?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
+            Config.initDefault(isPreview = true, ?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
 
     static member write (?Path: string) =
         fun (config: Config) ->
