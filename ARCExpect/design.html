@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-root="/arc-validate/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="ARCValidationPackages" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="arc-validate">
+    <meta property="og:title" content="ARCExpect API design
+" />
+    <meta property="og:url" content="/arc-validate/ARCExpect/design.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="/arc-validate/">
+    <meta name="twitter:title" content="ARCExpect API design
+">
+    
+    <title>ARCExpect API design
+ | arc-validate</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/arc-validate/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <link href="/arc-validate/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="/arc-validate/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="{{fsdocs-license-link}}">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="{{fsdocs-release-notes-link}}">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
+                    Repository</a></li>
+                <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/arc-validate/ARCExpect/design.html">
+    ARCExpect API design
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/arc-validate/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="/arc-validate/">
+            <img alt="Header menu logo" src="/arc-validate/img/logo.png">
+            <strong>arc-validate</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="{{fsdocs-repository-link}}" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="{{fsdocs-license-link}}">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="{{fsdocs-release-notes-link}}">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{fsdocs-repository-link}}">Source
+            Repository</a></li>
+        <li class="nav-header">
+  Documentation
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/arc-validate/introduction.html">
+    arc-validate
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="/arc-validate/ARCExpect/design.html">
+    ARCExpect API design
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="/arc-validate/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <h1><a name="ARCExpect-API-design" class="anchor" href="#ARCExpect-API-design">ARCExpect API design</a></h1>
+<p>The main goal of ARCExpect is providing an API surface that creates the common validatiopn cases without the need for much custom input.
+The following principles guide the design of the API:</p>
+<ul>
+<li><strong>Semantic</strong>: Creating a validation case should be as easy as expressing it in words. Therefore, the API should be as close as possible to the natural language.</li>
+<li><strong>Simple</strong>: The API should be simple to use and understand. It should not require a lot of boilerplate code to create a validation case.</li>
+<li><strong>Customizable</strong>: As is always the case, there are exceptions to the rule where the API should be flexible enough to allow for custom validation cases.</li>
+</ul>
+<h1><a name="API-Design" class="anchor" href="#API-Design">API Design</a></h1>
+<h2><a name="Semantic-Methods-for-validation-case-creation-in-the-namespace" class="anchor" href="#Semantic-Methods-for-validation-case-creation-in-the-namespace">Semantic Methods for validation case creation in the <code>Validate</code> namespace</a></h2>
+<p>Methods in the <code>Validate</code> (sub)namespace(s) should mirror an english sentence in the imperative mood of the following form, where words in brackets <code>()</code> are left out for brevity and/or are optional, and words in angle brackets <code>&lt;&gt;</code> are placeholders for the actual values:</p>
+<p><code>Validate.</code><em>(for <code>&lt;article&gt;</code>)</em><code>&lt;object&gt;</code><em>(that)</em><code>&lt;predicate&gt;</code><em>(is true)</em></p>
+<p>examples:</p>
+<ul>
+<li>
+<p><code>Validate.Param.ValueIsEqualTo(expectedValue)</code> method represents:</p>
+<blockquote>
+<p><code>Validate</code> <em>(for a)</em> <code>param</code><em>(eter that it's)</em> <code>value is equal to</code> <em>(the)</em> <code>value &lt;expected value&gt;</code></p>
+</blockquote>
+</li>
+<li>
+<p><code>Validate.ParamCollection.ContainsParamWithTerm(expectedTerm)</code> method represents:</p>
+<blockquote>
+<p><code>Validate</code> (for a) <code>param</code><em>(eter)</em> <code>collection</code> <em>(that it)</em> <code>contains</code> <em>(a)</em> <code>parameter with</code> <em>(the)</em> <code>term &lt;expected term&gt;</code></p>
+</blockquote>
+</li>
+</ul>
+<h3><a name="Objects" class="anchor" href="#Objects">Objects</a></h3>
+<p>As validation cases are fundamentally built for validating <a href="">ControlledVocabulary Tokens</a> (<code>CvParam</code>s / <code>IParam</code>s), this reflected in the objects of the <em>'sentences'</em> provided as methods of the API.</p>
+<p>The following objects should be supported:</p>
+<ul>
+<li><code>Param</code> represents a single object implementing the <code>IParam</code> interface.</li>
+<li><code>ParamCollection</code> represents a collection of <code>IParam</code>s.</li>
+</ul>
+<h3><a name="Predicates" class="anchor" href="#Predicates">Predicates</a></h3>
+<p>Predicates are the conditions that the object(s) should satisfy. Generic methods should be provided to cover predicates that are not directly provided by the API to satisfy the <em>Customizable</em> principle. The following predicates should be supported out of the box:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Object</p></th>
+<th><p>Predicate</p></th>
+<th><p>Signature</p></th>
+<th><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>IParam</code> (<em>Param</em>)</p></td>
+<td><p><code>SatisfiesPredicate</code></p></td>
+<td><p><code>(IParam -&gt; bool) -&gt; IParam -&gt; unit</code></p></td>
+<td><p>generic method to validate wether a single <code>IParam</code> satisfies any kind of predicate (<code>predicate</code> here refers to a function that projects <code>IParam -&gt; bool</code>)</p></td>
+</tr>
+<tr class="even">
+<td><p><code>IParam</code> (<em>Param</em>)</p></td>
+<td><p><code>IsEqualTo</code></p></td>
+<td><p><code>IParam -&gt; IParam -&gt; unit</code></p></td>
+<td><p>validates wether the given param is exactly equal (structural equality regarding all object fields) to the expected param</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>IParam</code> (<em>Param</em>)</p></td>
+<td><p><code>ValueIsEqualTo</code></p></td>
+<td><p><code>ParamValue -&gt; IParam -&gt; unit</code></p></td>
+<td><p>validates wether the given param's value is equal to the expected <code>ParamValue</code>.</p></td>
+</tr>
+<tr class="even">
+<td><p><code>IParam</code> (<em>Param</em>)</p></td>
+<td><p><code>TermIsEqualTo</code></p></td>
+<td><p><code>CvTerm -&gt; IParam -&gt; unit</code></p></td>
+<td><p>validates wether the given param's term is equal to the expected <code>CvTerm</code></p></td>
+</tr>
+<tr class="odd">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>SatisfiesPredicate</code></p></td>
+<td><p><code>(seq&lt;#IParam&gt; -&gt; bool) -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>generic method to validate wether a collection of <code>IParam</code>s satisfies any kind of predicate (<code>predicate</code> here refers to a function that projects the whole sequence <code>seq&lt;#IParam&gt; -&gt; bool</code>)</p></td>
+</tr>
+<tr class="even">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>IsNotEmpty</code></p></td>
+<td><p><code>seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>validates that the given collection of <code>IParam</code>s is not empty (has a length &gt; 0)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>HasLength</code></p></td>
+<td><p><code>int -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>validates wether the given collection of <code>IParam</code>s has as many items as expected</p></td>
+</tr>
+<tr class="even">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>AllItemsSatisfyPredicate</code></p></td>
+<td><p><code>(IParam&gt; -&gt; bool) -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>generic method to validate wether all items in a collection of <code>IParam</code>s satisfy any kind of predicate (<code>predicate</code> here refers to a function that projects one item at a time <code>IParam -&gt; bool</code>)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>AtLeastOneItemSatisfiesPredicate</code></p></td>
+<td><p><code>(IParam&gt; -&gt; bool) -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>generic method to validate wether at least one item in a collection of <code>IParam</code>s satisfies any kind of predicate (<code>predicate</code> here refers to a function that projects one item at a time <code>IParam -&gt; bool</code>)</p></td>
+</tr>
+<tr class="even">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>ContainsItem</code></p></td>
+<td><p><code>IParam -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>validates wether the given collection of <code>IParam</code>s contains the expected <code>IParam</code> (by structural equality regarding all object fields)</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>ContainsItemWithValue</code></p></td>
+<td><p><code>ParamValue -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>validates wether the given collection of <code>IParam</code>s contains an item with the expected <code>ParamValue</code></p></td>
+</tr>
+<tr class="even">
+<td><p><code>seq&lt;#IParam&gt;</code> (<em>ParamCollection</em>)</p></td>
+<td><p><code>ContainsItemWithTerm</code></p></td>
+<td><p><code>CvTerm -&gt; seq&lt;#IParam&gt; -&gt; unit</code></p></td>
+<td><p>validates wether the given collection of <code>IParam</code>s contains an item with the expected <code>CvTerm</code></p></td>
+</tr>
+</tbody>
+</table>
+
+
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#ARCExpect-API-design">
+      ARCExpect API design
+    </a>
+  </li>
+  <li class="level-1">
+    <a href="#API-Design">
+      API Design
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Objects">
+      Objects
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Predicates">
+      Predicates
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="/arc-validate/content/fsdocs-tips.js"></script>
+<script type="module" src="/arc-validate/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="/arc-validate/content/fsdocs-theme.js"></script>
+<script type="module" src="/arc-validate/content/fsdocs-search.js"></script>
+
+</body>
+</html>

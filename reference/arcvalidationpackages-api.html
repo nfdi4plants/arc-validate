@@ -52,14 +52,20 @@
   </a>
 </li>             
 <li class="nav-item ">
-  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
-    ARCValidationPackages
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
 
   </a>
 </li>             
 <li class="nav-item ">
-  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
-    ARCExpect
+  <a class="nav-link" href="/arc-validate/ARCExpect/design.html">
+    ARCExpect API design
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
 
   </a>
 </li>
@@ -106,14 +112,20 @@
   </a>
 </li>             
 <li class="nav-item ">
-  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
-    ARCValidationPackages
+  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
+    ARCExpect
 
   </a>
 </li>             
 <li class="nav-item ">
-  <a class="nav-link" href="/arc-validate/ARCExpect/introduction.html">
-    ARCExpect
+  <a class="nav-link" href="/arc-validate/ARCExpect/design.html">
+    ARCExpect API design
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="/arc-validate/ARCValidationPackages/introduction.html">
+    ARCValidationPackages
 
   </a>
 </li>
@@ -182,7 +194,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
+              <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
                 <p>
                   <a id="GetSyncedConfigAndCache">
                     <a href="#GetSyncedConfigAndCache">
@@ -191,7 +203,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="185">
+              <div class="fsdocs-tip" id="191">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code><span>API.GetSyncedConfigAndCache<span><span>(<span>?ConfigPath,&#32;?CacheFolder,&#32;?CacheFileName,&#32;?Token</span>)</span></span></span></code>
@@ -291,19 +303,19 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
+              <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
                 <p>
                   <a id="InstallPackage">
                     <a href="#InstallPackage">
-                      <code><span>API.InstallPackage<span><span>(<span>config,&#32;cache,&#32;packageName,&#32;?Verbose,&#32;?Token</span>)</span></span></span></code>
+                      <code><span>API.InstallPackage<span><span>(<span>config,&#32;cache,&#32;packageName,&#32;?SemVer,&#32;?Verbose,&#32;?Token</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="186">
+              <div class="fsdocs-tip" id="192">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>API.InstallPackage<span><span>(<span>config,&#32;cache,&#32;packageName,&#32;?Verbose,&#32;?Token</span>)</span></span></span></code>
+                  <code><span>API.InstallPackage<span><span>(<span>config,&#32;cache,&#32;packageName,&#32;?SemVer,&#32;?Verbose,&#32;?Token</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -327,6 +339,14 @@
                     <span>
                       <b>
                         packageName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?SemVer
                       </b>
                       :
                       <code>string</code>
@@ -387,6 +407,14 @@
               <dd class="fsdocs-param-docs"></dd>
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
+                  ?SemVer
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
                   ?Verbose
                 </span>
                 :
@@ -416,7 +444,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
+              <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
                 <p>
                   <a id="ListCachedPackages">
                     <a href="#ListCachedPackages">
@@ -425,7 +453,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="187">
+              <div class="fsdocs-tip" id="193">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code><span>API.ListCachedPackages<span><span>(<span>cache,&#32;?Verbose</span>)</span></span></span></code>
@@ -453,7 +481,7 @@
                   <br/>
                   <span>
                     Returns: 
-                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;list</span>,&#32;string</span>&gt;</span></code>
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;seq</span>,&#32;string</span>&gt;</span></code>
                   </span>
                   <br/>
                 </div>
@@ -484,7 +512,7 @@
                 <span class="fsdocs-return-name">
                   Returns: 
                 </span>
-                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;list</span>,&#32;string</span>&gt;</span></code>
+                <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-fsharpresult-2">Result</a>&lt;<span><span><a href="/arc-validate/reference/arcvalidationpackages-arcvalidationpackage.html">ARCValidationPackage</a>&#32;seq</span>,&#32;string</span>&gt;</span></code>
               </dt>
               <dd class="fsdocs-return-docs"></dd>
             </dl>
@@ -493,7 +521,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
+              <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
                 <p>
                   <a id="ListIndexedPackages">
                     <a href="#ListIndexedPackages">
@@ -502,7 +530,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="188">
+              <div class="fsdocs-tip" id="194">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code><span>API.ListIndexedPackages<span><span>(<span>config,&#32;?Verbose</span>)</span></span></span></code>
@@ -570,7 +598,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
+              <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
                 <p>
                   <a id="SaveAndCachePackage">
                     <a href="#SaveAndCachePackage">
@@ -579,7 +607,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="189">
+              <div class="fsdocs-tip" id="195">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code><span>API.SaveAndCachePackage<span><span>(<span>cache,&#32;indexedPackage,&#32;?CacheFolder,&#32;?Token</span>)</span></span></span></code>
@@ -679,19 +707,19 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
+              <code onmouseout="hideTip(event, '196', 196)" onmouseover="showTip(event, '196', 196)">
                 <p>
                   <a id="UninstallPackage">
                     <a href="#UninstallPackage">
-                      <code><span>API.UninstallPackage<span><span>(<span>cache,&#32;packageName,&#32;?Verbose</span>)</span></span></span></code>
+                      <code><span>API.UninstallPackage<span><span>(<span>cache,&#32;packageName,&#32;?SemVer,&#32;?Verbose</span>)</span></span></span></code>
                     </a>
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="190">
+              <div class="fsdocs-tip" id="196">
                 <div class="member-tooltip">
                   Full Usage: 
-                  <code><span>API.UninstallPackage<span><span>(<span>cache,&#32;packageName,&#32;?Verbose</span>)</span></span></span></code>
+                  <code><span>API.UninstallPackage<span><span>(<span>cache,&#32;packageName,&#32;?SemVer,&#32;?Verbose</span>)</span></span></span></code>
                   <br/>
                   <br/>
                   Parameters: 
@@ -707,6 +735,14 @@
                     <span>
                       <b>
                         packageName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?SemVer
                       </b>
                       :
                       <code>string</code>
@@ -751,6 +787,14 @@
               <dd class="fsdocs-param-docs"></dd>
               <dt class="fsdocs-param">
                 <span class="fsdocs-param-name">
+                  ?SemVer
+                </span>
+                :
+                <code>string</code>
+              </dt>
+              <dd class="fsdocs-param-docs"></dd>
+              <dt class="fsdocs-param">
+                <span class="fsdocs-param-name">
                   ?Verbose
                 </span>
                 :
@@ -772,7 +816,7 @@
         <tr>
           <td class="fsdocs-member-usage">
             <div>
-              <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
+              <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
                 <p>
                   <a id="UpdateIndex">
                     <a href="#UpdateIndex">
@@ -781,7 +825,7 @@
                   </a>
                 </p>
               </code>
-              <div class="fsdocs-tip" id="191">
+              <div class="fsdocs-tip" id="197">
                 <div class="member-tooltip">
                   Full Usage: 
                   <code><span>API.UpdateIndex<span><span>(<span>config,&#32;?Token</span>)</span></span></span></code>
