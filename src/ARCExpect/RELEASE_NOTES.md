@@ -1,3 +1,7 @@
+### 1.0.1 - (Released 2024-02-27)
+
+Add Pipeline execution function that generates ARC-spec v2 draft compliant output folder.
+
 ### 1.0.0 - (Released 2024-01-12)
 
 First release of ARCExpect API as a package. Initially, it was only used in the `arc-validate` CLI tool.
