@@ -40,7 +40,7 @@ let ``ValidateCommand CLI Tests`` =
                     "Console output does not indicate that package is not installed" , 
                         fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                     "Console Output is correct" ,
-                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Hello, world!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v2.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
 
                     ]
         ])
