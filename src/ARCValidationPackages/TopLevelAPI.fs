@@ -124,7 +124,7 @@ type API =
         ?Token: string
     ) =
         let verbose = defaultArg Verbose false
-        if (Config.indexContainsPackages packageName config) then
+        if (Config.indexContainsPackages packageName config None) then
             // package exists on the local index
 
             let indexedPackage = 

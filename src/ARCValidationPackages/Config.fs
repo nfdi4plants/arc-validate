@@ -1,6 +1,7 @@
 ﻿namespace ARCValidationPackages
 open System.IO
 open System.Text.Json
+open AVPRClient
 
 type Config = {
     PackageIndex: ValidationPackageIndex [] option
@@ -41,10 +42,18 @@ type Config = {
                 packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
                 indexLastUpdated = System.DateTimeOffset.Now
             )
-    static member indexContainsPackages (packageName: string) (config: Config) =
+    static member indexContainsPackages (packageName: string) (config: Config) (client: Client option) =
         if not config.IsPreview then
-            printfn "Warning: Your Config does not contain an Index"
-            false
+            let allPackages =
+                if client.IsSome then
+                    client.Value.GetAllPackagesAsync(System.Threading.CancellationToken.None)
+                    |> Async.AwaitTask
+                    |> Async.RunSynchronously
+                    |> Seq.toArray
+                else
+                    failwith "Client must be provided if the NFDI4Plants API is used"
+            allPackages
+            |> Array.exists (fun package -> package.Name = packageName)
         else
             config.PackageIndex.Value |> Array.exists (fun package -> package.Metadata.Name = packageName)
 
@@ -67,7 +76,7 @@ type Config = {
             config.PackageIndex.Value |> Array.filter (fun package -> package.Metadata.Name = packageName)
 
     static member tryGetLatestPackage (packageName: string) (config: Config) =
-        if Config.indexContainsPackages packageName config then
+        if (Config.indexContainsPackages packageName config None) then
             config 
             |> Config.getIndexedPackagesByName packageName
             |> Array.maxBy ValidationPackageIndex.getSemanticVersionString
