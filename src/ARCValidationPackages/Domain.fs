@@ -4,24 +4,95 @@ open System.IO
 open System.Text.Json
 open System.Text.Json.Serialization
 
-// must be a class to be deserializable with YamlDotNet
+
+// must be classes to be deserializable with YamlDotNet
+
+/// <summary>
+/// Represents the author of a validation package
+/// </summary>
+type Author() =
+    // mandatory fields
+    member val FullName = "" with get,set
+    member val Email = "" with get,set
+    // optional fields
+    member val Affiliation = "" with get,set
+    member val AffiliationLink = "" with get,set
+
+    override this.GetHashCode() = hash (this.FullName, this.Email, this.Affiliation, this.AffiliationLink)
+
+    override this.Equals(other) =
+        match other with
+        | :? Author as a -> 
+            (this.FullName, this.Email, this.Affiliation, this.AffiliationLink) = (a.FullName, a.Email, a.Affiliation, a.AffiliationLink)
+        | _ -> false
+
+    static member create(
+        fullName: string,
+        email: string,
+        ?Affiliation: string,
+        ?AffiliationLink: string
+    ) = 
+        let tmp = Author()
+        tmp.FullName <- fullName
+        tmp.Email <- email
+        Affiliation |> Option.iter (fun x -> tmp.Affiliation <- x)
+        AffiliationLink |> Option.iter (fun x -> tmp.AffiliationLink <- x)
+        tmp
+    
+
 /// <summary>
 /// Represents the metadata of a validation package, e.g. version, name and description.
 /// </summary>
 type ValidationPackageMetadata() =
+    // mandatory fields
     member val Name = "" with get,set
     member val Description = "" with get,set
     member val MajorVersion = 0 with get,set
     member val MinorVersion = 0 with get,set
     member val PatchVersion = 0 with get,set
+    // optional fields
+    member val Publish = false with get,set
+    member val Authors: Author [] = Array.empty<Author> with get,set
+    member val Tags: string [] = Array.empty<string> with get,set
+    member val ReleaseNotes = "" with get,set
 
     override this.GetHashCode() =
-        hash (this.Name, this.Description, this.MajorVersion, this.MinorVersion, this.PatchVersion)
+        hash (
+            this.Name, 
+            this.Description, 
+            this.MajorVersion, 
+            this.MinorVersion, 
+            this.PatchVersion, 
+            this.Publish,
+            this.Authors,
+            this.Tags,
+            this.ReleaseNotes
+        )
 
     override this.Equals(other) =
         match other with
         | :? ValidationPackageMetadata as vpm -> 
-            (this.Name, this.Description, this.MajorVersion, this.MinorVersion, this.PatchVersion) = (vpm.Name, vpm.Description, vpm.MajorVersion, vpm.MinorVersion, vpm.PatchVersion)
+            (
+                this.Name, 
+                this.Description, 
+                this.MajorVersion, 
+                this.MinorVersion, 
+                this.PatchVersion, 
+                this.Publish,
+                this.Authors,
+                this.Tags,
+                this.ReleaseNotes
+            ) = (
+                vpm.Name, 
+                vpm.Description, 
+                vpm.MajorVersion, 
+                vpm.MinorVersion, 
+                vpm.PatchVersion, 
+                vpm.Publish,
+                vpm.Authors,
+                vpm.Tags,
+                vpm.ReleaseNotes
+            )
         | _ -> false
 
     static member create (
@@ -29,7 +100,11 @@ type ValidationPackageMetadata() =
         description: string, 
         majorVersion: int, 
         minorVersion: int, 
-        patchVersion: int
+        patchVersion: int,
+        ?Publish: bool,
+        ?Authors: Author [],
+        ?Tags: string [],
+        ?ReleaseNotes
     ) = 
         let tmp = ValidationPackageMetadata()
         tmp.Name <- name
@@ -37,6 +112,11 @@ type ValidationPackageMetadata() =
         tmp.MajorVersion <- majorVersion
         tmp.MinorVersion <- minorVersion
         tmp.PatchVersion <- patchVersion
+        Publish |> Option.iter (fun x -> tmp.Publish <- x)
+        Authors |> Option.iter (fun x -> tmp.Authors <- x)
+        Tags |> Option.iter (fun x -> tmp.Tags <- x)
+        ReleaseNotes |> Option.iter (fun x -> tmp.ReleaseNotes <- x)
+        
         tmp
 
     static member getSemanticVersionString(m: ValidationPackageMetadata) = $"{m.MajorVersion}.{m.MinorVersion}.{m.PatchVersion}";
