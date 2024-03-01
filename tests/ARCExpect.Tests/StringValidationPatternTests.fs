@@ -3,7 +3,8 @@
 
 open Expecto
 open FSharpAux
-open ArcValidation.StringValidationPattern.Orcid
+open ARCExpect.StringValidationPattern
+open ARCExpect.StringValidationPattern.Orcid
 
 
 let dummyOrcidInRange1 = "0000-0001-5555-0000"
@@ -15,6 +16,9 @@ let dummyOrcidSumRight = "0123-4567-8910-1111"
 let dummyOrcidWrong = "1111-2222-3333-4444"
 let dummyOrcidTotallyWrong = "abcd-efgh-ijkl-mnox"
 let dummyOrcidRight = "0000-0001-5874-2232"
+
+let dummyString1 = "asd"
+let dummyString2 = "asdasdasdasdasdasdasdasdasdasd"
 
 
 /// Erases hyphens from ORCIDs.
@@ -52,5 +56,32 @@ let ``StringValidationPattern tests`` =
                 testCase "Is totally invalid" <| fun _ ->
                     Expect.isFalse (checkValid dummyOrcidTotallyWrong) "ORCID is valid (though it mustn't)"
             ]
+        ]
+        testList "characterLimit" [
+            testCase "is in range" <| fun _ ->
+                let rx1 = characterLimit (Some 1) (Some 10)
+                let rx2 = characterLimit (Some 1) None
+                let rx3 = characterLimit None (Some 10)
+                let rx4 = characterLimit None None
+                let rx5 = characterLimit (Some 10) (Some 100)
+                let rx6 = characterLimit (Some 10) None
+                let rx7 = characterLimit None (Some 100)
+                Expect.isTrue (rx1.Match dummyString1).Success "dummyString1 is in range of 1 to 10 chars"
+                Expect.isTrue (rx2.Match dummyString1).Success "dummyString1 is in range of at least 1 chars"
+                Expect.isTrue (rx3.Match dummyString1).Success "dummyString1 is in range of at most 10 chars"
+                Expect.isTrue (rx4.Match dummyString1).Success "dummyString1 is in range of no char limits"
+                Expect.isTrue (rx5.Match dummyString2).Success "dummyString2 is in range of 10 to 100 chars"
+                Expect.isTrue (rx6.Match dummyString2).Success "dummyString2 is in range of at least 10 chars"
+                Expect.isTrue (rx7.Match dummyString2).Success "dummyString2 is in range of at most 100 chars"
+                Expect.isTrue (rx4.Match dummyString2).Success "dummyString2 is in range of no char limits"
+            testCase "is outside of range" <| fun _ ->
+                let rx1 = characterLimit (Some 1) (Some 10)
+                let rx2 = characterLimit None (Some 10)
+                let rx3 = characterLimit (Some 10) (Some 100)
+                let rx4 = characterLimit (Some 10) None
+                Expect.isFalse (rx1.Match dummyString2).Success "dummyString2 is outside of range of 1 to 10 chars"
+                Expect.isFalse (rx2.Match dummyString2).Success "dummyString2 is outside of range at most 10 chars"
+                Expect.isFalse (rx3.Match dummyString1).Success "dummyString1 is outside of range at 10 to 100 chars"
+                Expect.isFalse (rx4.Match dummyString1).Success "dummyString1 is outside of range at least 10 chars"
         ]
     ]
