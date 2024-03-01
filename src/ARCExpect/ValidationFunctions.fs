@@ -171,12 +171,11 @@ module Validate =
         /// </summary>
         /// <param name="predicate">Function that projects the whole sequence.</param>
         /// <param name="paramCollection">The param collection to validate.</param>
-        static member SatisfiesPredicate (predicate : seq<#IParam> -> bool) (paramCollection : #seq<#IParam>) =
+        static member SatisfiesPredicate (predicate :#seq<#IParam> -> bool) (paramCollection : #seq<#IParam>) =
             match predicate paramCollection with
             | true  -> ()
             | false ->
-                paramCollection
-                |> ErrorMessage.ofValue $"does not satisfy the predicate."
+                ErrorMessage.ofValue $"The does not satisfy the predicate." "paramCollection"
                 |> Expecto.Tests.failtestNoStackf "%s"
 
 
