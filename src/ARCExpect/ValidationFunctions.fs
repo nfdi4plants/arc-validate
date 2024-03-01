@@ -102,6 +102,17 @@ module Validate =
                 |> ErrorMessage.ofIParam "is invalid."
                 |> Expecto.Tests.failtestNoStackf "%s"
 
+        /// <summary>
+        /// Validates if the given Param satisfies a predicate (meaning a function that for a given Param returns either true or false)
+        /// </summary>
+        /// <param name="predicate">The predicate that the Param should satisfy</param>
+        /// <param name="param">The param to validate</param>
+        static member SatisfiesPredicate (predicate: IParam -> bool) (param : #IParam) =
+            if not (predicate param) then
+                param
+                |> ErrorMessage.ofIParam "is invalid."
+                |> Expecto.Tests.failtestNoStackf "%s"
+
     /// <summary>
     /// Validation functions to perform on a collection containing any type implementing the `IParam` interface.
     /// </summary>
@@ -152,6 +163,22 @@ module Validate =
             |> ErrorMessage.ofIParam $"does not exist"
             |> Expecto.Tests.failtestNoStackf "%s"
 
+        /// <summary>
+        /// Generic method to validate wether a collection of IParams satisfies any kind of predicate.
+        /// </summary>
+        /// <summary>
+        /// Validates whether a given predicate function returns true for the sequence of IParams.
+        /// </summary>
+        /// <param name="predicate">Function that projects the whole sequence.</param>
+        /// <param name="paramCollection">The param collection to validate.</param>
+        static member SatisfiesPredicate (predicate : seq<#IParam> -> bool) (paramCollection : #seq<#IParam>) =
+            match predicate paramCollection with
+            | true  -> ()
+            | false ->
+                paramCollection
+                |> ErrorMessage.ofValue $"does not satisfy the predicate."
+                |> Expecto.Tests.failtestNoStackf "%s"
+
 
     /// <summary>
     /// Validates wether the given Param's value is an email that matches a pre-defined regex pattern ("^[^@\s]+@[^@\s]+\.[^@\s]+$") 
@@ -161,3 +188,5 @@ module Validate =
     let email (param : #IParam) = 
         param |> Param.ValueMatchesRegex StringValidationPattern.email
         param |> Param.TermIsEqualTo INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
+
+    
