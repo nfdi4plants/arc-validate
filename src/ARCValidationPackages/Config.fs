@@ -26,7 +26,7 @@ type Config = {
         Config.create(
             packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
             indexLastUpdated = System.DateTimeOffset.Now,
-            packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER()),
+            packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()),
             configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH())
         )
     static member indexContainsPackages (packageName: string) (config: Config) =

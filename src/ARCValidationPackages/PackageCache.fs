@@ -146,18 +146,18 @@ type PackageCache =
         cache
 
     static member exists (?Path: string) =
-        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW())
         File.Exists(path)
 
     static member read (?Path: string) =
-        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW())
         path
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<PackageCache>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
     static member get (?Folder: string, ?FileName: string) =
         let fileName = defaultArg FileName (Defaults.PACKAGE_CACHE_FILE_NAME)
-        let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER())
+        let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
         let path = Path.Combine(folder, fileName)
         if PackageCache.exists(path) then
             PackageCache.read(path)
@@ -167,7 +167,7 @@ type PackageCache =
     static member write (?Folder: string, ?FileName: string) =
         fun (cache: PackageCache) ->
             let fileName = defaultArg FileName (Defaults.PACKAGE_CACHE_FILE_NAME)
-            let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER())
+            let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
             let path = Path.Combine(folder, fileName)
             System.IO.FileInfo(path).Directory.Create(); // ensures directory exists
             JsonSerializer.Serialize(cache, Defaults.SERIALIZATION_OPTIONS)

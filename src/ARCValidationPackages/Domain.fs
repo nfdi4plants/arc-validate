@@ -41,7 +41,7 @@ type CachedValidationPackage =
         /// <param name="packageIndex">The input package index entry</param>
         /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
         static member ofPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
-            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER())
+            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
             CachedValidationPackage.create(
                 fileName = packageIndex.FileName,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
@@ -56,7 +56,7 @@ type CachedValidationPackage =
         /// <param name="Date"></param>
         /// <param name="Path"></param>
         static member ofPackageName (packageName: string, ?Date: System.DateTimeOffset, ?Path: string) =
-            let path = defaultArg Path (Defaults.PACKAGE_CACHE_FOLDER())
+            let path = defaultArg Path (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
             CachedValidationPackage.create(
                 fileName = packageName,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),

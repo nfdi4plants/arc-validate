@@ -1,5 +1,6 @@
 ﻿namespace ARCValidationPackages
 open System.IO
+open AVPRIndex
 open AVPRIndex.Domain
 
 type APIError = 

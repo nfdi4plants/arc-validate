@@ -58,7 +58,7 @@ let testValidationPackage1 =
     CachedValidationPackage.create(
         "test@1.0.0.fsx",
         testDate1,
-        (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
+        (Path.Combine(expected_package_cache_folder_path_preview, "test@1.0.0.fsx").Replace("\\","/")),
         ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
     )
 
@@ -66,7 +66,7 @@ let testValidationPackage2 =
     CachedValidationPackage.create(
         "test@1.0.0.fsx",
         testDate2,
-        (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
+        (Path.Combine(expected_package_cache_folder_path_preview, "test@1.0.0.fsx").Replace("\\","/")),
         ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
     )
 
@@ -74,7 +74,7 @@ let testValidationPackage3FullMetadata =
     CachedValidationPackage.create(
         "test@3.0.0.fsx",
         testDate3,
-        (Path.Combine(expected_package_cache_folder_path, "test@3.0.0.fsx").Replace("\\","/")),
+        (Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx").Replace("\\","/")),
         ValidationPackageMetadata.create(
             "test",
             "this package is here for testing purposes only.",

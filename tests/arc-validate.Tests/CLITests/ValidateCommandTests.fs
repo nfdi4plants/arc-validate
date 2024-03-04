@@ -26,7 +26,7 @@ let ``ValidateCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Package script exists after running package install test" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                 ]
             yield! 
                 testFixture (Fixtures.withToolExecution 
@@ -57,7 +57,7 @@ let ``ValidateCommand CLI Tests`` =
                     (get_gh_api_token())
                 ) [
                     "Package script exists after running package install test" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                 ]
             yield! 
                 testFixture (Fixtures.withToolExecution 
