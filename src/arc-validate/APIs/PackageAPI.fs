@@ -5,6 +5,7 @@ open ARCValidate.CLIArguments
 open ARCValidate.CLICommands
 open ARCExpect
 open ARCValidationPackages
+open AVPRIndex.Domain
 
 open Argu
 
@@ -98,7 +99,7 @@ type PackageAPI =
         | Ok (config, cache) -> 
             let verbose = defaultArg Verbose false
 
-            let printCachedPackageList (packages: seq<ARCValidationPackage>) =
+            let printCachedPackageList (packages: seq<CachedValidationPackage>) =
                 packages
                 |> fun p -> 
                     if Seq.length p = 0 then 

@@ -10,6 +10,7 @@ let ``invenio test arc validation results`` = ValidationResults.fromJUnitFile "f
 let test_package_script_content_v1 = """(*
 ---
 Name: test
+Summary: this package is here for testing purposes only.
 Description: this package is here for testing purposes only.
 MajorVersion: 1
 MinorVersion: 0
@@ -17,7 +18,7 @@ PatchVersion: 0
 Publish: true
 ---
 *)
-
+ 
 // this file is intended for testing purposes only.
 printfn "If you can read this in your console, you successfully executed test package v1.0.0!" 
 
@@ -43,6 +44,7 @@ MajorVersion: 2
 MinorVersion: 0
 PatchVersion: 0
 Publish: true
+Summary: this package is here for testing purposes only.
 Description: this package is here for testing purposes only.
 Authors:
   - FullName: John Doe
@@ -54,13 +56,13 @@ Authors:
     Affiliation: University of Somewhere
     AffiliationLink: https://somewhere.edu
 Tags:
-  - validation
-  - my-package
-  - thing
+  - Name: validation
+  - Name: my-package
+  - Name: thing
 ReleaseNotes: "add authors and tags for further testing"
 ---
 *)
-
+ 
 // this file is intended for testing purposes only.
 printfn "If you can read this in your console, you successfully executed test package v2.0.0!" 
 
