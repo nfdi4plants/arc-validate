@@ -7,6 +7,7 @@ open System.IO
 open Common.TestUtils
 open TestUtils
 open ReferenceObjects
+open AVPRIndex.Domain
 
 [<Tests>]
 let ``Toplevel API tests`` =

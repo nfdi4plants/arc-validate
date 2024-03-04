@@ -13,7 +13,7 @@ let tests =
              Expect.equal 
                 (
                     testValidationPackage1
-                    |> ARCValidationPackage.updateCacheDate testDate2
+                    |> CachedValidationPackage.updateCacheDate testDate2
                 )
                 testValidationPackage2
                 "ARCValidationPackage cache date was not updated correctly."
@@ -21,7 +21,7 @@ let tests =
         test "ofPackageIndex" {
             Expect.equal 
                 (
-                    ARCValidationPackage.ofPackageIndex(
+                    CachedValidationPackage.ofPackageIndex(
                         packageIndex = testPackageIndex[0],
                         Date = testDate2
                     )
