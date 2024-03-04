@@ -10,7 +10,7 @@ type PackageCache =
 
     new () = { inherit Dictionary<string, Dictionary<string,CachedValidationPackage>>() }
 
-    new (packages: IEnumerable<KeyValuePair<string, Dictionary<string,CachedValidationPackage>>>) = { inherit Dictionary<string, Dictionary<string,ARCValidationPackage>>(packages) }
+    new (packages: IEnumerable<KeyValuePair<string, Dictionary<string,CachedValidationPackage>>>) = { inherit Dictionary<string, Dictionary<string,CachedValidationPackage>>(packages) }
 
     new (cache: PackageCache) = 
         let kv = 

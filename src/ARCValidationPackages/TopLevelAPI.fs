@@ -51,7 +51,7 @@ type API =
         ?Token: string
     ) =
 
-        let package = ARCValidationPackage.ofPackageIndex(indexedPackage, ?CacheFolder = CacheFolder)
+        let package = CachedValidationPackage.ofPackageIndex(indexedPackage, ?CacheFolder = CacheFolder)
         try 
             GitHubAPI.downloadPackageScript(indexedPackage, ?Token = Token)
             |> fun script -> 
