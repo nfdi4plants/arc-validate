@@ -1,5 +1,7 @@
 ﻿namespace ARCValidationPackages
 open System.IO
+open AVPRIndex
+open AVPRIndex.Domain
 
 type APIError = 
 | RateLimitExceeded of msg: string
@@ -50,7 +52,7 @@ type API =
         ?Token: string
     ) =
 
-        let package = ARCValidationPackage.ofPackageIndex(indexedPackage, ?CacheFolder = CacheFolder)
+        let package = CachedValidationPackage.ofPackageIndex(indexedPackage, ?CacheFolder = CacheFolder)
         try 
             GitHubAPI.downloadPackageScript(indexedPackage, ?Token = Token)
             |> fun script -> 
@@ -151,7 +153,7 @@ type API =
 
                     match API.UpdateIndex(config, ?Token = Token) with
                     | Ok updatedConfig -> 
-                        let updatedIndexPackage = Config.getIndexedPackageByNameAndVersion packageName (ARCValidationPackage.getSemanticVersionString cachedPackage) updatedConfig
+                        let updatedIndexPackage = Config.getIndexedPackageByNameAndVersion packageName (CachedValidationPackage.getSemanticVersionString cachedPackage) updatedConfig
                         if updatedIndexPackage.LastUpdated > indexedPackage.LastUpdated then
                             // package on remote index is newer, download package and cache.
                             if verbose then printfn $"package {packageName} is available in a newer version({updatedIndexPackage.LastUpdated} vs {indexedPackage.LastUpdated}). downloading..."

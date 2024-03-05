@@ -5,6 +5,7 @@ open System
 open System.IO
 open System.Text
 open System.Text.Json
+open AVPRIndex.Domain
 
 module GitHubAPI =
 

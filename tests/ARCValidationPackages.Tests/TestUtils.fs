@@ -32,8 +32,8 @@ module Expect =
                     with _ -> false
                 )
 
-        let mutable zippedValuesActual: seq<(string*string*ARCValidationPackage)> = Seq.empty
-        let mutable zippedValuesExpected: seq<(string*string*ARCValidationPackage)> = Seq.empty
+        let mutable zippedValuesActual: seq<(string*string*CachedValidationPackage)> = Seq.empty
+        let mutable zippedValuesExpected: seq<(string*string*CachedValidationPackage)> = Seq.empty
         
         if innerKeysAreEqual && KeysAreEqual then 
             zippedValuesActual <- 

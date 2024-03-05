@@ -20,8 +20,12 @@ module TestUtils =
     let expected_config_folder_path = Path.Combine(application_data_path, "nfdi4plants/arc-validate").Replace("\\", "/")
     let expected_config_file_path = Path.Combine(expected_config_folder_path, "validation-packages-config.json").Replace("\\", "/")
 
-    let expected_package_cache_folder_path = Path.Combine(expected_config_folder_path, "package-cache").Replace("\\", "/")
-    let expected_package_cache_file_path = Path.Combine(expected_package_cache_folder_path, "validation-packages-cache.json").Replace("\\", "/")
+    let expected_package_cache_folder_path_preview = Path.Combine(expected_config_folder_path, "package-cache-preview").Replace("\\", "/")
+    let expected_package_cache_file_path_preview = Path.Combine(expected_package_cache_folder_path_preview, "validation-packages-cache.json").Replace("\\", "/")
+
+    let expected_package_cache_folder_path_release = Path.Combine(expected_config_folder_path, "package-cache-release").Replace("\\", "/")
+    let expected_package_cache_file_path_release = Path.Combine(expected_package_cache_folder_path_release, "validation-packages-cache.json").Replace("\\", "/")
+
 
     let runTool (tool: string) (args: string []) =
         CreateProcess.fromRawCommand tool args
@@ -32,13 +36,13 @@ module TestUtils =
 
         // remove any existing config folder for running tests
         if Directory.Exists(expected_config_folder_path) then Directory.Delete(expected_config_folder_path, true)
-        if Directory.Exists(expected_package_cache_folder_path) then Directory.Delete(expected_package_cache_folder_path, true)
+        if Directory.Exists(expected_package_cache_folder_path_preview) then Directory.Delete(expected_package_cache_folder_path_preview, true)
         // ensure that these file do not exist before running tests
         if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
-        if File.Exists(expected_package_cache_file_path) then File.Delete(expected_package_cache_file_path)
+        if File.Exists(expected_package_cache_file_path_preview) then File.Delete(expected_package_cache_file_path_preview)
 
     let deleteDefaultPackageCache() =
-        if File.Exists(expected_package_cache_file_path) then File.Delete(expected_package_cache_file_path)
+        if File.Exists(expected_package_cache_file_path_preview) then File.Delete(expected_package_cache_file_path_preview)
 
     let deleteDefaultConfig() =
         if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)

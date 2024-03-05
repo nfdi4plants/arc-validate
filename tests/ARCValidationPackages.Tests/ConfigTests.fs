@@ -19,7 +19,7 @@ let ``Config tests`` =
                     packageIndex = testPackageIndex,
                     indexLastUpdated = testDate1,
                     configFilePath = Defaults.CONFIG_FILE_PATH(),
-                    packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER()
+                    packageCacheFolder = Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()
                 )
 
             test "config file path is correct" {
@@ -31,7 +31,7 @@ let ``Config tests`` =
             test "package cache folder is correct" {
                 Expect.equal 
                     (testConfig.PackageCacheFolder) 
-                    expected_package_cache_folder_path
+                    expected_package_cache_folder_path_preview
                     "package cache folder path is not correct"
             } 
             test "config folder path is correct" {

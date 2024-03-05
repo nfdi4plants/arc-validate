@@ -21,8 +21,8 @@ type ScriptExecution =
     static member runScript (scriptPath: string) =
         ScriptExecution.runScriptWithArgs scriptPath [||]
 
-    static member runPackageScriptWithArgs (package: ARCValidationPackage) (args: string []) =
+    static member runPackageScriptWithArgs (package: CachedValidationPackage) (args: string []) =
         ScriptExecution.runScriptWithArgs package.LocalPath args
 
-    static member runPackageScript (package: ARCValidationPackage) =
+    static member runPackageScript (package: CachedValidationPackage) =
         ScriptExecution.runPackageScriptWithArgs package [||]

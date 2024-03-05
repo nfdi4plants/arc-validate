@@ -17,7 +17,7 @@ let tests =
                 (PackageCache([testValidationPackage1]))
                 (
                     let tmp = PackageCache()
-                    let inner = new Dictionary<string, ARCValidationPackage>()
+                    let inner = new Dictionary<string, CachedValidationPackage>()
                     inner["1.0.0"] <- testValidationPackage1
                     tmp["test"] <- inner
                     tmp
@@ -56,7 +56,7 @@ let tests =
             Expect.packageCacheEqual 
                 (
                     PackageCache(testPackageCache1)
-                    |> PackageCache.updateCacheDate testValidationPackage1.Metadata.Name (ARCValidationPackage.getSemanticVersionString testValidationPackage1) testDate2
+                    |> PackageCache.updateCacheDate testValidationPackage1.Metadata.Name (CachedValidationPackage.getSemanticVersionString testValidationPackage1) testDate2
                 )
                 testPackageCache2
         } |> testSequenced
@@ -64,7 +64,7 @@ let tests =
         test "can write json" {
             deleteDefaultPackageCache() // make sure any cached file is deleted before testing that it can be written
             testPackageCache1 |> PackageCache.write()
-            Expect.isTrue (File.Exists(expected_package_cache_file_path)) "package cache file was not created"
+            Expect.isTrue (File.Exists(expected_package_cache_file_path_preview)) "package cache file was not created"
         } |> testSequenced
 
         test "can read json" {

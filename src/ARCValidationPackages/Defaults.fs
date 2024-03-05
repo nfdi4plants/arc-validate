@@ -24,7 +24,9 @@ module Defaults =
 
     let [<Literal>] CONFIG_FILE_NAME = "validation-packages-config.json"
 
-    let [<Literal>] PACKAGE_CACHE_FOLDER_NAME = "package-cache"
+    let [<Literal>] PACKAGE_CACHE_FOLDER_NAME_PREVIEW = "package-cache-preview"
+
+    let [<Literal>] PACKAGE_CACHE_FOLDER_NAME_RELEASE = "package-cache-release"
 
     let [<Literal>] PACKAGE_CACHE_FILE_NAME = "validation-packages-cache.json"
 
@@ -44,15 +46,26 @@ module Defaults =
         Path.Combine(CONFIG_FOLDER(), CONFIG_FILE_NAME)
             .Replace("\\", "/")
 
-    let PACKAGE_CACHE_FOLDER () = 
+    let PACKAGE_CACHE_FOLDER_PREVIEW () = 
         let path = 
-            Path.Combine(CONFIG_FOLDER(), PACKAGE_CACHE_FOLDER_NAME)
+            Path.Combine(CONFIG_FOLDER(), PACKAGE_CACHE_FOLDER_NAME_PREVIEW)
                 .Replace("\\", "/")
         Directory.CreateDirectory(path) |> ignore
         path
 
-    let PACKAGE_CACHE_FILE_PATH () = 
-        Path.Combine(PACKAGE_CACHE_FOLDER(), PACKAGE_CACHE_FILE_NAME)
+    let PACKAGE_CACHE_FOLDER_RELEASE () = 
+        let path = 
+            Path.Combine(CONFIG_FOLDER(), PACKAGE_CACHE_FOLDER_NAME_RELEASE)
+                .Replace("\\", "/")
+        Directory.CreateDirectory(path) |> ignore
+        path
+
+    let PACKAGE_CACHE_FILE_PATH_PREVIEW () = 
+        Path.Combine(PACKAGE_CACHE_FOLDER_PREVIEW(), PACKAGE_CACHE_FILE_NAME)
+            .Replace("\\", "/")
+
+    let PACKAGE_CACHE_FILE_PATH_RELEASE () = 
+        Path.Combine(PACKAGE_CACHE_FOLDER_RELEASE(), PACKAGE_CACHE_FILE_NAME)
             .Replace("\\", "/")
 
     let SERIALIZATION_OPTIONS =  JsonSerializerOptions(WriteIndented = true)

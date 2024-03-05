@@ -3,13 +3,14 @@
 open System.Collections.Generic
 open System.IO
 open System.Text.Json
+open AVPRIndex.Domain
 
 type PackageCache =
-    inherit Dictionary<string, Dictionary<string,ARCValidationPackage>>
+    inherit Dictionary<string, Dictionary<string,CachedValidationPackage>>
 
-    new () = { inherit Dictionary<string, Dictionary<string,ARCValidationPackage>>() }
+    new () = { inherit Dictionary<string, Dictionary<string,CachedValidationPackage>>() }
 
-    new (packages: IEnumerable<KeyValuePair<string, Dictionary<string,ARCValidationPackage>>>) = { inherit Dictionary<string, Dictionary<string,ARCValidationPackage>>(packages) }
+    new (packages: IEnumerable<KeyValuePair<string, Dictionary<string,CachedValidationPackage>>>) = { inherit Dictionary<string, Dictionary<string,CachedValidationPackage>>(packages) }
 
     new (cache: PackageCache) = 
         let kv = 
@@ -21,14 +22,14 @@ type PackageCache =
         PackageCache(kv)
         
 
-    new(packages: seq<ARCValidationPackage>) = 
+    new(packages: seq<CachedValidationPackage>) = 
         let kv = 
             packages
             |> Seq.groupBy (fun p -> p.Metadata.Name)
             |> Seq.map (fun (name,packages) -> 
                 name, 
                 packages
-                |> Seq.map (fun p -> KeyValuePair.Create(ARCValidationPackage.getSemanticVersionString p, p) )
+                |> Seq.map (fun p -> KeyValuePair.Create(CachedValidationPackage.getSemanticVersionString p, p) )
                 |> Dictionary
             )
             |> Seq.map (fun (name,versions) -> KeyValuePair.Create(name,versions))
@@ -57,7 +58,7 @@ type PackageCache =
     //            false
     //    | _ -> false
 
-    static member create (packages: seq<ARCValidationPackage>) =
+    static member create (packages: seq<CachedValidationPackage>) =
         new PackageCache(packages)
 
     static member getPackage (name: string) (semVerString: string) (cache: PackageCache) =
@@ -65,7 +66,7 @@ type PackageCache =
 
     static member getLatestPackage (name: string) (cache: PackageCache) =
         cache[name]
-        |> Seq.maxBy (fun (kv:KeyValuePair<string,ARCValidationPackage>) -> kv.Key)
+        |> Seq.maxBy (fun (kv:KeyValuePair<string,CachedValidationPackage>) -> kv.Key)
         |> fun x -> x.Value
 
     static member getPackages (name: string) (cache: PackageCache) =
@@ -104,16 +105,16 @@ type PackageCache =
         else 
             None
 
-    static member addPackage (package: ARCValidationPackage) (cache: PackageCache) =
+    static member addPackage (package: CachedValidationPackage) (cache: PackageCache) =
 
-        let semver = ARCValidationPackage.getSemanticVersionString package
+        let semver = CachedValidationPackage.getSemanticVersionString package
 
         if cache.ContainsKey(package.Metadata.Name) then
             cache[package.Metadata.Name].Add(semver, package)
         else
             cache.Add(
                 package.Metadata.Name, 
-                new Dictionary<string, ARCValidationPackage>([KeyValuePair.Create(semver, package)])
+                new Dictionary<string, CachedValidationPackage>([KeyValuePair.Create(semver, package)])
             )
 
         cache
@@ -121,11 +122,11 @@ type PackageCache =
     static member cachePackageOfIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset) =
         fun (cache: PackageCache) ->
             cache
-            |> PackageCache.addPackage (ARCValidationPackage.ofPackageIndex(packageIndex, ?Date = Date))
+            |> PackageCache.addPackage (CachedValidationPackage.ofPackageIndex(packageIndex, ?Date = Date))
 
     static member updateCacheDate (name: string) (semVerString: string) (date: System.DateTimeOffset) (cache: PackageCache) =
         let package = cache.[name][semVerString]
-        cache.[name][semVerString] <- package |> ARCValidationPackage.updateCacheDate date
+        cache.[name][semVerString] <- package |> CachedValidationPackage.updateCacheDate date
         cache
 
     static member tryUpdateCacheDate (name: string) (semVerString: string) (date: System.DateTimeOffset) (cache: PackageCache) =
@@ -145,18 +146,18 @@ type PackageCache =
         cache
 
     static member exists (?Path: string) =
-        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW())
         File.Exists(path)
 
     static member read (?Path: string) =
-        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH())
+        let path = defaultArg Path (Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW())
         path
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<PackageCache>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
     static member get (?Folder: string, ?FileName: string) =
         let fileName = defaultArg FileName (Defaults.PACKAGE_CACHE_FILE_NAME)
-        let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER())
+        let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
         let path = Path.Combine(folder, fileName)
         if PackageCache.exists(path) then
             PackageCache.read(path)
@@ -166,7 +167,7 @@ type PackageCache =
     static member write (?Folder: string, ?FileName: string) =
         fun (cache: PackageCache) ->
             let fileName = defaultArg FileName (Defaults.PACKAGE_CACHE_FILE_NAME)
-            let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER())
+            let folder = defaultArg Folder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
             let path = Path.Combine(folder, fileName)
             System.IO.FileInfo(path).Directory.Create(); // ensures directory exists
             JsonSerializer.Serialize(cache, Defaults.SERIALIZATION_OPTIONS)

@@ -12,6 +12,7 @@
     <Compile Include="Results.fs" />
     <Compile Include="Defaults.fs" />
     <Compile Include="Domain.fs" />
+    <Compile Include="AVPRAPI.fs" />
     <Compile Include="GitHubAPI.fs" />
     <Compile Include="PackageCache.fs" />
     <Compile Include="Config.fs" />
@@ -22,6 +23,8 @@
   <ItemGroup>
     <PackageReference Include="Fake.DotNet.Cli" Version="[6.0.0]" />
     <PackageReference Include="FsHttp" Version="[11.0.0]" />
+	<PackageReference Include="AVPRClient" Version="[0.0.2]" />
+	<PackageReference Include="AVPRIndex" Version="[0.0.2]" />
   </ItemGroup>
 
 </Project>

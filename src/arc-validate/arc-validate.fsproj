@@ -28,6 +28,7 @@
     <PackageReference Include="Expecto" Version="[9.0.4]" />
     <PackageReference Include="Spectre.Console" Version="0.48.0" />
     <PackageReference Include="Spectre.Console.CLI" Version="0.48.0" />
+	<PackageReference Include="AVPRIndex" Version="[0.0.2]" />
   </ItemGroup>
 
   <ItemGroup>
