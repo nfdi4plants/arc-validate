@@ -153,9 +153,9 @@ module Validate =
             |> Expecto.Tests.failtestNoStackf "%s"
 
         /// <summary>
-        /// Validates if all elements in the given IParam collection satisfy the projection function.
+        /// Validates if all elements in the given IParam collection satisfy the predicate function.
         /// </summary>
-        /// <param name="projection">A function that evaluates to true if the element satisfies the requirements.</param>
+        /// <param name="predicate">A function that evaluates to true if the element satisfies the requirements.</param>
         /// <param name="paramCollection">The IParam collection to validate.</param>
         static member AllItemsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
             use en = paramCollection.GetEnumerator()
