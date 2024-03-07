@@ -158,11 +158,16 @@ module Validate =
         /// <param name="projection">A function that evaluates to true if the element satisfies the requirements.</param>
         /// <param name="paramCollection">The IParam collection to validate.</param>
         static member ParamsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
-            match Seq.forall predicate paramCollection with
-            | true  -> ()
-            | false ->
-                ErrorMessage.ofIParamCollection $"does not exist" paramCollection
-                |> Expecto.Tests.failtestNoStackf "%s"
+            use en = paramCollection.GetEnumerator()
+            let rec loop () =
+                match en.MoveNext() with
+                | true ->
+                    if predicate en.Current |> not then
+                        ErrorMessage.ofIParam $"does not satisfy predicate" en.Current
+                        |> Expecto.Tests.failtestNoStackf "%s"
+                    else loop ()
+                | false -> ()
+            loop ()
 
 
     /// <summary>
