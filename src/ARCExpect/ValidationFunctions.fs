@@ -157,7 +157,7 @@ module Validate =
         /// </summary>
         /// <param name="projection">A function that evaluates to true if the element satisfies the requirements.</param>
         /// <param name="paramCollection">The IParam collection to validate.</param>
-        static member ParamsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
+        static member AllItemsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
             use en = paramCollection.GetEnumerator()
             let rec loop () =
                 match en.MoveNext() with
