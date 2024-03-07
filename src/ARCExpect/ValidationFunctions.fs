@@ -157,8 +157,8 @@ module Validate =
         /// </summary>
         /// <param name="projection">A function that evaluates to true if the element satisfies the requirements.</param>
         /// <param name="paramCollection">The IParam collection to validate.</param>
-        static member forAll (projection : #IParam -> bool) (paramCollection : #seq<#IParam>) =
-            match Seq.forall projection paramCollection with
+        static member ParamsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
+            match Seq.forall predicate paramCollection with
             | true  -> ()
             | false ->
                 ErrorMessage.ofIParamCollection $"does not exist" paramCollection
