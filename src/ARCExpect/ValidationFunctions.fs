@@ -165,6 +165,7 @@ module Validate =
                     if predicate en.Current |> not then
                         ErrorMessage.ofIParam $"does not satisfy predicate" en.Current
                         |> Expecto.Tests.failtestNoStackf "%s"
+                        loop ()
                     else loop ()
                 | false -> ()
             loop ()
