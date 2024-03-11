@@ -3,6 +3,9 @@
 open ControlledVocabulary
 open ARCExpect
 open ARCTokenization.StructuralOntology
+open FSharpAux
+
+FSharpx.Collections.Array.catOptions
 
 /// <summary>
 /// Top level API for performing validation.
@@ -159,16 +162,17 @@ module Validate =
         /// <param name="paramCollection">The IParam collection to validate.</param>
         static member AllItemsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
             use en = paramCollection.GetEnumerator()
-            let rec loop () =
+            let rec loop failString =
                 match en.MoveNext() with
                 | true ->
                     if predicate en.Current |> not then
-                        ErrorMessage.ofIParam $"does not satisfy predicate" en.Current
-                        |> Expecto.Tests.failtestNoStackf "%s"
-                        loop ()
-                    else loop ()
-                | false -> ()
-            loop ()
+                        let em = ErrorMessage.ofIParam $"does not satisfy predicate" en.Current
+                        loop $"{failString}\n{em}"
+                    else loop failString
+                | false -> failString
+            let failString = loop ""
+            if String.isNullOrEmpty failString |> not then
+                Expecto.Tests.failtestNoStackf "%s" failString
 
 
     /// <summary>

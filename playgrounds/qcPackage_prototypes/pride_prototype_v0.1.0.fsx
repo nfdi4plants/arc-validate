@@ -50,9 +50,6 @@ let invFileTokens =
     |> Seq.concat
     |> Seq.map snd
 
-Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths |> List.concat |> Seq.iter (Param.getCvName >> printfn "%s")
-Investigation.parseMetadataSheetsFromTokens() absoluteFilePaths |> List.concat |> Seq.iter (Param.getTerm >> printfn "%A")
-
 let invFileTokensNoMdSecKeys =
     invFileTokens
     |> Seq.filter (Param.getValue >> (<>) Terms.StructuralTerms.metadataSectionKey.Name) 
@@ -76,6 +73,32 @@ let contactsEmails =
 let commis =
     invFileTokensNoMdSecKeys
     |> Seq.filter (Param.getTerm >> (=) Terms.StructuralTerms.userComment)
+
+
+
+// Helper functions:
+
+type ParamCollection = 
+
+    static member AllItemsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
+        use en = paramCollection.GetEnumerator()
+        let rec loop failString =
+            match en.MoveNext() with
+            | true ->
+                if predicate en.Current |> not then
+                    let em = ErrorMessage.ofIParam $"does not satisfy predicate" en.Current
+                    loop $"{failString}\n{em}"
+                else loop failString
+            | false -> failString
+        let failString = loop ""
+        if String.isNullOrEmpty failString |> not then
+            Expecto.Tests.failtestNoStackf "%s" failString
+
+
+let testl = Seq.take 5 invFileTokens |> List.ofSeq
+
+ParamCollection.AllItemsSatisfyPredicate (fun p -> p.Name = "Term Source Name") testl
+
 
 
 // Validation Cases:
