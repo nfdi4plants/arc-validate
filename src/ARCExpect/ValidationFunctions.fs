@@ -5,7 +5,6 @@ open ARCExpect
 open ARCTokenization.StructuralOntology
 open FSharpAux
 
-FSharpx.Collections.Array.catOptions
 
 /// <summary>
 /// Top level API for performing validation.
