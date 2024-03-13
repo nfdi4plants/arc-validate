@@ -24,9 +24,9 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[8.0.101, )",
-        "resolved": "8.0.101",
-        "contentHash": "sOLz3O4BOxnTKfd5OChdRmDUy4Id0GfoEClRG4nzIod8LY1LJZcNyygKAV0A78XOLh8yvhA5hsDYKZXGCR9blw=="
+        "requested": "[8.0.200, )",
+        "resolved": "8.0.200",
+        "contentHash": "qnxoF3Fu0HzfOeYdrwmQOsLP1v+OtOMSIYkNVUwf6nGqWzL03Hh4r6VFCvCb54jlsgtt3WADVYkKkrgdeY5kiQ=="
       },
       "Spectre.Console": {
         "type": "Direct",
@@ -141,6 +141,25 @@
           "ARCtrl.ISA": "1.0.1",
           "FSharp.Core": "6.0.7",
           "FsSpreadsheet": "5.0.1"
+        }
+      },
+      "AVPRClient": {
+        "type": "Transitive",
+        "resolved": "0.0.4",
+        "contentHash": "heiOkmXZjvV/qaCXoOxK9c4Ghaiv4X8ve0l2KDmQ152BGWQeRoosHVExc9FMVHVj6o192jeCMTj9xL1FcQuGdA==",
+        "dependencies": {
+          "AVPRIndex": "0.0.3",
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "AVPRIndex": {
+        "type": "Transitive",
+        "resolved": "0.0.6",
+        "contentHash": "sqbqKn3WhQuIglCUr8Ux8/hJ+sDsyvnqRDi2QeePOXnIHmcGAl3tamIgCOySv5F2AuG5n6FAZBecQjmwbYxVSg==",
+        "dependencies": {
+          "FSharp.Core": "8.0.200",
+          "FsHttp": "14.5.0",
+          "YamlDotNet": "15.1.2"
         }
       },
       "BlackFox.VsWhere": {
@@ -550,10 +569,10 @@
       },
       "FsHttp": {
         "type": "Transitive",
-        "resolved": "11.0.0",
-        "contentHash": "9YVNdI01hQ5V0MGb8/9QY2F2dd9p4hZ8ywXaoEO/qNGeTPiPNbqTpGAtsdhIo75eAAfl1M2OM/UI76M/bhA1ag==",
+        "resolved": "14.5.0",
+        "contentHash": "4IntP699QAP8Na16kD+7DoKES5WtIlDgKUaPAU+IcvNW2Ut/LzjTVP1XUx532TlNygvwTbGv9DHOAZVcnNDIuw==",
         "dependencies": {
-          "FSharp.Core": "5.0.0"
+          "FSharp.Core": "5.0.2"
         }
       },
       "FsSpreadsheet": {
@@ -744,8 +763,8 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
       },
       "NJsonSchema": {
         "type": "Transitive",
@@ -1263,6 +1282,11 @@
           "Newtonsoft.Json": "11.0.2"
         }
       },
+      "YamlDotNet": {
+        "type": "Transitive",
+        "resolved": "15.1.2",
+        "contentHash": "qeX0XhzOIcQEvnI5JxnPaIwcINwyY4Qy/LXhSfsdHkFrl9F41AT52UFfy2nIE7kgrhMg+cP7xuS+GtPJhmHmTA=="
+      },
       "arcexpect": {
         "type": "Project",
         "dependencies": {
@@ -1270,7 +1294,7 @@
           "AnyBadge.NET": "[2.0.0, 2.0.0]",
           "Cytoscape.NET": "[0.2.0, 0.2.0]",
           "Expecto": "[9.0.4, 9.0.4]",
-          "FSharp.Core": "[8.0.101, )",
+          "FSharp.Core": "[8.0.200, )",
           "FSharpAux": "[2.0.0, 2.0.0]",
           "FsSpreadsheet": "[5.0.2, 5.0.2]",
           "FsSpreadsheet.ExcelIO": "[5.0.2, 5.0.2]",
@@ -1281,9 +1305,11 @@
       "arcvalidationpackages": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.101, )",
+          "AVPRClient": "[0.0.4, 0.0.4]",
+          "AVPRIndex": "[0.0.6, 0.0.6]",
+          "FSharp.Core": "[8.0.200, )",
           "Fake.DotNet.Cli": "[6.0.0, 6.0.0]",
-          "FsHttp": "[11.0.0, 11.0.0]"
+          "FsHttp": "[14.5.0, 14.5.0]"
         }
       }
     }

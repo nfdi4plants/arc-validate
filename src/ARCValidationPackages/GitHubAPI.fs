@@ -5,6 +5,7 @@ open System
 open System.IO
 open System.Text
 open System.Text.Json
+open AVPRIndex
 open AVPRIndex.Domain
 
 module GitHubAPI =
@@ -63,22 +64,10 @@ type GitHubAPI =
 
 
     static member getPackageIndex (?Token: string) =
-        let json = 
-            GitHubAPI.getRepositoryContent(
-                owner = Defaults.PACKAGE_INDEX_OWNER,
-                repo = Defaults.PACKAGE_INDEX_REPO,
-                path = Defaults.PACKAGE_INDEX_FILE_NAME,
-                userAgent = Defaults.GITHUB_API_USER_AGENT,
-                ?Token = Token
-            )
         try
-            json
-            |> fun json -> (json?content).GetString()
-            |> fun content -> Convert.FromBase64String(content)
-            |> fun bytes -> Encoding.UTF8.GetString(bytes)
-            |> fun index -> JsonSerializer.Deserialize<ValidationPackageIndex[]>(index, Defaults.SERIALIZATION_OPTIONS)
+            AVPRRepo.getPreviewIndex()
         with e ->
-            raise (GitHubAPI.Errors.SerializationError($"{e.Message}{System.Environment.NewLine}{json}"))
+            raise (GitHubAPI.Errors.SerializationError($"{e.Message}"))
 
     static member downloadPackageScript (packagePath: string, ?Token: string) =
         let json = 

@@ -28,7 +28,7 @@ let ``GitHubAPI tests`` =
                 GitHubAPI.getRepositoryContent(
                     owner = "nfdi4plants",
                     repo = "arc-validate-package-registry",
-                    path = $"src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx",
+                    path = "StagingArea/test/test@1.0.0.fsx",
                     userAgent = "arc-validate-test",
                     ?Token = token
                 )
@@ -52,7 +52,7 @@ let ``GitHubAPI tests`` =
         }
         test "getScriptContent terminates" {
             GitHubAPI.downloadPackageScript(
-                "src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx",
+                "StagingArea/test/test@1.0.0.fsx",
                 ?Token = token
             )
             |> ignore
@@ -61,7 +61,7 @@ let ``GitHubAPI tests`` =
             Expect.equal 
                 (
                     GitHubAPI.downloadPackageScript(
-                        "src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx",
+                        "StagingArea/test/test@1.0.0.fsx",
                         ?Token = token
                     )
                     |> fun content -> content.ReplaceLineEndings()
