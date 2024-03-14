@@ -48,7 +48,7 @@ let ``GitHubAPI tests`` =
         }
         test "getPackageIndex contains test script" {
             let indexedPackages = GitHubAPI.getPackageIndex(?Token = token)
-            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "src/PackageRegistryService/StagingArea/test/test@1.0.0.fsx")) "package index did not contain test script"
+            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "StagingArea/test/test@1.0.0.fsx")) "package index did not contain test script"
         }
         test "getScriptContent terminates" {
             GitHubAPI.downloadPackageScript(

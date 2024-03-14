@@ -23,7 +23,7 @@
     <PackageReference Include="Fake.DotNet.Cli" Version="[6.0.0]" />
     <PackageReference Include="FsHttp" Version="[14.5.0]" />
 	<PackageReference Include="AVPRClient" Version="[0.0.4]" />
-	<PackageReference Include="AVPRIndex" Version="[0.0.6]" />
+	<PackageReference Include="AVPRIndex" Version="[0.0.7]" />
   </ItemGroup>
 
 </Project>
