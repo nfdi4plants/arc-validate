@@ -84,44 +84,23 @@ let testValidationPackage3FullMetadata =
             0,
             Publish = true,
             Authors = [|
-                let author1 = new Author()
-                let author2 = new Author()
-                (
-                    author1.FullName <- "John Doe"
-                    author1.Email <- "j@d.com"
-                    author1.Affiliation <- "University of Nowhere"
-                    author1.AffiliationLink <- "https://nowhere.edu"
+                Author.create(
+                    fullName = "John Doe",
+                    email = "j@d.com",
+                    Affiliation = "University of Nowhere",
+                    AffiliationLink = "https://nowhere.edu"
                 )
-                (
-                    author2.FullName <- "Jane Doe"
-                    author2.Email <- "jj@d.com"
-                    author2.Affiliation <- "University of Somewhere"
-                    author2.AffiliationLink <- "https://somewhere.edu"
+                Author.create(
+                    fullName = "Jane Doe",
+                    email = "jj@d.com",
+                    Affiliation = "University of Somewhere",
+                    AffiliationLink = "https://somewhere.edu"
                 )
-                author1; author2
-                //Author.create(
-                //    fullName = "John Doe",
-                //    email = "j@d.com",
-                //    Affiliation = "University of Nowhere",
-                //    AffiliationLink = "https://nowhere.edu"
-                //)
-                //Author.create(
-                //    fullName = "Jane Doe",
-                //    email = "jj@d.com",
-                //    Affiliation = "University of Somewhere",
-                //    AffiliationLink = "https://somewhere.edu"
-                //)
             |],
             Tags = [|
-                let annotation1 = new OntologyAnnotation ()
-                let annotation2 = new OntologyAnnotation ()
-                let annotation3 = new OntologyAnnotation ()
-                annotation1.Name <- "validation"
-                annotation2.Name <- "my-package"
-                annotation3.Name <- "thing"
-                annotation1
-                annotation2
-                annotation3
+                OntologyAnnotation.create("validation")
+                OntologyAnnotation.create("my-package")
+                OntologyAnnotation.create("thing")
             |],
             ReleaseNotes = "add authors and tags for further testing"
         )
