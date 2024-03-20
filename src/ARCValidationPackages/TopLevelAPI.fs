@@ -1,5 +1,6 @@
 ﻿namespace ARCValidationPackages
 open System.IO
+open AVPRClient
 open AVPRIndex
 open AVPRIndex.Domain
 
@@ -256,3 +257,141 @@ type API =
         with e ->
             Error e.Message
 
+type AVPR =
+    
+    static member SaveAndCachePackage (
+        cache: PackageCache,
+        packageName: string,
+        ?packageVersion: string,
+        ?CacheFolder: string
+    ) =
+
+        try 
+            let avprapi = new AVPRAPI()
+            
+            let validationPackage =
+                match packageVersion with
+                | Some v ->
+                    avprapi.GetPackageByNameAndVersion packageName v
+                | None -> 
+                    avprapi.GetPackageByName packageName
+                    
+            let metadata = validationPackage.toValidationPackageMetadata()
+            let package = CachedValidationPackage.ofPackageMetadata(metadata, ?CacheFolder = CacheFolder)
+            
+            cache
+            |> PackageCache.addPackage package
+            |> PackageCache.write()
+
+            Ok ($"installed package {package.FileName} at {package.LocalPath}")
+                
+        with e ->
+            match e with
+            | _ -> Error (PackageInstallError.DownloadError(packageName, e.Message))
+            
+    static member InstallPackage(
+        config: Config,
+        cache: PackageCache,
+        packageName: string,
+        ?SemVer: string,
+        ?Verbose: bool,
+        ?Token: string
+    ) =
+        let verbose = defaultArg Verbose false
+        let cachedPackage =
+            match SemVer with
+            | Some semver -> 
+                cache
+                |> PackageCache.tryGetPackage packageName semver
+            | None ->
+                cache
+                |> PackageCache.tryGetLatestPackage packageName
+            
+        match cachedPackage
+        with
+        | Some cachedPackage ->
+            //already cached -> check if newer package is available
+            if verbose then printfn $"package {packageName} is already cached locally from {cachedPackage.CacheDate}"
+            if verbose then printfn $"updating package index and looking for a newer version..."
+
+            let avprapi = new AVPRAPI()
+            
+            let latestPackage =
+                avprapi.GetPackageByName packageName
+            if ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata = ValidationPackageMetadata.getSemanticVersionString (latestPackage.toValidationPackageMetadata()) then
+                Ok ($"package {packageName} is already installed with the latest version.")
+            else
+                if verbose then printfn $"package {packageName} is available in a newer version({ValidationPackageMetadata.getSemanticVersionString (latestPackage.toValidationPackageMetadata())} vs {ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata}). downloading..."
+                AVPR.SaveAndCachePackage(
+                    cache = cache,
+                    packageName = packageName
+                )
+
+        |None -> 
+            // not cached -> download and cache
+            AVPR.SaveAndCachePackage(
+                cache = cache,
+                packageName = packageName
+            )
+
+    static member UninstallPackage(
+        cache: PackageCache,
+        packageName: string,
+        ?SemVer: string,
+        ?Verbose: bool
+    ) =
+        let verbose = defaultArg Verbose false
+
+        match SemVer with
+        | None ->
+
+            if verbose then printfn $"uninstalling all package versions of {packageName}..."
+
+            try
+                PackageCache.getPackages packageName cache
+                |> Seq.iter (fun kv -> 
+                    let version, package = kv.Key, kv.Value
+                    if verbose then printfn $"package {packageName}@{version} is installed. removing..."
+                    if verbose then printfn $"removing {package.LocalPath}..."
+                    File.Delete(package.LocalPath)
+                    cache
+                    |> PackageCache.removePackage packageName version
+                    |> PackageCache.write()
+                )
+                Ok ($"uninstalled all package versions of {packageName}")
+            with e ->
+                if verbose then printfn $"failed to remove a package: {e.Message}"
+                Error (IOError e.Message)
+
+        | Some semver ->
+            if verbose then printfn $"uninstalling all package versions of {packageName}..."
+
+            match PackageCache.tryGetPackage packageName semver cache with
+            | Some p -> 
+                if verbose then printfn $"package {packageName}@{semver} is installed. removing..."
+                try
+                    if verbose then printfn $"removing {p.LocalPath}..."
+                    File.Delete(p.LocalPath)
+                    cache
+                    |> PackageCache.removePackage packageName semver
+                    |> PackageCache.write()
+                    Ok ($"uninstalled package {packageName}@{semver} from {p.LocalPath}")
+                with e ->
+                    if verbose then printfn $"failed to remove {p.LocalPath}: {e.Message}"
+                    Error (IOError e.Message)
+
+            | None -> 
+                if verbose then printfn $"package {packageName} is not installed."
+                Error (PackageNotInstalled packageName)
+
+    static member ListCachedPackages(
+        cache: PackageCache,
+        ?Verbose: bool
+    ) =
+        try
+            cache 
+            |> PackageCache.getAllPackages
+            |> Ok
+        
+        with e ->
+            Error e.Message
