@@ -61,6 +61,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo_notebooks", "demo_notebooks", "{A83F65C9-925E-437C-A457-EF8B9C6B154D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qcPackage_prototypes", "qcPackage_prototypes", "{9B3B6E39-DB2F-4A91-944B-EFAAD961FCE7}"
+	ProjectSection(SolutionItems) = preProject
+		playgrounds\qcPackage_prototypes\pride_prototype_v0.1.0.fsx = playgrounds\qcPackage_prototypes\pride_prototype_v0.1.0.fsx
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DB01DF70-3713-4445-AC79-A09ECE093294}"
 EndProject
@@ -68,7 +71,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{588E
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharpConsole", "tests\FSharpConsole\FSharpConsole.fsproj", "{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Common", "tests\Common\Common.fsproj", "{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Common", "tests\Common\Common.fsproj", "{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arc-validate", "arc-validate", "{E6A037FA-C367-4C2A-9B87-2A04CA25D3C9}"
 EndProject

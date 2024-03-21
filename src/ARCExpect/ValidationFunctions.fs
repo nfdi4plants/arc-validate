@@ -3,6 +3,8 @@
 open ControlledVocabulary
 open ARCExpect
 open ARCTokenization.StructuralOntology
+open FSharpAux
+
 
 /// <summary>
 /// Top level API for performing validation.
@@ -134,7 +136,7 @@ module Validate =
                 |> Expecto.Tests.failtestNoStackf "%s"
 
         /// <summary>
-        /// Validates if the given Param is contained in the given collection át least once.
+        /// Validates if the given Param is contained in the given collection at least once.
         /// </summary>
         /// <param name="expectedParam">the param expected to occur at least once in the given collection</param>
         /// <param name="paramCollection">The param collection to validate</param>
@@ -151,6 +153,25 @@ module Validate =
             expectedParam
             |> ErrorMessage.ofIParam $"does not exist"
             |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if all elements in the given IParam collection satisfy the predicate function.
+        /// </summary>
+        /// <param name="predicate">A function that evaluates to true if the element satisfies the requirements.</param>
+        /// <param name="paramCollection">The IParam collection to validate.</param>
+        static member AllItemsSatisfyPredicate (predicate : #IParam -> bool) (paramCollection : #seq<#IParam>) =
+            use en = paramCollection.GetEnumerator()
+            let rec loop failString =
+                match en.MoveNext() with
+                | true ->
+                    if predicate en.Current |> not then
+                        let em = ErrorMessage.ofIParam $"does not satisfy predicate" en.Current
+                        loop $"{failString}\n{em}"
+                    else loop failString
+                | false -> failString
+            let failString = loop ""
+            if String.isNullOrEmpty failString |> not then
+                Expecto.Tests.failtestNoStackf "%s" failString
 
 
     /// <summary>

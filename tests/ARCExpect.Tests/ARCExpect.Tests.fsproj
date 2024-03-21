@@ -12,6 +12,7 @@
     <Compile Include="InternalUtilsTests.fs" />
     <Compile Include="StringValidationPatternTests.fs" />
     <Compile Include="ReferenceObjects.fs" />
+    <Compile Include="ErrorMessageTests.fs" />
     <Compile Include="ExpectoExtensionsTests.fs" />
     <Compile Include="PathConfigTests.fs" />
     <Compile Include="DirTokenizerTests.fs" />

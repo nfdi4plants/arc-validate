@@ -90,3 +90,42 @@ type ErrorMessage =
             str.AppendFormat(" > position '{0}'", position) |> ignore
         | None -> ()
         str.ToString()
+
+
+    static member ofIParamCollection error iParamCollection =
+
+        let iParam = Seq.head iParamCollection
+
+        let str = new StringBuilder()    
+        str.AppendFormat("['{0}', ..] {1}\n",  Param.getCvName iParam, error) |> ignore 
+
+        match Param.tryGetValueOfCvParamAttr "FilePath" iParam with
+        | Some path ->
+            str.AppendFormat(" > filePath '{0}'\n", path) |> ignore         
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Worksheet" iParam with
+        | Some sheet ->
+            str.AppendFormat(" > sheet '{0}'", sheet) |> ignore         
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Row" iParam with
+        | Some row -> 
+            str.AppendFormat(" > row '{0}'", row) |> ignore
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Column" iParam with
+        | Some column -> 
+            str.AppendFormat(" > column '{0}'", column) |> ignore
+        | None -> ()        
+                
+        match Param.tryGetValueOfCvParamAttr "Line" iParam with
+        | Some line ->
+            str.AppendFormat(" > line '{0}'", line) |> ignore
+        | None -> ()
+
+        match Param.tryGetValueOfCvParamAttr "Position" iParam with
+        | Some position -> 
+            str.AppendFormat(" > position '{0}'", position) |> ignore
+        | None -> ()
+        str.ToString()
