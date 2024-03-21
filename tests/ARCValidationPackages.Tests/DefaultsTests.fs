@@ -31,23 +31,39 @@ let ``Defaults tests`` =
                     expected_config_file_path
                     "config file path is not correct"
             }
-            test "package cache folder path is correct" {
+            test "package cache preview folder path is correct" {
                 Expect.equal 
                     (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()) 
                     expected_package_cache_folder_path_preview
-                    "package cache folder path is not correct"
+                    "package cache preview folder path is not correct"
             }
-            test "package cache folder path exists" {
+            test "package cache release folder path is correct" {
+                Expect.equal 
+                    (Defaults.PACKAGE_CACHE_FOLDER_RELEASE()) 
+                    expected_package_cache_folder_path_release
+                    "package cache release folder path is not correct"
+            }
+            test "package cache preview folder path exists" {
                 Expect.isTrue 
                     (Directory.Exists(expected_package_cache_folder_path_preview))
-                    "package cache folder path does not exist"
+                    "package cache preview folder path does not exist"
             }
-            test "package cache file path is correct" {
+            test "package cache release folder path exists" {
+                Expect.isTrue 
+                    (Directory.Exists(expected_package_cache_folder_path_release))
+                    "package cache release folder path does not exist"
+            }
+            test "package cache preview file path is correct" {
                 Expect.equal 
                     (Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW()) 
                     expected_package_cache_file_path_preview
-                    "config file path is not correct"
+                    "config file preview path is not correct"
             }
-
+            test "package cache release file path is correct" {
+                Expect.equal 
+                    (Defaults.PACKAGE_CACHE_FILE_PATH_RELEASE()) 
+                    expected_package_cache_file_path_release
+                    "config file release path is not correct"
+            }
         ]
     )
