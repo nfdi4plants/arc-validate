@@ -26,10 +26,16 @@ let ``Toplevel API tests`` =
                     fun (freshConfig, _) ->
                         Expect.equal freshConfig.ConfigFilePath expected_config_file_path "config file path is not correct"
 
-                "Fresh package cache folder",
+                "Fresh package cache preview folder",
                     fun (freshConfig, _) ->
-                        Expect.equal freshConfig.PackageCacheFolder expected_package_cache_folder_path_preview "package cache folder path is not correct"
+                        Expect.equal freshConfig.PackageCacheFolderPreview expected_package_cache_folder_path_preview "package cache preview folder path is not correct"
+                
+                
+                "Fresh package cache release folder",
+                    fun (freshConfig, _) ->
+                        Expect.equal freshConfig.PackageCacheFolderRelease expected_package_cache_folder_path_release "package cache release folder path is not correct"
 
+                
                 "Fresh config package index contains packages",
                     fun (freshConfig, _) ->
                         Expect.isGreaterThan freshConfig.PackageIndex.Length 0 "fresh config package index was empty"

@@ -6,19 +6,22 @@ open AVPRIndex.Domain
 type Config = {
     PackageIndex: ValidationPackageIndex []
     IndexLastUpdated: System.DateTimeOffset
-    PackageCacheFolder: string
+    PackageCacheFolderPreview: string
+    PackageCacheFolderRelease: string
     ConfigFilePath: string
 } with
     static member create (
         packageIndex: ValidationPackageIndex [],
         indexLastUpdated: System.DateTimeOffset,
-        packageCacheFolder: string,
+        packageCacheFolderPreview: string,
+        packageCacheFolderRelease: string,
         configFilePath: string
     ) =
         {
             PackageIndex = packageIndex
             IndexLastUpdated = indexLastUpdated
-            PackageCacheFolder = packageCacheFolder
+            PackageCacheFolderPreview = packageCacheFolderPreview
+            PackageCacheFolderRelease = packageCacheFolderRelease
             ConfigFilePath = configFilePath
         }
 
@@ -26,7 +29,8 @@ type Config = {
         Config.create(
             packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
             indexLastUpdated = System.DateTimeOffset.Now,
-            packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()),
+            packageCacheFolderPreview = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()),
+            packageCacheFolderRelease = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_RELEASE()),
             configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH())
         )
     static member indexContainsPackages (packageName: string) (config: Config) =
