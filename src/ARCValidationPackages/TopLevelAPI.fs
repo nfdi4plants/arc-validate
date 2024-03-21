@@ -31,16 +31,27 @@ type PackageUninstallError =
 type API =
 
     static member GetSyncedConfigAndCache(
+        release: bool,
         ?ConfigPath: string,
-        ?CacheFolder: string,
+        ?CacheFolderPreview: string,
+        ?CacheFolderRelease: string,
         ?CacheFileName: string,
         ?Token: string
     ) =
         try
-            let config = Config.get(?Path = ConfigPath, ?CacheFolder= CacheFolder, ?Token = Token)
+            let cacheFolderPreview = defaultArg CacheFolderPreview (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
+            let cacheFolderRelease = defaultArg CacheFolderRelease (Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
+            let config = Config.get(?Path = ConfigPath, ?CacheFolderPreview= CacheFolderPreview, ?CacheFolderRelease = CacheFolderRelease, ?Token = Token)
             config |> Config.write(?Path = ConfigPath)
-            let cache = PackageCache.get(?Folder = CacheFolder, ?FileName = CacheFileName)
-            cache |> PackageCache.write(?Folder = CacheFolder, ?FileName = CacheFileName)
+            let cache =
+                if release then
+                    let c = PackageCache.get(folder = cacheFolderRelease, ?FileName = CacheFileName)
+                    c |> PackageCache.write(folder = cacheFolderRelease, ?FileName = CacheFileName)
+                    c
+                else
+                    let c = PackageCache.get(folder = cacheFolderPreview, ?FileName = CacheFileName)
+                    c |> PackageCache.write(folder = cacheFolderPreview, ?FileName = CacheFileName)
+                    c
 
             Ok (config, cache)
         with e ->
@@ -52,7 +63,7 @@ type API =
         ?CacheFolder: string,
         ?Token: string
     ) =
-
+        let cacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
         let package = CachedValidationPackage.ofPackageIndex(indexedPackage, ?CacheFolder = CacheFolder)
         try 
             GitHubAPI.downloadPackageScript(indexedPackage, ?Token = Token)
@@ -64,7 +75,7 @@ type API =
 
             cache
             |> PackageCache.addPackage package
-            |> PackageCache.write()
+            |> PackageCache.write(cacheFolder)
 
             Ok ($"installed package {package.FileName} at {package.LocalPath}")
                 
@@ -204,7 +215,7 @@ type API =
                     File.Delete(package.LocalPath)
                     cache
                     |> PackageCache.removePackage packageName version
-                    |> PackageCache.write()
+                    |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
                 )
                 Ok ($"uninstalled all package versions of {packageName}")
             with e ->
@@ -222,7 +233,7 @@ type API =
                     File.Delete(p.LocalPath)
                     cache
                     |> PackageCache.removePackage packageName semver
-                    |> PackageCache.write()
+                    |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
                     Ok ($"uninstalled package {packageName}@{semver} from {p.LocalPath}")
                 with e ->
                     if verbose then printfn $"failed to remove {p.LocalPath}: {e.Message}"
@@ -266,7 +277,8 @@ type AVPR =
         ?CacheFolder: string
     ) =
 
-        try 
+        try
+            let cacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
             let avprapi = new AVPRAPI()
             
             let validationPackage =
@@ -281,7 +293,7 @@ type AVPR =
             
             cache
             |> PackageCache.addPackage package
-            |> PackageCache.write()
+            |> PackageCache.write(cacheFolder)
 
             Ok ($"installed package {package.FileName} at {package.LocalPath}")
                 
@@ -356,7 +368,7 @@ type AVPR =
                     File.Delete(package.LocalPath)
                     cache
                     |> PackageCache.removePackage packageName version
-                    |> PackageCache.write()
+                    |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
                 )
                 Ok ($"uninstalled all package versions of {packageName}")
             with e ->
@@ -374,7 +386,7 @@ type AVPR =
                     File.Delete(p.LocalPath)
                     cache
                     |> PackageCache.removePackage packageName semver
-                    |> PackageCache.write()
+                    |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
                     Ok ($"uninstalled package {packageName}@{semver} from {p.LocalPath}")
                 with e ->
                     if verbose then printfn $"failed to remove {p.LocalPath}: {e.Message}"
