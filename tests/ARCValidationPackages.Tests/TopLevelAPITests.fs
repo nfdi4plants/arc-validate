@@ -15,7 +15,7 @@ let ``Toplevel API tests`` =
 
         test "getSyncedConfigAndCache returns OK" {
             resetConfigEnvironment()
-            let syncResult = API.GetSyncedConfigAndCache(?Token = get_gh_api_token())
+            let syncResult = API.GetSyncedConfigAndCache(false, ?Token = get_gh_api_token())
             Expect.isOk (syncResult) "updateIndex did not return OK"
         }
 

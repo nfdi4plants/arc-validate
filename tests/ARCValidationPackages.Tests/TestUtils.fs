@@ -64,7 +64,7 @@ module Fixtures =
 
     let withFreshConfigAndCache (token:string option) (f: Config * PackageCache -> unit) () =
         resetConfigEnvironment()
-        let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
+        let freshConfig, freshCache = API.GetSyncedConfigAndCache(false, ?Token = token) |> Result.okValue
         f (freshConfig, freshCache)
 
     //let saveAndCachePackage (token:string option) (package:Package) =

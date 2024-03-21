@@ -97,7 +97,7 @@ module ValidateAPI =
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
                 
-                match ARCValidationPackages.API.GetSyncedConfigAndCache(?Token = token) with
+                match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = token) with
                 | Error e -> 
                     PackageAPI.printGetSyncedConfigAndCacheError e
                     exitCode <- ExitCode.InternalError

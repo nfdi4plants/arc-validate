@@ -36,7 +36,7 @@ type PackageAPI =
         ?Verbose: bool,
         ?Token: string
     ) = 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(?Token = Token) with
+        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
@@ -61,7 +61,7 @@ type PackageAPI =
         ?Token: string
     ) = 
 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(?Token = Token) with
+        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
@@ -91,7 +91,7 @@ type PackageAPI =
         ?Token: string
     ) = 
 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(?Token = Token) with
+        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
@@ -160,7 +160,7 @@ type PackageAPI =
         ?Verbose: bool,
         ?Token: string
     ) = 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(?Token = Token) with
+        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
