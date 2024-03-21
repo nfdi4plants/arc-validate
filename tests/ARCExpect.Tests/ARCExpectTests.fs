@@ -53,6 +53,13 @@ let ``Validate.Param API tests`` =
                     (fun () -> Validate.Param.ValueSatisfiesPredicate (fun x -> (string x).Contains("XYZ")) ReferenceObjects.CvParams.``Investigation Person First Name``) 
                     "no match expected, but matched."
             }
+
+            test "SatisfiesPredicate passes if valid" {Validate.Param.SatisfiesPredicate (fun x -> (string (x.Value)).Contains("Kev")) ReferenceObjects.CvParams.``Investigation Person First Name``}
+            test "SatisfiesPredicate fails if invalid" {
+                Expect.throws 
+                    (fun () -> Validate.Param.SatisfiesPredicate (fun x -> (string (x.Value)).Contains("XYZ")) ReferenceObjects.CvParams.``Investigation Person First Name``) 
+                    "no match expected, but matched."
+            }
         ]
     ]
 
@@ -74,6 +81,12 @@ let ``Validate.ParamCollection API tests`` =
                 Expect.throws 
                     (fun () -> Validate.ParamCollection.ContainsParamWithTerm ReferenceObjects.CvTerms.``Investigation Person First Name`` [ReferenceObjects.CvParams.``Investigation Person Email (valid)``] ) 
                     "non-contained cvparam was not correctly detected as not contained"
+            }
+            test "SatisfiesPredicate passes if valid" {Validate.ParamCollection.SatisfiesPredicate (fun x -> x|>List.exists(fun y -> y.Name = ReferenceObjects.CvTerms.``Investigation Person First Name``.Name)) [ReferenceObjects.CvParams.``Investigation Person First Name``] }
+            test "SatisfiesPredicate fails if invalid" {
+                Expect.throws 
+                    (fun () -> Validate.ParamCollection.SatisfiesPredicate (fun x -> x|>List.exists(fun y -> y.Name = ReferenceObjects.CvTerms.``Investigation Person First Name``.Name)) [ReferenceObjects.CvParams.``Investigation Person Email (valid)``] ) 
+                    "SatisfiesPredicate failed to detect non-matching cvparam"
             }
         ]
     ]
