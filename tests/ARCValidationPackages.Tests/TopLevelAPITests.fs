@@ -21,7 +21,7 @@ let ``Toplevel API tests`` =
 
         testSequenced (testList "getSyncedConfigAndCache" [
 
-            yield! testFixture (Fixtures.withFreshConfigAndCache (get_gh_api_token())) [
+            yield! testFixture (Fixtures.withFreshConfigAndCachePreview (get_gh_api_token())) [
                 "Fresh config filepath",
                     fun (freshConfig, _) ->
                         Expect.equal freshConfig.ConfigFilePath expected_config_file_path "config file path is not correct"
@@ -52,7 +52,7 @@ let ``Toplevel API tests`` =
         ])
 
         testSequenced (testList "updateIndex" [
-            yield! testFixture (Fixtures.withFreshConfigAndCache (get_gh_api_token())) [
+            yield! testFixture (Fixtures.withFreshConfigAndCachePreview (get_gh_api_token())) [
                 "updateIndex returns OK",
                     fun (freshConfig, _) ->
                         Expect.isOk (API.UpdateIndex(freshConfig, ?Token = get_gh_api_token())) "updateIndex did not return OK"
