@@ -76,3 +76,7 @@ module Fixtures =
     //    let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
     //    let updatedCache = API.SaveAndCachePackage(freshConfig, freshCache, package) |> Result.okValue
     //    updatedCache
+
+module AVPR =
+    
+    let api = new AVPRAPI()
