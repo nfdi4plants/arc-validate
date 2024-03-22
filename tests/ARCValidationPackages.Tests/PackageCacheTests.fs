@@ -75,7 +75,7 @@ let tests =
 
         test "can read json preview" {
             Expect.packageCacheEqual 
-                (PackageCache.read(Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()))
+                (PackageCache.read(Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW()))
                 testPackageCache1
         } |> testSequenced
 
