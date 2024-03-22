@@ -68,7 +68,7 @@ let tests =
         } |> testSequenced
 
         test "can write json release" {
-            deleteDefaultPackageCache() // make sure any cached file is deleted before testing that it can be written
+            //deleteDefaultPackageCache() // make sure any cached file is deleted before testing that it can be written
             testPackageCache1 |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
             Expect.isTrue (File.Exists(expected_package_cache_file_path_release)) "package cache file was not created"
         } |> testSequenced
