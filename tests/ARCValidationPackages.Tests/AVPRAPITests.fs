@@ -19,7 +19,7 @@ let ``GitHubAPI tests`` =
                 vp.PackageContent
                 |> Encoding.UTF8.GetString
             Expect.equal 
-                script
+                (script.ReplaceLineEndings())
                 ReferenceObjects.testScriptContentAVPR
                 $"repository content was not correct{System.Environment.NewLine}{script}"
         }
