@@ -302,12 +302,10 @@ type AVPR =
             | _ -> Error (PackageInstallError.DownloadError(packageName, e.Message))
             
     static member InstallPackage(
-        config: Config,
         cache: PackageCache,
         packageName: string,
         ?SemVer: string,
-        ?Verbose: bool,
-        ?Token: string
+        ?Verbose: bool
     ) =
         let verbose = defaultArg Verbose false
         let cachedPackage =

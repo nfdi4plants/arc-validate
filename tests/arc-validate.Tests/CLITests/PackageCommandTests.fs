@@ -38,7 +38,7 @@ let ``PackageCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test"; "-pv"; "1.0.0"|]
+                    [|"-v"; "package"; "install"; "test"; "-pv"; "1.0.0"; "-pr"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
@@ -76,7 +76,7 @@ let ``PackageCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     false
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "uninstall"; "test"|]
+                    [|"-v"; "package"; "uninstall"; "test"; "-pr"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
@@ -108,7 +108,7 @@ let ``PackageCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"|]
+                    [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"; "-pr"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
@@ -146,7 +146,7 @@ let ``PackageCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     false
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "uninstall"; "test"|]
+                    [|"-v"; "package"; "uninstall"; "test"; "-pr"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 

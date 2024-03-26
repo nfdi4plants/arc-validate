@@ -74,7 +74,7 @@ let ``Toplevel API tests`` =
 
             testSequenced (testList "getSyncedConfigAndCache" [
 
-                yield! testFixture (Fixtures.withFreshConfigAndCachePreview (get_gh_api_token())) [
+                yield! testFixture (Fixtures.withFreshConfigAndCacheRelease) [
                     "Fresh config filepath",
                         fun (freshConfig, _) ->
                             Expect.equal freshConfig.ConfigFilePath expected_config_file_path "config file path is not correct"
