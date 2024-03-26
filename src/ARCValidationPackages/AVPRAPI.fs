@@ -25,6 +25,16 @@ type AVPRAPI () =
         |> Async.AwaitTask
         |> Async.RunSynchronously
         
+    member this.downloadPackageScript (packageName: string, ?version: string) =
+        let vp = 
+            match version with
+            | Some v ->  this.GetPackageByNameAndVersion packageName v
+            | None -> this.GetPackageByName packageName
+        let script =
+            vp.PackageContent
+            |> Text.Encoding.UTF8.GetString
+        script
+        
     //member this.downloadPackageScript (packageIndex: ValidationPackageIndex) =
         
     //    let validationPackage =

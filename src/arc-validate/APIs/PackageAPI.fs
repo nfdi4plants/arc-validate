@@ -36,32 +36,43 @@ type PackageAPI =
         ?Verbose: bool,
         ?Token: string
     ) = 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
+        let isRelease = args.TryGetResult(PackageInstallArgs.Preview).IsSome |> not
+        match ARCValidationPackages.API.GetSyncedConfigAndCache(isRelease, ?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
 
         | Ok (config, cache) -> 
-
+        
             let packageName = args.TryGetResult(PackageInstallArgs.Package).Value
             let version = args.TryGetResult(PackageInstallArgs.PackageVersion)
+            if isRelease then
+                match (AVPR.InstallPackage(cache, packageName, ?SemVer = version, ?Verbose = Verbose)) with
+                | Ok msg ->
+                    printfn $"{msg}"
+                    ExitCode.Success
 
-            match (API.InstallPackage(config, cache, packageName, ?SemVer = version, ?Verbose = Verbose, ?Token = Token)) with
-            | Ok msg ->
-                printfn $"{msg}"
-                ExitCode.Success
+                | Error e ->
+                    PackageAPI.printPackageInstallError e
+                    ExitCode.InternalError
+            else
+                match (API.InstallPackage(config, cache, packageName, ?SemVer = version, ?Verbose = Verbose, ?Token = Token)) with
+                | Ok msg ->
+                    printfn $"{msg}"
+                    ExitCode.Success
 
-            | Error e ->
-                PackageAPI.printPackageInstallError e
-                ExitCode.InternalError
+                | Error e ->
+                    PackageAPI.printPackageInstallError e
+                    ExitCode.InternalError
 
     static member Uninstall(
         args: ParseResults<PackageUninstallArgs>,
         ?Verbose: bool,
         ?Token: string
     ) = 
-
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
+    
+        let isRelease = args.TryGetResult(PackageUninstallArgs.Preview).IsSome |> not
+        match ARCValidationPackages.API.GetSyncedConfigAndCache(isRelease, ?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
@@ -71,19 +82,34 @@ type PackageAPI =
             let packageName = args.TryGetResult(PackageUninstallArgs.Package).Value
             let version = args.TryGetResult(PackageUninstallArgs.PackageVersion)
 
-            match (API.UninstallPackage(cache, packageName, ?SemVer = version, Verbose = verbose)) with
-            | Ok msg ->
-                printfn $"{msg}"
-                ExitCode.Success
-            | Error e ->
-                match e with
-                | PackageNotInstalled msg ->
+            if isRelease then
+                match (AVPR.UninstallPackage(cache, packageName, ?SemVer = version, Verbose = verbose)) with
+                | Ok msg ->
                     printfn $"{msg}"
                     ExitCode.Success
-                | IOError m ->
-                    printfn $"Error uninstalling package {packageName}."
-                    if verbose then printfn $"{m}"
-                    ExitCode.InternalError
+                | Error e ->
+                    match e with
+                    | PackageNotInstalled msg ->
+                        printfn $"{msg}"
+                        ExitCode.Success
+                    | IOError m ->
+                        printfn $"Error uninstalling package {packageName}."
+                        if verbose then printfn $"{m}"
+                        ExitCode.InternalError
+            else
+                match (API.UninstallPackage(cache, packageName, ?SemVer = version, Verbose = verbose)) with
+                | Ok msg ->
+                    printfn $"{msg}"
+                    ExitCode.Success
+                | Error e ->
+                    match e with
+                    | PackageNotInstalled msg ->
+                        printfn $"{msg}"
+                        ExitCode.Success
+                    | IOError m ->
+                        printfn $"Error uninstalling package {packageName}."
+                        if verbose then printfn $"{m}"
+                        ExitCode.InternalError
 
     static member List(
         args: ParseResults<PackageListArgs>,
