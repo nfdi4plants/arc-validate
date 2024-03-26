@@ -10,6 +10,6 @@ let token =
 let configPath = @"C:/Users/schne/Desktop/lol/test.json"
 let cacheFolder = @"C:/Users/schne/Desktop/lol/cache"
 
-let syncResult = API.GetSyncedConfigAndCache(ConfigPath = configPath, CacheFolder = cacheFolder, ?Token = token)
+let syncResult = API.GetSyncedConfigAndCache(false, ConfigPath = configPath, CacheFolderPreview = cacheFolder, ?Token = token)
 
 printfn "%A" syncResult

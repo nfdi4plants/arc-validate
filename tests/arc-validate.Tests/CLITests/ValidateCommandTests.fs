@@ -22,7 +22,7 @@ let ``ValidateCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"|]
+                    [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"; "-pr"|]
                     (get_gh_api_token())
                 ) [
                     "Package script exists after running package install test" ,  
@@ -53,7 +53,7 @@ let ``ValidateCommand CLI Tests`` =
                 testFixture (Fixtures.withToolExecution 
                     true
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test";|]
+                    [|"-v"; "package"; "install"; "test"; "-pr"|]
                     (get_gh_api_token())
                 ) [
                     "Package script exists after running package install test" ,  

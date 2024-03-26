@@ -6,27 +6,31 @@ open AVPRIndex.Domain
 type Config = {
     PackageIndex: ValidationPackageIndex []
     IndexLastUpdated: System.DateTimeOffset
-    PackageCacheFolder: string
+    PackageCacheFolderPreview: string
+    PackageCacheFolderRelease: string
     ConfigFilePath: string
 } with
     static member create (
         packageIndex: ValidationPackageIndex [],
         indexLastUpdated: System.DateTimeOffset,
-        packageCacheFolder: string,
+        packageCacheFolderPreview: string,
+        packageCacheFolderRelease: string,
         configFilePath: string
     ) =
         {
             PackageIndex = packageIndex
             IndexLastUpdated = indexLastUpdated
-            PackageCacheFolder = packageCacheFolder
+            PackageCacheFolderPreview = packageCacheFolderPreview
+            PackageCacheFolderRelease = packageCacheFolderRelease
             ConfigFilePath = configFilePath
         }
 
-    static member initDefault(?Token, ?ConfigPath, ?CacheFolder) = 
+    static member initDefault(?Token, ?ConfigPath, ?CacheFolderPreview, ?CacheFolderRelease) = 
         Config.create(
             packageIndex = GitHubAPI.getPackageIndex(?Token = Token),
             indexLastUpdated = System.DateTimeOffset.Now,
-            packageCacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()),
+            packageCacheFolderPreview = defaultArg CacheFolderPreview (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW()),
+            packageCacheFolderRelease = defaultArg CacheFolderRelease (Defaults.PACKAGE_CACHE_FOLDER_RELEASE()),
             configFilePath = defaultArg ConfigPath (Defaults.CONFIG_FILE_PATH())
         )
     static member indexContainsPackages (packageName: string) (config: Config) =
@@ -90,11 +94,11 @@ type Config = {
         |> File.ReadAllText
         |> fun jsonString -> JsonSerializer.Deserialize<Config>(jsonString, Defaults.SERIALIZATION_OPTIONS)
 
-    static member get (?Path: string, ?CacheFolder:string, ?Token:string) =
+    static member get (?Path: string, ?CacheFolderPreview:string, ?CacheFolderRelease:string, ?Token:string) =
         if Config.exists(?Path = Path) then
             Config.read(?Path = Path)
         else
-            Config.initDefault(?Token = Token, ?ConfigPath = Path, ?CacheFolder = CacheFolder)
+            Config.initDefault(?Token = Token, ?ConfigPath = Path, ?CacheFolderPreview = CacheFolderPreview, ?CacheFolderRelease = CacheFolderRelease)
 
     static member write (?Path: string) =
         fun (config: Config) ->

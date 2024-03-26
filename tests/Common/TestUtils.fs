@@ -37,12 +37,15 @@ module TestUtils =
         // remove any existing config folder for running tests
         if Directory.Exists(expected_config_folder_path) then Directory.Delete(expected_config_folder_path, true)
         if Directory.Exists(expected_package_cache_folder_path_preview) then Directory.Delete(expected_package_cache_folder_path_preview, true)
+        if Directory.Exists(expected_package_cache_folder_path_release) then Directory.Delete(expected_package_cache_folder_path_release, true)
         // ensure that these file do not exist before running tests
         if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
         if File.Exists(expected_package_cache_file_path_preview) then File.Delete(expected_package_cache_file_path_preview)
+        if File.Exists(expected_package_cache_file_path_release) then File.Delete(expected_package_cache_file_path_release)
 
     let deleteDefaultPackageCache() =
         if File.Exists(expected_package_cache_file_path_preview) then File.Delete(expected_package_cache_file_path_preview)
+        if File.Exists(expected_package_cache_file_path_release) then File.Delete(expected_package_cache_file_path_release)
 
     let deleteDefaultConfig() =
         if File.Exists(expected_config_file_path) then File.Delete(expected_config_file_path)
