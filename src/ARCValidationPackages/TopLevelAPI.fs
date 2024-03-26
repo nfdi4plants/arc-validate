@@ -290,7 +290,9 @@ type AVPR =
                     
             let metadata = validationPackage.toValidationPackageMetadata()
             let package = CachedValidationPackage.ofPackageMetadata(metadata, ?CacheFolder = CacheFolder)
-            
+
+            File.WriteAllBytes(package.LocalPath, validationPackage.PackageContent)
+
             cache
             |> PackageCache.addPackage package
             |> PackageCache.write(cacheFolder)
