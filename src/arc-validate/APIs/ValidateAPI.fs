@@ -50,6 +50,29 @@ module ValidateAPI =
                 "   - run [green]arc-validate validate -p <your-desired-package-name>[/] to validate agaionst a validation package."
             ]
             |> List.iter AnsiConsole.MarkupLine
+            
+            let status = AnsiConsole.Status()
+            let mutable exitCode = ExitCode.Success
+
+            status.Start($"Performing validation against the baselineValidation package", fun ctx ->
+
+                if verbose then
+
+                    AnsiConsole.MarkupLine("LOG: Running in:")
+                    AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
+                    AnsiConsole.MarkupLine("")
+                    AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]baselineValidationPackage[/].")
+                    AnsiConsole.MarkupLine($"LOG: Output path is:")
+                    AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
+                    AnsiConsole.MarkupLine("")
+
+                let result = BaselineValidation.isalight.runBaselineValidation root 
+
+                if result.successful then
+                    exitCode <- ExitCode.Success
+                else
+                    exitCode <- ExitCode.InternalError
+            )
 
         | Some packageName -> // Validate against a specific package
 
