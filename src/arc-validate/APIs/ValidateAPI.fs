@@ -54,24 +54,31 @@ module ValidateAPI =
             let status = AnsiConsole.Status()
             let mutable exitCode = ExitCode.Success
 
-            status.Start($"Performing validation against the baselineValidation package", fun ctx ->
+            status.Start($"Performing validation against the ARC specification V2_Draft", fun ctx ->
 
                 if verbose then
 
                     AnsiConsole.MarkupLine("LOG: Running in:")
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
-                    AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]baselineValidationPackage[/].")
+                    AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]ARC specification V2_Draft[/].")
                     AnsiConsole.MarkupLine($"LOG: Output path is:")
                     AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                     AnsiConsole.MarkupLine("")
 
-                let result = BaselineValidation.isalight.runBaselineValidation root 
+                let cases = ARCSpecification.V2_Draft.testCases root 
+                
+                let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
+                let outDirResXml =System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")
 
-                if result.successful then
+                ARCExpect.Execute.ValidationPipeline(jUnitPath=outDirResXml, badgePath=outDirBadge,labelText="ARC specification V2_Draft") cases
+
+                let runSummery = ARCExpect.Execute.Validation cases
+                
+                if runSummery.successful then
                     exitCode <- ExitCode.Success
                 else
-                    exitCode <- ExitCode.InternalError
+                    exitCode <- ExitCode.CriticalTestFailure
             )
 
         | Some packageName -> // Validate against a specific package

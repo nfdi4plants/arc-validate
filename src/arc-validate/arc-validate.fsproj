@@ -14,7 +14,7 @@
     <Compile Include="Commands\PackageCommand.fs" />
     <Compile Include="Commands\ARCValidateCommand.fs" />
     <Compile Include="APIs\PackageAPI.fs" />
-    <Compile Include="APIs/BaselineValidation.fs" />
+    <Compile Include="APIs/ARCSpecification.fs" />
     <Compile Include="APIs\ValidateAPI.fs" />
     <Compile Include="APIs\ARCValidateAPI.fs" />
     <Compile Include="CommandHandling.fs" />
@@ -38,7 +38,7 @@
         <ProjectVersion>@(_ProjectReferenceWithExplicitPackageVersion-&gt;'%(PackageVersion)')</ProjectVersion>
       </_ProjectReferenceWithReassignedVersion>
       <_ProjectReferenceWithReassignedVersion Include="@(_ProjectReferencesWithVersions)" Condition="'%(Identity)' != '' And '@(_ProjectReferenceWithExactPackageVersion)' == '@(_ProjectReferencesWithVersions)'">
-        <ProjectVersion>[@(_ProjectReferencesWithVersions-&gt;'%(ProjectVersion)')]</ProjectVersion>
+        <ProjectVersion>@(_ProjectReferenceWithExplicitPackageVersion->'%(PackageVersion)')</ProjectVersion>
       </_ProjectReferenceWithReassignedVersion>
       <_ProjectReferencesWithVersions Remove="@(_ProjectReferenceWithReassignedVersion)" />
       <_ProjectReferencesWithVersions Include="@(_ProjectReferenceWithReassignedVersion)" />

@@ -1,33 +1,11 @@
-﻿namespace ARCValidate.BaselineValidation
+﻿namespace ARCValidate.ARCSpecification
 
 open ControlledVocabulary
 open ARCTokenization
 open ARCExpect
-open ARCtrl.ISA
 open Expecto
-open Expecto.Tests
 
-// (*
-//  ---
-//  Name: BaselineValidation
-//  Description: |
-//      Validates if the ARC contains the required minimum.
-//  MajorVersion: 1
-//  MinorVersion: 0
-//  PatchVersion: 0
-//  Publish: true
-//  Authors:
-//    - FullName: Christopher Lux
-//      Email: lux@csbiology.de
-//      Affiliation: RPTU Kaiserslautern
-//      AffiliationLink: http://rptu.de/startseite
-//  Tags:
-//    - validation
-//  ReleaseNotes: "
-//    - initial release
-//  ---
-//  *)
-module isalight =
+module V2_Draft =
 
     module internal MustHaveTerms = 
         let investigationTerms = 
@@ -244,19 +222,7 @@ module isalight =
                 }
             }
 
-    /// Checks if the specified parameter exists in the given parameter collection.
-    /// Returns true if the parameter is found, false otherwise.
-    let internal checkForParam (expectedParam : CvTerm) (paramCollection : #seq<#IParam>) = 
-        let tmp = 
-            expectedParam.Accession
-        paramCollection
-        |> Seq.exists(fun x -> (Param.getCvAccession x = tmp))
-
-
-    let runBaselineValidation (arcDir:string) =
-
-        let outDirBadge = System.IO.Path.Combine(arcDir, "Baseline_badge.svg")
-        let outDirResXml =System.IO.Path.Combine(arcDir, "Baseline_results.xml")
+    let testCases (arcDir:string) =
 
         let absoluteDirectoryPaths = FileSystem.parseARCFileSystem arcDir
 
@@ -539,7 +505,8 @@ module isalight =
                         investigationMetadata|>List.concat
                     MayHave.investigationTerms
                     |> Seq.iter(fun (key,valSeq) -> 
-                        if (checkForParam key investigations) then
+                        if investigations|>Seq.exists(fun x -> (Param.getCvAccession x = key.Accession)) then
+                        
                             valSeq
                             |> Seq.iter(fun x -> Validate.ParamCollection.ContainsParamWithTerm x investigations)
                     )
@@ -551,13 +518,12 @@ module isalight =
                     for studySingular in studyMetadata do
                         MayHave.studyTerms
                         |> Seq.iter(fun (key,valSeq) -> 
-                            if (checkForParam key studySingular) then
+                            if studySingular|>Seq.exists(fun x -> (Param.getCvAccession x = key.Accession)) then
+
                                 valSeq
                                 |> Seq.iter(fun x -> Validate.ParamCollection.ContainsParamWithTerm x studySingular)
                         )
                 }
             ]
 
-        let runSummery = ARCExpect.Execute.Validation cases
-        ARCExpect.Execute.ValidationPipeline(jUnitPath=outDirResXml, badgePath=outDirBadge,labelText="BaseLineValidation") cases
-        runSummery
+        cases
