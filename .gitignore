@@ -355,3 +355,6 @@ test/arc-validate-results.xml
 !/tests/fixtures/arcs/invenio-test-arc/.gitkeep
 /tmp/watch
 /.fsdocs
+
+# Mac specific files
+**/.DS_Store
