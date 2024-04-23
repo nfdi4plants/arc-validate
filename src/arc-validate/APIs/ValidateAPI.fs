@@ -71,9 +71,6 @@ module ValidateAPI =
                 let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
                 let outDirResXml =System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")
 
-                ARCExpect.Execute.ValidationPipeline(jUnitPath=outDirResXml, badgePath=outDirBadge,labelText="ARC specification V2_Draft") cases
-
-
                 let results = ARCExpect.Execute.Validation cases
                     
                 results
