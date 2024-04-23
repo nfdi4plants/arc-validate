@@ -1,4 +1,4 @@
-﻿namespace ARCValidate.ARCSpecification
+﻿namespace ARCExpect.ARCSpecification
 
 open ControlledVocabulary
 open ARCTokenization
@@ -7,7 +7,7 @@ open Expecto
 
 module V2_Draft =
 
-    module internal MustHaveTerms = 
+    module MustHaveTerms = 
         let investigationTerms = 
             seq{
                 StructuralOntology.INVMSO.``Investigation Metadata``.``ONTOLOGY SOURCE REFERENCE``.key
@@ -103,7 +103,7 @@ module V2_Draft =
                 StructuralOntology.ASSMSO.``Assay Metadata``.``ASSAY PERFORMERS``.``Assay Person Roles Term Source REF``
             }
 
-    module internal MayHave =
+    module MayHave =
         let investigationTerms = 
             seq{
                 StructuralOntology.INVMSO.``Investigation Metadata``.STUDY.key,
@@ -222,7 +222,7 @@ module V2_Draft =
                 }
             }
 
-    let testCases (arcDir:string) =
+    let validationCases (arcDir:string) =
 
         let absoluteDirectoryPaths = FileSystem.parseARCFileSystem arcDir
 
@@ -310,7 +310,19 @@ module V2_Draft =
                     studies
                     |> Validate.ParamCollection.SatisfiesPredicate(fun x -> 
                         x
-                        |> Seq.forall (fun y -> Seq.contains (y.Value|>ParamValue.getValue|>string|>fun x -> x.Split"/"|> Array.rev|>Array.tail|>Array.rev|>String.concat"/") studyDirs) 
+                        |> Seq.forall (fun y -> 
+                            studyDirs
+                            |> Seq.contains (
+                                y.Value
+                                |>ParamValue.getValue
+                                |>string
+                                |>fun x -> x.Split('/')
+                                |> Array.rev
+                                |>Array.tail
+                                |>Array.rev
+                                |>String.concat"/"
+                            ) 
+                        ) 
                     ) 
                 }
 
@@ -330,7 +342,19 @@ module V2_Draft =
                     assays
                     |> Validate.ParamCollection.SatisfiesPredicate(fun x -> 
                         x
-                        |> Seq.forall (fun y -> Seq.contains (y.Value|>ParamValue.getValue|>string|>fun x -> x.Split"/"|> Array.rev|>Array.tail|>Array.rev|>String.concat"/") assayDir) 
+                        |> Seq.forall (fun y -> 
+                            assayDir
+                            |> Seq.contains (
+                                y.Value
+                                |>ParamValue.getValue
+                                |>string
+                                |>fun x -> x.Split('/')
+                                |> Array.rev
+                                |>Array.tail
+                                |>Array.rev
+                                |>String.concat"/"
+                                ) 
+                            ) 
                     ) 
                 }
 
@@ -348,7 +372,7 @@ module V2_Draft =
                             x.Value
                             |>ParamValue.getValue
                             |>string
-                            |>fun x -> x.Split"/" 
+                            |>fun (x: string) -> x.Split [|'/'|]
                             |>fun x -> 
                                 match x with 
                                 | [|"workflows";_;_|] -> true
@@ -368,7 +392,7 @@ module V2_Draft =
                                 |>ParamValue.getValue
                                 |>string
                                 |>fun x -> 
-                                    x.Split"/"
+                                    x.Split('/')
                                     |> Array.rev
                                     |>Array.tail
                                     |>Array.rev

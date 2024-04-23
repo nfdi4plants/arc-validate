@@ -12,7 +12,6 @@
     <Compile Include="CLITests\ValidateCommandTests.fs" />
     <Compile Include="CLITests\PackageCommandTests.fs" />
     <Compile Include="CLITests/CLITests.fs" />
-    <Compile Include="ARCSpecification.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -30,7 +29,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.fsproj" />
-    <ProjectReference Include="..\..\src\ARCExpect\ARCExpect.fsproj" />
-    <ProjectReference Include="..\..\src\arc-validate\arc-validate.fsproj" />
   </ItemGroup>
 </Project>

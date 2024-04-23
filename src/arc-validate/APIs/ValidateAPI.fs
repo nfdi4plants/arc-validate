@@ -66,7 +66,7 @@ module ValidateAPI =
                     AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                     AnsiConsole.MarkupLine("")
 
-                let cases = ARCSpecification.V2_Draft.testCases root 
+                let cases = ARCSpecification.V2_Draft.validationCases root 
                 
                 let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
                 let outDirResXml =System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")

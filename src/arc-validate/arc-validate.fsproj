@@ -14,7 +14,6 @@
     <Compile Include="Commands\PackageCommand.fs" />
     <Compile Include="Commands\ARCValidateCommand.fs" />
     <Compile Include="APIs\PackageAPI.fs" />
-    <Compile Include="APIs/ARCSpecification.fs" />
     <Compile Include="APIs\ValidateAPI.fs" />
     <Compile Include="APIs\ARCValidateAPI.fs" />
     <Compile Include="CommandHandling.fs" />

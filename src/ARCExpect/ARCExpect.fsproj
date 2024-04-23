@@ -1,10 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="packages.lock.json" />
     <None Include="RELEASE_NOTES.md" />
@@ -23,11 +21,11 @@
     <Compile Include="TopLevelAPI.fs" />
     <Compile Include="Configs\PathConfig.fs" />
     <Compile Include="Configs\ARCConfig.fs" />
+    <Compile Include="ARCSpecification.fs" />
     <Compile Include="TestGeneration\NonCritical\ARCISA.fs" />
     <Compile Include="TestGeneration\Critical\ARCFileSystem.fs" />
     <Compile Include="TestGeneration\Critical\ARCISA.fs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[9.0.4]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
