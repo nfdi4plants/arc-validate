@@ -20,12 +20,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
     <PackageReference Update="FSharp.Core" Version="8.*" />
     <PackageReference Include="Fake.Core.Process" Version="6.0.0" />
-    <PackageReference Include="FSharpAux" Version="[2.0.0]" />
-    <PackageReference Include="FsSpreadsheet" Version="[5.0.2]" />
-    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[5.0.2]" />
-    <PackageReference Include="ARCTokenization" Version="[5.0.0]" />
-    <PackageReference Include="OBO.NET" Version="[0.4.2]" />
-    <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.fsproj" />

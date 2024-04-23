@@ -17,7 +17,7 @@ let tests =
             //false None (ParseResults<ARCValidate.CLIArguments.ValidateArgs>.Empty)
             Expect.isTrue
                 runSummary.successful
-                "ARCValidationPackage cache date was not updated correctly."
+                "The validation cases for ARCSpecification.V2_Draft do not validate a structurally correct ARC."
             
         }
        

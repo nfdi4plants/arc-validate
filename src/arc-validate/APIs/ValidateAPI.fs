@@ -73,9 +73,16 @@ module ValidateAPI =
 
                 ARCExpect.Execute.ValidationPipeline(jUnitPath=outDirResXml, badgePath=outDirBadge,labelText="ARC specification V2_Draft") cases
 
-                let runSummery = ARCExpect.Execute.Validation cases
-                
-                if runSummery.successful then
+
+                let results = ARCExpect.Execute.Validation cases
+                    
+                results
+                |> Execute.JUnitSummaryCreation(outDirResXml)
+
+                results
+                |> Execute.BadgeCreation(outDirBadge, "ARC specification V2_Draft", "passing", DefaultColor=AnyBadge.NET.Color.GREEN)
+
+                if results.successful then
                     exitCode <- ExitCode.Success
                 else
                     exitCode <- ExitCode.CriticalTestFailure
