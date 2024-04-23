@@ -10,7 +10,7 @@ let tests =
     testList "ARCValidationPackage tests" [
         test "V2_Draft" {
 
-            let testPath = System.IO.Path.GetFullPath("Fixtures/arcs/testingArc/")
+            let testPath = System.IO.Path.GetFullPath("fixtures/arcs/testingArc/")
 
             let cases = ARCValidate.ARCSpecification.V2_Draft.testCases testPath
 
