@@ -3,6 +3,8 @@
 
 open System
 open Graphoscope
+open System.Text.Json
+open System.Text.Json.Serialization
 
 
 //// this is needed to allow ValidatorTests project to access internal modules
@@ -19,6 +21,13 @@ module InternalUtils =
     open System.IO
     open OBO.NET
     open ControlledVocabulary
+
+    /// internal json options for better F# type support in serialization (mainly for Options)
+    module JsonOptions =
+        let options =
+            JsonFSharpOptions.Default()
+                .WithSkippableOptionFields() // if option is none, do not include a property, but include it if option is some.
+                .ToJsonSerializerOptions()
 
 
     module String =

@@ -1,9 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
+
   <ItemGroup>
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <EmbeddedResource Remove="CLITests\**" />
@@ -17,9 +19,10 @@
     <Compile Include="ParamCollectionTests.fs" />
     <Compile Include="ARCExpectTests.fs" />
     <Compile Include="ARCGraphTests.fs" />
-    <Compile Include="ARCSpecification.fs" />
+    <Compile Include="ValidationSummaryTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Expecto" Version="9.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
