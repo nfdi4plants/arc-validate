@@ -50,6 +50,40 @@ module ValidateAPI =
                 "   - run [green]arc-validate validate -p <your-desired-package-name>[/] to validate agaionst a validation package."
             ]
             |> List.iter AnsiConsole.MarkupLine
+            
+            let status = AnsiConsole.Status()
+            let mutable exitCode = ExitCode.Success
+
+            status.Start($"Performing validation against the ARC specification V2_Draft", fun ctx ->
+
+                if verbose then
+
+                    AnsiConsole.MarkupLine("LOG: Running in:")
+                    AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
+                    AnsiConsole.MarkupLine("")
+                    AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]ARC specification V2_Draft[/].")
+                    AnsiConsole.MarkupLine($"LOG: Output path is:")
+                    AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
+                    AnsiConsole.MarkupLine("")
+
+                let cases = ARCSpecification.V2_Draft.validationCases root 
+                
+                let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
+                let outDirResXml =System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")
+
+                let results = ARCExpect.Execute.Validation cases
+                    
+                results
+                |> Execute.JUnitSummaryCreation(outDirResXml)
+
+                results
+                |> Execute.BadgeCreation(outDirBadge, "ARC specification V2_Draft", "passing", DefaultColor=AnyBadge.NET.Color.GREEN)
+
+                if results.successful then
+                    exitCode <- ExitCode.Success
+                else
+                    exitCode <- ExitCode.CriticalTestFailure
+            )
 
         | Some packageName -> // Validate against a specific package
 
