@@ -9,6 +9,14 @@ open Common.TestUtils
 module Expect =
     open Expecto
 
+    let packageCacheContainsPackage (packageName: string) (packageVersion:string) (packageCache:PackageCache) =
+        Expect.isTrue (packageCache.ContainsKey(packageName)) "package cache did not contain any version of the package"
+        Expect.isTrue (packageCache.[packageName].ContainsKey(packageVersion)) "package cache did not contain the specific version of the package"
+
+    let packageCacheDoesNotContainPackage (packageName: string) (packageVersion:string) (packageCache:PackageCache) =
+        Expect.isFalse (packageCache.ContainsKey(packageName)) "package cache did not contain any version of the package"
+        Expect.isFalse (packageCache.[packageName].ContainsKey(packageVersion)) "package cache did not contain the specific version of the package"
+
     let packageCacheEqual (actual:PackageCache) (expected:PackageCache) =
         let actualKeysSorted, expectedKeysSorted = (actual.Keys |> Seq.sort), (expected.Keys |> Seq.sort)
         let countIsEqual = actual.Count = expected.Count
