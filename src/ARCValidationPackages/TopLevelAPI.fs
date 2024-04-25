@@ -404,7 +404,8 @@ type AVPR =
             // not cached -> download and cache
             AVPR.SaveAndCachePackage(
                 cache = cache,
-                packageName = packageName
+                packageName = packageName,
+                ?packageVersion = SemVer
             )
 
     static member UninstallPackage(

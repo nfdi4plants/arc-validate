@@ -46,7 +46,7 @@ type PackageAPI =
         | Ok (config, avprCache, previewCache) -> 
         
             let packageName = args.TryGetResult(PackageInstallArgs.Package).Value
-            let version = args.TryGetResult(PackageInstallArgs.PackageVersion)
+            let version = args.TryGetResult(PackageInstallArgs.Version)
             if isRelease then
                 match (AVPR.InstallPackage(avprCache, packageName, ?SemVer = version, ?Verbose = Verbose)) with
                 | Ok msg ->

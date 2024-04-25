@@ -36,7 +36,7 @@ module ValidateAPI =
             args.TryGetResult(Package)
 
         let version = 
-            args.TryGetResult(PackageVersion)
+            args.TryGetResult(Package_Version)
 
         match package with
 

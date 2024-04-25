@@ -12,6 +12,7 @@ module ValidationPackageMetadata =
 
 module ValidationPackageIndex =
     let getSemanticVersionString(i: ValidationPackageIndex) = $"{i.Metadata.MajorVersion}.{i.Metadata.MinorVersion}.{i.Metadata.PatchVersion}"
+
 /// <summary>
 /// represents the locally installed version of a validation package, e.g. the path to the local file and the date it was cached.
 /// </summary>
@@ -74,7 +75,7 @@ type CachedValidationPackage =
             CachedValidationPackage.create(
                 fileName = packageMetadata.Name,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = (System.IO.Path.Combine(path, $"{packageMetadata.Name}.fsx").Replace("\\","/")),
+                localPath = (System.IO.Path.Combine(path, $"{packageMetadata.Name}@{packageMetadata.MajorVersion}.{packageMetadata.MinorVersion}.{packageMetadata.PatchVersion}.fsx").Replace("\\","/")),
                 metadata = packageMetadata
             )
 
