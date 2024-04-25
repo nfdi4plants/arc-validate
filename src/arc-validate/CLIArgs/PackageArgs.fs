@@ -24,13 +24,3 @@ type PackageUninstallArgs =
             | Package _        -> "name of the validation package to uninstall"
             | PackageVersion _        -> "version of the validation package to uninstall. If no version is specified, all versions will be uninstalled."
             | Preview       -> "uninstall the preview version of the package"
-
-type PackageListArgs = 
-    | [<AltCommandLine("-i"); Unique>] Installed
-    | [<AltCommandLine("-c"); Unique>] Indexed
-
-    interface IArgParserTemplate with
-        member s.Usage =
-            match s with
-            | Installed     -> "list installed packages from the package cache"
-            | Indexed       -> "list indexed packages from the cached package index"

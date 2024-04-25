@@ -6,6 +6,7 @@ type ValidateArgs =
     | [<AltCommandLine("-o")>] Out_Directory of path:string
     | [<AltCommandLine("-p")>] Package of package_name:string
     | [<AltCommandLine("-pv")>] PackageVersion of package_version:string
+    | [<AltCommandLine("-pr")>] Preview
 
     interface IArgParserTemplate with
         member s.Usage =
@@ -14,3 +15,4 @@ type ValidateArgs =
             | ARC_Directory _ -> "Optional. Specify a directory that contains the arc to convert. Default: content of the ARC_PATH environment variable. If ARC_PATH is not set: current directory."
             | Package _       -> "Optional. Specify a validation package to use on top of the default validation for invenio export. Default: no package is used, only structural validation for invenio export."
             | PackageVersion _ -> "Optional. Specify a version of the validation package to use. If no version is specified, the latest version will be used."
+            | Preview         -> "Optional. Use the preview version of the package."

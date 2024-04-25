@@ -25,6 +25,19 @@ module AVPRAPI =
         type GeneralError(msg : string) =
             inherit Exception(msg)
 
+    let convertAVPRClientError (e: Exception)=
+        match e.Message with
+        | m when m.ToLower().Contains "response was null" -> 
+            raise (Errors.ResponseNullError(e.Message))
+        | m when m.ToLower().Contains "http status code of the response was not expected" -> 
+            raise (Errors.UnexpectedStatusCodeError(e.Message))
+        | m when m.ToLower().Contains "server side error occurred" -> 
+            raise (Errors.ServerSideError(e.Message))
+        | m when m.ToLower().Contains "could not deserialize the response body string" -> 
+            raise (Errors.DeserializationError(e.Message))
+        | _ -> 
+            raise (Errors.GeneralError(e.Message))
+
 type AVPRAPI () =
     member private this.BaseUri = Uri("https://avpr.nfdi4plants.org")
     member private this.HttpClienHandler = new HttpClientHandler (UseCookies = false)
@@ -37,54 +50,23 @@ type AVPRAPI () =
             |> Async.RunSynchronously
             |> Seq.toArray
         with
-        | :? AVPRClient.ApiException as e -> 
-            match e.Message with
-            | m when m.ToLower().Contains "response was null" -> 
-                raise (AVPRAPI.Errors.ResponseNullError(e.Message))
-            | m when m.ToLower().Contains "http status code of the response was not expected" -> 
-                raise (AVPRAPI.Errors.UnexpectedStatusCodeError(e.Message))
-            | m when m.ToLower().Contains "server side error occurred" -> 
-                raise (AVPRAPI.Errors.ServerSideError(e.Message))
-            | m when m.ToLower().Contains "could not deserialize the response body string" -> 
-                raise (AVPRAPI.Errors.DeserializationError(e.Message))
-            | _ -> 
-                raise (AVPRAPI.Errors.GeneralError(e.Message))
+        | :? AVPRClient.ApiException as e -> e |> AVPRAPI.convertAVPRClientError
+
     member this.GetPackageByName (packageName: string): ValidationPackage =
         try
             this.Client.GetLatestPackageByNameAsync(packageName)
             |> Async.AwaitTask
             |> Async.RunSynchronously
         with
-        | :? AVPRClient.ApiException as e -> 
-            match e.Message with
-            | m when m.ToLower().Contains "response was null" -> 
-                raise (AVPRAPI.Errors.ResponseNullError(e.Message))
-            | m when m.ToLower().Contains "http status code of the response was not expected" -> 
-                raise (AVPRAPI.Errors.UnexpectedStatusCodeError(e.Message))
-            | m when m.ToLower().Contains "server side error occurred" -> 
-                raise (AVPRAPI.Errors.ServerSideError(e.Message))
-            | m when m.ToLower().Contains "could not deserialize the response body string" -> 
-                raise (AVPRAPI.Errors.DeserializationError(e.Message))
-            | _ -> 
-                raise (AVPRAPI.Errors.GeneralError(e.Message))
+        | :? AVPRClient.ApiException as e -> e |> AVPRAPI.convertAVPRClientError
+
     member this.GetPackageByNameAndVersion (packageName: string) (version: string): ValidationPackage =
         try
             this.Client.GetPackageByNameAndVersionAsync(packageName, version)
             |> Async.AwaitTask
             |> Async.RunSynchronously
         with
-        | :? AVPRClient.ApiException as e -> 
-            match e.Message with
-            | m when m.ToLower().Contains "response was null" -> 
-                raise (AVPRAPI.Errors.ResponseNullError(e.Message))
-            | m when m.ToLower().Contains "http status code of the response was not expected" -> 
-                raise (AVPRAPI.Errors.UnexpectedStatusCodeError(e.Message))
-            | m when m.ToLower().Contains "server side error occurred" -> 
-                raise (AVPRAPI.Errors.ServerSideError(e.Message))
-            | m when m.ToLower().Contains "could not deserialize the response body string" -> 
-                raise (AVPRAPI.Errors.DeserializationError(e.Message))
-            | _ -> 
-                raise (AVPRAPI.Errors.GeneralError(e.Message))
+        | :? AVPRClient.ApiException as e -> e |> AVPRAPI.convertAVPRClientError
         
     member this.downloadPackageScript (packageName: string, ?version: string) =
         let vp = 

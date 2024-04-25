@@ -90,6 +90,8 @@ module ValidateAPI =
             let status = AnsiConsole.Status()
             let mutable exitCode = ExitCode.Success
 
+            let isRelease = args.TryGetResult(ValidateArgs.Preview).IsSome |> not
+
             status.Start($"Performing validation against the {packageName} package", fun ctx ->
 
                 if verbose then
@@ -97,16 +99,24 @@ module ValidateAPI =
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
                 
-                match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = token) with
+                match ARCValidationPackages.API.Common.GetSyncedConfigAndCache(?Token = token) with
                 | Error e -> 
                     PackageAPI.printGetSyncedConfigAndCacheError e
                     exitCode <- ExitCode.InternalError
 
-                | Ok (config, cache) -> 
+                | Ok (config, avprCache, previewCache) -> 
                     let package = 
                         match version with 
-                        | Some semver -> PackageCache.tryGetPackage packageName semver cache
-                        | None -> PackageCache.tryGetLatestPackage packageName cache
+                        | Some semver -> 
+                            if isRelease then 
+                                PackageCache.tryGetPackage packageName semver avprCache
+                            else
+                                PackageCache.tryGetPackage packageName semver previewCache
+                        | None -> 
+                            if isRelease then 
+                                PackageCache.tryGetLatestPackage packageName avprCache
+                            else
+                                PackageCache.tryGetLatestPackage packageName previewCache
 
                     match package with
                     | Some validationPackage ->

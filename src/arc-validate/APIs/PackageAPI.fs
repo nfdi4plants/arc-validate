@@ -5,6 +5,7 @@ open ARCValidate.CLIArguments
 open ARCValidate.CLICommands
 open ARCExpect
 open ARCValidationPackages
+open ARCValidationPackages.API
 open AVPRIndex.Domain
 
 open Argu
@@ -37,17 +38,17 @@ type PackageAPI =
         ?Token: string
     ) = 
         let isRelease = args.TryGetResult(PackageInstallArgs.Preview).IsSome |> not
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(isRelease, ?Token = Token) with
+        match Common.GetSyncedConfigAndCache(?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
 
-        | Ok (config, cache) -> 
+        | Ok (config, avprCache, previewCache) -> 
         
             let packageName = args.TryGetResult(PackageInstallArgs.Package).Value
             let version = args.TryGetResult(PackageInstallArgs.PackageVersion)
             if isRelease then
-                match (AVPR.InstallPackage(cache, packageName, ?SemVer = version, ?Verbose = Verbose)) with
+                match (AVPR.InstallPackage(avprCache, packageName, ?SemVer = version, ?Verbose = Verbose)) with
                 | Ok msg ->
                     printfn $"{msg}"
                     ExitCode.Success
@@ -56,7 +57,7 @@ type PackageAPI =
                     PackageAPI.printPackageInstallError e
                     ExitCode.InternalError
             else
-                match (API.InstallPackage(config, cache, packageName, ?SemVer = version, ?Verbose = Verbose, ?Token = Token)) with
+                match (Preview.InstallPackage(config, previewCache, packageName, ?SemVer = version, ?Verbose = Verbose, ?Token = Token)) with
                 | Ok msg ->
                     printfn $"{msg}"
                     ExitCode.Success
@@ -72,18 +73,18 @@ type PackageAPI =
     ) = 
     
         let isRelease = args.TryGetResult(PackageUninstallArgs.Preview).IsSome |> not
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(isRelease, ?Token = Token) with
+        match Common.GetSyncedConfigAndCache(?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
 
-        | Ok (config, cache) -> 
+        | Ok (config, avprCache, previewCache) -> 
             let verbose = defaultArg Verbose false
             let packageName = args.TryGetResult(PackageUninstallArgs.Package).Value
             let version = args.TryGetResult(PackageUninstallArgs.PackageVersion)
 
             if isRelease then
-                match (AVPR.UninstallPackage(cache, packageName, ?SemVer = version, Verbose = verbose)) with
+                match (AVPR.UninstallPackage(avprCache, packageName, ?SemVer = version, Verbose = verbose)) with
                 | Ok msg ->
                     printfn $"{msg}"
                     ExitCode.Success
@@ -97,7 +98,7 @@ type PackageAPI =
                         if verbose then printfn $"{m}"
                         ExitCode.InternalError
             else
-                match (API.UninstallPackage(cache, packageName, ?SemVer = version, Verbose = verbose)) with
+                match (Preview.UninstallPackage(previewCache, packageName, ?SemVer = version, Verbose = verbose)) with
                 | Ok msg ->
                     printfn $"{msg}"
                     ExitCode.Success
@@ -112,17 +113,16 @@ type PackageAPI =
                         ExitCode.InternalError
 
     static member List(
-        args: ParseResults<PackageListArgs>,
         ?Verbose: bool, 
         ?Token: string
     ) = 
 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
+        match Common.GetSyncedConfigAndCache(?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
 
-        | Ok (config, cache) -> 
+        | Ok (config, avprCache, previewCache) -> 
             let verbose = defaultArg Verbose false
 
             let printCachedPackageList (packages: seq<CachedValidationPackage>) =
@@ -141,60 +141,48 @@ type PackageAPI =
                     else 
                         p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}")
 
-            match (args.TryGetResult(Installed), args.TryGetResult(Indexed)) with
-            | None, None | Some Installed, None | None, Some Installed->
-                match API.ListCachedPackages(cache, verbose) with
-                | Ok packages ->
-                    printf $"Installed validation packages:"
-                    printCachedPackageList packages
-                    ExitCode.Success
-                | Error e ->
-                    printfn $"Error listing packages."
-                    if verbose then printfn $"{e}"
-                    ExitCode.InternalError
-            | None, Some Indexed | Some Indexed, None->
-                match API.ListIndexedPackages(config, verbose) with
-                | Ok packages ->
-                    printf $"Indexed validation packages:"
-                    printIndexedPackageList packages
-                    ExitCode.Success
-                | Error e ->
-                    printfn $"Error listing packages."
-                    if verbose then printfn $"{e}"
-                    ExitCode.InternalError
-            | Some Indexed, Some Installed | Some Installed, Some Indexed ->
-                let installed = API.ListCachedPackages(cache, verbose)
-                let cached = API.ListIndexedPackages(config, verbose)
 
-                match (installed, cached) with
-                | Ok installed, Ok cached ->
-                    printf $"Installed validation packages:"
-                    printCachedPackageList installed
-                    printf $"Indexed validation packages:"
-                    printIndexedPackageList cached
-                    ExitCode.Success
-                | Error e, _ ->
-                    printfn $"Error listing installed packages."
-                    if verbose then printfn $"{e}"
-                    ExitCode.InternalError
-                | _, Error e ->
-                    printfn $"Error listing indexed packages."
-                    if verbose then printfn $"{e}"
-                    ExitCode.InternalError
+            let installedAVPR = Common.ListCachedPackages(avprCache, verbose)
+            let installedPreview = Common.ListCachedPackages(previewCache, verbose)
+            let indexedPreview = Preview.ListIndexedPackages(config, verbose)
+
+            match (installedAVPR, installedPreview, indexedPreview) with
+            | Ok avpr, Ok preview, Ok indexed ->
+                printf $"SOURCE: avpr.nfdi4plants.org" 
+                printfn "Installed validation packages:"
+                printCachedPackageList avpr
+                printf $"SOURCE: avpr.nfdi4plants.org"
+                printfn "Installed validation packages:"
+                printCachedPackageList avpr
+                printf $"Indexed validation packages:"
+                printIndexedPackageList indexed
+                ExitCode.Success
+            | Error e, _, _ ->
+                printfn $"Error listing installed avpr packages."
+                if verbose then printfn $"{e}"
+                ExitCode.InternalError
+            | _, Error e, _ ->
+                printfn $"Error listing installed preview packages."
+                if verbose then printfn $"{e}"
+                ExitCode.InternalError
+            | _, _, Error e ->
+                printfn $"Error listing indexed packages."
+                if verbose then printfn $"{e}"
+                ExitCode.InternalError
 
     static member UpdateIndex(
         ?Verbose: bool,
         ?Token: string
     ) = 
-        match ARCValidationPackages.API.GetSyncedConfigAndCache(false, ?Token = Token) with
+        match Common.GetSyncedConfigAndCache(?Token = Token) with
         | Error e -> 
             PackageAPI.printGetSyncedConfigAndCacheError e
             ExitCode.InternalError
 
-        | Ok (config, _) -> 
+        | Ok (config, _, _) -> 
             let verbose = defaultArg Verbose false
 
-            match API.UpdateIndex(config, ?Token = Token) with
+            match Preview.UpdateIndex(config, ?Token = Token) with
             | Ok _ ->
                 printfn $"Updated package index."
                 ExitCode.Success

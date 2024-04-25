@@ -62,15 +62,10 @@ module Result =
 
 module Fixtures =
 
-    let withFreshConfigAndCachePreview (token:string option) (f: Config * PackageCache -> unit) () =
+    let withFreshConfigAndCaches (token:string option) (f: Config * PackageCache * PackageCache -> unit) () =
         resetConfigEnvironment()
-        let freshConfig, freshCache = API.GetSyncedConfigAndCache(false, ?Token = token) |> Result.okValue
-        f (freshConfig, freshCache)
-
-    let withFreshConfigAndCacheRelease (f: Config * PackageCache -> unit) () =
-        resetConfigEnvironment()
-        let freshConfig, freshCache = API.GetSyncedConfigAndCache(true) |> Result.okValue
-        f (freshConfig, freshCache)
+        let freshConfig, freshAVPRCache, freshPreviewCache = API.Common.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
+        f (freshConfig, freshAVPRCache, freshPreviewCache)
 
     //let saveAndCachePackage (token:string option) (package:Package) =
     //    let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
