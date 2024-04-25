@@ -14,7 +14,7 @@ module CommandHandling =
         | UnInstall args    -> 
             if verbose then printfn "Command: uninstall"
             PackageAPI.Uninstall(args, verbose)
-        | List args         -> 
+        | List args -> 
             if verbose then printfn "Command: list"
             PackageAPI.List(args, verbose, ?Token = token)
         | Update_Index      -> 

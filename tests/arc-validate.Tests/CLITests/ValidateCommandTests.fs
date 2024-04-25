@@ -17,65 +17,150 @@ open JUnit
 [<Tests>]
 let ``ValidateCommand CLI Tests`` =
     testSequenced (testList "arc-validate validate" [
-        testSequenced (testList "package test -pv 2 -i fixtures/arcs/inveniotestarc" [
-            yield! 
-                testFixture (Fixtures.withToolExecution 
-                    true
-                    "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"|]
-                    (get_gh_api_token())
-                ) [
-                    "Package script exists after running package install test" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
-                ]
-            yield! 
-                testFixture (Fixtures.withToolExecution 
-                    false
-                    "../../../../../publish/arc-validate" 
-                    [|"-v"; "validate"; "-p"; "test"; "-pv"; "2.0.0"; "-i"; "fixtures/arcs/inveniotestarc"|]
-                    (get_gh_api_token())
-                ) [
-                    "Exit code is 0" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
-                    "Console output does not indicate that package is not installed" , 
-                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
-                    "Console Output is correct" ,
-                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v2.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
-                    "Ouptput files exist",
-                        fun tool args proc -> 
-                            Expect.isTrue (Directory.Exists(".arc-validate-results")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results does not exist in {System.Environment.CurrentDirectory}" proc tool args )
-                            Expect.isTrue (File.Exists(".arc-validate-results/test/badge.svg")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/badge.svg does not exist in {System.Environment.CurrentDirectory}" proc tool args )
-                            Expect.isTrue (File.Exists(".arc-validate-results/test/validation_report.xml")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/validation_report.xml does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+        testSequenced (testList "preview" [
+            testSequenced (testList "package test version 2" [
+                // run:
+                // - arc-validate --verbose package install test -v 2.0.0 --preview
+                // - arc-validate validate -p test -v 2.0.0 --preview -i fixtures/arcs/inveniotestarc
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        true
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "package"; "install"; "test"; "-v"; "2.0.0"; "--preview"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Package script exists in preview cache after running package install test" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        "Package script does not exist in avpr cache after running package install test" ,  
+                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                
                     ]
-        ])
-        testSequenced (testList "package test -i fixtures/arcs/inveniotestarc" [
-            yield! 
-                testFixture (Fixtures.withToolExecution 
-                    true
-                    "../../../../../publish/arc-validate" 
-                    [|"-v"; "package"; "install"; "test";|]
-                    (get_gh_api_token())
-                ) [
-                    "Package script exists after running package install test" ,  
-                        fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
-                ]
-            yield! 
-                testFixture (Fixtures.withToolExecution 
-                    false
-                    "../../../../../publish/arc-validate" 
-                    [|"-v"; "validate"; "-p"; "test"; "-i"; "fixtures/arcs/inveniotestarc"|]
-                    (get_gh_api_token())
-                ) [
-                    "Exit code is 0" , 
-                        fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
-                    "Console output does not indicate that package is not installed" , 
-                        fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
-                    "Console Output is correct" ,
-                        fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v3.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
-
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "-p"; "test"; "-v"; "2.0.0"; "--preview"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Console output does not indicate that package is not installed" , 
+                            fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output is correct" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v2.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Ouptput files exist",
+                            fun tool args proc -> 
+                                Expect.isTrue (Directory.Exists(".arc-validate-results")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/test/badge.svg")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/badge.svg does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/test/validation_report.xml")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/validation_report.xml does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                        ]
+            ])
+            testSequenced (testList "package test version latest" [
+                // run:
+                // - arc-validate --verbose package install test --preview
+                // - arc-validate validate -p test --preview -i fixtures/arcs/inveniotestarc
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        true
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "package"; "install"; "test"; "--preview"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Package script exists in preview cache after running package install test" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@999.999.999.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        "Package script does not exist in avpr cache after running package install test" ,  
+                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@999.999.999.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                
                     ]
-        ])
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "-p"; "test"; "--preview"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Console output does not indicate that package is not installed" , 
+                            fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output is correct" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed preview test package v999.999.999!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
 
+                        ]
+                ])
+            ])
+        testSequenced (testList "avpr" [
+            testSequenced (testList "package test version 2" [
+                yield! 
+                // run:
+                // - arc-validate --verbose package install test -v 2.0.0
+                // - arc-validate validate -p test -v 2.0.0 --preview -i fixtures/arcs/inveniotestarc
+                    testFixture (Fixtures.withToolExecution 
+                        true
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "package"; "install"; "test"; "-v"; "2.0.0"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Package script exists in avpr cache after running package install test" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        "Package script does not exist in preview cache after running package install test" ,  
+                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                
+                    ]
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "-p"; "test"; "-v"; "2.0.0"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Console output does not indicate that package is not installed" , 
+                            fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output is correct" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v2.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Ouptput files exist",
+                            fun tool args proc -> 
+                                Expect.isTrue (Directory.Exists(".arc-validate-results")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/test/badge.svg")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/badge.svg does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/test/validation_report.xml")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/validation_report.xml does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                        ]
+            ])
+            testSequenced (testList "package test version latest" [
+                // run:
+                // - arc-validate --verbose package install test
+                // - arc-validate validate -p test -i fixtures/arcs/inveniotestarc
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        true
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "package"; "install"; "test";|]
+                        (get_gh_api_token())
+                    ) [
+                        "Package script exists in avpr cache after running package install test" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                        "Package script does not exist in preview cache after running package install test" ,  
+                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                
+                    ]
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "-p"; "test"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                        (get_gh_api_token())
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Console output does not indicate that package is not installed" , 
+                            fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output is correct" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v3.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+
+                        ]
+                ])
+            ])
         //        printfn "%s" (Path.GetFullPath("fixtures/arcs/inveniotestarc"))
 
         //        let proc = runTool "../../../../../publish/arc-validate" [|"validate"; "-i"; "fixtures/arcs/inveniotestarc"|] 

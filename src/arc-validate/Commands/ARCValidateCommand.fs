@@ -6,14 +6,14 @@ open Argu
 [<HelpFlags([|"--help"; "-h"|])>]
 type ARCValidateCommand =
     // Parameters
-    | [<AltCommandLine("-v")>] Verbose    
-    | [<AltCommandLine("-t")>] Token of string
+    | [<Unique>] Verbose    
+    | [<Unique; AltCommandLine("-t")>] Token of string
 
     //Commands
-    | [<CliPrefix(CliPrefix.None); AltCommandLine("v")>] Validate of ParseResults<ValidateArgs>
+    | [<Unique; CliPrefix(CliPrefix.None); AltCommandLine("v")>] Validate of ParseResults<ValidateArgs>
 
     // SubCommands
-    | [<CliPrefix(CliPrefix.None); AltCommandLine("p")>] Package of ParseResults<PackageCommand>
+    | [<Unique; CliPrefix(CliPrefix.None); AltCommandLine("p")>] Package of ParseResults<PackageCommand>
 
     interface IArgParserTemplate with
         member s.Usage =

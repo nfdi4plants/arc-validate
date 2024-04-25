@@ -8,6 +8,7 @@ open TestUtils
 open Common.TestUtils
 open TestUtils
 open System.Collections.Generic
+
 [<Tests>]
 let tests =
     testSequenced (testList "PackageCache tests" [
@@ -61,15 +62,27 @@ let tests =
                 testPackageCache2
         } |> testSequenced
 
-        test "can write json" {
+        test "can write json preview" {
             deleteDefaultPackageCache() // make sure any cached file is deleted before testing that it can be written
-            testPackageCache1 |> PackageCache.write()
+            testPackageCache1 |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
             Expect.isTrue (File.Exists(expected_package_cache_file_path_preview)) "package cache file was not created"
         } |> testSequenced
 
-        test "can read json" {
+        test "can write json release" {
+            //deleteDefaultPackageCache() // make sure any cached file is deleted before testing that it can be written
+            testPackageCache1 |> PackageCache.write(Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
+            Expect.isTrue (File.Exists(expected_package_cache_file_path_release)) "package cache file was not created"
+        } |> testSequenced
+
+        test "can read json preview" {
             Expect.packageCacheEqual 
-                (PackageCache.read())
+                (PackageCache.read(Defaults.PACKAGE_CACHE_FILE_PATH_PREVIEW()))
+                testPackageCache1
+        } |> testSequenced
+
+        test "can read json release" {
+            Expect.packageCacheEqual 
+                (PackageCache.read(Defaults.PACKAGE_CACHE_FILE_PATH_RELEASE()))
                 testPackageCache1
         } |> testSequenced
 

@@ -15,4 +15,4 @@ type PackageCommand =
             | Install _     -> "install valiation packages"
             | UnInstall _   -> "uninstall valiation packages"
             | List _        -> "list packages from available soures"
-            | Update_Index   -> "update the locally chached package index"
+            | Update_Index  -> "update the locally chached package index"

@@ -9,6 +9,14 @@ open Common.TestUtils
 module Expect =
     open Expecto
 
+    let packageCacheContainsPackage (packageName: string) (packageVersion:string) (packageCache:PackageCache) =
+        Expect.isTrue (packageCache.ContainsKey(packageName)) "package cache did not contain any version of the package"
+        Expect.isTrue (packageCache.[packageName].ContainsKey(packageVersion)) "package cache did not contain the specific version of the package"
+
+    let packageCacheDoesNotContainPackage (packageName: string) (packageVersion:string) (packageCache:PackageCache) =
+        Expect.isFalse (packageCache.ContainsKey(packageName)) "package cache did not contain any version of the package"
+        Expect.isFalse (packageCache.[packageName].ContainsKey(packageVersion)) "package cache did not contain the specific version of the package"
+
     let packageCacheEqual (actual:PackageCache) (expected:PackageCache) =
         let actualKeysSorted, expectedKeysSorted = (actual.Keys |> Seq.sort), (expected.Keys |> Seq.sort)
         let countIsEqual = actual.Count = expected.Count
@@ -62,12 +70,16 @@ module Result =
 
 module Fixtures =
 
-    let withFreshConfigAndCache (token:string option) (f: Config * PackageCache -> unit) () =
+    let withFreshConfigAndCaches (token:string option) (f: Config * PackageCache * PackageCache -> unit) () =
         resetConfigEnvironment()
-        let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
-        f (freshConfig, freshCache)
+        let freshConfig, freshAVPRCache, freshPreviewCache = API.Common.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
+        f (freshConfig, freshAVPRCache, freshPreviewCache)
 
     //let saveAndCachePackage (token:string option) (package:Package) =
     //    let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
     //    let updatedCache = API.SaveAndCachePackage(freshConfig, freshCache, package) |> Result.okValue
     //    updatedCache
+
+module AVPR =
+    
+    let api = new AVPRAPI()

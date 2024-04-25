@@ -12,6 +12,7 @@ module ValidationPackageMetadata =
 
 module ValidationPackageIndex =
     let getSemanticVersionString(i: ValidationPackageIndex) = $"{i.Metadata.MajorVersion}.{i.Metadata.MinorVersion}.{i.Metadata.PatchVersion}"
+
 /// <summary>
 /// represents the locally installed version of a validation package, e.g. the path to the local file and the date it was cached.
 /// </summary>
@@ -36,7 +37,7 @@ type CachedValidationPackage =
             }
 
         /// <summary>
-        /// Creates a new ARCValidationPackage from a ValidationPackageIndex, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default cache folder or custom folder.
+        /// Creates a new ARCValidationPackage from a ValidationPackageIndex, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default preview cache folder or custom folder.
         /// </summary>
         /// <param name="packageIndex">The input package index entry</param>
         /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
@@ -50,7 +51,7 @@ type CachedValidationPackage =
             )
 
         /// <summary>
-        /// Creates a new ARCValidationPackage from a package name only, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default cache folder or custom folder.
+        /// Creates a new ARCValidationPackage from a package name only, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default preview cache folder or custom folder.
         /// </summary>
         /// <param name="packageName"></param>
         /// <param name="Date"></param>
@@ -62,6 +63,20 @@ type CachedValidationPackage =
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
                 localPath = (System.IO.Path.Combine(path, $"{packageName}.fsx").Replace("\\","/")),
                 metadata = ValidationPackageMetadata()
+            )
+
+        /// <summary>
+        /// Creates a new ARCValidationPackage from a ValidationPackageMetadata, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default release cache folder or custom folder.
+        /// </summary>
+        /// <param name="packageIndex">The input package index entry</param>
+        /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
+        static member ofPackageMetadata (packageMetadata: ValidationPackageMetadata, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
+            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
+            CachedValidationPackage.create(
+                fileName = packageMetadata.Name,
+                cacheDate = (defaultArg Date System.DateTimeOffset.Now),
+                localPath = (System.IO.Path.Combine(path, $"{packageMetadata.Name}@{packageMetadata.MajorVersion}.{packageMetadata.MinorVersion}.{packageMetadata.PatchVersion}.fsx").Replace("\\","/")),
+                metadata = packageMetadata
             )
 
         /// <summary>
