@@ -17,7 +17,7 @@ open JUnit
 [<Tests>]
 let ``ValidateCommand CLI Tests`` =
     testSequenced (testList "arc-validate validate" [
-        testSequenced (testList "package test -pv 2 -i fixtures/arcs/inveniotestarc" [
+        testSequenced (testList "package test -pv 2 -pr -i fixtures/arcs/inveniotestarc" [
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     true
@@ -25,14 +25,17 @@ let ``ValidateCommand CLI Tests`` =
                     [|"-v"; "package"; "install"; "test"; "-pv"; "2.0.0"; "-pr"|]
                     (get_gh_api_token())
                 ) [
-                    "Package script exists after running package install test" ,  
+                    "Package script exists in preview cache after running package install test" ,  
                         fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                    "Package script does not exist in avpr cache after running package install test" ,  
+                        fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@2.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                
                 ]
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     false
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "validate"; "-p"; "test"; "-pv"; "2.0.0"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                    [|"-v"; "validate"; "-pr"; "-p"; "test"; "-pv"; "2.0.0"; "-pr"; "-i"; "fixtures/arcs/inveniotestarc"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 
@@ -48,7 +51,7 @@ let ``ValidateCommand CLI Tests`` =
                             Expect.isTrue (File.Exists(".arc-validate-results/test/validation_report.xml")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/test/validation_report.xml does not exist in {System.Environment.CurrentDirectory}" proc tool args )
                     ]
         ])
-        testSequenced (testList "package test -i fixtures/arcs/inveniotestarc" [
+        testSequenced (testList "package test -pr -i fixtures/arcs/inveniotestarc" [
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     true
@@ -56,14 +59,17 @@ let ``ValidateCommand CLI Tests`` =
                     [|"-v"; "package"; "install"; "test"; "-pr"|]
                     (get_gh_api_token())
                 ) [
-                    "Package script exists after running package install test" ,  
+                    "Package script exists in preview cache after running package install test" ,  
                         fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@4.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                    "Package script does not exist in avpr cache after running package install test" ,  
+                        fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@4.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                
                 ]
             yield! 
                 testFixture (Fixtures.withToolExecution 
                     false
                     "../../../../../publish/arc-validate" 
-                    [|"-v"; "validate"; "-p"; "test"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                    [|"-v"; "validate"; "-p"; "test"; "-pr"; "-i"; "fixtures/arcs/inveniotestarc"|]
                     (get_gh_api_token())
                 ) [
                     "Exit code is 0" , 

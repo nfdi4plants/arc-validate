@@ -6,7 +6,7 @@ open Argu
 type PackageCommand =
     | [<CliPrefix(CliPrefix.None); AltCommandLine("i")>] Install of ParseResults<PackageInstallArgs>
     | [<CliPrefix(CliPrefix.None); AltCommandLine("u")>] UnInstall of ParseResults<PackageUninstallArgs>
-    | [<CliPrefix(CliPrefix.None); AltCommandLine("l")>] List
+    | [<CliPrefix(CliPrefix.None); AltCommandLine("l")>] List of ParseResults<PackageListArgs>
     | [<CliPrefix(CliPrefix.None); AltCommandLine("c"); SubCommand()>] Update_Index
 
     interface IArgParserTemplate with
@@ -14,5 +14,5 @@ type PackageCommand =
             match s with
             | Install _     -> "install valiation packages"
             | UnInstall _   -> "uninstall valiation packages"
-            | List          -> "list packages from available soures"
-            | Update_Index   -> "update the locally chached package index"
+            | List _        -> "list packages from available soures"
+            | Update_Index  -> "update the locally chached package index"

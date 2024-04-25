@@ -113,6 +113,7 @@ type PackageAPI =
                         ExitCode.InternalError
 
     static member List(
+        args: ParseResults<PackageListArgs>,
         ?Verbose: bool, 
         ?Token: string
     ) = 
@@ -124,22 +125,44 @@ type PackageAPI =
 
         | Ok (config, avprCache, previewCache) -> 
             let verbose = defaultArg Verbose false
+            let printIndexed=  args.TryGetResult(PackageListArgs.Include_Indexed).IsSome
 
-            let printCachedPackageList (packages: seq<CachedValidationPackage>) =
+            let printCachedPackageList (verbose: bool) (packages: seq<CachedValidationPackage>) =
                 packages
                 |> fun p -> 
                     if Seq.length p = 0 then 
                         printfn $"No validation packages installed."
                     else 
-                        p |> Seq.iteri (fun i p -> printfn $"""{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}""")
+                        if verbose then
+                            p |> Seq.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}")
+                        else
+                            p 
+                            |> Seq.groupBy (fun p -> p.Metadata.Name)
+                            |> Seq.iter (fun (name,packages) ->
+                                printfn $"- {name}:"
+                                packages 
+                                |> Seq.sortByDescending (fun p -> ValidationPackageMetadata.getSemanticVersionString p.Metadata)
+                                |> Seq.iter (fun p -> printfn $"  - {ValidationPackageMetadata.getSemanticVersionString p.Metadata}")
+                            )
 
-            let printIndexedPackageList (packages: ValidationPackageIndex list) =
+            let printIndexedPackageList (verbose: bool) (packages: ValidationPackageIndex list) =
                 packages
                 |> fun p -> 
                     if p.Length = 0 then 
                         printfn $"No validation packages indexed."
                     else 
-                        p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}")
+                        if verbose then
+                            p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}")
+                        else
+                            p 
+                            |> List.groupBy (fun p -> p.Metadata.Name)
+                            |> List.iter (fun (name,packages) ->
+                                printfn $"- {name}:"
+                                packages 
+                                |> List.sortByDescending (fun p -> ValidationPackageMetadata.getSemanticVersionString p.Metadata)
+                                |> List.iter (fun p -> printfn $"  - {ValidationPackageMetadata.getSemanticVersionString p.Metadata}")
+                            )
+                        
 
 
             let installedAVPR = Common.ListCachedPackages(avprCache, verbose)
@@ -148,14 +171,19 @@ type PackageAPI =
 
             match (installedAVPR, installedPreview, indexedPreview) with
             | Ok avpr, Ok preview, Ok indexed ->
-                printf $"SOURCE: avpr.nfdi4plants.org" 
-                printfn "Installed validation packages:"
-                printCachedPackageList avpr
-                printf $"SOURCE: avpr.nfdi4plants.org"
-                printfn "Installed validation packages:"
-                printCachedPackageList avpr
-                printf $"Indexed validation packages:"
-                printIndexedPackageList indexed
+                printfn ""
+                printfn $"Installed from: avpr.nfdi4plants.org" 
+                printCachedPackageList verbose avpr
+                printfn ""
+                printfn $"Installed from: preview index"
+                printCachedPackageList verbose preview
+                printfn ""
+
+                if printIndexed then
+                    printfn $"Locally indexed preview validation packages:"
+                    printIndexedPackageList verbose indexed
+                    printfn ""
+
                 ExitCode.Success
             | Error e, _, _ ->
                 printfn $"Error listing installed avpr packages."

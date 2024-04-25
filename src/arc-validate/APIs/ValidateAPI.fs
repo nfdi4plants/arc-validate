@@ -92,7 +92,9 @@ module ValidateAPI =
 
             let isRelease = args.TryGetResult(ValidateArgs.Preview).IsSome |> not
 
-            status.Start($"Performing validation against the {packageName} package", fun ctx ->
+            let packageMessagePrefix = if isRelease then "" else "preview "
+
+            status.Start($"Performing validation against the {packageMessagePrefix}{packageName} package", fun ctx ->
 
                 if verbose then
                     AnsiConsole.MarkupLine("LOG: Running in:")
