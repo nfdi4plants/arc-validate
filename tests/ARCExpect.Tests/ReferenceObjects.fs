@@ -11,11 +11,6 @@ module TestCase =
     let dummyTestWillPass = testCase "dummyTest1" (fun _ -> Expect.isTrue true "is not true")
     let dummyTestWillFail = testCase "dummyTest2" (fun _ -> Expect.isTrue false "is not true") 
 
-module TestRunSummary =
-    
-    let dummyTestPassed = TestCase.dummyTestWillPass |> performTest
-    let dummyTestFailed = TestCase.dummyTestWillFail |> performTest
-
 module CvTerms =
 
     let ``Investigation Person First Name`` = CvTerm.create("INVMSO:00000023","Investigation Person First Name","INVMSO")
@@ -229,10 +224,10 @@ module Badge =
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
-    <mask id="1">
+    <mask id="2">
         <rect width="63" height="20" rx="3" fill="#fff"/>
     </mask>
-    <g mask="url(#1)">
+    <g mask="url(#2)">
         <path fill="#555" d="M0 0h34v20H0z"/>
         <path fill="#4C1" d="M34 0h29v20H34z"/>
         <path fill="url(#b)" d="M0 0h63v20H0z"/>

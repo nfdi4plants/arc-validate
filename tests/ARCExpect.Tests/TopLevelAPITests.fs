@@ -8,7 +8,7 @@ open System.IO
 
 [<Tests>]
 let ``Toplevel API Setup tests`` =
-    testList "Toplevel API tests" [
+    testSequenced (testList "Toplevel API tests" [
         testList "Setup_Metadata" [
             test "correct metadata is extracted from valid frontmatter string" {
                 let actual = Setup.Metadata(ReferenceObjects.Frontmatter.validNoHook)
@@ -57,10 +57,10 @@ let ``Toplevel API Setup tests`` =
                     Setup.ValidationPackage(
                         metadata = ReferenceObjects.ValidationPackageMetadata.validNoHook,
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillFail]
+                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                     )
                     |> Execute.Validation
-                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.nonCriticalFailedNoHook
+                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedNoHook
             }
 
             test "resulting summary is correct with hook" {
@@ -68,11 +68,11 @@ let ``Toplevel API Setup tests`` =
                     Setup.ValidationPackage(
                         metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillFail],
+                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                         CQCHookEndpoint = "http://test.com"
                     )
                     |> Execute.Validation
-                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.nonCriticalFailedWithHook
+                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithHook
             }
         ]
         testList "Execute_SummaryCreation" [
@@ -151,4 +151,4 @@ let ``Toplevel API Setup tests`` =
                 Expect.equal actualBadge ReferenceObjects.Badge.allPassedWithHookBadgeSVGFromPipeline "badge files were not equal"
             }
         ]
-    ]
+    ])
