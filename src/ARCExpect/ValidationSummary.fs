@@ -4,6 +4,7 @@ open Expecto
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.IO
+open AVPRIndex
 
 /// <summary>
 /// Represents a brief summary of the result of validating an ARC against a set of validation cases.
@@ -61,17 +62,34 @@ type ValidationResult = {
 type ValidationPackageSummary = {
     Name: string
     Version: string
+    Summary: string
+    Description: string
     HookEndpoint: string option
 } with
     static member create(
         name: string,
         version: string,
+        summary: string,
+        description: string,
         ?HookEndpoint: string
     ) = {
         Name = name
         Version = version
+        Summary = summary
+        Description = description
         HookEndpoint = HookEndpoint
     }
+    static member create (
+        metadata: ValidationPackageMetadata,
+        ?HookEndpoint: string
+    ) =
+        ValidationPackageSummary.create(
+            name = metadata.Name,
+            version = ValidationPackageMetadata.getSemanticVersionString metadata,
+            summary = metadata.Summary,
+            description = metadata.Description,
+            ?HookEndpoint = HookEndpoint
+        )
 
 /// <summary>
 /// Represents a summary of the validation results of an ARC against a validation package containing critical and non-critical validation cases.

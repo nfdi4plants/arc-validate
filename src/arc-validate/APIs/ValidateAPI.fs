@@ -69,23 +69,11 @@ module ValidateAPI =
                     AnsiConsole.MarkupLine($"LOG: Output path is:")
                     AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                     AnsiConsole.MarkupLine("")
-                
 
-                let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
-                let outDirResXml = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")
+                validationCases
+                |> Execute.ValidationPipeline outPath
 
-                let results = ARCExpect.Execute.Validation validationCases
-                    
-                results
-                |> Execute.JUnitSummaryCreation(outDirResXml)
-
-                results
-                |> Execute.BadgeCreation(outDirBadge, "ARC specification V2_Draft", "passing", DefaultColor=AnyBadge.NET.Color.GREEN)
-
-                if results.successful then
-                    exitCode <- ExitCode.Success
-                else
-                    exitCode <- ExitCode.CriticalTestFailure
+                exitCode <- ExitCode.Success
             )
 
         | Some packageName -> // Validate against a specific package

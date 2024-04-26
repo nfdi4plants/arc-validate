@@ -3,22 +3,34 @@
 open ARCExpect
 open Expecto
 open TestUtils
+open AVPRIndex
 
 let dummyTestPassed = testCase "dummyTest1" (fun _ -> Expect.isTrue true "is not true") |> performTest
 let dummyTestFailed = testCase "dummyTest2" (fun _ -> Expect.isTrue false "is not true") |> performTest
 
 let testPackageName = "test"
 let testPackageVersion = "1.0.0"
+
+let testSummaryNoHook = "A package without CQC hook."
+let testDescriptionNoHook = "A package without CQC hook. More text here."
+
+let testSummaryWithHook = "A package with CQC hook."
+let testDescriptionWithHook = "A package with CQC hook. More text here."
 let testHook = "http://test.com"
+
 
 let testPackageNoHook = ValidationPackageSummary.create(
     name = testPackageName,
-    version = testPackageVersion
+    version = testPackageVersion,
+    summary = testSummaryNoHook,
+    description = testDescriptionNoHook
 )
 
 let testPackageWithHook = ValidationPackageSummary.create(
     name = testPackageName,
     version = testPackageVersion,
+    summary = testSummaryWithHook,
+    description = testDescriptionWithHook,
     HookEndpoint = testHook
 )
 
@@ -39,7 +51,9 @@ let ``ValidationResult tests`` =
             test "package summary is created correctly without hook" {
                 let actual = ValidationPackageSummary.create(
                     name = testPackageName,
-                    version = testPackageVersion
+                    version = testPackageVersion,
+                    summary = testSummaryNoHook,
+                    description = testDescriptionNoHook
                 )
                 Expect.equal actual ReferenceObjects.ValidationPackageSummary.noHook "package summary was not equal"
             }
@@ -47,6 +61,8 @@ let ``ValidationResult tests`` =
                 let actual = ValidationPackageSummary.create(
                     name = testPackageName,
                     version = testPackageVersion,
+                    summary = testSummaryWithHook,
+                    description = testDescriptionWithHook,
                     HookEndpoint = testHook
                 )
                 Expect.equal actual ReferenceObjects.ValidationPackageSummary.withHook "package summary was not equal"

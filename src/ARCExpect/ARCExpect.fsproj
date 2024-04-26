@@ -7,7 +7,6 @@
     <None Include="packages.lock.json" />
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="InternalUtils.fs" />
-    <Compile Include="BadgeCreation.fs" />
     <Compile Include="StringValidationPattern.fs" />
     <Compile Include="ParamCollection.fs" />
     <Compile Include="CVExtensions.fs" />
@@ -20,6 +19,7 @@
     <Compile Include="ValidationFunctions.fs" />
     <Compile Include="ARCValidationPackage.fs" />
     <Compile Include="ValidationSummary.fs" />
+    <Compile Include="BadgeCreation.fs" />
     <Compile Include="SpecificationValidation\V2_0_0_Draft.fs" />
     <Compile Include="SpecificationValidation\SpecificationSelection.fs" />
     <Compile Include="TopLevelAPI.fs" />

@@ -1,19 +1,97 @@
-﻿
-namespace ARCExpect
+﻿namespace ARCExpect
+
 open AnyBadge.NET
 open Expecto
 open System.IO
+open AVPRIndex
+
+type Setup =
+    
+    static member ValidationPackage(
+        metadata: ValidationPackageMetadata,
+        ?CriticalValidationCases: Test list,
+        ?NonCriticalValidationCases: Test list,
+        ?CQCHookEndpoint: string
+    ) =
+        ARCValidationPackage.create(
+            metadata = metadata,
+            ?CriticalValidationCasesList = CriticalValidationCases,
+            ?NonCriticalValidationCasesList = NonCriticalValidationCases,
+            ?CQCHookEndpoint = CQCHookEndpoint
+        )
+
+    static member ValidationPackage(
+        name: string,
+        summary: string,
+        description: string,
+        majorVersion: int,
+        minorVersion: int,
+        patchVersion: int,
+        ?Publish: bool,
+        ?Authors: Author array,
+        ?Tags: OntologyAnnotation array,
+        ?ReleaseNotes: string,
+        ?CriticalValidationCases: Test list,
+        ?NonCriticalValidationCases: Test list,
+        ?CQCHookEndpoint: string
+    ) =
+        Setup.ValidationPackage(
+            metadata = ValidationPackageMetadata.create(
+                name = name,
+                summary = summary,
+                description = description,
+                majorVersion = majorVersion,
+                minorVersion = minorVersion,
+                patchVersion = patchVersion,
+                ?Publish = Publish,
+                ?Authors = Authors,
+                ?Tags = Tags,
+                ?ReleaseNotes = ReleaseNotes
+            ),
+            ?CriticalValidationCases = CriticalValidationCases,
+            ?NonCriticalValidationCases = NonCriticalValidationCases,
+            ?CQCHookEndpoint = CQCHookEndpoint
+        )
 
 type Execute =
-    
-    static member Validation (validationCases: Test) = performTest validationCases
 
-    static member JUnitSummaryCreation(
+// ------------------ New API with ARCValidationPackage, metadata support and custom summaries ------------------
+    static member Validation (arcValidationPackage: ARCValidationPackage) =
+        let criticalResults = performTest arcValidationPackage.CriticalValidationCases
+        let nonCriticalResults = performTest arcValidationPackage.NonCriticalValidationCases
+        
+        ValidationSummary.ofExpectoTestRunSummaries(
+            criticalSummary = criticalResults,
+            nonCriticalSummary = nonCriticalResults,
+            package = ValidationPackageSummary.create(
+                arcValidationPackage.Metadata,
+                ?HookEndpoint = arcValidationPackage.CQCHookEndpoint
+            )
+        )
+
+    static member SummaryCreation(
+        path: string
+    ) =  
+        fun (validationSummary: ValidationSummary) -> 
+            ValidationSummary.writeJson path validationSummary
+
+    static member JUnitReportCreation(
         path: string,
         ?Verbose: bool
     ) =
         let verbose = defaultArg Verbose false
-        fun (validationResults: Impl.TestRunSummary) -> writeJUnitSummary verbose path validationResults
+
+        fun (validationSummary: ValidationSummary) -> 
+            match validationSummary.Critical.OriginalRunSummary, validationSummary.NonCritical.OriginalRunSummary with
+            | None, None ->
+                printfn "No validation results to summarize"
+            | Some criticalResults, None ->
+                writeJUnitSummary verbose path criticalResults
+            | None, Some nonCriticalResults ->
+                writeJUnitSummary verbose path nonCriticalResults
+            | Some criticalResults, Some nonCriticalResults ->
+                combineTestRunSummaries [criticalResults; nonCriticalResults]
+                |> writeJUnitSummary verbose path
 
     static member BadgeCreation(
         path: string,
@@ -22,9 +100,10 @@ type Execute =
         ?Thresholds: Map<int, Color>,
         ?DefaultColor: Color
     ) =
-        fun (validationResults: Impl.TestRunSummary) -> 
-            validationResults
-            |> BadgeCreation.ofTestResults(
+        fun (validationSummary: ValidationSummary) -> 
+
+            validationSummary
+            |> BadgeCreation.ofValidationSummary(
                 labelText,
                 ?ValueSuffix = ValueSuffix,
                 ?Thresholds = Thresholds,
@@ -33,50 +112,113 @@ type Execute =
             |> fun b -> b.WriteBadge(path)
 
     static member ValidationPipeline(
-        jUnitPath: string,
-        badgePath: string,
-        labelText: string,
-        ?ValueSuffix: string,
-        ?Thresholds: Map<int, Color>,
-        ?DefaultColor: Color
-    ) =
-        fun (validationCases: Test) ->
-
-            let results = 
-                validationCases
-                |> Execute.Validation
-
-            results
-            |> Execute.JUnitSummaryCreation(jUnitPath)
-
-            results
-            |> Execute.BadgeCreation(badgePath, labelText, ?ValueSuffix = ValueSuffix, ?Thresholds = Thresholds, ?DefaultColor = DefaultColor)
-
-    static member ValidationPipeline(
         basePath: string,
-        packageName: string,
         ?BadgeLabelText: string,
         ?ValueSuffix: string,
         ?Thresholds: Map<int, Color>,
         ?DefaultColor: Color
     ) =
-        fun (validationCases: Test) ->
+        fun (arcValidationPackage: ARCValidationPackage) ->
 
-            let resultFolder = Path.Combine(basePath, ".arc-validate-results", packageName)
+            let labelText = defaultArg BadgeLabelText arcValidationPackage.Metadata.Name
+
+            let foldername = $"{arcValidationPackage.Metadata.Name}@{ValidationPackageMetadata.getSemanticVersionString arcValidationPackage.Metadata}"
+
+            let resultFolder = Path.Combine(basePath, ".arc-validate-results", foldername)
+            let summaryPath = Path.Combine(resultFolder, "validation_summary.json")
             let badgePath = Path.Combine(resultFolder, "badge.svg")
             let jUnitPath = Path.Combine(resultFolder, "validation_report.xml")
 
             Directory.CreateDirectory(resultFolder) |> ignore
 
             let results = 
-                validationCases
+                arcValidationPackage
                 |> Execute.Validation
 
+            results |> Execute.SummaryCreation(summaryPath)
+            results |> Execute.JUnitReportCreation(jUnitPath)
             results
-            |> Execute.JUnitSummaryCreation(jUnitPath)
+            |> Execute.BadgeCreation(
+                badgePath, 
+                labelText, 
+                ?ValueSuffix = ValueSuffix, 
+                ?Thresholds = Thresholds, 
+                ?DefaultColor = DefaultColor
+            )
 
-            let labelText = defaultArg BadgeLabelText packageName
+// ------------------ Legacy API without ARCValidationPackage, metadata, or custom Summaries ------------------
 
-            results
-            |> Execute.BadgeCreation(badgePath, labelText, ?ValueSuffix = ValueSuffix, ?Thresholds = Thresholds, ?DefaultColor = DefaultColor)
+    //static member Validation (validationCases: Test) = performTest validationCases
+
+    //static member JUnitSummaryCreation(
+    //    path: string,
+    //    ?Verbose: bool
+    //) =
+    //    let verbose = defaultArg Verbose false
+    //    fun (validationResults: Impl.TestRunSummary) -> writeJUnitSummary verbose path validationResults
+
+    //static member BadgeCreation(
+    //    path: string,
+    //    labelText: string,
+    //    ?ValueSuffix: string,
+    //    ?Thresholds: Map<int, Color>,
+    //    ?DefaultColor: Color
+    //) =
+    //    fun (validationResults: Impl.TestRunSummary) -> 
+    //        validationResults
+    //        |> BadgeCreation.ofTestResults(
+    //            labelText,
+    //            ?ValueSuffix = ValueSuffix,
+    //            ?Thresholds = Thresholds,
+    //            ?DefaultColor = DefaultColor
+    //        )
+    //        |> fun b -> b.WriteBadge(path)
+
+    //static member ValidationPipeline(
+    //    jUnitPath: string,
+    //    badgePath: string,
+    //    labelText: string,
+    //    ?ValueSuffix: string,
+    //    ?Thresholds: Map<int, Color>,
+    //    ?DefaultColor: Color
+    //) =
+    //    fun (validationCases: Test) ->
+
+    //        let results = 
+    //            validationCases
+    //            |> Execute.Validation
+
+    //        results
+    //        |> Execute.JUnitSummaryCreation(jUnitPath)
+
+    //        results
+    //        |> Execute.BadgeCreation(badgePath, labelText, ?ValueSuffix = ValueSuffix, ?Thresholds = Thresholds, ?DefaultColor = DefaultColor)
+
+    //static member ValidationPipeline(
+    //    basePath: string,
+    //    packageName: string,
+    //    ?BadgeLabelText: string,
+    //    ?ValueSuffix: string,
+    //    ?Thresholds: Map<int, Color>,
+    //    ?DefaultColor: Color
+    //) =
+    //    fun (validationCases: Test) ->
+
+    //        let resultFolder = Path.Combine(basePath, ".arc-validate-results", packageName)
+    //        let badgePath = Path.Combine(resultFolder, "badge.svg")
+    //        let jUnitPath = Path.Combine(resultFolder, "validation_report.xml")
+
+    //        Directory.CreateDirectory(resultFolder) |> ignore
+
+    //        let results = 
+    //            validationCases
+    //            |> Execute.Validation
+
+    //        results
+    //        |> Execute.JUnitSummaryCreation(jUnitPath)
+
+    //        let labelText = defaultArg BadgeLabelText packageName
+
+    //        results
+    //        |> Execute.BadgeCreation(badgePath, labelText, ?ValueSuffix = ValueSuffix, ?Thresholds = Thresholds, ?DefaultColor = DefaultColor)
 

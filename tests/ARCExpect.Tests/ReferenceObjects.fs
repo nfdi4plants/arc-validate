@@ -44,12 +44,16 @@ module ValidationPackageSummary =
     let noHook = {
         Name = "test"
         Version = "1.0.0"
+        Summary = "A package without CQC hook."
+        Description = "A package without CQC hook. More text here."
         HookEndpoint = None
     }
 
     let withHook = {
         Name = "test"
         Version = "1.0.0"
+        Summary = "A package with CQC hook."
+        Description = "A package with CQC hook. More text here."
         HookEndpoint = Some "http://test.com"
     }
 
@@ -62,7 +66,7 @@ module ValidationSummary =
             ValidationPackage = ValidationPackageSummary.noHook
         }
 
-    let allPassedNoHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0"}}"""
+    let allPassedNoHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package without CQC hook.","Description":"A package without CQC hook. More text here."}}"""
 
     let allPassedWithHook = 
         {
@@ -71,7 +75,7 @@ module ValidationSummary =
             ValidationPackage = ValidationPackageSummary.withHook
         }
 
-    let allPassedWithHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","HookEndpoint":"http://test.com"}}""" 
+    let allPassedWithHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","HookEndpoint":"http://test.com"}}""" 
 
     let allFailedNoHook = 
         {

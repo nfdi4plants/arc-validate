@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -20,6 +20,7 @@
     <Compile Include="ARCExpectTests.fs" />
     <Compile Include="ARCGraphTests.fs" />
     <Compile Include="ValidationSummaryTests.fs" />
+    <Compile Include="TopLevelAPITests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 
