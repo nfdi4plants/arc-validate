@@ -2,6 +2,7 @@
 
 open Expecto
 open System.Text.Json
+open System.Text.Json.Serialization
 open System.IO
 
 /// <summary>
@@ -13,31 +14,36 @@ type ValidationResult = {
     Passed: int
     Failed: int
     Errored: int
+    [<JsonIgnore>]
+    OriginalRunSummary: Impl.TestRunSummary option
 } with
     static member create(
         hasFailures: bool,
         total: int,
         passed: int,
         failed: int,
-        errored: int
+        errored: int,
+        ?OriginalRunSummary: Impl.TestRunSummary
     ) = {
         HasFailures = hasFailures
         Total = total
         Passed = passed
         Failed = failed
         Errored = errored
+        OriginalRunSummary = OriginalRunSummary
     }
     
-    static member create (total: int, passed: int, failed: int, errored: int) =
+    static member create (total: int, passed: int, failed: int, errored: int, ?OriginalRunSummary: Impl.TestRunSummary) =
         ValidationResult.create(
             hasFailures = (failed > 0 || errored > 0),
             total = total,
             passed = passed,
             failed = failed,
-            errored = errored
+            errored = errored,
+            ?OriginalRunSummary = OriginalRunSummary
         )
 
-    static member ofTestRunSummary (summary: Impl.TestRunSummary) =
+    static member ofExpectoTestRunSummary (summary: Impl.TestRunSummary) =
 
         let totalTests = summary.errored @ summary.failed @ summary.ignored @ summary.passed
 
@@ -45,7 +51,8 @@ type ValidationResult = {
             total = totalTests.Length,
             passed = summary.passed.Length,
             errored = summary.errored.Length,
-            failed = summary.failed.Length
+            failed = summary.failed.Length,
+            OriginalRunSummary = summary
         )
 
 /// <summary>
@@ -83,14 +90,14 @@ type ValidationSummary = {
         NonCritical = nonCritical
         ValidationPackage = validationPackage
     }
-    static member ofTestRunSummaries (
+    static member ofExpectoTestRunSummaries (
         criticalSummary: Impl.TestRunSummary,
         nonCriticalSummary: Impl.TestRunSummary,
         package: ValidationPackageSummary
     ) =
         ValidationSummary.create(
-            critical = ValidationResult.ofTestRunSummary criticalSummary,
-            nonCritical = ValidationResult.ofTestRunSummary nonCriticalSummary,
+            critical = ValidationResult.ofExpectoTestRunSummary criticalSummary,
+            nonCritical = ValidationResult.ofExpectoTestRunSummary nonCriticalSummary,
             validationPackage = package
         )
     

@@ -1,5 +1,5 @@
-﻿namespace ARCExpect
-
+﻿
+namespace ARCExpect
 open AnyBadge.NET
 open Expecto
 open System.IO
@@ -79,3 +79,4 @@ type Execute =
 
             results
             |> Execute.BadgeCreation(badgePath, labelText, ?ValueSuffix = ValueSuffix, ?Thresholds = Thresholds, ?DefaultColor = DefaultColor)
+

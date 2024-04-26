@@ -27,6 +27,7 @@ module ValidationResult =
         Passed = 1
         Failed = 0
         Errored = 0
+        OriginalRunSummary = None
     }
 
     let allFailed = {
@@ -35,6 +36,7 @@ module ValidationResult =
         Passed = 0
         Failed = 1
         Errored = 0
+        OriginalRunSummary = None
     }
 
 module ValidationPackageSummary = 

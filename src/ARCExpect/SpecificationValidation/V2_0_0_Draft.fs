@@ -1,11 +1,11 @@
-﻿namespace ARCExpect.ARCSpecification
+﻿namespace ARCExpect.SpecificationValidation
 
 open ControlledVocabulary
 open ARCTokenization
 open ARCExpect
 open Expecto
 
-module V2_Draft =
+module V2_0_0_Draft =
 
     module MustHaveTerms = 
         let investigationTerms = 

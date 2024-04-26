@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
@@ -18,9 +18,11 @@
     <Compile Include="ARCGraph.fs" />
     <Compile Include="ARCExpect.fs" />
     <Compile Include="ValidationFunctions.fs" />
+    <Compile Include="ARCValidationPackage.fs" />
     <Compile Include="ValidationSummary.fs" />
+    <Compile Include="SpecificationValidation\V2_0_0_Draft.fs" />
+    <Compile Include="SpecificationValidation\SpecificationSelection.fs" />
     <Compile Include="TopLevelAPI.fs" />
-    <Compile Include="ARCSpecification.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[9.0.4]" />
@@ -33,5 +35,6 @@
     <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
     <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
     <PackageReference Include="FSharp.SystemTextJson" Version="[1.3.13]" />
+    <PackageReference Include="AVPRIndex" Version="[0.1.0]" />
   </ItemGroup>
 </Project>

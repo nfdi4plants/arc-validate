@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <EmbeddedResource Remove="CLITests\**" />
+    <Compile Include="TestUtils.fs" />
     <Compile Include="InternalUtilsTests.fs" />
     <Compile Include="StringValidationPatternTests.fs" />
     <Compile Include="ReferenceObjects.fs" />

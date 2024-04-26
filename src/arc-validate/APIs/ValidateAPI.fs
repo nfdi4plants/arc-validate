@@ -50,27 +50,31 @@ module ValidateAPI =
             ]
             |> List.iter AnsiConsole.MarkupLine
             
+            let specVersion = defaultArg (args.TryGetResult(Specification_Version)) "latest"
             let status = AnsiConsole.Status()
             let mutable exitCode = ExitCode.Success
 
-            status.Start($"Performing validation against the ARC specification V2_Draft", fun ctx ->
+            status.Start($"Performing validation against version '{specVersion}' of the ARC specification", fun ctx ->
+
+                let version_used, validationCases = SpecificationValidation.SpecificationSelection.tryGetValidationCasesForSpecificationVersion specVersion root
+                
+                if specVersion = "latest" then printfn $"latest spec version supported is {version_used}"
 
                 if verbose then
 
                     AnsiConsole.MarkupLine("LOG: Running in:")
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
-                    AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]ARC specification V2_Draft[/].")
+                    AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green] version '{specVersion}' of the ARC specification[/].")
                     AnsiConsole.MarkupLine($"LOG: Output path is:")
                     AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                     AnsiConsole.MarkupLine("")
-
-                let cases = ARCSpecification.V2_Draft.validationCases root 
                 
-                let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
-                let outDirResXml =System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")
 
-                let results = ARCExpect.Execute.Validation cases
+                let outDirBadge = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.svg")
+                let outDirResXml = System.IO.Path.Combine(root, "ARC_specification_V2_Draft.xml")
+
+                let results = ARCExpect.Execute.Validation validationCases
                     
                 results
                 |> Execute.JUnitSummaryCreation(outDirResXml)
