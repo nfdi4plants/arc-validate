@@ -3,7 +3,6 @@
 open ARCValidate
 open ARCValidate.CLIArguments
 open ARCExpect
-open ARCExpect.Configs
 open ARCTokenization
 open ARCValidationPackages
 

@@ -4,7 +4,6 @@ open Expecto
 open Argu
 open System.IO
 open ARCExpect
-open ARCExpect.Configs
 
 open ARCValidate
 open ARCValidate.CLICommands
