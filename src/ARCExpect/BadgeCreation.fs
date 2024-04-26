@@ -59,7 +59,7 @@ type BadgeCreation =
                     label = labelText,
                     defaultColor = Color.RED,
                     value = criticalFailedOrErrored,
-                    ValueSuffix = $"Critical Errors"
+                    ValueSuffix = $" Critical Errors"
                 )
 
             else

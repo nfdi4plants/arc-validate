@@ -7,6 +7,11 @@ open AVPRIndex
 
 type Setup =
     
+    static member Metadata(
+        frontmatter: string
+    ) =
+        ValidationPackageMetadata.extractFromString frontmatter
+
     static member ValidationPackage(
         metadata: ValidationPackageMetadata,
         ?CriticalValidationCases: Test list,

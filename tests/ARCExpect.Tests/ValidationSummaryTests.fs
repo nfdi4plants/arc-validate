@@ -5,9 +5,6 @@ open Expecto
 open TestUtils
 open AVPRIndex
 
-let dummyTestPassed = testCase "dummyTest1" (fun _ -> Expect.isTrue true "is not true") |> performTest
-let dummyTestFailed = testCase "dummyTest2" (fun _ -> Expect.isTrue false "is not true") |> performTest
-
 let testPackageName = "test"
 let testPackageVersion = "1.0.0"
 
@@ -39,11 +36,11 @@ let ``ValidationResult tests`` =
     testList "ValidationSummary tests" [
         testList "ValidationResult" [
             test "correct result is created from passed TestRunSummary" {
-                let actual = ValidationResult.ofExpectoTestRunSummary dummyTestPassed
+                let actual = ValidationResult.ofExpectoTestRunSummary ReferenceObjects.TestRunSummary.dummyTestPassed
                 Expect.validationResultEqualIgnoringOriginal actual ReferenceObjects.ValidationResult.allPassed 
             }
             test "correct result is created from failed TestRunSummary" {
-                let actual = ValidationResult.ofExpectoTestRunSummary dummyTestFailed
+                let actual = ValidationResult.ofExpectoTestRunSummary ReferenceObjects.TestRunSummary.dummyTestFailed
                 Expect.validationResultEqualIgnoringOriginal actual ReferenceObjects.ValidationResult.allFailed 
             }
         ]
@@ -71,32 +68,32 @@ let ``ValidationResult tests`` =
         testList "ValidationSummary" [
             test "critial passed, noncritical passed, package with no hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestPassed,
-                    nonCriticalSummary = dummyTestPassed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
                     package = testPackageNoHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedNoHook 
             }
             test "critial passed, noncritical passed, package with hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestPassed,
-                    nonCriticalSummary = dummyTestPassed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
                     package = testPackageWithHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithHook
             }
             test "critial passed, noncritical failed, package with no hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestPassed,
-                    nonCriticalSummary = dummyTestFailed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
                     package = testPackageNoHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.nonCriticalFailedNoHook
             }
             test "critial passed, noncritical failed, package with hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestPassed,
-                    nonCriticalSummary = dummyTestFailed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
                     package = testPackageWithHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.nonCriticalFailedWithHook
@@ -104,32 +101,32 @@ let ``ValidationResult tests`` =
 
             test "critial failed, noncritical passed, package with no hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestFailed,
-                    nonCriticalSummary = dummyTestPassed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
                     package = testPackageNoHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.criticalFailedNoHook
             }
             test "critial failed, noncritical passed, package with hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestFailed,
-                    nonCriticalSummary = dummyTestPassed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestPassed,
                     package = testPackageWithHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.criticalFailedWithHook
             }
             test "critial failed, noncritical failed, package with no hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestFailed,
-                    nonCriticalSummary = dummyTestFailed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
                     package = testPackageNoHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allFailedNoHook
             }
             test "critial failed, noncritical failed, package with hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
-                    criticalSummary = dummyTestFailed,
-                    nonCriticalSummary = dummyTestFailed,
+                    criticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
+                    nonCriticalSummary = ReferenceObjects.TestRunSummary.dummyTestFailed,
                     package = testPackageWithHook
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allFailedWithHook
@@ -166,9 +163,9 @@ let ``ValidationResult tests`` =
             }
             test "roundtrip looses original summary" {
                 
-                let initial = ValidationSummary.ofExpectoTestRunSummaries(dummyTestPassed, dummyTestPassed, ReferenceObjects.ValidationPackageSummary.noHook)
+                let initial = ValidationSummary.ofExpectoTestRunSummaries(ReferenceObjects.TestRunSummary.dummyTestPassed, ReferenceObjects.TestRunSummary.dummyTestPassed, ReferenceObjects.ValidationPackageSummary.noHook)
                 let actual = 
-                    ValidationSummary.ofExpectoTestRunSummaries(dummyTestPassed, dummyTestPassed, ReferenceObjects.ValidationPackageSummary.noHook)
+                    ValidationSummary.ofExpectoTestRunSummaries(ReferenceObjects.TestRunSummary.dummyTestPassed, ReferenceObjects.TestRunSummary.dummyTestPassed, ReferenceObjects.ValidationPackageSummary.noHook)
                     |> ValidationSummary.toJson
                     |> ValidationSummary.fromJson
 

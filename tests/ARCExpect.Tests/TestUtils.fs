@@ -2,6 +2,7 @@
 
 open Expecto
 open ARCExpect
+open AVPRIndex
 
 module Expect =
     
@@ -21,4 +22,4 @@ module Expect =
                 Critical.OriginalRunSummary = None
                 NonCritical.OriginalRunSummary = None
             }
-        Expect.isTrue (actual = expected) "validation summaries were not equal ignoring the original run summaries."
+        Expect.equal actual expected "validation summaries were not equal ignoring the original run summaries."
