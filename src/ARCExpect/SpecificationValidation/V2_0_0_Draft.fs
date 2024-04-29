@@ -553,7 +553,7 @@ module V2_0_0_Draft =
 
         ARCValidationPackage.create(
             metadata = ValidationPackageMetadata.create(
-                name = "Specification V2.0.0-draft",
+                name = "arc_specification",
                 summary = "Validate whether an ARC conforms to Specification V2.0.0-draft",
                 description = "Validate whether an ARC conforms to Specification V2.0.0-draft. See the relevant spec at https://github.com/nfdi4plants/ARC-specification/blob/v2.0.0/ARC%20specification.md",
                 majorVersion = 2,

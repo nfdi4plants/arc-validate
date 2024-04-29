@@ -8,6 +8,8 @@ open System.IO
 open System.Diagnostics
 open Fake.Core
 
+open ARCExpect
+
 open Common
 open Common.TestUtils
 open TestUtils
@@ -17,7 +19,7 @@ open JUnit
 [<Tests>]
 let ``ValidateCommand CLI Tests`` =
     testSequenced (testList "arc-validate validate" [
-        testSequenced (testList "preview" [
+        testSequenced (testList "preview ARCExpect < 2" [
             testSequenced (testList "package test version 2" [
                 // run:
                 // - arc-validate --verbose package install test -v 2.0.0 --preview
@@ -89,7 +91,7 @@ let ``ValidateCommand CLI Tests`` =
                         ]
                 ])
             ])
-        testSequenced (testList "avpr" [
+        testSequenced (testList "avpr ARCExpect < 2" [
             testSequenced (testList "package test version 2" [
                 yield! 
                 // run:
@@ -157,49 +159,90 @@ let ``ValidateCommand CLI Tests`` =
                             fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         "Console Output is correct" ,
                             fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v3.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
-
                         ]
                 ])
+        ])
+        testSequenced (testList "specification validation" [
+            testSequenced (testList "latest" [
+                // run: arc-validate validate -i fixtures/arcs/specification/v2.0.0-draft
+                // adapt this when a new latest specification package is available!
+                yield!
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "-i"; "fixtures/arcs/specification/v2.0.0-draft"; "-o"; "."|]
+                        (get_gh_api_token())
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Console Output indicates that the tool will validate against specs" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("running `arc-validate validate` without")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output indicates that the chosen spec version is latest" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Performing validation against version 'latest' of the ARC specification")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output indicates that latest spec version is mapped to a validation package correctly" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("latest spec version supported is 2.0.0-draft")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Ouptput files exist",
+                            fun tool args proc -> 
+                                Expect.isTrue (Directory.Exists(".arc-validate-results")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/arc_specification@2.0.0/badge.svg")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/arc_specification@2.0.0/badge.svg does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/arc_specification@2.0.0/validation_report.xml")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/arc_specification@2.0.0/validation_report.xml does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/arc_specification@2.0.0/validation_summary.json")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/arc_specification@2.0.0/validation_summary.json does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                        "Test arc passes spec validation",
+                            fun tool args proc -> 
+                                let summary = 
+                                    ".arc-validate-results/arc_specification@2.0.0/validation_summary.json"
+                                    |> File.ReadAllText
+                                    |> fun x -> x.ReplaceLineEndings("\n")
+                                    |> ValidationSummary.fromJson
+
+                                Expect.equal summary.Critical.Failed 0 (ErrorMessage.withProcessDiagnostics "incorrect number of critical failures" proc tool args )
+                                Expect.equal summary.Critical.Errored 0 (ErrorMessage.withProcessDiagnostics "incorrect number of critical errors" proc tool args )
+                                Expect.isFalse summary.Critical.HasFailures (ErrorMessage.withProcessDiagnostics "expected no critical failures" proc tool args )
+                                
+                                Expect.equal summary.Critical.Failed 0 (ErrorMessage.withProcessDiagnostics "incorrect number of noncritical failures" proc tool args )
+                                Expect.equal summary.Critical.Errored 0 (ErrorMessage.withProcessDiagnostics "incorrect number of noncritical failures" proc tool args )
+                                Expect.isFalse summary.Critical.HasFailures (ErrorMessage.withProcessDiagnostics "expected no noncritical failures" proc tool args )
+
+                    ]
             ])
-        //        printfn "%s" (Path.GetFullPath("fixtures/arcs/inveniotestarc"))
+            testSequenced (testList "v2-0-0-draft" [
+                // run: arc-validate validate --specification-version 2.0.0-draft -i fixtures/arcs/specification/v2.0.0-draft
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "--specification-version"; "2.0.0-draft"; "-i"; "fixtures/arcs/specification/v2.0.0-draft"; "-o"; "."|]
+                        (get_gh_api_token())
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Console Output indicates that the tool will validate against specs" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("running `arc-validate validate` without")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Console Output indicates that the chosen spec version is correct" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("Performing validation against version '2.0.0-draft' of the ARC specification")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Ouptput files exist",
+                            fun tool args proc -> 
+                                Expect.isTrue (Directory.Exists(".arc-validate-results")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/arc_specification@2.0.0/badge.svg")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/arc_specification@2.0.0/badge.svg does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/arc_specification@2.0.0/validation_report.xml")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/arc_specification@2.0.0/validation_report.xml does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                                Expect.isTrue (File.Exists(".arc-validate-results/arc_specification@2.0.0/validation_summary.json")) (ErrorMessage.withProcessDiagnostics $".arc-validate-results/arc_specification@2.0.0/validation_summary.json does not exist in {System.Environment.CurrentDirectory}" proc tool args )
+                        "Test arc passes spec validation",
+                            fun tool args proc -> 
+                                let summary = 
+                                    ".arc-validate-results/arc_specification@2.0.0/validation_summary.json"
+                                    |> File.ReadAllText
+                                    |> fun x -> x.ReplaceLineEndings("\n")
+                                    |> ValidationSummary.fromJson
 
-        //        let proc = runTool "../../../../../publish/arc-validate" [|"validate"; "-i"; "fixtures/arcs/inveniotestarc"|] 
+                                Expect.equal summary.Critical.Failed 0 (ErrorMessage.withProcessDiagnostics "incorrect number of critical failures" proc tool args )
+                                Expect.equal summary.Critical.Errored 0 (ErrorMessage.withProcessDiagnostics "incorrect number of critical errors" proc tool args )
+                                Expect.isFalse summary.Critical.HasFailures (ErrorMessage.withProcessDiagnostics "expected no critical failures" proc tool args )
+                                
+                                Expect.equal summary.Critical.Failed 0 (ErrorMessage.withProcessDiagnostics "incorrect number of noncritical failures" proc tool args )
+                                Expect.equal summary.Critical.Errored 0 (ErrorMessage.withProcessDiagnostics "incorrect number of noncritical failures" proc tool args )
+                                Expect.isFalse summary.Critical.HasFailures (ErrorMessage.withProcessDiagnostics "expected no noncritical failures" proc tool args )
 
-        //        printfn "%s" proc.Result.Output
-        //        printfn "%s" proc.Result.Error
-
-        //        test "exit code is 0 (Success)" {
-        //            Expect.equal proc.ExitCode 0 $"incorrect exit code: {proc.Result.Error} | {proc.Result.Output}"
-        //        }
-
-        //        test "resultFileExists" {
-        //            Expect.isTrue (File.Exists("fixtures/arcs/inveniotestarc/arc-validate-results.xml")) "result file does not exist at expected location"
-        //        }
-
-        //        test "passed tests"{
-        //            let validationResults = ValidationResults.fromJUnitFile "fixtures/arcs/inveniotestarc/arc-validate-results.xml"
-        //            Expect.equal  
-        //                validationResults.PassedTests
-        //                ReferenceObjects.``invenio test arc validation results``.PassedTests
-        //                "incorrect test results"
-            
-        //        }
-
-        //        test "failed tests" {
-        //            let validationResults = ValidationResults.fromJUnitFile "fixtures/arcs/inveniotestarc/arc-validate-results.xml"
-        //            Expect.equal  
-        //                validationResults.FailedTests
-        //                ReferenceObjects.``invenio test arc validation results``.FailedTests
-        //                "incorrect test results"
-        //        }
-
-        //        test "errored tests" {
-        //            let validationResults = ValidationResults.fromJUnitFile "fixtures/arcs/inveniotestarc/arc-validate-results.xml"
-        //            Expect.equal  
-        //                validationResults.ErroredTests
-        //                ReferenceObjects.``invenio test arc validation results``.ErroredTests
-        //                "incorrect test results"
-        //        }
-        //    ]
-        //)
+                    ]
+            ])
+        ])
     ])

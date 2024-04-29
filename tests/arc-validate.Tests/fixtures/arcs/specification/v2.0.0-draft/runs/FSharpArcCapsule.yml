@@ -1,0 +1,22 @@
+arcDirectory:
+  class: Directory
+  path: ../
+firstArg:
+  class: File
+  path: ../assays/measurement1/dataset/table.csv
+secondArg: ./result.csv
+
+arc:has process sequence:
+  - class: arc:process sequence
+    arc:has input: 
+      - class: arc:data
+        arc:name: "./arc/assays/measurement1/dataset/table.csv"
+    arc:has output:
+      - class: arc:data
+        arc:name: "./arc/runs/fsResult1/result.csv"
+
+$namespaces:
+  arc: https://github.com/nfdi4plants/ARC_ontology
+
+$schemas:
+  - https://raw.githubusercontent.com/nfdi4plants/ARC_ontology/main/ARC_v2.0.owl
