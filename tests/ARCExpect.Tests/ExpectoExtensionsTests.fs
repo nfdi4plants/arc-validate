@@ -1,7 +1,6 @@
 ﻿module ExpectoExtensionsTests
 
 open ARCExpect
-open ARCExpect.Configs
 open Expecto
 
 

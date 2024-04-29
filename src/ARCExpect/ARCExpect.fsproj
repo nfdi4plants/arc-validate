@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="packages.lock.json" />
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="InternalUtils.fs" />
-    <Compile Include="BadgeCreation.fs" />
     <Compile Include="StringValidationPattern.fs" />
     <Compile Include="ParamCollection.fs" />
     <Compile Include="CVExtensions.fs" />
@@ -18,13 +17,12 @@
     <Compile Include="ARCGraph.fs" />
     <Compile Include="ARCExpect.fs" />
     <Compile Include="ValidationFunctions.fs" />
+    <Compile Include="ARCValidationPackage.fs" />
+    <Compile Include="ValidationSummary.fs" />
+    <Compile Include="BadgeCreation.fs" />
+    <Compile Include="SpecificationValidation\V2_0_0_Draft.fs" />
+    <Compile Include="SpecificationValidation\SpecificationSelection.fs" />
     <Compile Include="TopLevelAPI.fs" />
-    <Compile Include="Configs\PathConfig.fs" />
-    <Compile Include="Configs\ARCConfig.fs" />
-    <Compile Include="ARCSpecification.fs" />
-    <Compile Include="TestGeneration\NonCritical\ARCISA.fs" />
-    <Compile Include="TestGeneration\Critical\ARCFileSystem.fs" />
-    <Compile Include="TestGeneration\Critical\ARCISA.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[9.0.4]" />
@@ -36,5 +34,7 @@
     <PackageReference Include="OBO.NET" Version="[0.4.2]" />
     <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
     <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="[1.3.13]" />
+    <PackageReference Include="AVPRIndex" Version="[0.1.0]" />
   </ItemGroup>
 </Project>

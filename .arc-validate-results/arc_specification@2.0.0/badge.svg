@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="223" height="20">
+    <linearGradient id="b" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+    <mask id="1">
+        <rect width="223" height="20" rx="3" fill="#fff"/>
+    </mask>
+    <g mask="url(#1)">
+        <path fill="#555" d="M0 0h115v20H0z"/>
+        <path fill="#E05D44" d="M115 0h108v20H115z"/>
+        <path fill="url(#b)" d="M0 0h223v20H0z"/>
+    </g>
+    <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+        <text x="58.5" y="15" fill="#010101" fill-opacity=".3">arc_specification</text>
+        <text x="57.5" y="14">arc_specification</text>
+    </g>
+    <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+        <text x="170" y="15" fill="#010101" fill-opacity=".3">8 Critical Errors</text>
+        <text x="169" y="14">8 Critical Errors</text>
+    </g>
+</svg>

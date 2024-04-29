@@ -1,11 +1,12 @@
-﻿namespace ARCExpect.ARCSpecification
+﻿namespace ARCExpect.SpecificationValidation
 
 open ControlledVocabulary
 open ARCTokenization
 open ARCExpect
 open Expecto
+open AVPRIndex
 
-module V2_Draft =
+module V2_0_0_Draft =
 
     module MustHaveTerms = 
         let investigationTerms = 
@@ -268,7 +269,7 @@ module V2_Draft =
         ///
         /// The code uses the ARCExpect module and various functions from the Validate module to perform these checks.
         let cases = 
-            testList "cases" [ 
+            [ 
 
                 //Check for investigation
                 ARCExpect.validationCase (TestID.Name "Arc contains investigation file") {
@@ -550,4 +551,14 @@ module V2_Draft =
                 }
             ]
 
-        cases
+        ARCValidationPackage.create(
+            metadata = ValidationPackageMetadata.create(
+                name = "arc_specification",
+                summary = "Validate whether an ARC conforms to Specification V2.0.0-draft",
+                description = "Validate whether an ARC conforms to Specification V2.0.0-draft. See the relevant spec at https://github.com/nfdi4plants/ARC-specification/blob/v2.0.0/ARC%20specification.md",
+                majorVersion = 2,
+                minorVersion = 0,
+                patchVersion = 0
+            ),
+            CriticalValidationCasesList = cases
+        )
