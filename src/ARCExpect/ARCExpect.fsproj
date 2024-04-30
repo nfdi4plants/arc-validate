@@ -4,7 +4,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="packages.lock.json" />
     <None Include="RELEASE_NOTES.md" />
     <Compile Include="InternalUtils.fs" />
     <Compile Include="StringValidationPattern.fs" />

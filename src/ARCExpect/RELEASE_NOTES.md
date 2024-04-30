@@ -1,3 +1,23 @@
+### 2.0.0 - (Released 2024-04-30)
+
+Major rework and improvements of the **ARCExpect API**. The main changes are:
+
+- Built-in mechanisms for validating ARCs against the ARC specification
+
+- Built-in validation package to validate against ARC spec v2.0.0-draft
+
+- **New Validate functions**:
+  - `SatisfiesPredicate` for `Param` and `ParamCollection`
+
+- **New `Setup` and `Execute` functions**:
+  - `Setup` can be used in validation package code to aggregate package metadata, even from frontmatter yaml.
+  - `Execute` now creates a spec v2 compliant output folder with the junit report, badge, and a new json report.
+
+- **Addition of `Validation Summary` output**:
+  - In addition to JUnit report and badge creation, a json file combining the test results and validation package metadata is created by `Execute.*` functions.
+  - This file is intended to be used for further processing of the validation results, e.g. in a CQC pipeline.
+
+
 ### 1.0.1 - (Released 2024-02-27)
 
 Add Pipeline execution function that generates ARC-spec v2 draft compliant output folder.
