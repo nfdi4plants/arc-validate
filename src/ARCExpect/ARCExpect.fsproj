@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -24,14 +24,14 @@
     <Compile Include="TopLevelAPI.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Expecto" Version="[9.0.4]" />
+    <PackageReference Include="Expecto" Version="[10.2.1]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
-    <PackageReference Include="FsSpreadsheet" Version="[5.0.2]" />
-    <PackageReference Include="FsSpreadsheet.ExcelIO" Version="[5.0.2]" />
-    <PackageReference Include="ARCTokenization" Version="[5.0.0]" />
+    <PackageReference Include="FsSpreadsheet" Version="[6.1.2]" />
+    <PackageReference Include="FsSpreadsheet.Net" Version="[6.1.2]" />
+    <PackageReference Include="ARCTokenization" Version="[6.0.0]" />
     <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]" />
-    <PackageReference Include="OBO.NET" Version="[0.4.2]" />
     <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
+    <PackageReference Include="OBO.NET" Version="[0.4.2]" />
     <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
     <PackageReference Include="FSharp.SystemTextJson" Version="[1.3.13]" />
     <PackageReference Include="AVPRIndex" Version="[0.1.0]" />
