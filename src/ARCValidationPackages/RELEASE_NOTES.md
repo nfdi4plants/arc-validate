@@ -1,6 +1,6 @@
-﻿### 1.0.0 - (Released 2024-04-30)
+﻿### 3.0.0 - (Released 2024-04-30)
 
-Initial release of the ArcValidationPackages API.
+3.0.0 release of the ArcValidationPackages API.
 
 This library provides a set of functions to retrieve, cache, manage, and execute validation packages for ARCs.
 
