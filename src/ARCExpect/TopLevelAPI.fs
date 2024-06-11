@@ -15,14 +15,12 @@ type Setup =
     static member ValidationPackage(
         metadata: ValidationPackageMetadata,
         ?CriticalValidationCases: Test list,
-        ?NonCriticalValidationCases: Test list,
-        ?CQCHookEndpoint: string
+        ?NonCriticalValidationCases: Test list
     ) =
         ARCValidationPackage.create(
             metadata = metadata,
             ?CriticalValidationCasesList = CriticalValidationCases,
-            ?NonCriticalValidationCasesList = NonCriticalValidationCases,
-            ?CQCHookEndpoint = CQCHookEndpoint
+            ?NonCriticalValidationCasesList = NonCriticalValidationCases
         )
 
     static member ValidationPackage(
@@ -51,11 +49,11 @@ type Setup =
                 ?Publish = Publish,
                 ?Authors = Authors,
                 ?Tags = Tags,
-                ?ReleaseNotes = ReleaseNotes
+                ?ReleaseNotes = ReleaseNotes,
+                ?CQCHookEndpoint = CQCHookEndpoint
             ),
             ?CriticalValidationCases = CriticalValidationCases,
-            ?NonCriticalValidationCases = NonCriticalValidationCases,
-            ?CQCHookEndpoint = CQCHookEndpoint
+            ?NonCriticalValidationCases = NonCriticalValidationCases
         )
 
 type Execute =
@@ -68,10 +66,7 @@ type Execute =
         ValidationSummary.ofExpectoTestRunSummaries(
             criticalSummary = criticalResults,
             nonCriticalSummary = nonCriticalResults,
-            package = ValidationPackageSummary.create(
-                arcValidationPackage.Metadata,
-                ?HookEndpoint = arcValidationPackage.CQCHookEndpoint
-            )
+            package = ValidationPackageSummary.create(arcValidationPackage.Metadata)
         )
 
     static member SummaryCreation(

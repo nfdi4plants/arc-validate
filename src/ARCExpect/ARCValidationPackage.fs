@@ -8,19 +8,16 @@ type ARCValidationPackage =
         Metadata: ValidationPackageMetadata
         CriticalValidationCases: Test
         NonCriticalValidationCases: Test
-        CQCHookEndpoint: string option
     } with
         static member create (
             metadata: ValidationPackageMetadata,
             criticalValidationCases: Test,
-            nonCriticalValidationCases: Test,
-            ?CQCHookEndpoint: string
+            nonCriticalValidationCases: Test
         ) =
             {
                 Metadata = metadata
                 CriticalValidationCases = criticalValidationCases
                 NonCriticalValidationCases = nonCriticalValidationCases
-                CQCHookEndpoint = CQCHookEndpoint
             }
 
         static member create (
@@ -35,19 +32,16 @@ type ARCValidationPackage =
             ARCValidationPackage.create(
                 metadata = metadata, 
                 criticalValidationCases = criticalCases, 
-                nonCriticalValidationCases = nonCriticalCases,
-                ?CQCHookEndpoint = CQCHookEndpoint
+                nonCriticalValidationCases = nonCriticalCases
             )
 
         static member create (
             metadata: ValidationPackageMetadata,
             ?CriticalValidationCasesList: Test list,
-            ?NonCriticalValidationCasesList: Test list,
-            ?CQCHookEndpoint: string
+            ?NonCriticalValidationCasesList: Test list
         ) =
             ARCValidationPackage.create(
                 metadata = metadata, 
                 criticalValidationCasesList = defaultArg CriticalValidationCasesList [], 
-                nonCriticalValidationCasesList = defaultArg NonCriticalValidationCasesList [],
-                ?CQCHookEndpoint = CQCHookEndpoint
+                nonCriticalValidationCasesList = defaultArg NonCriticalValidationCasesList []
             )

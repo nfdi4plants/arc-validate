@@ -34,7 +34,7 @@ type BadgeCreation =
                 defaultColor = (DefaultColor |> Option.defaultValue (Color.fromString Defaults.DEFAULT_COLOR) ),
                 Thresholds = thresholds,
                 value = testResults.passed.Length,
-                ValueSuffix = $"/{max}"
+                ValueSuffix = valueSuffix
             )
 
 

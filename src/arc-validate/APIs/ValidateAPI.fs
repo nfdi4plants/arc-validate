@@ -37,6 +37,8 @@ module ValidateAPI =
         let version = 
             args.TryGetResult(Package_Version)
 
+        let mutable exitCode = ExitCode.Success
+
         match package with
 
         | None -> // Default call means validate schema conformity
@@ -52,7 +54,6 @@ module ValidateAPI =
             
             let specVersion = defaultArg (args.TryGetResult(Specification_Version)) "latest"
             let status = AnsiConsole.Status()
-            let mutable exitCode = ExitCode.Success
 
             status.Start($"Performing validation against version '{specVersion}' of the ARC specification", fun ctx ->
 
@@ -79,7 +80,6 @@ module ValidateAPI =
         | Some packageName -> // Validate against a specific package
 
             let status = AnsiConsole.Status()
-            let mutable exitCode = ExitCode.Success
 
             let isRelease = args.TryGetResult(ValidateArgs.Preview).IsSome |> not
 
@@ -132,9 +132,5 @@ module ValidateAPI =
                         AnsiConsole.MarkupLine($"[red]Package {packageName} not installed. You can run run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package.[/]")
                         exitCode <- ExitCode.InternalError
             )
-        try
 
-            ExitCode.Success
-
-        with e ->
-            ExitCode.CriticalTestFailure
+        exitCode

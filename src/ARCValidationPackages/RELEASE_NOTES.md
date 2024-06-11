@@ -1,4 +1,8 @@
-﻿### 3.0.0 - (Released 2024-04-30)
+﻿### 4.0.0 - (Released 2024-04-30)
+
+Update to AVPRIndex v0.1.1 and AVPRClient v0.0.5
+
+### 3.0.0 - (Released 2024-04-30)
 
 3.0.0 release of the ArcValidationPackages API.
 

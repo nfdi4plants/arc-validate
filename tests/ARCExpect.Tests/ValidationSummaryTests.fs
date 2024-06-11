@@ -31,7 +31,7 @@ let testPackageWithHook = ValidationPackageSummary.create(
     version = testPackageVersion,
     summary = testSummaryWithHook,
     description = testDescriptionWithHook,
-    HookEndpoint = testHook
+    CQCHookEndpoint = testHook
 )
 
 [<Tests>]
@@ -63,7 +63,7 @@ let ``ValidationResult tests`` =
                     version = testPackageVersion,
                     summary = testSummaryWithHook,
                     description = testDescriptionWithHook,
-                    HookEndpoint = testHook
+                    CQCHookEndpoint = testHook
                 )
                 Expect.equal actual ReferenceObjects.ValidationPackageSummary.withHook "package summary was not equal"
             }

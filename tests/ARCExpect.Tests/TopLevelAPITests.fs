@@ -47,8 +47,7 @@ let ``Toplevel API Setup tests`` =
                 Expect.equal fromMetadata.Metadata.Publish fromValues.Metadata.Publish "metadata publish were not equal"
                 Expect.equal fromMetadata.Metadata.Tags fromValues.Metadata.Tags "metadata tags were not equal"
                 Expect.equal fromMetadata.Metadata.ReleaseNotes fromValues.Metadata.ReleaseNotes "metadata release notes were not equal"
-
-                Expect.equal fromMetadata.CQCHookEndpoint fromValues.CQCHookEndpoint "hook endpoint was not equal"
+                Expect.equal fromMetadata.Metadata.CQCHookEndpoint fromValues.Metadata.CQCHookEndpoint "hook endpoint was not equal"
             }
         ]
         testList "Execute_Validation" [
@@ -68,8 +67,7 @@ let ``Toplevel API Setup tests`` =
                     Setup.ValidationPackage(
                         metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                        CQCHookEndpoint = "http://test.com"
+                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                     )
                     |> Execute.Validation
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithHook
@@ -81,8 +79,7 @@ let ``Toplevel API Setup tests`` =
                 Setup.ValidationPackage(
                     metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    CQCHookEndpoint = "http://test.com"
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
                 |> Execute.Validation
                 |> Execute.SummaryCreation path
@@ -99,8 +96,7 @@ let ``Toplevel API Setup tests`` =
                 Setup.ValidationPackage(
                     metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    CQCHookEndpoint = "http://test.com"
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
                 |> Execute.Validation
                 |> Execute.JUnitReportCreation path
@@ -117,8 +113,7 @@ let ``Toplevel API Setup tests`` =
                 Setup.ValidationPackage(
                     metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    CQCHookEndpoint = "http://test.com"
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
                 |> Execute.Validation
                 |> Execute.BadgeCreation(path, labelText="allPassedWithHook")
@@ -134,8 +129,7 @@ let ``Toplevel API Setup tests`` =
                 Setup.ValidationPackage(
                     metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
-                    CQCHookEndpoint = "http://test.com"
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
                 |> Execute.ValidationPipeline(
                     basePath = path

@@ -54,7 +54,7 @@ module ValidationPackageSummary =
         Version = "1.0.0"
         Summary = "A package without CQC hook."
         Description = "A package without CQC hook. More text here."
-        HookEndpoint = None
+        CQCHookEndpoint = None
     }
 
     let withHook = {
@@ -62,7 +62,7 @@ module ValidationPackageSummary =
         Version = "1.0.0"
         Summary = "A package with CQC hook."
         Description = "A package with CQC hook. More text here."
-        HookEndpoint = Some "http://test.com"
+        CQCHookEndpoint = Some "http://test.com"
     }
 
 module ValidationSummary =
@@ -83,7 +83,7 @@ module ValidationSummary =
             ValidationPackage = ValidationPackageSummary.withHook
         }
 
-    let allPassedWithHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","HookEndpoint":"http://test.com"}}""" 
+    let allPassedWithHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","CQCHookEndpoint":"http://test.com"}}""" 
 
     let allFailedNoHook = 
         {
@@ -184,7 +184,8 @@ module ValidationPackageMetadata =
             MinorVersion = 0,
             PatchVersion = 0,
             Summary = "A package with CQC hook.",
-            Description = "A package with CQC hook. More text here."
+            Description = "A package with CQC hook. More text here.",
+            CQCHookEndpoint = "http://test.com"
         )
 
 module JUnitReport =

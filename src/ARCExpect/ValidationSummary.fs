@@ -64,31 +64,30 @@ type ValidationPackageSummary = {
     Version: string
     Summary: string
     Description: string
-    HookEndpoint: string option
+    CQCHookEndpoint: string option
 } with
     static member create(
         name: string,
         version: string,
         summary: string,
         description: string,
-        ?HookEndpoint: string
+        ?CQCHookEndpoint: string
     ) = {
         Name = name
         Version = version
         Summary = summary
         Description = description
-        HookEndpoint = HookEndpoint
+        CQCHookEndpoint = CQCHookEndpoint
     }
     static member create (
-        metadata: ValidationPackageMetadata,
-        ?HookEndpoint: string
+        metadata: ValidationPackageMetadata
     ) =
         ValidationPackageSummary.create(
             name = metadata.Name,
             version = ValidationPackageMetadata.getSemanticVersionString metadata,
             summary = metadata.Summary,
             description = metadata.Description,
-            ?HookEndpoint = HookEndpoint
+            ?CQCHookEndpoint = if metadata.CQCHookEndpoint = "" then None else Some metadata.CQCHookEndpoint
         )
 
 /// <summary>

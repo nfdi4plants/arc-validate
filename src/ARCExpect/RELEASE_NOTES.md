@@ -1,3 +1,7 @@
+### 3.0.0 - (Released 2024-04-30)
+
+Remove separate `CQCHookEndpoint` because it is now directly contained in package metadata.
+
 ### 2.0.0 - (Released 2024-04-30)
 
 Major rework and improvements of the **ARCExpect API**. The main changes are:

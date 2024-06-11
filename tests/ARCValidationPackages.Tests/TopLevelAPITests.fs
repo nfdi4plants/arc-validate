@@ -150,67 +150,58 @@ let ``Toplevel API tests`` =
             testSequenced (testList "SaveAndCachePackage" [
                 // here, wee need persistent config and caches across the tests instead of a fixture for each test case
                 resetConfigEnvironment()
-                let config, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
-                let firstIndexedPackage = config.PackageIndex.[0]
-                let firstPackageName = firstIndexedPackage.Metadata.Name
-                let firstPackageVersion = ValidationPackageMetadata.getSemanticVersionString firstIndexedPackage.Metadata
+                let _, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
 
                 test "SaveAndCachePackage returns OK" {
-                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, firstPackageName, packageVersion = firstPackageVersion )) "SaveAndCachePackage did not return OK"
+                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "3.0.0" )) "SaveAndCachePackage did not return OK"
                 }
                 test "package is cached after running SaveAndCachePackage" {
                     avprCache 
-                    |> Expect.packageCacheContainsPackage firstPackageName firstPackageVersion
+                    |> Expect.packageCacheContainsPackage "test" "3.0.0"
                 }
                 test "package exists after running SaveAndCachePackage" {
-                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, $"{firstPackageName}@{firstPackageVersion}.fsx"))) $"{firstPackageName}@{firstPackageVersion}.fsx did not exist at {expected_package_cache_folder_path_release}"
+                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx"))) $"test@3.0.0.fsx did not exist at {expected_package_cache_folder_path_release}"
                 }
             ])
             testSequenced (testList "InstallPackage" [
                 // here, wee need persistent config and caches across the tests instead of a fixture for each test case
                 resetConfigEnvironment()
-                let config, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
-                let firstIndexedPackage = config.PackageIndex.[0]
-                let firstPackageName = firstIndexedPackage.Metadata.Name
-                let firstPackageVersion = ValidationPackageMetadata.getSemanticVersionString firstIndexedPackage.Metadata
+                let _, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
 
                 test "InstallPackage returns OK" {
-                    Expect.isOk (API.AVPR.InstallPackage(avprCache, firstPackageName, SemVer = firstPackageVersion)) "InstallPackage did not return OK"
+                    Expect.isOk (API.AVPR.InstallPackage(avprCache, "test", SemVer = "3.0.0")) "InstallPackage did not return OK"
                 }
                 test "package is cached after running InstallPackage" {
                     avprCache 
-                    |> Expect.packageCacheContainsPackage firstPackageName firstPackageVersion
+                    |> Expect.packageCacheContainsPackage "test" "3.0.0"
                 }
                 test "package exists after running InstallPackage" {
-                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, $"{firstPackageName}@{firstPackageVersion}.fsx"))) $"{firstPackageName}@{firstPackageVersion}.fsx did not exist at {expected_package_cache_folder_path_release}"
+                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx"))) $"test@3.0.0.fsx did not exist at {expected_package_cache_folder_path_release}"
                 }
             ])
             testSequenced (testList "UnInstallPackage" [
                 // here, wee need persistent config and caches across the tests instead of a fixture for each test case
                 resetConfigEnvironment()
                 let config, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
-                let firstIndexedPackage = config.PackageIndex.[0]
-                let firstPackageName = firstIndexedPackage.Metadata.Name
-                let firstPackageVersion = ValidationPackageMetadata.getSemanticVersionString firstIndexedPackage.Metadata
 
                 test "InstallPackage returns OK" {
-                    Expect.isOk (API.Preview.InstallPackage(config, avprCache, firstPackageName, SemVer = firstPackageVersion)) "InstallPackage did not return OK"
+                    Expect.isOk (API.Preview.InstallPackage(config, avprCache, "test", SemVer = "3.0.0")) "InstallPackage did not return OK"
                 }
                 test "package is cached after running InstallPackage" {
                     avprCache 
-                    |> Expect.packageCacheContainsPackage firstPackageName firstPackageVersion
+                    |> Expect.packageCacheContainsPackage "test" "3.0.0"
                 }
                 test "package exists after running InstallPackage" {
-                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, $"{firstPackageName}@{firstPackageVersion}.fsx"))) $"{firstPackageName}@{firstPackageVersion}.fsx did not exist at {expected_package_cache_folder_path_release}"
+                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx"))) $"test@3.0.0.fsx did not exist at {expected_package_cache_folder_path_release}"
                 }
                 test "UninstallPackage with version flag returns OK" {
-                    Expect.isOk (API.Preview.UninstallPackage(avprCache, firstPackageName, SemVer = firstPackageVersion)) "UninstallPackage did not return OK"
+                    Expect.isOk (API.Preview.UninstallPackage(avprCache, "test", SemVer = "3.0.0")) "UninstallPackage did not return OK"
                 }
                 test "package version is not cached anymore after running UninstallPackage" {
-                    Expect.isFalse (avprCache[firstPackageName].ContainsKey(firstPackageVersion)) "version was not removed from the cache"
+                    Expect.isFalse (avprCache["test"].ContainsKey("3.0.0")) "version was not removed from the cache"
                 }
                 test "package does not exist anymore after running UninstallPackage" {
-                    Expect.isFalse (File.Exists (Path.Combine(expected_package_cache_folder_path_preview, $"{firstPackageName}@{firstPackageVersion}.fsx"))) $"{firstPackageName}@{firstPackageVersion}.fsx did not exist at {expected_package_cache_folder_path_release}"
+                    Expect.isFalse (File.Exists (Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx"))) $"test@3.0.0.fsx did not exist at {expected_package_cache_folder_path_release}"
                 }
             ])
         ])
