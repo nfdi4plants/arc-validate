@@ -34,6 +34,6 @@
     <PackageReference Include="OBO.NET" Version="[0.4.2]" />
     <PackageReference Include="AnyBadge.NET" Version="[2.0.0]" />
     <PackageReference Include="FSharp.SystemTextJson" Version="[1.3.13]" />
-    <PackageReference Include="AVPRIndex" Version="[0.1.1]" />
+    <PackageReference Include="AVPRIndex" Version="[0.1.3]" />
   </ItemGroup>
 </Project>

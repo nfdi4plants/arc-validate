@@ -141,9 +141,9 @@ let ``ValidateCommand CLI Tests`` =
                         (get_gh_api_token())
                     ) [
                         "Package script exists in avpr cache after running package install test" ,  
-                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@5.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                         "Package script does not exist in preview cache after running package install test" ,  
-                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@5.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                 
                     ]
                 yield! 
@@ -158,7 +158,7 @@ let ``ValidateCommand CLI Tests`` =
                         "Console output does not indicate that package is not installed" , 
                             fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         "Console Output is correct" ,
-                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v3.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v5.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         ]
                 ])
         ])

@@ -12,7 +12,7 @@ open TestUtils
 [<Tests>]
 let ``Config tests`` = 
     testSequenced (
-        testList "Config tests" [
+        testList "Domain Tests.Config tests" [
 
             let testConfig =
                 Config.create(

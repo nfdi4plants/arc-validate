@@ -11,7 +11,7 @@ open System.Collections.Generic
 
 [<Tests>]
 let tests =
-    testSequenced (testList "PackageCache tests" [
+    testSequenced (testList "Domain Tests.PackageCache tests" [
 
         test "createFromPackageList"  {
             Expect.packageCacheEqual 

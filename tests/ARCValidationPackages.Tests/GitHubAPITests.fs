@@ -37,7 +37,7 @@ let ``GitHubAPI tests`` =
                     response
                     |> fun json -> (json?content).GetString()
                     |> fun content -> Convert.FromBase64String(content)
-                    |> fun bytes -> Encoding.UTF8.GetString(bytes).ReplaceLineEndings()
+                    |> fun bytes -> Encoding.UTF8.GetString(bytes).ReplaceLineEndings("\n")
                 )
                 ReferenceObjects.testScriptContent
                 $"repository content was not correct{System.Environment.NewLine}{response}"
@@ -48,7 +48,7 @@ let ``GitHubAPI tests`` =
         }
         test "getPackageIndex contains test script" {
             let indexedPackages = GitHubAPI.getPackageIndex(?Token = token)
-            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "StagingArea/test/test@1.0.0.fsx")) "package index did not contain test script"
+            Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.RepoPath = "./StagingArea/test/test@1.0.0.fsx")) "package index did not contain test script"
         }
         test "getScriptContent terminates" {
             GitHubAPI.downloadPackageScript(
@@ -64,7 +64,7 @@ let ``GitHubAPI tests`` =
                         "StagingArea/test/test@1.0.0.fsx",
                         ?Token = token
                     )
-                    |> fun content -> content.ReplaceLineEndings()
+                    |> fun content -> content.ReplaceLineEndings("\n")
                 )
                 ReferenceObjects.testScriptContent
                 "script content was not correct"

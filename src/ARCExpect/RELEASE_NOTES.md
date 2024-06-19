@@ -1,3 +1,7 @@
+### 3.0.1 - (Released 2024-04-30)
+
+Update pinned dependencies
+
 ### 3.0.0 - (Released 2024-04-30)
 
 Remove separate `CQCHookEndpoint` because it is now directly contained in package metadata.

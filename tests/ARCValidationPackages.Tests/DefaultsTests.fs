@@ -13,7 +13,7 @@ open TestUtils
 [<Tests>]
 let ``Defaults tests`` =
     testSequenced (
-        testList "Defaults tests" [
+        testList "Domain Tests.Defaults tests" [
             test "config folder path is correct" {
                 Expect.equal 
                     (Defaults.CONFIG_FOLDER()) 

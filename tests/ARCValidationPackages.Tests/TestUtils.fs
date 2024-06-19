@@ -62,6 +62,39 @@ module Expect =
         Expect.sequenceEqual expectedKeysSorted actualKeysSorted $"Keys were not equal."
         Expect.sequenceEqual zippedValuesActual zippedValuesExpected "Values were not equal."
 
+    module AVPRClient =
+
+        let authorEqual (actual:AVPRClient.Author) (expected:AVPRClient.Author) =
+            Expect.equal actual.FullName expected.FullName "AVPRClient.Author Name not equal"
+            Expect.equal actual.Email expected.Email "AVPRClient.Author Email not equal"
+            Expect.equal actual.Affiliation expected.Affiliation "AVPRClient.Author Affiliation not equal"
+            Expect.equal actual.AffiliationLink expected.AffiliationLink "AVPRClient.Author AffiliationLink not equal"
+            
+        let ontologyAnnotationTagEqual (actual:AVPRClient.OntologyAnnotation) (expected:AVPRClient.OntologyAnnotation) =
+            Expect.equal actual.Name expected.Name "AVPRClient.OntologyAnnotation Name not equal"
+            Expect.equal actual.TermAccessionNumber expected.TermAccessionNumber "AVPRClient.OntologyAnnotation TermAccessionNumber not equal"
+            Expect.equal actual.TermSourceREF expected.TermSourceREF "AVPRClient.OntologyAnnotation TermSourceREF not equal"
+
+        let validationPackageEqual (actual: AVPRClient.ValidationPackage) (expected:AVPRClient.ValidationPackage) =
+            Expect.equal actual.Name expected.Name "AVPRClient.ValidationPackage Name not equal"
+            Expect.equal actual.Summary expected.Summary "AVPRClient.ValidationPackage Summary not equal"
+            Expect.equal actual.MajorVersion expected.MajorVersion "AVPRClient.ValidationPackage MajorVersion not equal"
+            Expect.equal actual.MinorVersion expected.MinorVersion "AVPRClient.ValidationPackage MinorVersion not equal"
+            Expect.equal actual.PatchVersion expected.PatchVersion "AVPRClient.ValidationPackage PatchVersion not equal"
+            Expect.equal actual.ReleaseNotes expected.ReleaseNotes "AVPRClient.ValidationPackage ReleaseNotes not equal"
+            Expect.equal actual.CQCHookEndpoint expected.CQCHookEndpoint "AVPRClient.ValidationPackage CQCHookEndpoint not equal"
+
+            Seq.zip actual.Authors expected.Authors 
+            |> Seq.iter (fun (actual, expected) -> authorEqual actual expected)
+
+            Seq.zip actual.Tags expected.Tags
+            |> Seq.iter (fun (actual, expected) -> ontologyAnnotationTagEqual actual expected)
+
+            Expect.sequenceEqual expected.Tags expected.Tags "AVPRClient.ValidationPackage Tags not equal"
+            Expect.sequenceEqual expected.PackageContent expected.PackageContent "AVPRClient.ValidationPackage PackageContent not equal"
+
+
+
 module Result =
     
     let okValue = function
