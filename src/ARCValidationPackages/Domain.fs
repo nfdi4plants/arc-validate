@@ -6,13 +6,6 @@ open System.Text.Json.Serialization
 open AVPRIndex.Domain
 open System.Runtime.CompilerServices
 
-
-module ValidationPackageMetadata =
-    let getSemanticVersionString(m: ValidationPackageMetadata) = $"{m.MajorVersion}.{m.MinorVersion}.{m.PatchVersion}"
-
-module ValidationPackageIndex =
-    let getSemanticVersionString(i: ValidationPackageIndex) = $"{i.Metadata.MajorVersion}.{i.Metadata.MinorVersion}.{i.Metadata.PatchVersion}"
-
 /// <summary>
 /// represents the locally installed version of a validation package, e.g. the path to the local file and the date it was cached.
 /// </summary>
@@ -51,31 +44,17 @@ type CachedValidationPackage =
             )
 
         /// <summary>
-        /// Creates a new ARCValidationPackage from a package name only, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default preview cache folder or custom folder.
-        /// </summary>
-        /// <param name="packageName"></param>
-        /// <param name="Date"></param>
-        /// <param name="Path"></param>
-        static member ofPackageName (packageName: string, ?Date: System.DateTimeOffset, ?Path: string) =
-            let path = defaultArg Path (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
-            CachedValidationPackage.create(
-                fileName = packageName,
-                cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = (System.IO.Path.Combine(path, $"{packageName}.fsx").Replace("\\","/")),
-                metadata = ValidationPackageMetadata()
-            )
-
-        /// <summary>
         /// Creates a new ARCValidationPackage from a ValidationPackageMetadata, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default release cache folder or custom folder.
         /// </summary>
         /// <param name="packageIndex">The input package index entry</param>
         /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
         static member ofPackageMetadata (packageMetadata: ValidationPackageMetadata, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
             let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
+            let filename = $"{packageMetadata.Name}@{ValidationPackageMetadata.getSemanticVersionString packageMetadata}.fsx"
             CachedValidationPackage.create(
-                fileName = packageMetadata.Name,
+                fileName = filename,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = (System.IO.Path.Combine(path, $"{packageMetadata.Name}@{packageMetadata.MajorVersion}.{packageMetadata.MinorVersion}.{packageMetadata.PatchVersion}.fsx").Replace("\\","/")),
+                localPath = (System.IO.Path.Combine(path, filename).Replace("\\","/")),
                 metadata = packageMetadata
             )
 
@@ -87,7 +66,7 @@ type CachedValidationPackage =
         static member updateCacheDate (date: System.DateTimeOffset) (package: CachedValidationPackage) =
             {package with CacheDate = date}
 
-        static member getSemanticVersionString(vp: CachedValidationPackage) = $"{vp.Metadata.MajorVersion}.{vp.Metadata.MinorVersion}.{vp.Metadata.PatchVersion}";
+        static member getSemanticVersionString(vp: CachedValidationPackage) = ValidationPackageMetadata.getSemanticVersionString vp.Metadata
 
         member this.PrettyPrint() =
-            $" {this.Metadata.Name} @ version {this.Metadata.MajorVersion}.{this.Metadata.MinorVersion}.{this.Metadata.PatchVersion}{System.Environment.NewLine}{this.Metadata.Description}{System.Environment.NewLine}CacheDate: {this.CacheDate}{System.Environment.NewLine}Installed at: {this.LocalPath}{System.Environment.NewLine}"
+            $" {this.Metadata.Name} @ version {ValidationPackageMetadata.getSemanticVersionString this.Metadata}{System.Environment.NewLine}{this.Metadata.Description}{System.Environment.NewLine}CacheDate: {this.CacheDate}{System.Environment.NewLine}Installed at: {this.LocalPath}{System.Environment.NewLine}"

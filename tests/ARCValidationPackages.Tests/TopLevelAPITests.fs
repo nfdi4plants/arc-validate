@@ -147,7 +147,7 @@ let ``Toplevel API tests`` =
         ])
         testSequenced (testList "AVPR API" [
 
-            testSequenced (testList "SaveAndCachePackage" [
+            testSequenced (testList "SaveAndCachePackage test_3_0_0" [
                 // here, wee need persistent config and caches across the tests instead of a fixture for each test case
                 resetConfigEnvironment()
                 let _, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
@@ -159,10 +159,57 @@ let ``Toplevel API tests`` =
                     avprCache 
                     |> Expect.packageCacheContainsPackage "test" "3.0.0"
                 }
+                test "cached package is correct after running SaveAndCachePackage" {
+                    let actual = avprCache |> PackageCache.getPackage "test" "3.0.0"
+                    Expect.cachedPackageEqualExceptDate actual CachedValidationPackage.AVPR.testPackage_3_0_0
+                }
                 test "package exists after running SaveAndCachePackage" {
                     Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx"))) $"test@3.0.0.fsx did not exist at {expected_package_cache_folder_path_release}"
                 }
             ])
+
+            testSequenced (testList "SaveAndCachePackage test_5_0_0" [
+                // here, wee need persistent config and caches across the tests instead of a fixture for each test case
+                resetConfigEnvironment()
+                let _, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
+
+                test "SaveAndCachePackage returns OK" {
+                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "5.0.0" )) "SaveAndCachePackage did not return OK"
+                }
+                test "package is cached after running SaveAndCachePackage" {
+                    avprCache 
+                    |> Expect.packageCacheContainsPackage "test" "5.0.0"
+                }
+                test "cached package is correct after running SaveAndCachePackage" {
+                    let actual = avprCache |> PackageCache.getPackage "test" "5.0.0"
+                    Expect.cachedPackageEqualExceptDate actual CachedValidationPackage.AVPR.testPackage_5_0_0
+                }
+                test "package exists after running SaveAndCachePackage" {
+                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, "test@5.0.0.fsx"))) $"test@5.0.0.fsx did not exist at {expected_package_cache_folder_path_release}"
+                }
+            ])
+
+            testSequenced (testList "SaveAndCachePackage test_5_0_0-use+suffixes" [
+                // here, wee need persistent config and caches across the tests instead of a fixture for each test case
+                resetConfigEnvironment()
+                let _, avprCache, _ = Result.okValue (API.Common.GetSyncedConfigAndCache(?Token = get_gh_api_token()))
+
+                test "SaveAndCachePackage returns OK" {
+                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "5.0.0-use+suffixes" )) "SaveAndCachePackage did not return OK"
+                }
+                test "package is cached after running SaveAndCachePackage" {
+                    avprCache 
+                    |> Expect.packageCacheContainsPackage "test" "5.0.0-use+suffixes"
+                }
+                test "cached package is correct after running SaveAndCachePackage" {
+                    let actual = avprCache |> PackageCache.getPackage "test" "5.0.0-use+suffixes"
+                    Expect.cachedPackageEqualExceptDate actual CachedValidationPackage.AVPR.``testPackage_5_0_0-use+suffixes``
+                }
+                test "package exists after running SaveAndCachePackage" {
+                    Expect.isTrue (File.Exists (Path.Combine(expected_package_cache_folder_path_release, "test@5.0.0-use+suffixes.fsx"))) $"test@5.0.0-use+suffixes.fsx did not exist at {expected_package_cache_folder_path_release}"
+                }
+            ])
+
             testSequenced (testList "InstallPackage" [
                 // here, wee need persistent config and caches across the tests instead of a fixture for each test case
                 resetConfigEnvironment()

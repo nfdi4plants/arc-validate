@@ -120,7 +120,7 @@ type Execute =
     ) =
         fun (arcValidationPackage: ARCValidationPackage) ->
 
-            let labelText = defaultArg BadgeLabelText arcValidationPackage.Metadata.Name
+            let labelText = defaultArg BadgeLabelText $"{arcValidationPackage.Metadata.Name}@{ValidationPackageMetadata.getSemanticVersionString arcValidationPackage.Metadata}"
 
             let foldername = $"{arcValidationPackage.Metadata.Name}@{ValidationPackageMetadata.getSemanticVersionString arcValidationPackage.Metadata}"
 

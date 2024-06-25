@@ -1,3 +1,9 @@
+### 4.0.0 - (Released 2024-06-21)
+
+- Support full semantic versions for ValidationPackageMetadata in the `ARCExpect` API.
+
+- Use SemVer prerelease suffix for `arc_specification @2.0.0-draft_`
+
 ### 3.0.1 - (Released 2024-04-30)
 
 Update pinned dependencies

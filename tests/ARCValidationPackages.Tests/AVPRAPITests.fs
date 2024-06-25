@@ -20,13 +20,11 @@ let ``AVPRAPI tests`` =
             }
             test "test_5_0_0 - CQCHookEndpoint addition" {
                 let vp = AVPR.api.GetPackageByNameAndVersion "test" "5.0.0"
-                let script =
-                    vp.PackageContent
-                    |> Encoding.UTF8.GetString
-                Expect.equal 
-                    (script.ReplaceLineEndings("\n"))
-                    ReferenceObjects.testScriptContentAVPR_test_5_0_0
-                    $"repository content was not correct{System.Environment.NewLine}{script}"
+                Expect.AVPRClient.validationPackageEqual vp ReferenceObjects.AVPRClientDomain.ValidationPackage.testPackage_5_0_0
+            }
+            test "test_5_0_0-use+suffixes - SemVer addition" {
+                let vp = AVPR.api.GetPackageByNameAndVersion "test" "5.0.0-use+suffixes"
+                Expect.AVPRClient.validationPackageEqual vp ReferenceObjects.AVPRClientDomain.ValidationPackage.``testPackage_5_0_0-use+suffixes``
             }
         
         ]
@@ -34,13 +32,33 @@ let ``AVPRAPI tests`` =
             let indexedPackages = AVPR.api.GetAllPackages()
             Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.Name = "test")) "package index did not contain test script"
         }
-        test "downloadPackageScript test_3_0_0" {
-            Expect.equal 
-                (
-                    AVPR.api.downloadPackageScript( "test", "3.0.0")
-                    |> fun content -> content.ReplaceLineEndings("\n")
-                )
-                ReferenceObjects.testScriptContentAVPR_test_3_0_0
-                "script content was not correct"
-        }
+        testList "downloadPackageScript" [
+            test "test_3_0_0" {
+                Expect.equal 
+                    (
+                        AVPR.api.downloadPackageScript( "test", "3.0.0")
+                        |> fun content -> content.ReplaceLineEndings("\n")
+                    )
+                    ReferenceObjects.testScriptContentAVPR_test_3_0_0
+                    "script content was not correct"
+            }
+            test "test_5_0_0 - CQCHookEndpoint addition" {
+                Expect.equal 
+                    (
+                        AVPR.api.downloadPackageScript( "test", "5.0.0")
+                        |> fun content -> content.ReplaceLineEndings("\n")
+                    )
+                    ReferenceObjects.testScriptContentAVPR_test_5_0_0
+                    "script content was not correct"
+            }
+            test "test_5_0_0-use+suffixes - SemVer addition" {
+                Expect.equal 
+                    (
+                        AVPR.api.downloadPackageScript( "test", "5.0.0-use+suffixes")
+                        |> fun content -> content.ReplaceLineEndings("\n")
+                    )
+                    ReferenceObjects.``testScriptContentAVPR_test_5_0_0-use+suffixes``
+                    "script content was not correct"
+            }
+        ]
     ]

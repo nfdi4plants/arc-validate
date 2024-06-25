@@ -43,28 +43,28 @@ let ``ScriptExecution tests`` =
         testList "ARCValidationpackages" [
             test "can execute script from package without errors" {
                 Expect.equal
-                    (ScriptExecution.runPackageScript testScriptPackage).ExitCode
+                    (ScriptExecution.runPackageScript CachedValidationPackage.testScriptPackage).ExitCode
                     0
                     "script execution did not run without errors."
             }
 
             test "script from package prints message" {
                 Expect.sequenceEqual
-                    (ScriptExecution.runPackageScript testScriptPackage).Messages
+                    (ScriptExecution.runPackageScript CachedValidationPackage.testScriptPackage).Messages
                     ["Hello, World!"]
                     "script execution did not print correct mesages."
             }
 
             test "can execute script from package with args without errors" {
                 Expect.equal
-                    (ScriptExecution.runPackageScriptWithArgs testScriptArgsPackage [|"hello"; "world"|]).ExitCode
+                    (ScriptExecution.runPackageScriptWithArgs CachedValidationPackage.testScriptArgsPackage [|"hello"; "world"|]).ExitCode
                     0
                     "script execution did not run without errors."
             }
 
             test "script from package with args prints message" {
                 Expect.sequenceEqual
-                    (ScriptExecution.runPackageScriptWithArgs testScriptArgsPackage [|"hello"; "world"|]).Messages
+                    (ScriptExecution.runPackageScriptWithArgs CachedValidationPackage.testScriptArgsPackage [|"hello"; "world"|]).Messages
                     ["""args: [|"hello"; "world"|]"""]
                     "script execution did not print correct mesages."
             }

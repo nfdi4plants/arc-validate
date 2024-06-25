@@ -558,7 +558,8 @@ module V2_0_0_Draft =
                 description = "Validate whether an ARC conforms to Specification V2.0.0-draft. See the relevant spec at https://github.com/nfdi4plants/ARC-specification/blob/v2.0.0/ARC%20specification.md",
                 majorVersion = 2,
                 minorVersion = 0,
-                patchVersion = 0
+                patchVersion = 0,
+                PreReleaseVersionSuffix = "draft"
             ),
             CriticalValidationCasesList = cases
         )

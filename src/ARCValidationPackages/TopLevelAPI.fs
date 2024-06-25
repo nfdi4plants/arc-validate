@@ -177,7 +177,7 @@ type Preview =
             |> PackageCache.addPackage package
             |> PackageCache.write(cacheFolder)
 
-            Ok ($"installed preview package {package.FileName}@{ValidationPackageMetadata.getSemanticVersionString package.Metadata} at {package.LocalPath}")
+            Ok ($"installed preview package {package.FileName} at {package.LocalPath}")
                 
         with e ->
             match e with

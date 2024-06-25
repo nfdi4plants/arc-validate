@@ -1,15 +1,10 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-open ARCValidationPackages
+﻿open ARCValidate
+open ARCValidate.CLICommands
 
-open ARCValidationPackages
+let parser = ARCValidateCommand.createParser()
 
-let token = 
-    let t = System.Environment.GetEnvironmentVariable("ARC_VALIDATE_GITHUB_API_TEST_TOKEN")
-    if isNull(t) then None else Some t
+let args = parser.Parse(inputs = [|"--verbose";"package";"install";"test"|])
 
-let configPath = @"C:/Users/schne/Desktop/lol/test.json"
-let cacheFolder = @"C:/Users/schne/Desktop/lol/cache"
+printfn "%A" args
 
-let syncResult = API.Common.GetSyncedConfigAndCache(ConfigPath = configPath, CacheFolderPreview = cacheFolder, ?Token = token)
-
-printfn "%A" syncResult
+ARCValidate.CommandHandling.handleARCValidateCommand true None (args.GetSubCommand())

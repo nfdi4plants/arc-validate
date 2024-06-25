@@ -62,6 +62,12 @@ module Expect =
         Expect.sequenceEqual expectedKeysSorted actualKeysSorted $"Keys were not equal."
         Expect.sequenceEqual zippedValuesActual zippedValuesExpected "Values were not equal."
 
+    let cachedPackageEqualExceptDate (actual:CachedValidationPackage) (expected:CachedValidationPackage) =
+        Expect.equal actual.Metadata expected.Metadata "CachedValidationPackage Metadata not equal"
+        Expect.equal actual.FileName expected.FileName "CachedValidationPackage FileName not equal"
+        Expect.equal actual.LocalPath expected.LocalPath "CachedValidationPackage PackageName not equal"
+
+
     module AVPRClient =
 
         let authorEqual (actual:AVPRClient.Author) (expected:AVPRClient.Author) =
@@ -81,6 +87,8 @@ module Expect =
             Expect.equal actual.MajorVersion expected.MajorVersion "AVPRClient.ValidationPackage MajorVersion not equal"
             Expect.equal actual.MinorVersion expected.MinorVersion "AVPRClient.ValidationPackage MinorVersion not equal"
             Expect.equal actual.PatchVersion expected.PatchVersion "AVPRClient.ValidationPackage PatchVersion not equal"
+            Expect.equal actual.PreReleaseVersionSuffix expected.PreReleaseVersionSuffix "AVPRClient.PreReleaseVersionSuffix PatchVersion not equal"
+            Expect.equal actual.BuildMetadataVersionSuffix expected.BuildMetadataVersionSuffix "AVPRClient.ValidationPackage BuildMetadataVersionSuffix not equal"
             Expect.equal actual.ReleaseNotes expected.ReleaseNotes "AVPRClient.ValidationPackage ReleaseNotes not equal"
             Expect.equal actual.CQCHookEndpoint expected.CQCHookEndpoint "AVPRClient.ValidationPackage CQCHookEndpoint not equal"
 
@@ -93,7 +101,7 @@ module Expect =
             Expect.sequenceEqual expected.Tags expected.Tags "AVPRClient.ValidationPackage Tags not equal"
             Expect.sequenceEqual expected.PackageContent expected.PackageContent "AVPRClient.ValidationPackage PackageContent not equal"
 
-
+    
 
 module Result =
     

@@ -220,26 +220,26 @@ module Badge =
 """                                     .ReplaceLineEndings("\n")
 
     let allPassedWithHookBadgeSVGFromPipeline = """<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="63" height="20">
+<svg xmlns="http://www.w3.org/2000/svg" width="104" height="20">
     <linearGradient id="b" x2="0" y2="100%">
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
     <mask id="2">
-        <rect width="63" height="20" rx="3" fill="#fff"/>
+        <rect width="104" height="20" rx="3" fill="#fff"/>
     </mask>
     <g mask="url(#2)">
-        <path fill="#555" d="M0 0h34v20H0z"/>
-        <path fill="#4C1" d="M34 0h29v20H34z"/>
-        <path fill="url(#b)" d="M0 0h63v20H0z"/>
+        <path fill="#555" d="M0 0h75v20H0z"/>
+        <path fill="#4C1" d="M75 0h29v20H75z"/>
+        <path fill="url(#b)" d="M0 0h104v20H0z"/>
     </g>
     <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-        <text x="18" y="15" fill="#010101" fill-opacity=".3">test</text>
-        <text x="17" y="14">test</text>
+        <text x="38.5" y="15" fill="#010101" fill-opacity=".3">test@1.0.0</text>
+        <text x="37.5" y="14">test@1.0.0</text>
     </g>
     <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-        <text x="49.5" y="15" fill="#010101" fill-opacity=".3">2/2</text>
-        <text x="48.5" y="14">2/2</text>
+        <text x="90.5" y="15" fill="#010101" fill-opacity=".3">2/2</text>
+        <text x="89.5" y="14">2/2</text>
     </g>
 </svg>
 """                                                 .ReplaceLineEndings("\n")

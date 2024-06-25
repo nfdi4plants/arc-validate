@@ -26,8 +26,8 @@
     <PackageReference Include="Spectre.Console.CLI" Version="[0.49.1]" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[3.0.0, 4.0.0)" />
-    <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" PackageVersion="[4.0.0, 5.0.0)" />
+    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[4.0.0, 5.0.0)" />
+    <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" PackageVersion="[5.0.0, 6.0.0)" />
   </ItemGroup>
   <Target Name="UseExplicitPackageVersions" BeforeTargets="GenerateNuspec">
     <ItemGroup>

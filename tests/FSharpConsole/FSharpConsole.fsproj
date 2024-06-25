@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ARCExpect\ARCExpect.fsproj" />
     <ProjectReference Include="..\..\src\ARCValidationPackages\ARCValidationPackages.fsproj" />
+    <ProjectReference Include="..\..\src\arc-validate\arc-validate.fsproj" />
   </ItemGroup>
 
 </Project>

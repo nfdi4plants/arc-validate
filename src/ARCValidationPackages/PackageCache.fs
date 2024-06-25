@@ -66,7 +66,18 @@ type PackageCache =
 
     static member getLatestPackage (name: string) (cache: PackageCache) =
         cache[name]
-        |> Seq.maxBy (fun (kv:KeyValuePair<string,CachedValidationPackage>) -> kv.Key)
+        // only get stable versions when suffixes are not supplied explicitly
+        |> Seq.filter (fun (kv:KeyValuePair<string,CachedValidationPackage>) ->
+            let semver = SemVer.tryParse kv.Key 
+            if semver.IsSome then 
+                semver.Value.PreRelease = "" 
+                && semver.Value.BuildMetadata = ""
+            else false
+        )
+        |> Seq.maxBy (fun (kv:KeyValuePair<string,CachedValidationPackage>) -> 
+            let semver = SemVer.tryParse kv.Key |> Option.get
+            semver.Major, semver.Minor, semver.Patch
+        )
         |> fun x -> x.Value
 
     static member getPackages (name: string) (cache: PackageCache) =

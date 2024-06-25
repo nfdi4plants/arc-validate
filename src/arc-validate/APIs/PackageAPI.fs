@@ -47,6 +47,13 @@ type PackageAPI =
         
             let packageName = args.TryGetResult(PackageInstallArgs.Package).Value
             let version = args.TryGetResult(PackageInstallArgs.Version)
+
+            if Verbose.IsSome then 
+                if Verbose.Value then
+                    if version.IsSome then
+                        printfn $"""Installing package {packageName} {version.Value} from source {if isRelease then "'avpr.nfdi4plants.org'" else "'preview-index on GitHub'"} """
+                    else 
+                        printfn $"""Installing package latest version of {packageName} from source {if isRelease then "'avpr.nfdi4plants.org'" else "'preview-index on GitHub'"} """
             if isRelease then
                 match (AVPR.InstallPackage(avprCache, packageName, ?SemVer = version, ?Verbose = Verbose)) with
                 | Ok msg ->

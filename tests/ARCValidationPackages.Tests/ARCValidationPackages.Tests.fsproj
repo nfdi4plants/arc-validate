@@ -11,6 +11,7 @@
     <Compile Include="TestUtils.fs" />
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="DefaultsTests.fs" />
+    <Compile Include="DomainTests.fs" />
     <Compile Include="GitHubAPITests.fs" />
     <Compile Include="AVPRAPITests.fs" />
     <Compile Include="ARCValidationPackageTests.fs" />

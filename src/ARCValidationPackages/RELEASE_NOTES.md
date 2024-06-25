@@ -1,4 +1,8 @@
-﻿### 4.0.1 - (Released 2024-04-30)
+﻿### 5.0.0 - (Released 2024-06-21)
+
+Support full semantic versions with suffixes
+
+### 4.0.1 - (Released 2024-04-30)
 
 Update pinned dependencies
 
