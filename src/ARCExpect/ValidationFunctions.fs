@@ -5,8 +5,57 @@ open ARCExpect
 open ARCTokenization.StructuralOntology
 
 /// <summary>
-/// Top level API for performing validation.
+/// A collection of commonly used predicates for validation
 /// </summary>
+module Predicates =
+    
+    type Param = 
+
+        static member HasAccession (param : #IParam) = param.Accession <> ""
+
+        static member HasName (param : #IParam) = param.Name <> ""
+
+        static member HasReferenceOntology (param : #IParam) = param.RefUri <> ""
+
+        static member HasTerm (param : #IParam) = 
+            Param.HasAccession param
+            && Param.HasName param
+            && Param.HasReferenceOntology param
+
+        static member HasSimpleValue (param : #IParam) =
+            match param.Value with
+            | ParamValue.Value _ -> true | _ -> false
+
+        static member HasCvValue (param : #IParam) =
+            match param.Value with
+            | ParamValue.CvValue _ -> true | _ -> false
+
+        static member HasUnitizedValue (param : #IParam) =
+            match param.Value with
+            | ParamValue.WithCvUnitAccession _ -> true | _ -> false
+        
+        static member ParamValueIsEqualTo (expectedParamValue : ParamValue) (param : #IParam) = param.Value = expectedParamValue
+
+        static member SimpleValueIsEqualTo (expectedValue : System.IConvertible) (param : #IParam) =
+            match param.Value with
+            | ParamValue.Value v -> v = expectedValue
+            | _ -> false
+
+        static member CvValueIsEqualTo (expectedTerm:CvTerm) (param : #IParam) =
+            match param.Value with
+            | ParamValue.CvValue term -> term = expectedTerm
+            | _ -> false
+
+        static member UnitizedValueIsEqualTo (expectedValue : System.IConvertible) (expectedUnit:CvUnit) (param : #IParam) =
+            match param.Value with
+            | ParamValue.WithCvUnitAccession (value,unit) -> value = expectedValue && unit = expectedUnit
+            | _ -> false
+
+
+/// <summary>
+/// Top level API for formulating expectations as validation cases 
+/// </summary>
+[<RequireQualifiedAccess>]
 module Validate =
     
     /// <summary>
@@ -119,51 +168,6 @@ module Validate =
     type ParamCollection =
 
         /// <summary>
-        /// Validates if at least one Param with the expected value in the given collection exists.
-        /// </summary>
-        /// <param name="expectedValue">the value expected to occur in at least 1 Param in the given collection</param>
-        /// <param name="paramCollection">The param collection to validate</param>
-        static member ContainsParamWithValue (expectedValue : #System.IConvertible) (paramCollection : #seq<#IParam>) =
-            match Seq.exists (fun (param : #IParam)-> (param.Value |> ParamValue.getValue) = (expectedValue :> System.IConvertible)) paramCollection with
-            | true  -> ()
-            | false ->
-                expectedValue
-                |> ErrorMessage.ofValue $"does not exist"
-                |> Expecto.Tests.failtestNoStackf "%s"
-
-        /// <summary>
-        /// Validates if at least one Param with the expected term in the given collection exists.
-        /// </summary>
-        /// <param name="expectedTerm">the term expected to occur in at least 1 Param in the given collection</param>
-        /// <param name="paramCollection">The param collection to validate</param>
-        static member ContainsParamWithTerm (expectedTerm : CvTerm) (paramCollection: #seq<#IParam>) =
-            match Seq.exists (fun e -> Param.getTerm e = expectedTerm) paramCollection with
-            | true  -> ()
-            | false ->
-                expectedTerm
-                |> ErrorMessage.ofCvTerm $"does not exist"
-                |> Expecto.Tests.failtestNoStackf "%s"
-
-        /// <summary>
-        /// Validates if the given Param is contained in the given collection át least once.
-        /// </summary>
-        /// <param name="expectedParam">the param expected to occur at least once in the given collection</param>
-        /// <param name="paramCollection">The param collection to validate</param>
-        static member ContainsParam (expectedParam : #IParam) (paramCollection : #seq<#IParam>) =
-
-            let tmp = 
-                Param.getParamValue expectedParam
-                |> ParamValue.getValue
-            // this is incomplete and does not exactly perform what the name advertises 
-            // (e.g., it only checks value but not term, or even if the Params are Cv or User)
-            match Seq.exists (fun (param : #IParam)-> (param.Value |> ParamValue.getValue) = tmp) paramCollection with
-            | true  -> ()
-            | false ->
-            expectedParam
-            |> ErrorMessage.ofIParam $"does not exist"
-            |> Expecto.Tests.failtestNoStackf "%s"
-
-        /// <summary>
         /// Generic method to validate wether a collection of IParams satisfies any kind of predicate.
         /// </summary>
         /// <summary>
@@ -177,6 +181,51 @@ module Validate =
             | false ->
                 ErrorMessage.ofValue $"The does not satisfy the predicate." "paramCollection"
                 |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if at least one Param with the expected value in the given collection exists.
+        /// </summary>
+        /// <param name="expectedValue">the value expected to occur in at least 1 Param in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsItemWithValue (expectedValue : #System.IConvertible) (paramCollection : #seq<#IParam>) =
+            match Seq.exists (fun (param : #IParam)-> (param.Value |> ParamValue.getValue) = (expectedValue :> System.IConvertible)) paramCollection with
+            | true  -> ()
+            | false ->
+                expectedValue
+                |> ErrorMessage.ofValue $"does not exist"
+                |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if at least one Param with the expected term in the given collection exists.
+        /// </summary>
+        /// <param name="expectedTerm">the term expected to occur in at least 1 Param in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsItemWithTerm (expectedTerm : CvTerm) (paramCollection: #seq<#IParam>) =
+            match Seq.exists (fun e -> Param.getTerm e = expectedTerm) paramCollection with
+            | true  -> ()
+            | false ->
+                expectedTerm
+                |> ErrorMessage.ofCvTerm $"does not exist"
+                |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
+        /// Validates if the given Param is contained in the given collection át least once.
+        /// </summary>
+        /// <param name="expectedParam">the param expected to occur at least once in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsItem (expectedParam : #IParam) (paramCollection : #seq<#IParam>) =
+
+            let tmp = 
+                Param.getParamValue expectedParam
+                |> ParamValue.getValue
+            // this is incomplete and does not exactly perform what the name advertises 
+            // (e.g., it only checks value but not term, or even if the Params are Cv or User)
+            match Seq.exists (fun (param : #IParam)-> (param.Value |> ParamValue.getValue) = tmp) paramCollection with
+            | true  -> ()
+            | false ->
+            expectedParam
+            |> ErrorMessage.ofIParam $"does not exist"
+            |> Expecto.Tests.failtestNoStackf "%s"
 
 
     /// <summary>
