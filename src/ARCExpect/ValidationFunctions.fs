@@ -145,6 +145,19 @@ module Validate =
                 |> Expecto.Tests.failtestNoStackf "%s"
 
         /// <summary>
+        /// Validates if at least one Param with the expected term in the given collection exists, which is not a metadata section key.
+        /// </summary>
+        /// <param name="expectedTerm">the term expected to occur in at least 1 Param in the given collection</param>
+        /// <param name="paramCollection">The param collection to validate</param>
+        static member ContainsNonKeyParamWithTerm (expectedTerm : CvTerm) (paramCollection: #seq<#IParam>) =            
+            match Seq.exists (fun e -> Param.getTerm e = expectedTerm && e.Value <> ParamValue.CvValue ARCTokenization.Terms.StructuralTerms.metadataSectionKey) paramCollection with
+            | true  -> ()
+            | false ->
+                expectedTerm
+                |> ErrorMessage.ofCvTerm $"value does not exist"
+                |> Expecto.Tests.failtestNoStackf "%s"
+
+        /// <summary>
         /// Validates if the given Param is contained in the given collection át least once.
         /// </summary>
         /// <param name="expectedParam">the param expected to occur at least once in the given collection</param>

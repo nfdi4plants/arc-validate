@@ -82,6 +82,15 @@ let ``Validate.ParamCollection API tests`` =
                     (fun () -> Validate.ParamCollection.ContainsParamWithTerm ReferenceObjects.CvTerms.``Investigation Person First Name`` [ReferenceObjects.CvParams.``Investigation Person Email (valid)``] ) 
                     "non-contained cvparam was not correctly detected as not contained"
             }
+            test "ContainsNonKeyParamWithTerm passes if valid" {
+                let metadataSectionKeyParam = ReferenceObjects.CvParams.``Investigation Description Section Key``
+                let metadataParam = ReferenceObjects.CvParams.``Investigation Description``
+                Validate.ParamCollection.ContainsNonKeyParamWithTerm ReferenceObjects.CvTerms.``Investigation Description`` [metadataSectionKeyParam; metadataParam] }
+            test "ContainsNonKeyParamWithTerm fails if only metadata section key" {
+                Expect.throws 
+                    (fun () -> Validate.ParamCollection.ContainsNonKeyParamWithTerm ReferenceObjects.CvTerms.``Investigation Description`` [ReferenceObjects.CvParams.``Investigation Description Section Key``] ) 
+                    "Only metadata section key was present"
+            }
             test "SatisfiesPredicate passes if valid" {Validate.ParamCollection.SatisfiesPredicate (fun x -> x|>List.exists(fun y -> y.Name = ReferenceObjects.CvTerms.``Investigation Person First Name``.Name)) [ReferenceObjects.CvParams.``Investigation Person First Name``] }
             test "SatisfiesPredicate fails if invalid" {
                 Expect.throws 
