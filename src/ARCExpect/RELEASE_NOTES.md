@@ -1,3 +1,7 @@
+### 4.0.1 - (Released 2024-08-07)
+
+- Add `ContainsNonKeyParamWithTerm` validation function
+
 ### 4.0.0 - (Released 2024-06-21)
 
 - Support full semantic versions for ValidationPackageMetadata in the `ARCExpect` API.
