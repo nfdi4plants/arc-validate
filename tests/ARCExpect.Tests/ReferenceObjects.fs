@@ -15,7 +15,9 @@ module CvTerms =
 
     let ``Investigation Person First Name`` = CvTerm.create("INVMSO:00000023","Investigation Person First Name","INVMSO")
 
-    let ``Investigation Person Email`` = CvTerm.create("INVMSO:00000025","Investigation Person Email","INVMSO")        
+    let ``Investigation Person Email`` = CvTerm.create("INVMSO:00000025","Investigation Person Email","INVMSO")
+    
+    let ``Investigation Description`` = CvTerm.create("INVMSO:00000010","Investigation Description","INVMSO")
 
 module CvParams =
     
@@ -26,6 +28,10 @@ module CvParams =
     let ``Investigation Person Email (valid)`` = CvParam(CvTerms.``Investigation Person Email``, ParamValue.Value "yes@yes.com")
 
     let ``Investigation Person Email (invalid)`` = CvParam(CvTerms.``Investigation Person Email``, ParamValue.Value "nope")
+
+    let ``Investigation Description`` = CvParam(CvTerms.``Investigation Description`` , ParamValue.Value "Hello this is a description")
+
+    let ``Investigation Description Section Key`` = CvParam(CvTerms.``Investigation Description`` , ParamValue.CvValue ARCTokenization.Terms.StructuralTerms.metadataSectionKey)
 
 module ValidationResult =
     
