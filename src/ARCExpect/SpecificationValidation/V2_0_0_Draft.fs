@@ -380,8 +380,8 @@ module V2_0_0_Draft =
                                 | _ -> false
                         )
                     
-                    cwls
-                    |> Validate.ParamCollection.SatisfiesPredicate (fun x -> (Seq.length x) = (workflowDir|>Seq.length)) 
+                    //cwls
+                    //|> Validate.ParamCollection.SatisfiesPredicate (fun x -> (Seq.length x) = (workflowDir|>Seq.length)) 
                     
                     cwls
                     |> Validate.ParamCollection.SatisfiesPredicate(fun x -> 
