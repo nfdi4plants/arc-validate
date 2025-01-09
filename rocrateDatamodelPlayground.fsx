@@ -194,13 +194,23 @@ let arc = """{
                             }"""
 
 let ldo = LDObject.fromROCrateJsonString arc
+let ldo2 = LDObject.fromROCrateJsonString arc
+
+LDObject.tryGetContext() ldo
+
+let lp = LabProcess.fromROCrateJsonString arc
 
 
 
 module Tokenization =
 
     let ofLabProcess (labProcess : LabProcess) =
-        labProcess |> List.map (fun processUnit -> CvParam(processUnit.Term, processUnit.Value))
+        labProcess.Properties.Values 
+        |> Seq.map (
+            fun processUnit -> 
+                let puLdo = LDObject.fromROCrateJsonString (string processUnit)
+                CvParam(puLdo.Id, puLdo.)
+        )
 
 
 module Validate =
