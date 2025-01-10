@@ -200,11 +200,13 @@ LDObject.tryGetContext() ldo
 
 let lp = LabProcess.fromROCrateJsonString arc
 
+//let lp = LabProcess("#Process_Cell_Lysis", "Cell Lysis", )    // postponed till HLW fixes parser due to being too time-consuming to recreate
 
 
 module Tokenization =
 
-    let ofLabProcess (labProcess : LabProcess) =
+    /// Takes a LabProcess and returns its content tokenized as a sequence of CvParams (where each CvParam represents one property of the process).
+    let ofLabProcess (labProcess : LabProcess) : CvParam seq =
         labProcess.Properties.Values 
         |> Seq.map (
             fun processUnit -> 
@@ -215,8 +217,12 @@ module Tokenization =
 
 module Validate =
 
-    let containsAnyOfBy projection (cvParams : CvParam seq) =
-        cvParams |> Seq.exists projection
+    module Check =
 
-    let containsAnyOf expected (cvParams : CvParam seq) =
-        containsAnyOfBy ((=) expected) cvParams
+        /// Checks if a collection of CvParams contains any CvParams that match the projection.
+        let containsAnyOfBy projection (cvParams : CvParam seq) =
+            cvParams |> Seq.exists projection
+
+        /// Checks if a collection of CvParams contain an expected CvParam.
+        let containsAnyOf expected (cvParams : CvParam seq) =
+            containsAnyOfBy ((=) expected) cvParams
