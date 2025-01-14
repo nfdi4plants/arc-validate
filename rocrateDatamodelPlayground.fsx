@@ -1,11 +1,15 @@
 #r "nuget: ARCtrl"
 //#r "nuget: ARCExpect"
 #r "nuget: ControlledVocabulary"
+#r "nuget: Expecto"
+#r "nuget: ARCTokenization"
 
 
 open ARCtrl
 //open ARCExpect
 open ControlledVocabulary
+open Expecto
+open ARCTokenization
 
 
 let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
@@ -226,3 +230,21 @@ module Validate =
         /// Checks if a collection of CvParams contain an expected CvParam.
         let containsAnyOf expected (cvParams : CvParam seq) =
             containsAnyOfBy ((=) expected) cvParams
+
+    /// Lets the unit test fail if actual is not true with given error message.
+    // TO DO: in the future: put in CvParam information of missing or wrong stuff, i.e. cell position(s), filepath etc.; HLW might expand the ROCrate JSON model at that point  a bit to allow for this information to be attached as, e.g., property values
+    let isTrue actual errorMessage =
+        if actual then ()
+        else Expecto.Tests.failtestNoStackf errorMessage
+
+
+Validate.Check.containsAnyOf
+
+
+
+// testings
+
+// replace this later as soon as reading and parsing an ARC to the ROCrate JSON model representation is available:
+let studyMetadata =
+    Study.parseMetadataSheetsFromTokens() arcDir
+    |> List.concat
