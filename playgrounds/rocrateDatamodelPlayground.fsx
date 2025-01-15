@@ -2,24 +2,24 @@
 //#r "nuget: ARCExpect"
 #r "nuget: ControlledVocabulary"
 #r "nuget: Expecto"
-#r "nuget: ARCTokenization"
+//#r "nuget: ARCTokenization"
 
 
-open ARCtrl
+//open ARCtrl
 //open ARCExpect
 open ControlledVocabulary
 open Expecto
-open ARCTokenization
+//open ARCTokenization
 
 
 let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
 
-arc.ISA.Value.Assays |> Seq.iter (fun a -> printfn $"{a.Identifier}")
-arc.ISA.Value.GetAssay ""
+//arc.ISA.Value.Assays |> Seq.iter (fun a -> printfn $"{a.Identifier}")
+//arc.ISA.Value.GetAssay ""
 
-arc.ToROCrateJsonString()
+//arc.ToROCrateJsonString()
 
-open ARCtrl
+//open ARCtrl
 open ARCtrl.ROCrate
 open ARCtrl.Json
 
@@ -204,8 +204,13 @@ LDObject.tryGetContext() ldo
 
 let lp = LabProcess.fromROCrateJsonString arc
 
-//let lp = LabProcess("#Process_Cell_Lysis", "Cell Lysis", )    // postponed till HLW fixes parser due to being too time-consuming to recreate
+let lp = LabProcess("#Process_Cell_Lysis", "Cell Lysis", "Kevin Schneider", [||], [|"lal"|])    // postponed till HLW fixes parser due to being too time-consuming to recreate
 
+let p = Person("Oliver", "Maus")
+
+DynamicObj.DynObj.tryGetTypedPropertyValue<obj []> "agent" lp
+LabProcess.tryGetAgentAs<'T>
+lp.TryGetAgentAsPerson
 
 module Tokenization =
 
