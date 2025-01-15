@@ -46,7 +46,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{66A8015E-565
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds", "{7994D526-5B21-4EBD-9CCB-EFA04EE303CF}"
 	ProjectSection(SolutionItems) = preProject
-		rocrateDatamodelPlayground.fsx = rocrateDatamodelPlayground.fsx
+		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
+		playgrounds\ARCExpect_playground.fsx = playgrounds\ARCExpect_playground.fsx
+		playgrounds\codeGeneratorScripting.fsx = playgrounds\codeGeneratorScripting.fsx
+		playgrounds\rocrateDatamodelPlayground.fsx = playgrounds\rocrateDatamodelPlayground.fsx
 	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ARCValidationPackages", "src\ARCValidationPackages\ARCValidationPackages.fsproj", "{CF14C74E-20D2-4EC9-B11E-357BFD1244CB}"
@@ -71,7 +74,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{588E
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharpConsole", "tests\FSharpConsole\FSharpConsole.fsproj", "{DE9F79F6-ABA2-4940-AEB6-D969AE752E6F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Common", "tests\Common\Common.fsproj", "{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Common", "tests\Common\Common.fsproj", "{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arc-validate", "arc-validate", "{E6A037FA-C367-4C2A-9B87-2A04CA25D3C9}"
 EndProject
