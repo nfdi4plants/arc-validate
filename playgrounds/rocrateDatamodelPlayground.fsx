@@ -5,7 +5,7 @@
 //#r "nuget: ARCTokenization"
 
 
-//open ARCtrl
+open ARCtrl
 //open ARCExpect
 open ControlledVocabulary
 open Expecto
@@ -22,6 +22,7 @@ let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
 //open ARCtrl
 open ARCtrl.ROCrate
 open ARCtrl.Json
+open DynamicObj.DynObj
 
 
 let arc = """{
@@ -209,8 +210,17 @@ let lp = LabProcess("#Process_Cell_Lysis", "Cell Lysis", "Kevin Schneider", [||]
 let p = Person("Oliver", "Maus")
 
 DynamicObj.DynObj.tryGetTypedPropertyValue<obj []> "agent" lp
-LabProcess.tryGetAgentAs<'T>
-lp.TryGetAgentAsPerson
+
+type LabProcess with
+
+    member this.TryGetAgentAs<'T>() = 
+        tryGetTypedPropertyValue<'T> "agent" this
+
+    member this.GetAgentAs<'T>() =
+        this.TryGetAgentAs<'T>().Value
+
+    static member tryGetAgentAs<'T> (lp : LabProcess) = 0
+
 
 module Tokenization =
 
@@ -253,3 +263,6 @@ Validate.Check.containsAnyOf
 let studyMetadata =
     Study.parseMetadataSheetsFromTokens() arcDir
     |> List.concat
+
+
+let ch
