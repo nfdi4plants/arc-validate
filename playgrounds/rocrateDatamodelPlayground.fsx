@@ -219,7 +219,17 @@ type LabProcess with
     member this.GetAgentAs<'T>() =
         this.TryGetAgentAs<'T>().Value
 
-    static member tryGetAgentAs<'T> (lp : LabProcess) = 0
+    member this.TryGetAgentAsString() =
+        this.TryGetAgentAs<string>()
+
+    member this.GetAgentAsString() =
+        this.GetAgentAs<string>()
+
+    static member tryGetAgentAs<'T> (lp : LabProcess) = 
+        lp.TryGetAgentAs<'T>()
+
+    static member getAgentAs<'T> (lp : LabProcess) =
+        lp.GetAgentAs<'T>()
 
 
 module Tokenization =
