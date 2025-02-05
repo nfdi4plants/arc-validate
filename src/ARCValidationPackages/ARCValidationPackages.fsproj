@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fake.DotNet.Cli" Version="[6.0.0]" />
+    <PackageReference Include="Fake.DotNet.Cli" Version="[6.1.2]" />
     <PackageReference Include="FsHttp" Version="[14.5.0]" />
     <PackageReference Include="AVPRIndex" Version="[0.2.1]" />
     <PackageReference Include="AVPRClient" Version="[0.1.2]" />
