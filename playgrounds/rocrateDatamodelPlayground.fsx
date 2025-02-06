@@ -205,13 +205,10 @@ LDObject.tryGetContext() ldo
 
 let lp = LabProcess.fromROCrateJsonString arc
 
-let lp = LabProcess("#Process_Cell_Lysis", "Cell Lysis", "Kevin Schneider", [||], [|"lal"|])    // postponed till HLW fixes parser due to being too time-consuming to recreate
-
-let p = Person("Oliver", "Maus")
-
-DynamicObj.DynObj.tryGetTypedPropertyValue<obj []> "agent" lp
 
 type LabProcess with
+
+    // already given: .GetAgent, .GetName, .GetResult, .GetObject
 
     member this.TryGetAgentAs<'T>() = 
         tryGetTypedPropertyValue<'T> "agent" this
@@ -223,13 +220,333 @@ type LabProcess with
         this.TryGetAgentAs<string>()
 
     member this.GetAgentAsString() =
-        this.GetAgentAs<string>()
+        this.TryGetAgentAsString()
 
     static member tryGetAgentAs<'T> (lp : LabProcess) = 
         lp.TryGetAgentAs<'T>()
 
-    static member getAgentAs<'T> (lp : LabProcess) =
+    static member getAgentAs<'T> (lp : LabProcess) = 
         lp.GetAgentAs<'T>()
+
+    member this.TryGetParameterValues() =
+        tryGetTypedPropertyValue<PropertyValue list> "parameterValues" this
+
+    member this.GetParameterValues() =
+        this.TryGetParameterValues().Value
+
+    static member tryGetParameterValues (lp : LabProcess) = 
+        lp.TryGetParameterValues()
+
+    static member getParameterValues (lp : LabProcess) = 
+        lp.GetParameterValues()
+
+    member this.TryGetAdditionalType() =
+        tryGetTypedPropertyValue<string> "additionalType" this
+
+    member this.GetAdditionalType() =
+        this.TryGetAdditionalType().Value
+
+    static member tryGetAdditionalType (lp : LabProcess) = 
+        lp.TryGetAdditionalType()
+
+    static member getAdditionalType (lp : LabProcess) = 
+        lp.GetAdditionalType()
+
+    member this.TryGetExecutesLabProtocol() =
+        tryGetTypedPropertyValue<LabProtocol> "executesLabProtocol" this 
+
+    member this.GetExecutesLabProtocol() =
+        this.TryGetExecutesLabProtocol().Value
+
+    static member tryGetExecutesLabProtocol (lp : LabProcess) = 
+        lp.TryGetExecutesLabProtocol()
+
+    static member getExecutesLabProtocol (lp : LabProcess) = 
+        lp.GetExecutesLabProtocol()
+
+    member this.TryGetEndTime() =
+        tryGetTypedPropertyValue<System.DateTime> "endTime" this
+
+    member this.GetEndTime() =
+        this.TryGetEndTime().Value
+
+    static member tryGetEndTime (lp : LabProcess) = 
+        lp.TryGetEndTime()
+
+    static member getEndTime (lp : LabProcess) = 
+        lp.GetEndTime()
+
+
+type Person with
+
+    // already given: `.GetGivenName`
+
+    member this.TryGetFamilyName() =
+        tryGetTypedPropertyValue<string> "familyName" this
+
+    member this.GetFamilyName() =
+        this.TryGetFamilyName().Value
+
+    static member tryGetFamilyName (person : Person) = 
+        person.TryGetFamilyName()
+
+    static member getFamilyName (person : Person) = 
+        person.GetFamilyName()
+
+    member this.TryGetAdditionalName() =
+        tryGetTypedPropertyValue<string> "additionalName" this
+
+    member this.GetAdditionalName() =
+        this.TryGetAdditionalName().Value
+
+    static member tryGetAdditionalName (person : Person) = 
+        person.TryGetAdditionalName()
+
+    static member getAdditionalName (person : Person) = 
+        person.GetAdditionalName()
+
+    member this.TryGetJobTitle() =
+        tryGetTypedPropertyValue<string> "jobTitle" this
+
+    member this.GetJobTitle() =
+        this.TryGetJobTitle().Value
+
+    static member tryGetJobTitle (person : Person) = 
+        person.TryGetJobTitle()
+
+    static member getJobTitle (person : Person) = 
+        person.GetJobTitle()
+
+    member this.TryGetEmail() =
+        tryGetTypedPropertyValue<string> "email" this
+
+    member this.GetEmail() =
+        this.TryGetEmail().Value
+
+    static member tryGetEmail (person : Person) = 
+        person.TryGetEmail()
+
+    static member getEmail (person : Person) = 
+        person.GetEmail()
+
+    member this.TryGetAffiliation() =
+        tryGetTypedPropertyValue<string> "affiliation" this
+
+    member this.GetAffiliation() =
+        this.TryGetAffiliation().Value
+
+    static member tryGetAffiliation (person : Person) = 
+        person.TryGetAffiliation()
+
+    static member getAffiliation (person : Person) = 
+        person.GetAffiliation()
+
+    member this.TryGetAddress() =
+        tryGetTypedPropertyValue<string> "address" this
+
+    member this.GetAddress() =
+        this.TryGetAddress().Value
+
+    static member tryGetAddress (person : Person) = 
+        person.TryGetAddress()
+
+    static member getAddress (person : Person) = 
+        person.GetAddress()
+
+    member this.TryGetTelephone() =
+        tryGetTypedPropertyValue<string> "telephone" this
+
+    member this.GetTelephone() =
+        this.TryGetTelephone().Value
+
+    static member tryGetTelephone (person : Person) = 
+        person.TryGetTelephone()
+
+    static member getTelephone (person : Person) = 
+        person.GetTelephone()
+
+    member this.TryGetFaxNumber() =
+        tryGetTypedPropertyValue<string> "faxNumber" this
+
+    member this.GetFaxNumber() =
+        this.TryGetFaxNumber().Value
+
+    static member tryGetFaxNumber (person : Person) = 
+        person.TryGetFaxNumber() 
+
+    static member getFaxNumber (person : Person) = 
+        person.GetFaxNumber()
+
+
+type Sample with
+
+    // already given: .GetName
+
+    member this.TryGetAdditionalType() =
+        tryGetTypedPropertyValue<string> "additionalType" this
+
+    member this.GetAdditionalType() =
+        this.TryGetAdditionalType().Value
+
+    static member tryGetAdditionalType (sample : Sample) = 
+        sample.TryGetAdditionalType()
+
+    static member getAdditionalType (sample : Sample) = 
+        sample.GetAdditionalType()
+
+    member this.TryGetAdditionalProperty() =
+        tryGetTypedPropertyValue<PropertyValue> "additionalProperty" this
+
+    member this.GetAdditionalProperty() =
+        this.TryGetAdditionalProperty().Value
+
+    static member tryGetAdditionalProperty (sample : Sample) = 
+        sample.TryGetAdditionalProperty()
+
+    static member getAdditionalProperty (sample : Sample) = 
+        sample.GetAdditionalProperty()
+
+
+type PropertyValue with
+
+    // already given: `.GetName`, `.GetValue`
+
+    member this.TryGetUnit() =
+        tryGetTypedPropertyValue<string> "unit" this
+
+    member this.GetUnit() =
+        this.TryGetUnit().Value
+
+    static member tryGetUnit (propertyValue : PropertyValue) = 
+        propertyValue.TryGetUnit()
+
+    static member getUnit (propertyValue : PropertyValue) = 
+        propertyValue.GetUnit()
+
+    member this.TryGetUnitCode() =
+        tryGetTypedPropertyValue<string> "unitCode" this
+
+    member this.GetUnitCode() =
+        this.TryGetUnitCode().Value
+
+    static member tryGetUnitCode (propertyValue : PropertyValue) = 
+        propertyValue.TryGetUnitCode()
+
+    static member getUnitCode (propertyValue : PropertyValue) = 
+        propertyValue.GetUnitCode()
+
+    member this.TryGetValueReference() =
+        tryGetTypedPropertyValue<string> "valueReference" this
+
+    member this.GetValueReference() =
+        this.TryGetValueReference().Value
+
+    static member tryGetValueReference (propertyValue : PropertyValue) = 
+        propertyValue.TryGetValueReference()
+
+    static member getValueReference (propertyValue : PropertyValue) = 
+        propertyValue.GetValueReference()
+
+    member this.TryGetAdditionalType() =
+        tryGetTypedPropertyValue<string> "additionalType" this
+
+    member this.GetAdditionalType() =
+        this.TryGetAdditionalType().Value
+
+    static member tryGetAdditionalType (propertyValue : PropertyValue) = 
+        propertyValue.TryGetAdditionalType()
+
+    static member getAdditionalType (propertyValue : PropertyValue) = 
+        propertyValue.GetAdditionalType()
+
+    member this.TryGetPropertyID() =
+        tryGetTypedPropertyValue<string> "propertyID" this
+
+    member this.GetPropertyID() =
+        this.TryGetPropertyID().Value
+
+    static member tryGetPropertyID (propertyValue : PropertyValue) = 
+        propertyValue.TryGetPropertyID()
+
+    static member getPropertyID (propertyValue : PropertyValue) = 
+        propertyValue.GetPropertyID()
+
+
+type Assay with
+
+    // already given: .GetIdentifier
+
+    member this.TryGetAbout() =
+        tryGetTypedPropertyValue<LabProcess> "about" this
+
+    member this.GetAbout() =
+        this.TryGetAbout().Value
+
+    static member tryGetAbout (assay : Assay) = 
+        assay.TryGetAbout()
+
+    static member getAbout (assay : Assay) = 
+        assay.GetAbout()
+
+    member this.TryGetHasPart() =
+        tryGetTypedPropertyValue<string seq> "hasPart" this
+
+    member this.GetHasPart() =
+        this.TryGetHasPart().Value
+
+    static member tryGetHasPart (assay : Assay) = 
+        assay.TryGetHasPart()
+
+    static member getHasPart (assay : Assay) = 
+        assay.GetHasPart()
+
+    member this.TryGetMeasurementMethod() =
+        tryGetTypedPropertyValue<string> "measurementMethod" this
+
+    member this.GetMeasurementMethod() =
+        this.TryGetMeasurementMethod().Value
+
+    static member tryGetMeasurementMethod (assay : Assay) = 
+        assay.TryGetMeasurementMethod()
+
+    static member getMeasurementMethod (assay : Assay) = 
+        assay.GetMeasurementMethod()
+
+    member this.TryGetMeasurementTechnique() =
+        tryGetTypedPropertyValue<string> "measurementTechnique" this
+
+    member this.GetMeasurementTechnique() =
+        this.TryGetMeasurementTechnique().Value
+
+    static member tryGetMeasurementTechnique (assay : Assay) = 
+        assay.TryGetMeasurementTechnique()
+
+    static member getMeasurementTechnique (assay : Assay) = 
+        assay.GetMeasurementTechnique()
+
+    member this.TryGetUrl() =
+        tryGetTypedPropertyValue<string> "url" this
+
+    member this.GetUrl() =
+        this.TryGetUrl().Value
+
+    static member tryGetUrl (assay : Assay) = 
+        assay.TryGetUrl()
+
+    static member getUrl (assay : Assay) = 
+        assay.GetUrl()
+
+    member this.TryGetVariableMeasured() =
+        tryGetTypedPropertyValue<string> "variableMeasured" this
+
+    member this.GetVariableMeasured() =
+        this.TryGetVariableMeasured().Value
+
+    static member tryGetVariableMeasured (assay : Assay) = 
+        assay.TryGetVariableMeasured()
+
+    static member getVariableMeasured (assay : Assay) = 
+        assay.GetVariableMeasured()
 
 
 module Tokenization =
@@ -242,6 +559,8 @@ module Tokenization =
                 let puLdo = LDObject.fromROCrateJsonString (string processUnit)
                 CvParam(puLdo.Id, puLdo.)
         )
+
+
 
 
 module Validate =
@@ -263,7 +582,67 @@ module Validate =
         else Expecto.Tests.failtestNoStackf errorMessage
 
 
-Validate.Check.containsAnyOf
+module Toys =
+
+    // created in reference to https://github.com/nfdi4plants/isa-ro-crate-profile/blob/release/profile/isa_ro_crate.md and https://github.com/nfdi4plants/isa-ro-crate-profile/blob/release/profile/isa_ro_crate_mapping.md
+
+    // ROCrate | ISA
+    // id = id
+    // givenName = firstName
+    // familyName = lastName
+    // email = email
+    // identifier = ? (not assigned in ISA)
+    // affiliation = affiliation
+    // NB: is `id` here and below in every case only needed programmatically but does NOT occur in the original annotation table?
+    let person = ROCrate.Person("id1", "Oliver", familyName = "Maus", email = "maus@nfdi4plants.org", identifier = "id1", affiliation = "RPTU Kaiserslautern")
+
+    // ROCrate | ISA
+    // id = id
+    // name = key name (would probably be the name of the header term)
+    // value = text or number (as string) (text for terms and freetext, number for values and freetext when only digits)
+    // propertyID = category (key ontology reference, i.e. TermSourceRef (TSR) I think)
+    // additionalType = freetext (?) if it's Characteristics, Parameter, Factor, or Component (NB: is it standardized?)
+    // unitCode = unit ontology ref (again TSR I guess)
+    // unitText = unit name (i.e., unit term name)
+    // valueReference = value ontology reference (TSR?)
+    // IMPORTANT: TSR could always also be TAN (TermAccessionNumber) – clarify with HLW, FW (Florian Wetzels), and KS (Kevin Schneider) because it's a mess right now
+    // TAN would make more sense to me since you can always determine the TSR from the TAN but not vice versa – discuss with people
+    let characteristics = PropertyValue("char1", "SourceCharacteristics", "myCharacteristics", propertyID = "DBPO", additionalType = "Characteristics")
+
+    // ROCrate | ISA
+    // id = id
+    // name = identifier
+    // additionalProperty = either Characteristics or Factor in the form of propertyValue, see above: `characteristics`
+    // derivesFrom = (seems to be redundant)
+    // additionalType = ? (not mentioned in profile and mapping)
+    let inputs = Sample("source1", "source1", additionalProperty = characteristics)
+
+    // see above: `inputs` annotation
+    // IMPORTANT: Ask people where Characteristics and Factor should be applied to: to the inputs or to the outputs or both?
+    let outputs = Sample("sample1", "sample1", additionalProperty = characteristics)
+
+    // see above: `characteristics` annotation
+    let parameter = PropertyValue("param1", "SampleParameters", "myParameter", propertyID = "DBPO", additionalType = "Parameter")
+
+    // ROCrate | ISA
+    // id = id
+    // name = name
+    // agent = Performer (i.e., a Person)
+    // endTime = date
+    // executesLabProtocol = executesProtocol
+    // parameterValue = parameterValues (list of Parameters in the form of propertyValues, see above: `parameter`)
+    let labProcess = LabProcess("id1", "id1", person, object = [inputs], result = [outputs], parameterValue = [parameter])
+
+    // ROCrate | ISA
+    // id = id
+    // name = identifier
+    // about = Process (i.e., 1 single ISA Process, NOT the whole ProcessSequence. In the annotation table this correlates to 1 row (while the ProcessSequence correlates to ALL rows))
+    // measurementMethod = Technology Type
+    // measurementTechnique = Technology Platform
+    // variableMeasured = Measurement Type
+    // hasPart = Data Files
+    // url = fileName
+    let assay = ROCrate.Assay("assayID", "assayID", about = labProcess)
 
 
 
