@@ -10,6 +10,10 @@ open ARCtrl
 open ControlledVocabulary
 open Expecto
 //open ARCTokenization
+//open ARCtrl
+open ARCtrl.ROCrate
+open ARCtrl.Json
+open DynamicObj.DynObj
 
 
 let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
@@ -19,10 +23,6 @@ let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
 
 //arc.ToROCrateJsonString()
 
-//open ARCtrl
-open ARCtrl.ROCrate
-open ARCtrl.Json
-open DynamicObj.DynObj
 
 
 let arc = """{
@@ -649,9 +649,9 @@ module Toys =
 // testings
 
 // replace this later as soon as reading and parsing an ARC to the ROCrate JSON model representation is available:
-let studyMetadata =
-    Study.parseMetadataSheetsFromTokens() arcDir
-    |> List.concat
+//let studyMetadata =
+//    Study.parseMetadataSheetsFromTokens() arcDir
+//    |> List.concat
 
 
 let ch

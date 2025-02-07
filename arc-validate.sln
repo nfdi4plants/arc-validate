@@ -48,6 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playgrounds", "playgrounds"
 	ProjectSection(SolutionItems) = preProject
 		playgrounds\arc-validation-packages.fsx = playgrounds\arc-validation-packages.fsx
 		playgrounds\ARCExpect_playground.fsx = playgrounds\ARCExpect_playground.fsx
+		arcTokenization&CVPlayground.fsx = arcTokenization&CVPlayground.fsx
 		playgrounds\codeGeneratorScripting.fsx = playgrounds\codeGeneratorScripting.fsx
 		playgrounds\rocrateDatamodelPlayground.fsx = playgrounds\rocrateDatamodelPlayground.fsx
 	EndProjectSection
