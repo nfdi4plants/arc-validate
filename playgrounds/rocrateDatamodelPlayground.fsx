@@ -228,6 +228,7 @@ type LabProcess with
     static member getAgentAs<'T> (lp : LabProcess) = 
         lp.GetAgentAs<'T>()
 
+    /// 
     member this.TryGetParameterValues() =
         tryGetTypedPropertyValue<PropertyValue list> "parameterValues" this
 
@@ -281,27 +282,44 @@ type Person with
 
     // already given: `.GetGivenName`
 
+    // ROCrate | ISA
+    // id = id
+    // givenName = firstName
+    // familyName = lastName
+    // email = email
+    // identifier = ? (not assigned in ISA)
+    // affiliation = affiliation
+    // NB: is `id` here and below in every case only needed programmatically but does NOT occur in the original annotation table?
+
+    /// Returns the familyName of the Person if it exists. Else returns None. This corresponds to `lastName` in ISA.
     member this.TryGetFamilyName() =
         tryGetTypedPropertyValue<string> "familyName" this
 
+    /// Returns the familyName of the Person. This corresponds to `lastName` in ISA.
     member this.GetFamilyName() =
         this.TryGetFamilyName().Value
 
+    /// Returns the familyName of the given Person if it exists. Else returns None. This corresponds to `lastName` in ISA.
     static member tryGetFamilyName (person : Person) = 
         person.TryGetFamilyName()
 
+    /// Returns the familyName of the given Person. This corresponds to `lastName` in ISA.
     static member getFamilyName (person : Person) = 
         person.GetFamilyName()
 
+    /// Returns the additionalName of the Person if it exists. Else returns None. This corresponds to `midInitials` in ISA.
     member this.TryGetAdditionalName() =
         tryGetTypedPropertyValue<string> "additionalName" this
 
+    /// Returns the additionalName of the Person. This corresponds to `midInitials` in ISA.
     member this.GetAdditionalName() =
         this.TryGetAdditionalName().Value
 
+    /// Returns the additionalName of the given Person if it exists. Else returns None. This corresponds to `midInitials` in ISA.
     static member tryGetAdditionalName (person : Person) = 
         person.TryGetAdditionalName()
 
+    /// Returns the additionalName of the given Person. This corresponds to `midInitials` in ISA.
     static member getAdditionalName (person : Person) = 
         person.GetAdditionalName()
 
@@ -553,7 +571,7 @@ module Tokenization =
 
     /// Takes a LabProcess and returns its content tokenized as a sequence of CvParams (where each CvParam represents one property of the process).
     let ofLabProcess (labProcess : LabProcess) : CvParam seq =
-        labProcess.Properties.Values 
+        labProcess.GetAdditionalType
         |> Seq.map (
             fun processUnit -> 
                 let puLdo = LDObject.fromROCrateJsonString (string processUnit)
