@@ -298,6 +298,38 @@ type LabProcess with
     static member getEndTime (lp : LabProcess) = 
         lp.GetEndTime()
 
+    /// Returns the object of the LabProcess in the form of type Sample if it exists. Else returns None. This corresponds to `Source` or `Sample` (in this case: `Source`) in ISA.
+    member this.TryGetObjectAsSample() =
+        tryGetTypedPropertyValue<Sample> "object" this
+
+    /// Returns the object of the LabProcess in the form of type Sample. This corresponds to `Source` or `Sample` (in this case: `Source`) in ISA.
+    member this.GetObjectAsSample() =
+        this.TryGetObjectAsSample().Value
+
+    /// Returns the object of the given LabProcess in the form of type Sample if it exists. Else returns None. This corresponds to `Source` or `Sample` (in this case: `Source`) in ISA.
+    static member tryGetObjectAsSample (labProcess : LabProcess) =
+        labProcess.TryGetObjectAsSample()
+
+    /// Returns the object of the given LabProcess in the form of type Sample. This corresponds to `Source` or `Sample` (in this case: `Source`) in ISA.
+    static member getObjectAsSample (labProcess : LabProcess) =
+        labProcess.GetObjectAsSample()
+
+    /// Returns the result of the LabProcess in the form of type Sample if it exists. Else returns None. This corresponds to `Source` or `Sample` (in this case: `Sample`) in ISA.
+    member this.TryGetResultAsSample() =
+        tryGetTypedPropertyValue<Sample> "result" this
+
+    /// Returns the result of the LabProcess in the form of type Sample. This corresponds to `Source` or `Sample` (in this case: `Sample`) in ISA.
+    member this.GetResultAsSample() =
+        this.TryGetResultAsSample().Value
+
+    /// Returns the result of the given LabProcess in the form of type Sample if it exists. Else returns None. This corresponds to `Source` or `Sample` (in this case: `Sample`) in ISA.
+    static member tryGetResultAsSample (labProcess : LabProcess) =
+        labProcess.TryGetResultAsSample()
+
+    /// Returns the result of the given LabProcess in the form of type Sample. This corresponds to `Source` or `Sample` (in this case: `Sample`) in ISA.
+    static member getResultAsSample (labProcess : LabProcess) =
+        labProcess.GetResultAsSample()
+
 
 type Person with
 
@@ -521,6 +553,22 @@ type PropertyValue with
     static member getValueReference (propertyValue : PropertyValue) = 
         propertyValue.GetValueReference()
 
+    /// Returns the valueReference of the PropertyValue if it exists. Else returns None. This corresponds to `value` in ISA.
+    member this.TryGetValueReferenceAsCvTerm() =
+        tryGetTypedPropertyValue<CvTerm> "valueReference" this
+
+    /// Returns the valueReference of the PropertyValue. This corresponds to `value` in ISA.
+    member this.GetValueReferenceAsCvTerm() =
+        this.TryGetValueReferenceAsCvTerm().Value
+
+    /// Returns the valueReference of the given PropertyValue if it exists. Else returns None. This corresponds to `value` in ISA.
+    static member tryGetValueReferenceAsCvTerm (propertyValue : PropertyValue) = 
+        propertyValue.TryGetValueReferenceAsCvTerm()
+
+    /// Returns the valueReference of the given PropertyValue. This corresponds to `value` in ISA.
+    static member getValueReferenceAsCvTerm (propertyValue : PropertyValue) = 
+        propertyValue.GetValueReferenceAsCvTerm()
+
     /// Returns the additionalType of the PropertyValue if it exists. Else returns None. There is no corresponding term in ISA.
     member this.TryGetAdditionalType() =
         tryGetTypedPropertyValue<string> "additionalType" this
@@ -560,7 +608,7 @@ type Assay with
 
     /// Returns the about of the Assay if it exists. Else returns None. This corresponds to `processSequence` in ISA.
     member this.TryGetAbout() =
-        tryGetTypedPropertyValue<LabProcess> "about" this
+        tryGetTypedPropertyValue<LabProcess seq> "about" this
 
     /// Returns the about of the Assay. This corresponds to `processSequence` in ISA.
     member this.GetAbout() =
@@ -655,16 +703,48 @@ type Assay with
         assay.GetVariableMeasured()
 
 
+type CvTerm with
+
+    /// Returns the corresponding Term Source Ref from the given Term Number Accession.
+    static member refOfAccession accession =
+        let m = System.Text.RegularExpressions.Regex.Match(accession, @"^(?<TermSourceRef>[A-Za-z]+):(\d+)$")
+        m.Groups["TermSourceRef"].Value
+
+
 module Tokenization =
+
+    // ROCrate | ISA
+    // id = id
+    // name = name
+    // agent = Performer (i.e., a Person)
+    // endTime = date
+    // executesLabProtocol = executesProtocol
+    // parameterValue = parameterValues (list of Parameters in the form of propertyValues, see above: `parameter`)
+    // object = inputs (i.e., a series of Samples)
+    // result = outputs (i.e., a series of Samples)
 
     /// Takes a LabProcess and returns its content tokenized as a sequence of CvParams (where each CvParam represents one property of the process).
     let ofLabProcess (labProcess : LabProcess) : CvParam seq =
-        labProcess.GetAdditionalType
-        |> Seq.map (
-            fun processUnit -> 
-                let puLdo = LDObject.fromROCrateJsonString (string processUnit)
-                CvParam(puLdo.Id, puLdo.)
-        )
+        let input = LabProcess.getObjectAsSample labProcess
+        let output = LabProcess.getResultAsSample labProcess
+        let parameters = LabProcess.getParameterValues labProcess
+        let characteristics = Sample.getAdditionalProperty input
+        let inputCvP = CvParam("ISA:(sourceName)", "Source Name", "ISA", Sample.getName input)
+        let outputCvP = CvParam("ISA:(output)", "Sample Name", "ISA", Sample.getName output)
+        let parameterCvPs = 
+            parameters
+            |> List.map (
+                fun para -> 
+                    let valu =
+                        match para.TryGetValueReferenceAsCvTerm(), para.TryGetUnitText(), para.TryGetUnitCode() with
+                        | None, Some ut, Some uc -> 
+                            WithCvUnitAccession (para.GetValue(), CvTerm.create(uc, ut, CvTerm.refOfAccession uc))
+                        | None, Some ut, None ->        // user-specific case (i.e., unit given but not as a ontology-drawn term but as a custom term)
+                            WithCvUnitAccession (para.GetValue(), CvTerm.create("<missing>", ut, "<missing>"))
+                        | Some vr, None, None ->
+                            CvValue vr
+                    CvParam("ISA:(parameter)", "Parameter", "ISA", valu)
+            )
 
 
 
@@ -737,6 +817,8 @@ module Toys =
     // endTime = date
     // executesLabProtocol = executesProtocol
     // parameterValue = parameterValues (list of Parameters in the form of propertyValues, see above: `parameter`)
+    // object = inputs (i.e., a series of Samples)
+    // result = outputs (i.e., a series of Samples)
     let labProcess = LabProcess("id1", "id1", person, object = [inputs], result = [outputs], parameterValue = [parameter])
 
     // ROCrate | ISA
