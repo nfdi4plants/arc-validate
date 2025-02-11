@@ -210,70 +210,91 @@ type LabProcess with
 
     // already given: .GetAgent, .GetName, .GetResult, .GetObject
 
+    /// Returns the agent of the LabProcess in the given type if it exists. Else returns None. This corresponds to `performer` in ISA.
     member this.TryGetAgentAs<'T>() = 
         tryGetTypedPropertyValue<'T> "agent" this
 
+    /// Returns the agent of the LabProcess in the given type. This corresponds to `performer` in ISA.
     member this.GetAgentAs<'T>() =
         this.TryGetAgentAs<'T>().Value
 
+    /// Returns the agent of the LabProcess as a string if it exists. Else returns None. This corresponds to `performer` in ISA.
     member this.TryGetAgentAsString() =
         this.TryGetAgentAs<string>()
 
+    /// Returns the agent of the LabProcess as a string. This corresponds to `performer` in ISA.
     member this.GetAgentAsString() =
         this.TryGetAgentAsString()
 
+    /// Returns the agent of the given LabProcess in the given type if it exists. Else returns None. This corresponds to `performer` in ISA.
     static member tryGetAgentAs<'T> (lp : LabProcess) = 
         lp.TryGetAgentAs<'T>()
 
+    /// Returns the agent of the given LabProcess. This corresponds to `performer` in ISA.
     static member getAgentAs<'T> (lp : LabProcess) = 
         lp.GetAgentAs<'T>()
 
-    /// 
-    member this.TryGetParameterValues() =
-        tryGetTypedPropertyValue<PropertyValue list> "parameterValues" this
+    /// Returns the parameterValue of the LabProcess if it exists. Else returns None. This corresponds to `parameterValues` in ISA.
+    member this.TryGetParameterValue() =
+        tryGetTypedPropertyValue<PropertyValue list> "parameterValue" this
 
-    member this.GetParameterValues() =
-        this.TryGetParameterValues().Value
+    /// Returns the parameterValue of the LabProcess. This corresponds to `parameterValues` in ISA.
+    member this.GetParameterValue() =
+        this.TryGetParameterValue().Value
 
+    /// Returns the parameterValue of the given LabProcess if it exists. Else returns None. This corresponds to `parameterValues` in ISA.
     static member tryGetParameterValues (lp : LabProcess) = 
-        lp.TryGetParameterValues()
+        lp.TryGetParameterValue()
 
+    /// Returns the parameterValue of the given LabProcess. This corresponds to `parameterValues` in ISA.
     static member getParameterValues (lp : LabProcess) = 
-        lp.GetParameterValues()
+        lp.GetParameterValue()
 
+    /// Returns the additionalType of the LabProcess if it exists. Else returns None. There is no correspondent term in ISA.
     member this.TryGetAdditionalType() =
         tryGetTypedPropertyValue<string> "additionalType" this
 
+    /// Returns the additionalType of the LabProcess. There is no correspondent term in ISA.
     member this.GetAdditionalType() =
         this.TryGetAdditionalType().Value
 
+    /// Returns the additionalType of the given LabProcess if it exists. Else returns None. There is no correspondent term in ISA.
     static member tryGetAdditionalType (lp : LabProcess) = 
         lp.TryGetAdditionalType()
 
+    /// Returns the additionalType of the given LabProcess. There is no correspondent term in ISA.
     static member getAdditionalType (lp : LabProcess) = 
         lp.GetAdditionalType()
 
+    /// Returns the executesLabProtocol of the LabProcess if it exists. Else returns None. This corresponds to `executesProtocol` in ISA.
     member this.TryGetExecutesLabProtocol() =
         tryGetTypedPropertyValue<LabProtocol> "executesLabProtocol" this 
 
+    /// Returns the executesLabProtocol of the LabProcess. This corresponds to `executesProtocol` in ISA.
     member this.GetExecutesLabProtocol() =
         this.TryGetExecutesLabProtocol().Value
 
+    /// Returns the executesLabProtocol of the given LabProcess if it exists. Else returns None. This corresponds to `executesProtocol` in ISA.
     static member tryGetExecutesLabProtocol (lp : LabProcess) = 
         lp.TryGetExecutesLabProtocol()
 
+    /// Returns the executesLabProtocol of the given LabProcess. This corresponds to `executesProtocol` in ISA.
     static member getExecutesLabProtocol (lp : LabProcess) = 
         lp.GetExecutesLabProtocol()
 
+    /// Returns the endTime of the LabProcess if it exists. Else returns None. This corresponds to `date` in ISA.
     member this.TryGetEndTime() =
         tryGetTypedPropertyValue<System.DateTime> "endTime" this
 
+    /// Returns the endTime of the LabProcess. This corresponds to `date` in ISA.
     member this.GetEndTime() =
         this.TryGetEndTime().Value
 
+    /// Returns the endTime of the given LabProcess if it exists. Else returns None. This corresponds to `date` in ISA.
     static member tryGetEndTime (lp : LabProcess) = 
         lp.TryGetEndTime()
 
+    /// Returns the endTime of the given LabProcess. This corresponds to `date` in ISA.
     static member getEndTime (lp : LabProcess) = 
         lp.GetEndTime()
 
@@ -281,15 +302,6 @@ type LabProcess with
 type Person with
 
     // already given: `.GetGivenName`
-
-    // ROCrate | ISA
-    // id = id
-    // givenName = firstName
-    // familyName = lastName
-    // email = email
-    // identifier = ? (not assigned in ISA)
-    // affiliation = affiliation
-    // NB: is `id` here and below in every case only needed programmatically but does NOT occur in the original annotation table?
 
     /// Returns the familyName of the Person if it exists. Else returns None. This corresponds to `lastName` in ISA.
     member this.TryGetFamilyName() =
@@ -323,75 +335,99 @@ type Person with
     static member getAdditionalName (person : Person) = 
         person.GetAdditionalName()
 
+    /// Returns the jobTitle of the Person if it exists. Else returns None. This corresponds to `roles` in ISA.
     member this.TryGetJobTitle() =
         tryGetTypedPropertyValue<string> "jobTitle" this
 
+    /// Returns the jobTitle of the Person. This corresponds to `roles` in ISA.
     member this.GetJobTitle() =
         this.TryGetJobTitle().Value
 
+    /// Returns the jobTitle of the given Person if it exists. Else returns None. This corresponds to `roles` in ISA.
     static member tryGetJobTitle (person : Person) = 
         person.TryGetJobTitle()
 
+    /// Returns the jobTitle of the given Person. This corresponds to `roles` in ISA.
     static member getJobTitle (person : Person) = 
         person.GetJobTitle()
 
+    /// Returns the email of the Person if it exists. Else returns None. This corresponds to `email` in ISA.
     member this.TryGetEmail() =
         tryGetTypedPropertyValue<string> "email" this
 
+    /// Returns the email of the Person. This corresponds to `email` in ISA.
     member this.GetEmail() =
         this.TryGetEmail().Value
 
+    /// Returns the email of the given Person if it exists. Else returns None. This corresponds to `email` in ISA.
     static member tryGetEmail (person : Person) = 
         person.TryGetEmail()
 
+    /// Returns the email of the given Person. This corresponds to `email` in ISA.
     static member getEmail (person : Person) = 
         person.GetEmail()
 
+    /// Returns the affiliation of the Person if it exists. Else returns None. This corresponds to `affiliation` in ISA.
     member this.TryGetAffiliation() =
         tryGetTypedPropertyValue<string> "affiliation" this
 
+    /// Returns the affiliation of the Person. This corresponds to `affiliation` in ISA.
     member this.GetAffiliation() =
         this.TryGetAffiliation().Value
 
+    /// Returns the affiliation of the given Person if it exists. Else returns None. This corresponds to `affiliation` in ISA.
     static member tryGetAffiliation (person : Person) = 
         person.TryGetAffiliation()
 
+    /// Returns the affiliation of the given Person. This corresponds to `affiliation` in ISA.
     static member getAffiliation (person : Person) = 
         person.GetAffiliation()
 
+    /// Returns the address of the Person if it exists. Else returns None. This corresponds to `address` in ISA.
     member this.TryGetAddress() =
         tryGetTypedPropertyValue<string> "address" this
 
+    /// Returns the address of the Person. This corresponds to `address` in ISA.
     member this.GetAddress() =
         this.TryGetAddress().Value
 
+    /// Returns the address of the given Person if it exists. Else returns None. This corresponds to `address` in ISA.
     static member tryGetAddress (person : Person) = 
         person.TryGetAddress()
 
+    /// Returns the address of the given Person. This corresponds to `address` in ISA.
     static member getAddress (person : Person) = 
         person.GetAddress()
 
+    /// Returns the telephone of the Person if it exists. Else returns None. This corresponds to `phone` in ISA.
     member this.TryGetTelephone() =
         tryGetTypedPropertyValue<string> "telephone" this
 
+    /// Returns the telephone of the Person. This corresponds to `phone` in ISA.
     member this.GetTelephone() =
         this.TryGetTelephone().Value
 
+    /// Returns the telephone of the given Person if it exists. Else returns None. This corresponds to `phone` in ISA.
     static member tryGetTelephone (person : Person) = 
         person.TryGetTelephone()
 
+    /// Returns the telephone of the given Person. This corresponds to `phone` in ISA.
     static member getTelephone (person : Person) = 
         person.GetTelephone()
 
+    /// Returns the fax of the Person if it exists. Else returns None. This corresponds to `faxNumber` in ISA.
     member this.TryGetFaxNumber() =
         tryGetTypedPropertyValue<string> "faxNumber" this
 
+    /// Returns the fax of the Person. This corresponds to `faxNumber` in ISA.
     member this.GetFaxNumber() =
         this.TryGetFaxNumber().Value
 
+    /// Returns the fax of the given Person if it exists. Else returns None. This corresponds to `faxNumber` in ISA.
     static member tryGetFaxNumber (person : Person) = 
         person.TryGetFaxNumber() 
 
+    /// Returns the fax of the given Person. This corresponds to `faxNumber` in ISA.
     static member getFaxNumber (person : Person) = 
         person.GetFaxNumber()
 
@@ -400,27 +436,35 @@ type Sample with
 
     // already given: .GetName
 
+    /// Returns the additionalType of the Sample if it exists. Else returns None. There is no corresponding term in ISA.
     member this.TryGetAdditionalType() =
         tryGetTypedPropertyValue<string> "additionalType" this
 
+    /// Returns the additionalType of the Sample. There is no corresponding term in ISA.
     member this.GetAdditionalType() =
         this.TryGetAdditionalType().Value
 
+    /// Returns the additionalType of the given Sample if it exists. Else returns None. There is no corresponding term in ISA.
     static member tryGetAdditionalType (sample : Sample) = 
         sample.TryGetAdditionalType()
 
+    /// Returns the additionalType of the given Sample. There is no corresponding term in ISA.
     static member getAdditionalType (sample : Sample) = 
         sample.GetAdditionalType()
 
+    /// Returns the additionalProperty of the Sample if it exists. Else returns None. This corresponds to `characteristics` or `factor` in ISA.
     member this.TryGetAdditionalProperty() =
         tryGetTypedPropertyValue<PropertyValue> "additionalProperty" this
 
+    /// Returns the additionalProperty of the Sample. This corresponds to `characteristics` or `factor` in ISA.
     member this.GetAdditionalProperty() =
         this.TryGetAdditionalProperty().Value
 
+    /// Returns the additionalProperty of the given Sample if it exists. Else returns None. This corresponds to `characteristics` or `factor` in ISA.
     static member tryGetAdditionalProperty (sample : Sample) = 
         sample.TryGetAdditionalProperty()
 
+    /// Returns the additionalProperty of the given Sample. This corresponds to `characteristics` or `factor` in ISA.
     static member getAdditionalProperty (sample : Sample) = 
         sample.GetAdditionalProperty()
 
@@ -429,63 +473,83 @@ type PropertyValue with
 
     // already given: `.GetName`, `.GetValue`
 
-    member this.TryGetUnit() =
-        tryGetTypedPropertyValue<string> "unit" this
+    /// Returns the unitText of the PropertyValue if it exists. Else returns None. This, together with `unitCode` corresponds to `unit` in ISA.
+    member this.TryGetUnitText() =
+        tryGetTypedPropertyValue<string> "unitText" this
 
-    member this.GetUnit() =
-        this.TryGetUnit().Value
+    /// Returns the unitText of the PropertyValue. This, together with `unitCode` corresponds to `unit` in ISA.
+    member this.GetUnitText() =
+        this.TryGetUnitText().Value
 
-    static member tryGetUnit (propertyValue : PropertyValue) = 
-        propertyValue.TryGetUnit()
+    /// Returns the unitText of the given PropertyValue if it exists. Else returns None. This, together with `unitCode` corresponds to `unit` in ISA.
+    static member tryGetUnitText (propertyValue : PropertyValue) = 
+        propertyValue.TryGetUnitText()
 
-    static member getUnit (propertyValue : PropertyValue) = 
-        propertyValue.GetUnit()
+    /// Returns the unitText of the given PropertyValue. This, together with `unitCode` corresponds to `unit` in ISA.
+    static member getUnitText (propertyValue : PropertyValue) = 
+        propertyValue.GetUnitText()
 
+    /// Returns the unitCode of the PropertyValue if it exists. Else returns None. This, together with `unitText` corresponds to `unit` in ISA.
     member this.TryGetUnitCode() =
         tryGetTypedPropertyValue<string> "unitCode" this
 
+    /// Returns the unitCode of the PropertyValue. This, together with `unitText` corresponds to `unit` in ISA.
     member this.GetUnitCode() =
         this.TryGetUnitCode().Value
 
+    /// Returns the unitCode of the given PropertyValue if it exists. Else returns None. This, together with `unitText` corresponds to `unit` in ISA.
     static member tryGetUnitCode (propertyValue : PropertyValue) = 
         propertyValue.TryGetUnitCode()
 
+    /// Returns the unitCode of the given PropertyValue. This, together with `unitText` corresponds to `unit` in ISA.
     static member getUnitCode (propertyValue : PropertyValue) = 
         propertyValue.GetUnitCode()
 
+    /// Returns the valueReference of the PropertyValue if it exists. Else returns None. This corresponds to `value` in ISA.
     member this.TryGetValueReference() =
         tryGetTypedPropertyValue<string> "valueReference" this
 
+    /// Returns the valueReference of the PropertyValue. This corresponds to `value` in ISA.
     member this.GetValueReference() =
         this.TryGetValueReference().Value
 
+    /// Returns the valueReference of the given PropertyValue if it exists. Else returns None. This corresponds to `value` in ISA.
     static member tryGetValueReference (propertyValue : PropertyValue) = 
         propertyValue.TryGetValueReference()
 
+    /// Returns the valueReference of the given PropertyValue. This corresponds to `value` in ISA.
     static member getValueReference (propertyValue : PropertyValue) = 
         propertyValue.GetValueReference()
 
+    /// Returns the additionalType of the PropertyValue if it exists. Else returns None. There is no corresponding term in ISA.
     member this.TryGetAdditionalType() =
         tryGetTypedPropertyValue<string> "additionalType" this
 
+    /// Returns the additionalType of the PropertyValue. There is no corresponding term in ISA.
     member this.GetAdditionalType() =
         this.TryGetAdditionalType().Value
 
+    /// Returns the additionalType of the given PropertyValue if it exists. Else returns None. There is no corresponding term in ISA.
     static member tryGetAdditionalType (propertyValue : PropertyValue) = 
         propertyValue.TryGetAdditionalType()
 
+    /// Returns the additionalType of the given PropertyValue. There is no corresponding term in ISA.
     static member getAdditionalType (propertyValue : PropertyValue) = 
         propertyValue.GetAdditionalType()
 
+    /// Returns the propertyID of the PropertyValue if it exists. Else returns None. This corresponds to `category` in ISA.
     member this.TryGetPropertyID() =
         tryGetTypedPropertyValue<string> "propertyID" this
 
+    /// Returns the propertyID of the PropertyValue. This corresponds to `category` in ISA.
     member this.GetPropertyID() =
         this.TryGetPropertyID().Value
 
+    /// Returns the propertyID of the given PropertyValue if it exists. Else returns None. This corresponds to `category` in ISA.
     static member tryGetPropertyID (propertyValue : PropertyValue) = 
         propertyValue.TryGetPropertyID()
 
+    /// Returns the propertyID of the given PropertyValue. This corresponds to `category` in ISA.
     static member getPropertyID (propertyValue : PropertyValue) = 
         propertyValue.GetPropertyID()
 
@@ -494,75 +558,99 @@ type Assay with
 
     // already given: .GetIdentifier
 
+    /// Returns the about of the Assay if it exists. Else returns None. This corresponds to `processSequence` in ISA.
     member this.TryGetAbout() =
         tryGetTypedPropertyValue<LabProcess> "about" this
 
+    /// Returns the about of the Assay. This corresponds to `processSequence` in ISA.
     member this.GetAbout() =
         this.TryGetAbout().Value
 
+    /// Returns the about of the given Assay if it exists. Else returns None. This corresponds to `processSequence` in ISA.
     static member tryGetAbout (assay : Assay) = 
         assay.TryGetAbout()
 
+    /// Returns the about of the given Assay. This corresponds to `processSequence` in ISA.
     static member getAbout (assay : Assay) = 
         assay.GetAbout()
 
+    /// Returns the hasPart of the Assay if it exists. Else returns None. This corresponds to `dataFiles` in ISA.
     member this.TryGetHasPart() =
         tryGetTypedPropertyValue<string seq> "hasPart" this
 
+    /// Returns the hasPart of the Assay. This corresponds to `dataFiles` in ISA.
     member this.GetHasPart() =
         this.TryGetHasPart().Value
 
+    /// Returns the hasPart of the given Assay if it exists. Else returns None. This corresponds to `dataFiles` in ISA.
     static member tryGetHasPart (assay : Assay) = 
         assay.TryGetHasPart()
 
+    /// Returns the hasPart of the given Assay. This corresponds to `dataFiles` in ISA.
     static member getHasPart (assay : Assay) = 
         assay.GetHasPart()
 
+    /// Returns the measurementMethod of the Assay if it exists. Else returns None. This corresponds to `technologyType` in ISA.
     member this.TryGetMeasurementMethod() =
         tryGetTypedPropertyValue<string> "measurementMethod" this
 
+    /// Returns the measurementMethod of the Assay. This corresponds to `technologyType` in ISA.
     member this.GetMeasurementMethod() =
         this.TryGetMeasurementMethod().Value
 
+    /// Returns the measurementMethod of the given Assay if it exists. Else returns None. This corresponds to `technologyType` in ISA.
     static member tryGetMeasurementMethod (assay : Assay) = 
         assay.TryGetMeasurementMethod()
 
+    /// Returns the measurementMethod of the given Assay. This corresponds to `technologyType` in ISA.
     static member getMeasurementMethod (assay : Assay) = 
         assay.GetMeasurementMethod()
 
+    /// Returns the measurementTechnique of the Assay if it exists. Else returns None. This corresponds to `technologyPlatform` in ISA.
     member this.TryGetMeasurementTechnique() =
         tryGetTypedPropertyValue<string> "measurementTechnique" this
 
+/// Returns the measurementTechnique of the Assay. This corresponds to `technologyPlatform` in ISA.
     member this.GetMeasurementTechnique() =
         this.TryGetMeasurementTechnique().Value
 
+/// Returns the measurementTechnique of the given Assay if it exists. Else returns None. This corresponds to `technologyPlatform` in ISA.
     static member tryGetMeasurementTechnique (assay : Assay) = 
         assay.TryGetMeasurementTechnique()
 
+/// Returns the measurementTechnique of the given Assay. This corresponds to `technologyPlatform` in ISA.
     static member getMeasurementTechnique (assay : Assay) = 
         assay.GetMeasurementTechnique()
 
+    /// Returns the url of the Assay if it exists. Else returns None. This corresponds to `fileName` in ISA.
     member this.TryGetUrl() =
         tryGetTypedPropertyValue<string> "url" this
 
+    /// Returns the url of the Assay. This corresponds to `fileName` in ISA.
     member this.GetUrl() =
         this.TryGetUrl().Value
 
+    /// Returns the url of the given Assay if it exists. Else returns None. This corresponds to `fileName` in ISA.
     static member tryGetUrl (assay : Assay) = 
         assay.TryGetUrl()
 
+    /// Returns the url of the given Assay. This corresponds to `fileName` in ISA.
     static member getUrl (assay : Assay) = 
         assay.GetUrl()
 
+    /// Returns the variableMeasured of the Assay if it exists. Else returns None. This corresponds to `measurementType` in ISA.
     member this.TryGetVariableMeasured() =
         tryGetTypedPropertyValue<string> "variableMeasured" this
 
+    /// Returns the variableMeasured of the Assay. This corresponds to `measurementType` in ISA.
     member this.GetVariableMeasured() =
         this.TryGetVariableMeasured().Value
 
+    /// Returns the variableMeasured of the given Assay if it exists. Else returns None. This corresponds to `measurementType` in ISA.
     static member tryGetVariableMeasured (assay : Assay) = 
         assay.TryGetVariableMeasured()
 
+    /// Returns the variableMeasured of the given Assay. This corresponds to `measurementType` in ISA.
     static member getVariableMeasured (assay : Assay) = 
         assay.GetVariableMeasured()
 
