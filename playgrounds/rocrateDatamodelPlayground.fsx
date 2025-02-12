@@ -486,7 +486,7 @@ type Sample with
 
     /// Returns the additionalProperty of the Sample if it exists. Else returns None. This corresponds to `characteristics` or `factor` in ISA.
     member this.TryGetAdditionalProperty() =
-        tryGetTypedPropertyValue<PropertyValue> "additionalProperty" this
+        tryGetTypedPropertyValue<PropertyValue seq> "additionalProperty" this
 
     /// Returns the additionalProperty of the Sample. This corresponds to `characteristics` or `factor` in ISA.
     member this.GetAdditionalProperty() =
@@ -713,38 +713,50 @@ type CvTerm with
 
 module Tokenization =
 
-    // ROCrate | ISA
-    // id = id
-    // name = name
-    // agent = Performer (i.e., a Person)
-    // endTime = date
-    // executesLabProtocol = executesProtocol
-    // parameterValue = parameterValues (list of Parameters in the form of propertyValues, see above: `parameter`)
-    // object = inputs (i.e., a series of Samples)
-    // result = outputs (i.e., a series of Samples)
+    // TODO: should belong to another namespace
+    module Helper =
+
+        let createCvPFromPropertyValue accession name (pv : PropertyValue) =
+            let valu =
+                match pv.TryGetValueReferenceAsCvTerm(), pv.TryGetUnitText(), pv.TryGetUnitCode() with
+                | None, Some ut, Some uc -> 
+                    WithCvUnitAccession (pv.GetValue(), CvTerm.create(uc, ut, CvTerm.refOfAccession uc))
+                | None, Some ut, None ->        // user-specific case (i.e., unit given but not as a ontology-drawn term but as a custom term)
+                    WithCvUnitAccession (pv.GetValue(), CvTerm.create("<missing>", ut, "<missing>"))
+                | Some vr, None, None ->
+                    CvValue vr
+                | _ -> failwith $"Strange case occured: {pv.TryGetValueReferenceAsCvTerm()}, {pv.TryGetUnitText()}, {pv.TryGetUnitCode()}"      // TODO: Delete this when thoroughly tested
+            CvParam(accession, name, CvTerm.refOfAccession accession, valu)
+
 
     /// Takes a LabProcess and returns its content tokenized as a sequence of CvParams (where each CvParam represents one property of the process).
     let ofLabProcess (labProcess : LabProcess) : CvParam seq =
         let input = LabProcess.getObjectAsSample labProcess
         let output = LabProcess.getResultAsSample labProcess
         let parameters = LabProcess.getParameterValues labProcess
-        let characteristics = Sample.getAdditionalProperty input
+        let characteristics, factors = 
+            Sample.getAdditionalProperty input
+            |> List.ofSeq
+            |> List.partition (
+                fun cOrF ->     // characteristics OR factor
+                    match PropertyValue.getValue cOrF with      // get the value of the PropertyValue to determine if it's Characteristics or Factor
+                    | "characteristics" -> true
+                    | "factor" -> false
+                    | _ -> failwith $"Partitioning into Characteristics and Factors failed tue to Value being {PropertyValue.getValue cOrF}"
+            )
         let inputCvP = CvParam("ISA:(sourceName)", "Source Name", "ISA", Sample.getName input)
         let outputCvP = CvParam("ISA:(output)", "Sample Name", "ISA", Sample.getName output)
         let parameterCvPs = 
             parameters
-            |> List.map (
-                fun para -> 
-                    let valu =
-                        match para.TryGetValueReferenceAsCvTerm(), para.TryGetUnitText(), para.TryGetUnitCode() with
-                        | None, Some ut, Some uc -> 
-                            WithCvUnitAccession (para.GetValue(), CvTerm.create(uc, ut, CvTerm.refOfAccession uc))
-                        | None, Some ut, None ->        // user-specific case (i.e., unit given but not as a ontology-drawn term but as a custom term)
-                            WithCvUnitAccession (para.GetValue(), CvTerm.create("<missing>", ut, "<missing>"))
-                        | Some vr, None, None ->
-                            CvValue vr
-                    CvParam("ISA:(parameter)", "Parameter", "ISA", valu)
-            )
+            |> List.map (Helper.createCvPFromPropertyValue "ISA:(Parameter)" "Parameter")
+        let characteristicsCvPs =
+            characteristics
+            |> List.map (Helper.createCvPFromPropertyValue "ISA:(Characteristics)" "Characteristics")
+        let factorCvPs =
+            factors
+            |> List.map (Helper.createCvPFromPropertyValue "ISA:(Factor)" "Factor")
+        seq {inputCvP; yield! parameterCvPs; yield! characteristicsCvPs; yield! factorCvPs; outputCvP}
+
 
 
 
