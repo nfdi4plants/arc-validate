@@ -2,14 +2,14 @@
 //#r "nuget: ARCExpect"
 #r "nuget: ControlledVocabulary"
 #r "nuget: Expecto"
-//#r "nuget: ARCTokenization"
+#r "nuget: ARCTokenization"
 
 
 open ARCtrl
 //open ARCExpect
 open ControlledVocabulary
 open Expecto
-//open ARCTokenization
+open ARCTokenization
 //open ARCtrl
 open ARCtrl.ROCrate
 open ARCtrl.Json
@@ -703,14 +703,6 @@ type Assay with
         assay.GetVariableMeasured()
 
 
-type CvTerm with
-
-    /// Returns the corresponding Term Source Ref from the given Term Number Accession.
-    static member refOfAccession accession =
-        let m = System.Text.RegularExpressions.Regex.Match(accession, @"^(?<TermSourceRef>[A-Za-z]+):(\d+)$")
-        m.Groups["TermSourceRef"].Value
-
-
 module Tokenization =
 
     // TODO: should belong to another namespace
@@ -735,13 +727,15 @@ module Tokenization =
         let output = LabProcess.getResultAsSample labProcess
         let parameters = LabProcess.getParameterValues labProcess
         let characteristics, factors = 
+            printfn "getAdditionalProperty input"
             Sample.getAdditionalProperty input
             |> List.ofSeq
             |> List.partition (
                 fun cOrF ->     // characteristics OR factor
+                    printfn "partition"
                     match PropertyValue.getValue cOrF with      // get the value of the PropertyValue to determine if it's Characteristics or Factor
-                    | "characteristics" -> true
-                    | "factor" -> false
+                    | "characteristics" | "Characteristics" -> true
+                    | "factor" | "Factor" -> false
                     | _ -> failwith $"Partitioning into Characteristics and Factors failed tue to Value being {PropertyValue.getValue cOrF}"
             )
         let inputCvP = CvParam("ISA:(sourceName)", "Source Name", "ISA", Sample.getName input)
@@ -780,69 +774,69 @@ module Validate =
         else Expecto.Tests.failtestNoStackf errorMessage
 
 
-module Toys =
+// Toys:
 
-    // created in reference to https://github.com/nfdi4plants/isa-ro-crate-profile/blob/release/profile/isa_ro_crate.md and https://github.com/nfdi4plants/isa-ro-crate-profile/blob/release/profile/isa_ro_crate_mapping.md
+// created in reference to https://github.com/nfdi4plants/isa-ro-crate-profile/blob/release/profile/isa_ro_crate.md and https://github.com/nfdi4plants/isa-ro-crate-profile/blob/release/profile/isa_ro_crate_mapping.md
 
-    // ROCrate | ISA
-    // id = id
-    // givenName = firstName
-    // familyName = lastName
-    // email = email
-    // identifier = ? (not assigned in ISA)
-    // affiliation = affiliation
-    // NB: is `id` here and below in every case only needed programmatically but does NOT occur in the original annotation table?
-    let person = ROCrate.Person("id1", "Oliver", familyName = "Maus", email = "maus@nfdi4plants.org", identifier = "id1", affiliation = "RPTU Kaiserslautern")
+// ROCrate | ISA
+// id = id
+// givenName = firstName
+// familyName = lastName
+// email = email
+// identifier = ? (not assigned in ISA)
+// affiliation = affiliation
+// NB: is `id` here and below in every case only needed programmatically but does NOT occur in the original annotation table?
+let person = ROCrate.Person("id1", "Oliver", familyName = "Maus", email = "maus@nfdi4plants.org", identifier = "id1", affiliation = "RPTU Kaiserslautern")
 
-    // ROCrate | ISA
-    // id = id
-    // name = key name (would probably be the name of the header term)
-    // value = text or number (as string) (text for terms and freetext, number for values and freetext when only digits)
-    // propertyID = category (key ontology reference, i.e. TermSourceRef (TSR) I think)
-    // additionalType = freetext (?) if it's Characteristics, Parameter, Factor, or Component (NB: is it standardized?)
-    // unitCode = unit ontology ref (again TSR I guess)
-    // unitText = unit name (i.e., unit term name)
-    // valueReference = value ontology reference (TSR?)
-    // IMPORTANT: TSR could always also be TAN (TermAccessionNumber) – clarify with HLW, FW (Florian Wetzels), and KS (Kevin Schneider) because it's a mess right now
-    // TAN would make more sense to me since you can always determine the TSR from the TAN but not vice versa – discuss with people
-    let characteristics = PropertyValue("char1", "SourceCharacteristics", "myCharacteristics", propertyID = "DBPO", additionalType = "Characteristics")
+// ROCrate | ISA
+// id = id
+// name = key name (would probably be the name of the header term)
+// value = text or number (as string) (text for terms and freetext, number for values and freetext when only digits)
+// propertyID = category (key ontology reference, i.e. TermSourceRef (TSR) I think)
+// additionalType = freetext (?) if it's Characteristics, Parameter, Factor, or Component (NB: is it standardized?)
+// unitCode = unit ontology ref (again TSR I guess)
+// unitText = unit name (i.e., unit term name)
+// valueReference = value ontology reference (TSR?)
+// IMPORTANT: TSR could always also be TAN (TermAccessionNumber) – clarify with HLW, FW (Florian Wetzels), and KS (Kevin Schneider) because it's a mess right now
+// TAN would make more sense to me since you can always determine the TSR from the TAN but not vice versa – discuss with people
+let characteristics = PropertyValue("char1", "Characteristics", "myCharacteristics", propertyID = "DBPO", additionalType = "Characteristics")
 
-    // ROCrate | ISA
-    // id = id
-    // name = identifier
-    // additionalProperty = either Characteristics or Factor in the form of propertyValue, see above: `characteristics`
-    // derivesFrom = (seems to be redundant)
-    // additionalType = ? (not mentioned in profile and mapping)
-    let inputs = Sample("source1", "source1", additionalProperty = characteristics)
+// ROCrate | ISA
+// id = id
+// name = identifier
+// additionalProperty = either Characteristics or Factor in the form of propertyValue, see above: `characteristics`
+// derivesFrom = (seems to be redundant)
+// additionalType = ? (not mentioned in profile and mapping)
+let inputs = Sample("source1", "source1", additionalProperty = [characteristics])
 
-    // see above: `inputs` annotation
-    // IMPORTANT: Ask people where Characteristics and Factor should be applied to: to the inputs or to the outputs or both?
-    let outputs = Sample("sample1", "sample1", additionalProperty = characteristics)
+// see above: `inputs` annotation
+// IMPORTANT: Ask people where Characteristics and Factor should be applied to: to the inputs or to the outputs or both?
+let outputs = Sample("sample1", "sample1", additionalProperty = [characteristics])
 
-    // see above: `characteristics` annotation
-    let parameter = PropertyValue("param1", "SampleParameters", "myParameter", propertyID = "DBPO", additionalType = "Parameter")
+// see above: `characteristics` annotation
+let parameter = PropertyValue("param1", "SampleParameters", "myParameter", propertyID = "DBPO", additionalType = "Parameter")
 
-    // ROCrate | ISA
-    // id = id
-    // name = name
-    // agent = Performer (i.e., a Person)
-    // endTime = date
-    // executesLabProtocol = executesProtocol
-    // parameterValue = parameterValues (list of Parameters in the form of propertyValues, see above: `parameter`)
-    // object = inputs (i.e., a series of Samples)
-    // result = outputs (i.e., a series of Samples)
-    let labProcess = LabProcess("id1", "id1", person, object = [inputs], result = [outputs], parameterValue = [parameter])
+// ROCrate | ISA
+// id = id
+// name = name
+// agent = Performer (i.e., a Person)
+// endTime = date
+// executesLabProtocol = executesProtocol
+// parameterValue = parameterValues (list of Parameters in the form of propertyValues, see above: `parameter`)
+// object = inputs (i.e., a series of Samples)
+// result = outputs (i.e., a series of Samples)
+let labProcess = LabProcess("id1", "id1", person, object = inputs, result = outputs, parameterValue = [parameter])
 
-    // ROCrate | ISA
-    // id = id
-    // name = identifier
-    // about = Process (i.e., 1 single ISA Process, NOT the whole ProcessSequence. In the annotation table this correlates to 1 row (while the ProcessSequence correlates to ALL rows))
-    // measurementMethod = Technology Type
-    // measurementTechnique = Technology Platform
-    // variableMeasured = Measurement Type
-    // hasPart = Data Files
-    // url = fileName
-    let assay = ROCrate.Assay("assayID", "assayID", about = labProcess)
+// ROCrate | ISA
+// id = id
+// name = identifier
+// about = Process (i.e., 1 single ISA Process, NOT the whole ProcessSequence. In the annotation table this correlates to 1 row (while the ProcessSequence correlates to ALL rows))
+// measurementMethod = Technology Type
+// measurementTechnique = Technology Platform
+// variableMeasured = Measurement Type
+// hasPart = Data Files
+// url = fileName
+let assay = ROCrate.Assay("assayID", "assayID", about = [labProcess])
 
 
 
@@ -853,5 +847,6 @@ module Toys =
 //    Study.parseMetadataSheetsFromTokens() arcDir
 //    |> List.concat
 
-
-let ch
+Tokenization.ofLabProcess (Assay.getAbout assay |> Seq.head)
+Tokenization.ofLabProcess labProcess
+LabProcess.getObjectAsSample labProcess
