@@ -3,19 +3,19 @@
   "isRoot": true,
   "tools": {
     "docfx": {
-      "version": "2.70.1",
+      "version": "2.78.2",
       "commands": [
         "docfx"
       ]
     },
     "fsdocs-tool": {
-      "version": "20.0.0-alpha-018",
+      "version": "20.0.1",
       "commands": [
         "fsdocs"
       ]
     },
     "dotnet-repl": {
-      "version": "0.1.208",
+      "version": "0.3.230",
       "commands": [
         "dotnet-repl"
       ]
