@@ -16,7 +16,7 @@ open ARCtrl.Json
 open DynamicObj.DynObj
 
 
-let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
+//let arc = ARC.load @"C:\Repos\git.nfdi4plants.org\ArcPrototype"
 
 //arc.ISA.Value.Assays |> Seq.iter (fun a -> printfn $"{a.Identifier}")
 //arc.ISA.Value.GetAssay ""
@@ -717,7 +717,7 @@ module Tokenization =
                     WithCvUnitAccession (pv.GetValue(), CvTerm.create("<missing>", ut, "<missing>"))
                 | Some vr, None, None ->
                     CvValue vr
-                | _ -> failwith $"Strange case occured: {pv.TryGetValueReferenceAsCvTerm()}, {pv.TryGetUnitText()}, {pv.TryGetUnitCode()}"      // TODO: Delete this when thoroughly tested
+                | _ -> failwith $"Strange case occured: {pv.TryGetValueReferenceAsCvTerm()}, {pv.TryGetUnitText()}, {pv.TryGetUnitCode()} when accession: {accession} and name: {name}"      // TODO: Delete this when thoroughly tested
             CvParam(accession, name, CvTerm.refOfAccession accession, valu)
 
 
