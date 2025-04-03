@@ -20,7 +20,7 @@
     <Compile Include="ValidationSummary.fs" />
     <Compile Include="BadgeCreation.fs" />
     <Compile Include="SpecificationValidation\V2_0_0_Draft.fs" />
-    <Compile Include="SpecificationValidation\V2_1_0_Draft.fs" />
+    <Compile Include="SpecificationValidation\V2_1_0.fs" />
     <Compile Include="SpecificationValidation\SpecificationSelection.fs" />
     <Compile Include="TopLevelAPI.fs" />
   </ItemGroup>

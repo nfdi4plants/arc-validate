@@ -6,7 +6,7 @@ open ARCExpect
 open Expecto
 open AVPRIndex
 
-module V2_1_0_Draft =
+module V2_1_0 =
 
     module MustHaveTerms = 
         let investigationTerms = 
@@ -554,12 +554,11 @@ module V2_1_0_Draft =
         ARCValidationPackage.create(
             metadata = ValidationPackageMetadata.create(
                 name = "arc_specification",
-                summary = "Validate whether an ARC conforms to Specification V2.0.0-draft",
-                description = "Validate whether an ARC conforms to Specification V2.0.0-draft. See the relevant spec at https://github.com/nfdi4plants/ARC-specification/blob/v2.0.0/ARC%20specification.md",
+                summary = "Validate whether an ARC conforms to Specification V2.1.0",
+                description = "Validate whether an ARC conforms to Specification V2.1.0. See the relevant spec at https://github.com/nfdi4plants/ARC-specification/blob/3435ce03c0d2697f01e3a4607c8f15c3b195c97d/ARC%20specification.md",
                 majorVersion = 2,
-                minorVersion = 0,
-                patchVersion = 0,
-                PreReleaseVersionSuffix = "draft"
+                minorVersion = 1,
+                patchVersion = 0
             ),
             CriticalValidationCasesList = cases
         )

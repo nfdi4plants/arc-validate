@@ -1,14 +1,15 @@
 ﻿namespace ARCExpect.SpecificationValidation
 
+
 module SpecificationSelection =
 
     open ARCExpect
 
-    let [<Literal>] latest = "2.0.0-draft"
+    let [<Literal>] latest = "2.1.0"
 
     let internal specMap =
         [
-            "2.0.0-draft" , SpecificationValidation.V2_0_0_Draft.validationCases
+            "2.1.0" , SpecificationValidation.V2_1_0.validationCases
         ] |> Map.ofSeq
 
     let tryGetValidationCasesForSpecificationVersion (specVersion: string) (path: string) =
