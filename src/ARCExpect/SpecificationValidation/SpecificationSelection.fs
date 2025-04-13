@@ -9,7 +9,7 @@ module SpecificationSelection =
 
     let internal specMap =
         [
-            "2.1.0" , SpecificationValidation.V2_1_0.validationCases
+            "2.1.0" , SpecificationValidation.V2_1_0.getValidationCases
         ] |> Map.ofSeq
 
     let tryGetValidationCasesForSpecificationVersion (specVersion: string) (path: string) =
