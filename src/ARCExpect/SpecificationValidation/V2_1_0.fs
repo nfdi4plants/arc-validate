@@ -360,13 +360,13 @@ module V2_1_0 =
 
         let criticalCases = 
             [ 
-                //Check for Investigation
+                // Check for Investigation
                 ARCExpect.validationCase (TestID.Name "ARC contains Investigation file") {
                     absoluteDirectoryPaths
                     |> Validate.ParamCollection.ContainsParamWithTerm (StructuralOntology.AFSO.``Investigation File``)
                 }
 
-                //Check for folder structure
+                // Check for folder structure
                 ARCExpect.validationCase (TestID.Name "ARC contains Studies directory") {
                     absoluteDirectoryPaths
                     |> Validate.ParamCollection.ContainsParamWithTerm (StructuralOntology.AFSO.``Studies Directory``)
@@ -416,7 +416,7 @@ module V2_1_0 =
                     ) 
                 }
 
-                //Check if each Assay directory features an Assay file
+                // Check if each Assay directory features an Assay file
                 ARCExpect.validationCase (TestID.Name "ARC contains Assay in Assay directory") {
                     let assayDir = 
                         absoluteDirectoryPaths 
@@ -569,7 +569,7 @@ module V2_1_0 =
                 // TO DO: missing: Check if output files from run.cwl can be found in the Run's subdir
                 // difficult due to complex CWL syntax – parser needed (CWLDotNet might be insufficient)
 
-                //Check if every file linked in Investigation is present
+                // Check if every file linked in Investigation is present
                 ARCExpect.validationCase (TestID.Name "ARC contains all files linked in Investigation") {
                     let investigationFiles : IParam seq  = 
                         investigationMetadata
@@ -673,7 +673,7 @@ module V2_1_0 =
 
                 }
 
-                //Check if every required Investigation metadata field is there
+                // Check if every required Investigation metadata field is there
                 ARCExpect.validationCase (TestID.Name "ARC contains all required Investigation metadata fields") {
 
                     let investigations = List.concat investigationMetadata
@@ -681,7 +681,7 @@ module V2_1_0 =
                     |> Seq.iter (fun key -> Validate.ParamCollection.ContainsParamWithTerm key investigations)
                 }
 
-                //Check if every required Study metadata field is there
+                // Check if every required Study metadata field is there
                 ARCExpect.validationCase (TestID.Name "ARC contains all required Study metadata fields") {
 
                     for studySingular in studyMetadata do
@@ -689,17 +689,19 @@ module V2_1_0 =
                         |> Seq.iter (fun key -> Validate.ParamCollection.ContainsParamWithTerm key studySingular)
                 }
 
-                //Check if every required Assay metadata field is there
+                // Check if every required Assay metadata field is there
                 ARCExpect.validationCase (TestID.Name "ARC contains all required Assay metadata fields") {
 
                     for assaySingular in assayMetadata do
                         CriticalTerms.assayTerms
                         |> Seq.iter (fun key -> Validate.ParamCollection.ContainsParamWithTerm key assaySingular)
                 }
+
+                // Check
         ]
 
         let nonCriticalCases = [
-            //Check if Investigation metadata contains optional fields
+            // Check if Investigation metadata contains optional fields
             ARCExpect.validationCase (TestID.Name "ARC contains Investigation optional Metadata fields") {
 
                 let investigations = List.concat investigationMetadata
@@ -707,21 +709,21 @@ module V2_1_0 =
                 NonCriticalTerms.investigationTerms
                 |> Seq.iter (
                     fun (key,valSeq) -> 
-                        let condition = investigations |> Seq.exists(fun x -> (Param.getCvAccession x = key.Accession))
+                        let condition = investigations |> Seq.exists (Param.getCvAccession >> (=) key.Accession)
                         if condition then
                             valSeq
                             |> Seq.iter (fun x -> Validate.ParamCollection.ContainsParamWithTerm x investigations)
                 )
             }
 
-            //Check if Study metadata contains optional fields
+            // Check if Study metadata contains optional fields
             ARCExpect.validationCase (TestID.Name "ARC contains Study optional Metadata fields") {
 
                 for studySingular in studyMetadata do
                     NonCriticalTerms.studyTerms
                     |> Seq.iter (
                         fun (key,valSeq) -> 
-                            let condition = studySingular |> Seq.exists (fun x -> (Param.getCvAccession x = key.Accession))
+                            let condition = studySingular |> Seq.exists (Param.getCvAccession >> (=) key.Accession)
                             if condition then
                                 valSeq
                                 |> Seq.iter (fun x -> Validate.ParamCollection.ContainsParamWithTerm x studySingular)
