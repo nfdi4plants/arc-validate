@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -24,7 +24,7 @@
     <Compile Include="TopLevelAPI.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Expecto" Version="[10.2.1]" />
+    <PackageReference Include="Expecto" Version="[10.2.2]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
     <PackageReference Include="FsSpreadsheet" Version="[6.1.2]" />
     <PackageReference Include="FsSpreadsheet.Net" Version="[6.1.2]" />
