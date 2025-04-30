@@ -5,7 +5,6 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="fixtures\**" CopyToOutputDirectory="Always" />
     <Compile Include="JUnit.fs" />
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="TestUtils.fs" />
@@ -25,5 +24,46 @@
     <ProjectReference Include="..\Common\Common.fsproj" />
     <ProjectReference Include="..\..\src\ARCExpect\ARCExpect.fsproj" />
 
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="fixtures\arcs\errorARCs\assayAllFieldsMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\assayAllFieldsMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\assayAllFieldsMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\assayAllKeysMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\assayAllKeysMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\assayAllKeysMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\empty\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\empty\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\empty\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigation1FieldShifted\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigation1FieldShifted\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigation1FieldShifted\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllFieldsMissingButOne\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllFieldsMissingButOne\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllFieldsMissingButOne\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllFieldsMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllFieldsMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllFieldsMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllKeysMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllKeysMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationAllKeysMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationIdentifierMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationIdentifierMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationIdentifierMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationIdentifierShifted\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationIdentifierShifted\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationIdentifierShifted\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationInvestigationSectionMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationInvestigationSectionMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationInvestigationSectionMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\investigationMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\studyAllFieldsMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\studyAllFieldsMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\studyAllFieldsMissing\.git\refs\tags\" />
+    <Folder Include="fixtures\arcs\errorARCs\studyAllKeysMissing\.git\objects\info\" />
+    <Folder Include="fixtures\arcs\errorARCs\studyAllKeysMissing\.git\objects\pack\" />
+    <Folder Include="fixtures\arcs\errorARCs\studyAllKeysMissing\.git\refs\tags\" />
   </ItemGroup>
 </Project>
