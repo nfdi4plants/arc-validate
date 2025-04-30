@@ -4,16 +4,16 @@
 open ARCtrl
 
 
-let arcEmpty = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\empty"
+let arcEmpty = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/empty"
 // ^ loads well even if Investigation identifier is empty
 
 arcEmpty.FileSystem.Tree
 arcEmpty.ISA.Value
 
 
-let arcInvestigationMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationMissing"
+let arcInvestigationMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationMissing"
 // ^ raises error: 
-//System.Exception: Could not load ARC, failed with the following errors Error reading contract isa.investigation.xlsx: Could not find file 'C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationMissing\isa.investigation.xlsx'.
+//System.Exception: Could not load ARC, failed with the following errors Error reading contract isa.investigation.xlsx: Could not find file '../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationMissing\isa.investigation.xlsx'.
 //   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1448.Invoke(String message)
 //   at <StartupCode$ARCtrl>.$ARC.loadAsync@272-1.Invoke(FSharpResult`2 result) in C:\Users\HLWei\source\repos\ARC_tools\ARCtrl\src\ARCtrl\ARC.fs:line 276
 //   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvokeNoHijackCheck[a,b](AsyncActivation`1 ctxt, b result1, FSharpFunc`2 userCode) in D:\a\_work\1\s\src\FSharp.Core\async.fs:line 528
@@ -29,13 +29,13 @@ let arcInvestigationMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\
 //Stopped due to error
 
 
-let arcInvestigationIdentifierMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationIdentifierMissing"
+let arcInvestigationIdentifierMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationIdentifierMissing"
 // ^ loads well even if Investigation identifier is missing (= row does not exist) and parses this as empty string
 
 arcInvestigationIdentifierMissing.ISA.Value
 
 
-let arcInvestigationAllFieldsMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationAllFieldsMissing"
+let arcInvestigationAllFieldsMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationAllFieldsMissing"
 // ^ raises error:
 //System.Exception: Could not read investigation from spreadsheet: emptyInvestigationFile
 //   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1448.Invoke(String message)
@@ -59,19 +59,19 @@ let arcInvestigationAllFieldsMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-St
 //Stopped due to error
 
 
-let arcInvestigationAllKeysMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationAllKeysMissing"
+let arcInvestigationAllKeysMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationAllKeysMissing"
 // ^ loads well even if all keys in the Investigation file are missing (everything parsed as empty string or seq)
 
 arcInvestigationAllKeysMissing.ISA
 
 
-let arcInvestigationInvestigationSectionMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationInvestigationSectionMissing"
+let arcInvestigationInvestigationSectionMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationInvestigationSectionMissing"
 // ^ loads well even if all fields in the Investigation section of the Investigation file are missing (all parsed as empty)
 
 arcInvestigationInvestigationSectionMissing.ISA.Value
 
 
-let arcInvestigationAllFieldsMissingButOne = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationAllFieldsMissingButOne"
+let arcInvestigationAllFieldsMissingButOne = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationAllFieldsMissingButOne"
 // ^ loads well even if all fields in the Investigation file are missing but one (all parsed as empty)
 
 arcInvestigationAllFieldsMissingButOne.FileSystem
@@ -79,31 +79,61 @@ arcInvestigationAllFieldsMissingButOne.ISA
 arcInvestigationAllFieldsMissingButOne.ISA.Value.Assays |> Seq.length
 
 
-let arcInvestigation1FieldShifted = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigation1FieldShifted"
-// ^ loads well even if 1 field is shifted to the right but the field itself is not recognized and parsed as empty
+let arcInvestigation1FieldShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigation1FieldShifted"
+// ^ loads well even if 1 field (Investigation title) is shifted to the right but the field itself is not recognized and parsed as empty
 
 arcInvestigation1FieldShifted.ISA
 
 
-let arcInvestigationIdentifierShifted = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\investigationIdentifierShifted"
+let arcInvestigationIdentifierShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationIdentifierShifted"
 // ^ loads well even if identifier field is shifted to the right but the field itself is not recognized and parsed as empty
 
 arcInvestigationIdentifierShifted.ISA
 
 
-let arcStudyAllFieldsMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\studyAllFieldsMissing"
+let arcInvestigation1ValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigation1ValueShifted"
+// ^ loads well even if 1 value (Investigation title) is shifted to the right but the value itself is not recognized and parsed as empty
+
+arcInvestigation1ValueShifted.ISA
+
+
+let arcInvestigationIdentifierValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationIdentifierValueShifted"
+// ^ loads well even if identifier value is shifted to the right but the value itself is not recognized and parsed as empty
+
+arcInvestigationIdentifierValueShifted.ISA
+
+
+let arcStudyAllFieldsMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/studyAllFieldsMissing"
 // ^ loads well even if all fields in the Study metadata sheet are missing (parsed as empty seq inside the seq of Studies)
 
 arcStudyAllFieldsMissing.ISA
 
 
-let arcStudyAllKeysMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\studyAllKeysMissing"
+let arcStudy1FieldShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/study1FieldShifted"
+// ^ loads well even if 1 field is shifted to the right but the field itself is not recognized and parsed as empty
+
+arcStudy1FieldShifted.ISA
+
+
+let arcStudyIdentifierShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/studyIdentifierShifted"
+// ^ loads well even with Study identifier field shifted but StudyIdentifiers now has the string "MISSING_IDENTIFIER_18962cc4-f294-470e-90a4-12cd50714927"
+
+arcStudyIdentifierShifted.ISA
+
+
+let arcStudyIdentifierValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/studyIdentifierValueShifted"
+// ^ loads well even with Study identifier field shifted but StudyIdentifiers now has the string "MISSING_IDENTIFIER_c5790905-86f5-4225-8f1e-23e0b7441921"
+
+arcStudyIdentifierValueShifted.ISA
+
+
+let arcStudyAllKeysMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/studyAllKeysMissing"
 // ^ loads well even if all keys in the Study metadata sheet are missing (parsed as empty seq inside the seq of Studies)
 
 arcStudyAllKeysMissing.ISA
 
 
-let arcAssayAllFieldsMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\assayAllFieldsMissing"
+let arcAssayAllFieldsMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/assayAllFieldsMissing"
 // ^ raises error:
 //System.Exception: Could not parse assay: 
 //Failed while parsing metadatasheet: empty assay metadata sheet
@@ -126,10 +156,22 @@ let arcAssayAllFieldsMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI
 //Stopped due to error
 
 
-let arcAssayAllKeysMissing = ARC.load @"C:\Users\olive\OneDrive\CSB-Stuff\NFDI\errorARCs\assayAllKeysMissing"
+let arcAssayAllKeysMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/assayAllKeysMissing"
 
 arcAssayAllKeysMissing.ISA
 // ^ loads well even if all keys in the Assay metadata sheet are missing (parsed as empty seq inside the seq of Assays)
+
+
+let arcAssay1FieldShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/assay1FieldShifted"
+// ^ loads well but Assay is not parsed :|
+
+arcAssay1FieldShifted.ISA.Value.Assays.Item 0
+
+
+let arcAssay1ValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/"
+
+
+
 
 
 // ------------
