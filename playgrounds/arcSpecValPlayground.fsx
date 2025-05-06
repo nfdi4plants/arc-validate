@@ -168,7 +168,10 @@ let arcAssay1FieldShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/
 arcAssay1FieldShifted.ISA.Value.Assays.Item 0
 
 
-let arcAssay1ValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/"
+let arcAssay1ValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/assay1ValueShifted"
+// ^ loads well but Assay is not parsed :|
+
+arcAssay1ValueShifted.ISA.Value.Assays
 
 
 
