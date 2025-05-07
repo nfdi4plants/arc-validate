@@ -174,6 +174,11 @@ let arcAssay1ValueShifted = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/
 arcAssay1ValueShifted.ISA.Value.Assays
 
 
+let arcAssayAnnoTableColumnShifted = ARC.load "..//tests/arc-validate.Tests/fixtures/arcs/errorARCs/assayAnnoTableColumnShifted"
+// ^ loads well though the additional empty non-Building Block column is also parsed (as additional column)
+
+arcAssayAnnoTableColumnShifted.ISA.Value
+
 
 
 
