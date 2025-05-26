@@ -65,6 +65,15 @@ let arcInvestigationAllKeysMissing = ARC.load "../tests/arc-validate.Tests/fixtu
 arcInvestigationAllKeysMissing.ISA
 
 
+let arcInvestigationWrongKey = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationWrongKey"
+// ^ loads well even if there's no correct key (everything parsed as empty string or seq)
+
+arcInvestigationWrongKey.ISA
+
+
+let arcInvestigationWrongSheet = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationWrongSheet"
+
+
 let arcInvestigationInvestigationSectionMissing = ARC.load "../tests/arc-validate.Tests/fixtures/arcs/errorARCs/investigationInvestigationSectionMissing"
 // ^ loads well even if all fields in the Investigation section of the Investigation file are missing (all parsed as empty)
 
