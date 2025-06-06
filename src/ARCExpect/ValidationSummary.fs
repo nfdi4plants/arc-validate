@@ -105,24 +105,24 @@ type ValidationSummary = {
         critical: ValidationResult,
         nonCritical: ValidationResult,
         validationPackage: ValidationPackageSummary,
-        ?payload: Dictionary<string, obj>
+        ?Payload: Dictionary<string, obj>
     ) = {
         Critical = critical
         NonCritical = nonCritical
         ValidationPackage = validationPackage
-        Payload = payload
+        Payload = Payload
     }
     static member ofExpectoTestRunSummaries (
         criticalSummary: Impl.TestRunSummary,
         nonCriticalSummary: Impl.TestRunSummary,
         package: ValidationPackageSummary,
-        ?payload: Dictionary<string, obj>
+        ?Payload: Dictionary<string, obj>
     ) =
         ValidationSummary.create(
             critical = ValidationResult.ofExpectoTestRunSummary criticalSummary,
             nonCritical = ValidationResult.ofExpectoTestRunSummary nonCriticalSummary,
             validationPackage = package,
-            ?payload = payload
+            ?Payload = Payload
         )
     
     static member toJson (summary: ValidationSummary) =

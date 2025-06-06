@@ -1,3 +1,7 @@
+### 5.0.0 - (Released 2025-06-06)
+
+- Add functionality to add arbitrary JSON payload to the resulting `validation_summary.json` file.
+
 ### 4.0.1 - (Released 2024-08-07)
 
 - Add `ContainsNonKeyParamWithTerm` validation function
