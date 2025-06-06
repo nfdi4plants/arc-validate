@@ -90,6 +90,8 @@ type ValidationPackageSummary = {
             ?CQCHookEndpoint = if metadata.CQCHookEndpoint = "" then None else Some metadata.CQCHookEndpoint
         )
 
+open System.Collections.Generic
+
 /// <summary>
 /// Represents a summary of the validation results of an ARC against a validation package containing critical and non-critical validation cases.
 /// </summary>
@@ -97,25 +99,30 @@ type ValidationSummary = {
     Critical: ValidationResult
     NonCritical: ValidationResult
     ValidationPackage: ValidationPackageSummary
+    Payload: Dictionary<string, obj> option
 } with
     static member create(
         critical: ValidationResult,
         nonCritical: ValidationResult,
-        validationPackage: ValidationPackageSummary
+        validationPackage: ValidationPackageSummary,
+        ?payload: Dictionary<string, obj>
     ) = {
         Critical = critical
         NonCritical = nonCritical
         ValidationPackage = validationPackage
+        Payload = payload
     }
     static member ofExpectoTestRunSummaries (
         criticalSummary: Impl.TestRunSummary,
         nonCriticalSummary: Impl.TestRunSummary,
-        package: ValidationPackageSummary
+        package: ValidationPackageSummary,
+        ?payload: Dictionary<string, obj>
     ) =
         ValidationSummary.create(
             critical = ValidationResult.ofExpectoTestRunSummary criticalSummary,
             nonCritical = ValidationResult.ofExpectoTestRunSummary nonCriticalSummary,
-            validationPackage = package
+            validationPackage = package,
+            ?payload = payload
         )
     
     static member toJson (summary: ValidationSummary) =

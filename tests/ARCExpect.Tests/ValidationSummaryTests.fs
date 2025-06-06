@@ -34,6 +34,14 @@ let testPackageWithHook = ValidationPackageSummary.create(
     CQCHookEndpoint = testHook
 )
 
+open System.Collections.Generic
+
+let testPayload = 
+    Dictionary<string, obj>([
+        KeyValuePair("key1", box "value1")
+        KeyValuePair("key2", box 2)
+    ])
+
 [<Tests>]
 let ``ValidationResult tests`` =
     testList "ValidationSummary tests" [
@@ -85,6 +93,16 @@ let ``ValidationResult tests`` =
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithHook
             }
+            test "critial passed, noncritical passed, package with payload is created correctly from TestRunSummaries" {
+                let actual = ValidationSummary.ofExpectoTestRunSummaries(
+                    criticalSummary = dummyTestPassed,
+                    nonCriticalSummary = dummyTestPassed,
+                    package = testPackageWithHook,
+                    payload = testPayload
+                )
+                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithPayload
+            }
+
             test "critial passed, noncritical failed, package with no hook is created correctly from TestRunSummaries" {
                 let actual = ValidationSummary.ofExpectoTestRunSummaries(
                     criticalSummary = dummyTestPassed,
@@ -134,6 +152,7 @@ let ``ValidationResult tests`` =
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allFailedWithHook
             }
+        
         ]
         testList "Serialization" [
             test "correctly serialized without hook" {
@@ -163,6 +182,20 @@ let ``ValidationResult tests`` =
                     |> ValidationSummary.fromJson
 
                 Expect.equal actual ReferenceObjects.ValidationSummary.allPassedWithHook "roundtrip was not equal"
+            }
+            test "correctly serialized with payload" {
+                let actual = 
+                    ReferenceObjects.ValidationSummary.allPassedWithPayload
+                    |> ValidationSummary.toJson
+                Expect.equal actual ReferenceObjects.ValidationSummary.allPassedWithPayloadJson "serialization was not equal"
+            }
+            test "roundtrip with payload" {
+                let actual = 
+                    ReferenceObjects.ValidationSummary.allPassedWithPayload
+                    |> ValidationSummary.toJson
+                    |> ValidationSummary.fromJson
+
+                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithPayload
             }
             test "roundtrip looses original summary" {
                 
