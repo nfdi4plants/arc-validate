@@ -2,13 +2,13 @@ name: Build and test
 
 on:
   push:
-    branches: [ main ]
+    branches: ['dev', 'release']
     paths:
 # this ensures that tests are run when adding new tests, but docker image is only published with the other pipeline when source code is changed
       - 'tests/**'
       - 'build/**'
   pull_request:
-    branches: [ main ]
+    branches: ['dev', 'release']
     paths:
 # here, also run tests when a pr targets source files
       - 'tests/**'

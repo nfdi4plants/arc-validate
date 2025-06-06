@@ -5,7 +5,7 @@ on:
     branches: ['dev', 'release']
     paths:
 # this ensures that docker image is only published when source code or Dockerfile is changed
-      - 'src/**'
+      - 'src/arc-validate/**'
       - 'Dockerfile'
 
 env:
