@@ -5,6 +5,7 @@ open AVPRIndex
 open Expecto
 open TestUtils
 open System.IO
+open System.Collections.Generic
 
 [<Tests>]
 let ``Toplevel API Setup tests`` =
@@ -58,7 +59,7 @@ let ``Toplevel API Setup tests`` =
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                         NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                     )
-                    |> Execute.Validation
+                    |> Execute.Validation()
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedNoHook
             }
 
@@ -69,8 +70,24 @@ let ``Toplevel API Setup tests`` =
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                         NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                     )
-                    |> Execute.Validation
+                    |> Execute.Validation()
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithHook
+            }
+
+            test "resulting summary is correct with payload" {
+                let actual = 
+                    Setup.ValidationPackage(
+                        metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
+                        CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
+                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
+                    )
+                    |> Execute.Validation(
+                        Payload = Dictionary<string, obj>([
+                            KeyValuePair("key1", box "value1")
+                            KeyValuePair("key2", box 2)
+                        ])
+                    )
+                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithPayload
             }
         ]
         testList "Execute_SummaryCreation" [
@@ -81,13 +98,33 @@ let ``Toplevel API Setup tests`` =
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                     NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
-                |> Execute.Validation
+                |> Execute.Validation()
                 |> Execute.SummaryCreation path
 
                 let actual = 
                     File.ReadAllText path
 
                 Expect.equal actual ReferenceObjects.ValidationSummary.allPassedWithHookJson "summary files were not equal"
+            }
+            test "Correct summary file is created with payload" {
+                let path = Path.GetTempFileName() |> fun p -> Path.ChangeExtension(p, "json")
+                Setup.ValidationPackage(
+                    metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
+                    CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
+                )
+                |> Execute.Validation(
+                    Payload = Dictionary<string, obj>([
+                        KeyValuePair("key1", box "value1")
+                        KeyValuePair("key2", box 2)
+                    ])
+                )
+                |> Execute.SummaryCreation path
+
+                let actual = 
+                    File.ReadAllText path
+
+                Expect.equal actual ReferenceObjects.ValidationSummary.allPassedWithPayloadJson "summary files were not equal"
             }
         ]
         testList "Execute_JUnitReportCreation" [
@@ -98,7 +135,7 @@ let ``Toplevel API Setup tests`` =
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                     NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
-                |> Execute.Validation
+                |> Execute.Validation()
                 |> Execute.JUnitReportCreation path
 
                 let actual = (File.ReadAllText path).ReplaceLineEndings("\n")
@@ -115,7 +152,7 @@ let ``Toplevel API Setup tests`` =
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                     NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
-                |> Execute.Validation
+                |> Execute.Validation()
                 |> Execute.BadgeCreation(path, labelText="allPassedWithHook")
 
                 let actual = (File.ReadAllText path).ReplaceLineEndings("\n")

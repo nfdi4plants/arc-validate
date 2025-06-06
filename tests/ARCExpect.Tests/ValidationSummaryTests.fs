@@ -98,7 +98,7 @@ let ``ValidationResult tests`` =
                     criticalSummary = dummyTestPassed,
                     nonCriticalSummary = dummyTestPassed,
                     package = testPackageWithHook,
-                    payload = testPayload
+                    Payload = testPayload
                 )
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithPayload
             }
