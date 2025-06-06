@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
-
+ 
 COPY ./ /opt/arc-validate
 WORKDIR /opt/arc-validate
 
