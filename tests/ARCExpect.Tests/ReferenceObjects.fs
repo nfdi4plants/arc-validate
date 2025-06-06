@@ -73,11 +73,14 @@ module ValidationPackageSummary =
 
 module ValidationSummary =
 
+    open System.Collections.Generic
+
     let allPassedNoHook = 
         {
             Critical = ValidationResult.allPassed
             NonCritical = ValidationResult.allPassed
             ValidationPackage = ValidationPackageSummary.noHook
+            Payload = None
         }
 
     let allPassedNoHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package without CQC hook.","Description":"A package without CQC hook. More text here."}}"""
@@ -87,15 +90,31 @@ module ValidationSummary =
             Critical = ValidationResult.allPassed
             NonCritical = ValidationResult.allPassed
             ValidationPackage = ValidationPackageSummary.withHook
+            Payload = None
         }
 
     let allPassedWithHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","CQCHookEndpoint":"http://test.com"}}""" 
+
+    let allPassedWithPayload = 
+        {
+            Critical = ValidationResult.allPassed
+            NonCritical = ValidationResult.allPassed
+            ValidationPackage = ValidationPackageSummary.withHook
+            Payload = Some (
+                Dictionary<string, obj>([
+                    KeyValuePair("key1", box "value1")
+                    KeyValuePair("key2", box 2)
+                ]))
+        }
+
+    let allPassedWithPayloadJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","CQCHookEndpoint":"http://test.com"},"Payload":{"key1":"value1","key2":2}}""" 
 
     let allFailedNoHook = 
         {
             Critical = ValidationResult.allFailed
             NonCritical = ValidationResult.allFailed
             ValidationPackage = ValidationPackageSummary.noHook
+            Payload = None
         }
 
     let allFailedWithHook = 
@@ -103,6 +122,7 @@ module ValidationSummary =
             Critical = ValidationResult.allFailed
             NonCritical = ValidationResult.allFailed
             ValidationPackage = ValidationPackageSummary.withHook
+            Payload = None
         }
 
     let nonCriticalFailedNoHook = 
@@ -110,6 +130,7 @@ module ValidationSummary =
             Critical = ValidationResult.allPassed
             NonCritical = ValidationResult.allFailed
             ValidationPackage = ValidationPackageSummary.noHook
+            Payload = None
         }
 
     let nonCriticalFailedWithHook = 
@@ -117,6 +138,7 @@ module ValidationSummary =
             Critical = ValidationResult.allPassed
             NonCritical = ValidationResult.allFailed
             ValidationPackage = ValidationPackageSummary.withHook
+            Payload = None
         }
 
     let criticalFailedNoHook = 
@@ -124,6 +146,7 @@ module ValidationSummary =
             Critical = ValidationResult.allFailed
             NonCritical = ValidationResult.allPassed
             ValidationPackage = ValidationPackageSummary.noHook
+            Payload = None
         }
 
     let criticalFailedWithHook = 
@@ -131,6 +154,7 @@ module ValidationSummary =
             Critical = ValidationResult.allFailed
             NonCritical = ValidationResult.allPassed
             ValidationPackage = ValidationPackageSummary.withHook
+            Payload = None
         }
          
 module Frontmatter =
