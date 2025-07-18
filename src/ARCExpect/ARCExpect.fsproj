@@ -26,6 +26,7 @@
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[10.2.1]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
+    <PackageReference Include="FsHttp" Version="15.0.1" />
     <PackageReference Include="FsSpreadsheet" Version="[6.1.2]" />
     <PackageReference Include="FsSpreadsheet.Net" Version="[6.1.2]" />
     <PackageReference Include="ARCTokenization" Version="[6.0.0]" />
