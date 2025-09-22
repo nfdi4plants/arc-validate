@@ -1,3 +1,8 @@
+### 4.0.2 - (Released 2025-09-22)
+
+- Fix error with specification failing for multiple workflow files per workflow
+- Update ORCID pattern and check functions
+
 ### 4.0.1 - (Released 2024-08-07)
 
 - Add `ContainsNonKeyParamWithTerm` validation function
