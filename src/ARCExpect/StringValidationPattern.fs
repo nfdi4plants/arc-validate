@@ -6,9 +6,9 @@ module StringValidationPattern =
     open System
     open System.Text.RegularExpressions
     open FSharpAux
-
+    
     let email = Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-    let orcid = Regex(@"^(https?://(www.)?orcid.org/)?(?<orcid>\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/?$")
+    let orcid = Regex(@"^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$")
 
     /// Creates a Regex that matches for the given lower and upper character limit. Input may be None if there shall be no upper or lower limit.
     let characterLimit (lowerLimit : int option) (upperLimit : int option) =
@@ -50,9 +50,7 @@ module StringValidationPattern =
         /// Checks if a given string is a valid ORCID.
         /// 
         /// Checks if the ORCID is in current number range and has a valid checksum digit.
-        let checkValid (input : string) =
-            let isOrcid = orcid.Match(input).Success
-            let onlyNumber = 
-                orcid.Match(input).Groups["orcid"].Value
-                |> String.replace "-" ""
-            isOrcid && checkRange onlyNumber && checksum onlyNumber = onlyNumber[onlyNumber.Length - 1]
+        let checkValid (input : string) =            
+            let isNum = orcid.Match(input).Success
+            let noHyphens = String.replace "-" "" input
+            isNum && checkRange noHyphens && checksum noHyphens = noHyphens[noHyphens.Length - 1]
