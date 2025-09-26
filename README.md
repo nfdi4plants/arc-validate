@@ -26,7 +26,7 @@ Validation of ARCs based on:
 
 ## Development
 
-For how to contribute to and how to develop on this project, please read the [Contributing guidelines](https://github.com/nfdi4plants/arc-validate/blob/release/CONTRIBUTE.md).
+For how to contribute to and how to develop on this project, please read the [Contributing guidelines](https://github.com/nfdi4plants/arc-validate/blob/release/CONTRIBUTING.md).
 
 ## Project layout
 
