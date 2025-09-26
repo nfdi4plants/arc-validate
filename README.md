@@ -24,7 +24,34 @@ Validation of ARCs based on:
 - **ARCExpect**: Expecto-like API for creating validation cases
 - **Validation Packages**: API for installing and executing additional validation packages
 
+## Development
+
+For how to contribute to and how to develop on this project, please read the [Contributing guidelines](https://github.com/nfdi4plants/arc-validate/blob/release/CONTRIBUTE.md).
+
 ## Project layout
+
+### Dependency visualization
+
+```mermaid
+flowchart TD
+
+ControlledVocabulary("<b>ControlledVocabulary:</b><br>Data model for CVs")
+ARCTokenization("<b>ARCTokenization:</b><br>Tokenization of ARCs into CVs")
+OBO.NET("<b>OBO.NET:</b><br>OBO Ontology data model and parsing")
+ARCGraph("<b>ARCGraph:</b><br>Graph based on structural ontologies")
+ARCExpect("<b>ARCExpect:</b><br>Expecto-like API for validation")
+ARCValidationPackages("<b>ARCValidationPackages:</b><br>API for additional validation packages")
+arc-validate("<b>arc-validate:</b><br>validation CLI tool")
+
+arc-validate --depends on--> ARCExpect
+arc-validate --depends on--> ARCValidationPackages
+ARCTokenization --depends on--> ControlledVocabulary
+ARCTokenization --depends on--> OBO.NET
+ARCExpect --depends on--> ARCGraph
+ARCExpect --depends on--> ARCTokenization
+ARCGraph --depends on--> ARCTokenization
+ARCGraph --depends on--> OBO.NET
+```
 
 ### Used libraries
 
@@ -55,62 +82,3 @@ Validation of ARCs based on:
 - [Argu](https://github.com/fsprojects/Argu)
 - [Expecto](https://github.com/haf/expecto)
 - [Spectre.Console](https://github.com/spectreconsole/spectre.console)
-
-### Dependency visualization
-
-```mermaid
-flowchart TD
-
-ControlledVocabulary("<b>ControlledVocabulary:</b><br>Data model for CVs")
-ARCTokenization("<b>ARCTokenization:</b><br>Tokenization of ARCs into CVs")
-OBO.NET("<b>OBO.NET:</b><br>OBO Ontology data model and parsing")
-ARCGraph("<b>ARCGraph:</b><br>Graph based on structural ontologies")
-ARCExpect("<b>ARCExpect:</b><br>Expecto-like API for validation")
-ARCValidationPackages("<b>ARCValidationPackages:</b><br>API for additional validation packages")
-arc-validate("<b>arc-validate:</b><br>validation CLI tool")
-
-arc-validate --depends on--> ARCExpect
-arc-validate --depends on--> ARCValidationPackages
-ARCTokenization --depends on--> ControlledVocabulary
-ARCTokenization --depends on--> OBO.NET
-ARCExpect --depends on--> ARCGraph
-ARCExpect --depends on--> ARCTokenization
-ARCGraph --depends on--> ARCTokenization
-ARCGraph --depends on--> OBO.NET
-```
-
-## Development
-
-### Build
-
-Just call `build.sh` or `build.cmd` depending on your OS.
-
-### Test
-
-```bash
-build.sh runtests
-```
-
-```bash
-build.cmd runtests
-```
-
-### Create Nuget package
-
-```bash
-build.sh pack
-```
-
-```bash
-build.cmd pack
-```
-
-For prereleases use
-
-```bash
-build.sh packprerelease
-```
-
-```bash
-build.cmd packprerelease
-```
