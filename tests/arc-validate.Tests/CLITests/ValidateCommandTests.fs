@@ -392,11 +392,11 @@ let ``ValidateCommand CLI Tests`` =
                         "Install: Exit code is 0" , 
                             fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
                         "Install: Console output indicates that the package was installed" , 
-                            fun tool args proc -> Expect.stringContains proc.Result.Output "installed package test@5.0.0.fsx at" (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                            fun tool args proc -> Expect.stringContains proc.Result.Output "installed package test@6.0.2.fsx at" (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         "Install: Package script exists in avpr cache after running package install test" ,  
-                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@5.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path_release, "test@6.0.2.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                         "Install: Package script does not exist in preview cache after running package install test" ,  
-                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@5.0.0.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                            fun tool args proc -> Expect.isFalse (File.Exists(Path.Combine(expected_package_cache_folder_path_preview, "test@6.0.2.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
                 
                     ]
                 yield! 
@@ -411,7 +411,7 @@ let ``ValidateCommand CLI Tests`` =
                         "Validate: Console output does not indicate that package is not installed" , 
                             fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         "Validate: Console Output is correct" ,
-                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v5.0.0!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v6.0.1!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         ]
                 ])
         ])
