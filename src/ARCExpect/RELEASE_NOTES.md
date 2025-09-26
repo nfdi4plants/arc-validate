@@ -1,3 +1,8 @@
+### 5.0.1 - (Released 2025-09-26)
+
+- Fix error with specification failing for multiple workflow files per workflow
+- Update ORCID pattern and check functions
+
 ### 5.0.0 - (Released 2025-06-06)
 
 - Add functionality to add arbitrary JSON payload to the resulting `validation_summary.json` file.
