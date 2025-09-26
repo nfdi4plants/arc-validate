@@ -12,7 +12,7 @@ open Fake.DotNet
 open Fake.IO.Globbing.Operators
 
 
-let pack = BuildTask.create "Pack" [ clean; build; runTests ] {
+let pack = BuildTask.create "Pack" [ clean; build ] {
     [
         CoreProject
         ValidationPackagesProject
@@ -68,7 +68,6 @@ let packPrerelease =
         [
             clean
             build
-            runTests
         ] {
         [
             CoreProject

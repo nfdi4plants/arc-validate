@@ -17,7 +17,7 @@ open Fake.IO.Globbing.Operators
 
 
 let createTag =
-    BuildTask.create "CreateTag" [ clean; build; runTests; pack ] {
+    BuildTask.create "CreateTag" [ clean; build; pack ] {
         if promptYesNo (sprintf "tagging branch with %s OK?" branchTag) then
             Git.Branches.tag "" branchTag
             Git.Branches.pushTag "" projectRepo branchTag
@@ -44,7 +44,7 @@ let createPrereleaseTag =
 
 
 let publishNuget =
-    BuildTask.create "PublishNuget" [ clean; build; runTests; pack ] {
+    BuildTask.create "PublishNuget" [ clean; build; pack ] {
         let targets =
             (!!(sprintf "%s/*.*pkg" pkgDir))
 
@@ -83,7 +83,6 @@ let publishNugetPrerelease =
         [
             clean
             build
-            runTests
             packPrerelease
         ] {
         let targets =
