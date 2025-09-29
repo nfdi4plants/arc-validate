@@ -53,7 +53,7 @@ ARCGraph --depends on--> ARCTokenization
 ARCGraph --depends on--> OBO.NET
 ```
 
-### Used libraries
+### Libraries used
 
 #### ARCExpect
 
