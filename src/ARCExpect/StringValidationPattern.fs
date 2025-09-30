@@ -9,6 +9,9 @@ module StringValidationPattern =
 
     let email = Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     let orcid = Regex(@"^(https?://(www.)?orcid.org/)?(?<orcid>\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/?$")
+    let url = Regex(@"(?i)\b((?:https?|ftp)://[^\r\n""'<>()\[\]]+)")
+    let absoluteUnixPath = Regex(@"")
+    let absoluteWinPath = Regex(@"")
 
     /// Creates a Regex that matches for the given lower and upper character limit. Input may be None if there shall be no upper or lower limit.
     let characterLimit (lowerLimit : int option) (upperLimit : int option) =
@@ -56,3 +59,8 @@ module StringValidationPattern =
                 orcid.Match(input).Groups["orcid"].Value
                 |> String.replace "-" ""
             isOrcid && checkRange onlyNumber && checksum onlyNumber = onlyNumber[onlyNumber.Length - 1]
+
+
+    module DataPathAnnotation =
+
+        
