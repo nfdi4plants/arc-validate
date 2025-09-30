@@ -87,6 +87,9 @@ module Validate =
                 |> ErrorMessage.ofIParam "is invalid."              
                 |> Expecto.Tests.failtestNoStackf "%s"                   
 
+        static member ValueDataPathAnnotationIsPresent (absoluteDirectoryPaths : #IParam seq) (param : #IParam) =
+            
+
         /// <summary>
         /// Validates if the value of the given Param satisfies a predicate (meaning a function that for a given Param returns either true or false)
         /// </summary>
