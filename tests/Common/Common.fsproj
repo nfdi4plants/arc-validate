@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="10.*" />
-    <PackageReference Include="Fake.Core.Process" Version="6.0.0" />
+    <PackageReference Include="Fake.Core.Process" Version="6.1.4" />
   </ItemGroup>
 
 </Project>
