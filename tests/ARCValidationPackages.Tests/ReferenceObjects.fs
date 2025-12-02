@@ -13,8 +13,11 @@ let testDate1 = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "
 let testDate2 = System.DateTimeOffset.ParseExact("2023-08-15 11:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 let testDate3 = System.DateTimeOffset.ParseExact("2024-02-22 09:00:17 +01:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
 
-let testScriptPath = "fixtures/testScript.fsx"
-let testScriptArgsPath = "fixtures/testScriptArgs.fsx"
+let fsharpTestScriptPath = "fixtures/testScript.fsx"
+let fsharpTestScriptArgsPath = "fixtures/testScriptArgs.fsx"
+
+let pythonTestScriptPath = "fixtures/testScript.py"
+let pythonTestScriptArgsPath = "fixtures/testScriptArgs.py"
 
 let testPackageIndex = 
     [|
@@ -419,8 +422,11 @@ module CachedValidationPackage =
             metadata = AVPRIndexDomain.ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
         )
 
-    let testScriptPackage = CachedValidationPackage.create("testScript", testDate1, testScriptPath, ValidationPackageMetadata())
-    let testScriptArgsPackage = CachedValidationPackage.create("testScriptArgs", testDate1, testScriptArgsPath, ValidationPackageMetadata())
+    let fsharpTestScriptPackage = CachedValidationPackage.create("fsharpTestScript", testDate1, fsharpTestScriptPath, ValidationPackageMetadata())
+    let fsharpTestScriptArgsPackage = CachedValidationPackage.create("fsharpTestScriptArgs", testDate1, fsharpTestScriptArgsPath, ValidationPackageMetadata())
+
+    let pythonTestScriptPackage = CachedValidationPackage.create("pythonTestScript", testDate1, pythonTestScriptPath, ValidationPackageMetadata())
+    let pythonTestScriptArgsPackage = CachedValidationPackage.create("pythonTestScriptArgs", testDate1, pythonTestScriptArgsPath, ValidationPackageMetadata())
 
 module PackageCache =
 

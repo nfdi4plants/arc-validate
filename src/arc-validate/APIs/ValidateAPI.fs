@@ -109,7 +109,7 @@ module ValidateAPI =
                             AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                             AnsiConsole.MarkupLine("")
 
-                        let result = ScriptExecution.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
+                        let result = FSharpScript.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
 
                         if result.OK then
                             exitCode <- ExitCode.Success
