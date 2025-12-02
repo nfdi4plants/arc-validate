@@ -17,7 +17,7 @@ open AnyBadge.NET
 
 module ValidateAPI = 
 
-    let validate (verbose: bool) (token: string option) (args: ParseResults<ValidateArgs>)=
+    let validate (verbose: bool) (args: ParseResults<ValidateArgs>)=
 
         let root = 
             args.TryGetResult(ARC_Directory)

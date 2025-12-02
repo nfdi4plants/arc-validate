@@ -7,4 +7,4 @@ let args = parser.Parse(inputs = [|"--verbose";"package";"install";"test"|])
 
 printfn "%A" args
 
-ARCValidate.CommandHandling.handleARCValidateCommand true None (args.GetSubCommand())
+ARCValidate.CommandHandling.handleARCValidateCommand true (args.GetSubCommand())

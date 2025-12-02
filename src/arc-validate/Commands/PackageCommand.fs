@@ -4,9 +4,9 @@ open ARCValidate.CLIArguments
 open Argu
 
 type PackageCommand =
-    | [<CliPrefix(CliPrefix.None); AltCommandLine("i")>] Install of ParseResults<PackageInstallArgs>
-    | [<CliPrefix(CliPrefix.None); AltCommandLine("u")>] UnInstall of ParseResults<PackageUninstallArgs>
-    | [<CliPrefix(CliPrefix.None); AltCommandLine("l")>] List
+    | [<SubCommand; CliPrefix(CliPrefix.None); AltCommandLine("i")>] Install of ParseResults<PackageInstallArgs>
+    | [<SubCommand; CliPrefix(CliPrefix.None); AltCommandLine("u")>] UnInstall of ParseResults<PackageUninstallArgs>
+    | [<SubCommand; CliPrefix(CliPrefix.None); AltCommandLine("l")>] List
 
     interface IArgParserTemplate with
         member s.Usage =
