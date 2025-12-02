@@ -1,4 +1,8 @@
-﻿### 5.0.0 - (Released 2024-06-21)
+﻿### 6.0.0 - (Released 2025-12-02)
+
+Remove all preview package functionality
+
+### 5.0.0 - (Released 2024-06-21)
 
 Support full semantic versions with suffixes
 

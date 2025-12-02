@@ -10,16 +10,13 @@ module CommandHandling =
         match command with
         | Install args      -> 
             if verbose then printfn "Command: install"
-            PackageAPI.Install(args, verbose, ?Token = token)
+            PackageAPI.Install(args, verbose)
         | UnInstall args    -> 
             if verbose then printfn "Command: uninstall"
             PackageAPI.Uninstall(args, verbose)
-        | List args -> 
+        | List -> 
             if verbose then printfn "Command: list"
-            PackageAPI.List(args, verbose, ?Token = token)
-        | Update_Index      -> 
-            if verbose then printfn "Command: update-index"
-            PackageAPI.UpdateIndex(verbose, ?Token = token)
+            PackageAPI.List(verbose)
 
     let handleARCValidateCommand (verbose:bool) (token: string option) command = 
         match command with

@@ -274,32 +274,6 @@ module AVPRIndexDomain =
             CQCHookEndpoint = "https://avpr.nfdi4plants.org"
         )
 
-    module ValidationPackageIndex = 
-        
-        let testPackageIndex_3_0_0 = ValidationPackageIndex.create(
-            repoPath = "./StagingArea/test/test@3.0.0.fsx",
-            fileName = "test@3.0.0.fsx",
-            lastUpdated = testDate3,
-            contentHash = "384174B1D02FCA8255442306AC53FF80",
-            metadata = ValidationPackageMetadata.testPackage_3_0_0_metadata
-        )
-
-        let testPackageIndex_5_0_0 = ValidationPackageIndex.create(
-            repoPath = "./StagingArea/test/test@5.0.0.fsx",
-            fileName = "test@5.0.0.fsx",
-            lastUpdated = testDate3,
-            contentHash = "A39BDCECBAD67D4CCDBE9079E5A3E463",
-            metadata = ValidationPackageMetadata.testPackage_5_0_0_metadata
-        )
-
-        let ``testPackageIndex_5_0_0-use+suffixes`` = ValidationPackageIndex.create(
-            repoPath = "./StagingArea/test/test@5.0.0-use+suffixes.fsx",
-            fileName = "test@5.0.0-use+suffixes.fsx",
-            lastUpdated = testDate3,
-            contentHash = "4001D307AC13B7DB2039C85D7002C707",
-            metadata = ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
-        )
-
 module AVPRClientDomain =
     module ValidationPackage =
         let testPackage_3_0_0 = AVPRClient.ValidationPackage(
@@ -404,98 +378,51 @@ module AVPRClientDomain =
 
 module CachedValidationPackage =
 
-    module Preview =
+    let testValidationPackage1 =
+        CachedValidationPackage.create(
+            "test@1.0.0.fsx",
+            testDate1,
+            (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
+            ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
+        )
 
-        let testValidationPackage1 =
-            CachedValidationPackage.create(
-                "test@1.0.0.fsx",
-                testDate1,
-                (Path.Combine(expected_package_cache_folder_path_preview, "test@1.0.0.fsx").Replace("\\","/")),
-                ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
-            )
+    let testValidationPackage2 =
+        CachedValidationPackage.create(
+            "test@1.0.0.fsx",
+            testDate2,
+            (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
+            ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
+        )
 
-        let testValidationPackage2 =
-            CachedValidationPackage.create(
-                "test@1.0.0.fsx",
-                testDate2,
-                (Path.Combine(expected_package_cache_folder_path_preview, "test@1.0.0.fsx").Replace("\\","/")),
-                ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
-            )
-
-        let testPackage_3_0_0 =
-            CachedValidationPackage.create(
-                fileName = "test@3.0.0.fsx",
-                cacheDate = testDate3,
-                localPath = (Path.Combine(expected_package_cache_folder_path_preview, "test@3.0.0.fsx").Replace("\\","/")),
-                metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_3_0_0_metadata
+    let testPackage_3_0_0 =
+        CachedValidationPackage.create(
+            fileName = "test@3.0.0.fsx",
+            cacheDate = testDate3,
+            localPath = (Path.Combine(expected_package_cache_folder_path, "test@3.0.0.fsx").Replace("\\","/")),
+            metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_3_0_0_metadata
                 
-            )
+        )
 
-        let testPackage_5_0_0 =
-            CachedValidationPackage.create(
-                fileName = "test@5.0.0.fsx",
-                cacheDate = testDate3,
-                localPath = (Path.Combine(expected_package_cache_folder_path_preview, "test@5.0.0.fsx").Replace("\\","/")),
-                metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_5_0_0_metadata
-            )
+    let testPackage_5_0_0 =
+        CachedValidationPackage.create(
+            fileName = "test@5.0.0.fsx",
+            cacheDate = testDate3,
+            localPath = (Path.Combine(expected_package_cache_folder_path, "test@5.0.0.fsx").Replace("\\","/")),
+            metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_5_0_0_metadata
+        )
 
-        let ``testPackage_5_0_0-use+suffixes`` =
-            CachedValidationPackage.create(
-                fileName = "test@5.0.0-use+suffixes.fsx",
-                cacheDate = testDate3,
-                localPath = (Path.Combine(expected_package_cache_folder_path_preview, "test@5.0.0-use+suffixes.fsx").Replace("\\","/")),
-                metadata = AVPRIndexDomain.ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
-            )
-
-    module AVPR =
-
-        let testValidationPackage1 =
-            CachedValidationPackage.create(
-                "test@1.0.0.fsx",
-                testDate1,
-                (Path.Combine(expected_package_cache_folder_path_release, "test@1.0.0.fsx").Replace("\\","/")),
-                ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
-            )
-
-        let testValidationPackage2 =
-            CachedValidationPackage.create(
-                "test@1.0.0.fsx",
-                testDate2,
-                (Path.Combine(expected_package_cache_folder_path_release, "test@1.0.0.fsx").Replace("\\","/")),
-                ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
-            )
-
-        let testPackage_3_0_0 =
-            CachedValidationPackage.create(
-                fileName = "test@3.0.0.fsx",
-                cacheDate = testDate3,
-                localPath = (Path.Combine(expected_package_cache_folder_path_release, "test@3.0.0.fsx").Replace("\\","/")),
-                metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_3_0_0_metadata
-                
-            )
-
-        let testPackage_5_0_0 =
-            CachedValidationPackage.create(
-                fileName = "test@5.0.0.fsx",
-                cacheDate = testDate3,
-                localPath = (Path.Combine(expected_package_cache_folder_path_release, "test@5.0.0.fsx").Replace("\\","/")),
-                metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_5_0_0_metadata
-            )
-
-        let ``testPackage_5_0_0-use+suffixes`` =
-            CachedValidationPackage.create(
-                fileName = "test@5.0.0-use+suffixes.fsx",
-                cacheDate = testDate3,
-                localPath = (Path.Combine(expected_package_cache_folder_path_release, "test@5.0.0-use+suffixes.fsx").Replace("\\","/")),
-                metadata = AVPRIndexDomain.ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
-            )
+    let ``testPackage_5_0_0-use+suffixes`` =
+        CachedValidationPackage.create(
+            fileName = "test@5.0.0-use+suffixes.fsx",
+            cacheDate = testDate3,
+            localPath = (Path.Combine(expected_package_cache_folder_path, "test@5.0.0-use+suffixes.fsx").Replace("\\","/")),
+            metadata = AVPRIndexDomain.ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
+        )
 
     let testScriptPackage = CachedValidationPackage.create("testScript", testDate1, testScriptPath, ValidationPackageMetadata())
     let testScriptArgsPackage = CachedValidationPackage.create("testScriptArgs", testDate1, testScriptArgsPath, ValidationPackageMetadata())
 
 module PackageCache =
 
-    module Preview =
-
-        let testPackageCache1 = PackageCache([CachedValidationPackage.Preview.testValidationPackage1])
-        let testPackageCache2 = PackageCache([CachedValidationPackage.Preview.testValidationPackage2])
+    let testPackageCache1 = PackageCache([CachedValidationPackage.testValidationPackage1])
+    let testPackageCache2 = PackageCache([CachedValidationPackage.testValidationPackage2])

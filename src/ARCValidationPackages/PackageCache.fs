@@ -130,11 +130,6 @@ type PackageCache =
 
         cache
 
-    static member cachePackageOfIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset) =
-        fun (cache: PackageCache) ->
-            cache
-            |> PackageCache.addPackage (CachedValidationPackage.ofPackageIndex(packageIndex, ?Date = Date))
-
     static member updateCacheDate (name: string) (semVerString: string) (date: System.DateTimeOffset) (cache: PackageCache) =
         let package = cache.[name][semVerString]
         cache.[name][semVerString] <- package |> CachedValidationPackage.updateCacheDate date

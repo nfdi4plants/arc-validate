@@ -81,35 +81,23 @@ module ValidateAPI =
 
             let status = AnsiConsole.Status()
 
-            let isRelease = args.TryGetResult(ValidateArgs.Preview).IsSome |> not
-
-            let packageMessagePrefix = if isRelease then "" else "preview "
-
-            status.Start($"Performing validation against the {packageMessagePrefix}{packageName} package", fun ctx ->
+            status.Start($"Performing validation against the {packageName} package", fun ctx ->
 
                 if verbose then
                     AnsiConsole.MarkupLine("LOG: Running in:")
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
                 
-                match ARCValidationPackages.API.Common.GetSyncedConfigAndCache(?Token = token) with
+                match ARCValidationPackages.API.Common.GetSyncedConfigAndCache() with
                 | Error e -> 
                     PackageAPI.printGetSyncedConfigAndCacheError e
                     exitCode <- ExitCode.InternalError
 
-                | Ok (config, avprCache, previewCache) -> 
+                | Ok (config, cache) -> 
                     let package = 
                         match version with 
-                        | Some semver -> 
-                            if isRelease then 
-                                PackageCache.tryGetPackage packageName semver avprCache
-                            else
-                                PackageCache.tryGetPackage packageName semver previewCache
-                        | None -> 
-                            if isRelease then 
-                                PackageCache.tryGetLatestPackage packageName avprCache
-                            else
-                                PackageCache.tryGetLatestPackage packageName previewCache
+                        | Some semver ->  PackageCache.tryGetPackage packageName semver cache
+                        | None -> PackageCache.tryGetLatestPackage packageName cache
 
                     match package with
                     | Some validationPackage ->

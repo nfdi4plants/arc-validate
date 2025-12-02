@@ -30,26 +30,12 @@ type CachedValidationPackage =
             }
 
         /// <summary>
-        /// Creates a new ARCValidationPackage from a ValidationPackageIndex, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default preview cache folder or custom folder.
-        /// </summary>
-        /// <param name="packageIndex">The input package index entry</param>
-        /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
-        static member ofPackageIndex (packageIndex: ValidationPackageIndex, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
-            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_PREVIEW())
-            CachedValidationPackage.create(
-                fileName = packageIndex.FileName,
-                cacheDate = (defaultArg Date System.DateTimeOffset.Now),
-                localPath = (System.IO.Path.Combine(path, packageIndex.FileName).Replace("\\","/")),
-                metadata = packageIndex.Metadata
-            )
-
-        /// <summary>
         /// Creates a new ARCValidationPackage from a ValidationPackageMetadata, with the CacheDate set to the current or optionally a custom date, and the LocalPath set to the default release cache folder or custom folder.
         /// </summary>
         /// <param name="packageIndex">The input package index entry</param>
         /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
         static member ofPackageMetadata (packageMetadata: ValidationPackageMetadata, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
-            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER_RELEASE())
+            let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER())
             let filename = $"{packageMetadata.Name}@{ValidationPackageMetadata.getSemanticVersionString packageMetadata}.fsx"
             CachedValidationPackage.create(
                 fileName = filename,

@@ -57,6 +57,28 @@ ARCGraph --depends on--> OBO.NET
 
 #### ARCExpect
 
+Just call `build.sh` or `build.cmd` depending on your OS.
+
+### Test
+
+test setup is interconnected with production services.
+
+it tests for the compiled `arc-validate` tool:
+- validation packages with source https://avpr.nfdi4plants.org
+
+```bash
+build.sh runtests
+```
+
+```bash
+build.cmd runtests
+```
+
+### Create Nuget package
+
+```bash
+build.sh pack
+```
 - [ARCTokenization](https://github.com/nfdi4plants/ARCTokenization)
 - [AVPRIndex](https://github.com/nfdi4plants/arc-validate-package-registry)
 - [OBO.NET](https://github.com/CSBiology/OBO.NET)

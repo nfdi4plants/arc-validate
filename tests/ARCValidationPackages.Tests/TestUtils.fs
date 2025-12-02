@@ -111,10 +111,10 @@ module Result =
 
 module Fixtures =
 
-    let withFreshConfigAndCaches (token:string option) (f: Config * PackageCache * PackageCache -> unit) () =
+    let withFreshConfigAndCache (f: Config * PackageCache -> unit) () =
         resetConfigEnvironment()
-        let freshConfig, freshAVPRCache, freshPreviewCache = API.Common.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
-        f (freshConfig, freshAVPRCache, freshPreviewCache)
+        let freshConfig, freshCache = API.Common.GetSyncedConfigAndCache() |> Result.okValue
+        f (freshConfig, freshCache)
 
     //let saveAndCachePackage (token:string option) (package:Package) =
     //    let freshConfig, freshCache = API.GetSyncedConfigAndCache(?Token = token) |> Result.okValue
