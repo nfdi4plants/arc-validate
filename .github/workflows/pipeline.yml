@@ -22,7 +22,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.x.x
+        dotnet-version: 10.x.x
     - name: make script executable
       run: chmod u+x build.sh
     - name: Build and test
@@ -40,7 +40,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.x.x
+        dotnet-version: 10.x.x
     - name: Build and test
       env:
         ARC_VALIDATE_GITHUB_API_TEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
