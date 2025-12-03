@@ -8,6 +8,7 @@ on:
       - 'tests/**'
       - 'src/**'
       - 'build/**'
+      - '.github/**'
   pull_request:
     branches: ['dev', 'release']
     paths:
@@ -15,6 +16,7 @@ on:
       - 'tests/**'
       - 'src/**'
       - 'build/**'
+      - '.github/**'
 
 jobs:
   build-and-test-linux:
