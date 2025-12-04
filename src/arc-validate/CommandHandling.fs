@@ -6,29 +6,26 @@ module CommandHandling =
 
     open ARCValidate.CLICommands
 
-    let handlePackageSubCommand (verbose: bool) (token: string option) (command: PackageCommand) = 
+    let handlePackageSubCommand (verbose: bool) (command: PackageCommand) = 
         match command with
         | Install args      -> 
             if verbose then printfn "Command: install"
-            PackageAPI.Install(args, verbose, ?Token = token)
+            PackageAPI.Install(args, verbose)
         | UnInstall args    -> 
             if verbose then printfn "Command: uninstall"
             PackageAPI.Uninstall(args, verbose)
-        | List args -> 
+        | List -> 
             if verbose then printfn "Command: list"
-            PackageAPI.List(args, verbose, ?Token = token)
-        | Update_Index      -> 
-            if verbose then printfn "Command: update-index"
-            PackageAPI.UpdateIndex(verbose, ?Token = token)
+            PackageAPI.List(verbose)
 
-    let handleARCValidateCommand (verbose:bool) (token: string option) command = 
+    let handleARCValidateCommand (verbose:bool) command = 
         match command with
         | ARCValidateCommand.Validate subcommand -> 
             if verbose then printfn "Command: validate"
-            ValidateAPI.validate verbose token (subcommand)
+            ValidateAPI.validate verbose (subcommand)
 
         | ARCValidateCommand.Package subcommand -> 
             if verbose then printfn "Subcommand: package"
-            handlePackageSubCommand verbose token (subcommand.GetSubCommand())
+            handlePackageSubCommand verbose (subcommand.GetSubCommand())
 
         | _ -> failwith $"unrecognized command '{command}"

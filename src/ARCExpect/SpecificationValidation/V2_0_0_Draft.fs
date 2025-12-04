@@ -559,6 +559,7 @@ module V2_0_0_Draft =
                 majorVersion = 2,
                 minorVersion = 0,
                 patchVersion = 0,
+                programmingLanguage = "FSharp",
                 PreReleaseVersionSuffix = "draft"
             ),
             CriticalValidationCasesList = cases

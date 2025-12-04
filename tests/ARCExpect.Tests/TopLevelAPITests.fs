@@ -5,17 +5,18 @@ open AVPRIndex
 open Expecto
 open TestUtils
 open System.IO
+open System.Collections.Generic
 
 [<Tests>]
 let ``Toplevel API Setup tests`` =
     testSequenced (testList "Toplevel API tests" [
         testList "Setup_Metadata" [
             test "correct metadata is extracted from valid frontmatter string" {
-                let actual = Setup.Metadata(ReferenceObjects.Frontmatter.validNoHook)
+                let actual = Setup.Metadata(ReferenceObjects.Frontmatter.validNoHook, FrontmatterLanguage.FSharpFrontmatter)
                 Expect.equal actual ReferenceObjects.ValidationPackageMetadata.validNoHook "metadata was not equal"
             }
             test "incorrect frontmatter string throws" {
-                Expect.throws (fun () -> Setup.Metadata(ReferenceObjects.Frontmatter.invalid) |> ignore) "did not throw"
+                Expect.throws (fun () -> Setup.Metadata(ReferenceObjects.Frontmatter.invalid , FrontmatterLanguage.FSharpFrontmatter) |> ignore) "did not throw"
             }
         ]
         testList "Setup_ValidationPackage" [
@@ -34,6 +35,7 @@ let ``Toplevel API Setup tests`` =
                         patchVersion = 0,
                         summary = "A package without CQC hook.",
                         description = "A package without CQC hook. More text here.",
+                        programmingLanguage = "FSharp",
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                         NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillFail]
                     )
@@ -58,7 +60,7 @@ let ``Toplevel API Setup tests`` =
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                         NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                     )
-                    |> Execute.Validation
+                    |> Execute.Validation()
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedNoHook
             }
 
@@ -69,8 +71,24 @@ let ``Toplevel API Setup tests`` =
                         CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                         NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                     )
-                    |> Execute.Validation
+                    |> Execute.Validation()
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithHook
+            }
+
+            test "resulting summary is correct with payload" {
+                let actual = 
+                    Setup.ValidationPackage(
+                        metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
+                        CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
+                        NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
+                    )
+                    |> Execute.Validation(
+                        Payload = Dictionary<string, obj>([
+                            KeyValuePair("key1", box "value1")
+                            KeyValuePair("key2", box 2)
+                        ])
+                    )
+                Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithPayload
             }
         ]
         testList "Execute_SummaryCreation" [
@@ -81,13 +99,33 @@ let ``Toplevel API Setup tests`` =
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                     NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
-                |> Execute.Validation
+                |> Execute.Validation()
                 |> Execute.SummaryCreation path
 
                 let actual = 
                     File.ReadAllText path
 
                 Expect.equal actual ReferenceObjects.ValidationSummary.allPassedWithHookJson "summary files were not equal"
+            }
+            test "Correct summary file is created with payload" {
+                let path = Path.GetTempFileName() |> fun p -> Path.ChangeExtension(p, "json")
+                Setup.ValidationPackage(
+                    metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
+                    CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
+                )
+                |> Execute.Validation(
+                    Payload = Dictionary<string, obj>([
+                        KeyValuePair("key1", box "value1")
+                        KeyValuePair("key2", box 2)
+                    ])
+                )
+                |> Execute.SummaryCreation path
+
+                let actual = 
+                    File.ReadAllText path
+
+                Expect.equal actual ReferenceObjects.ValidationSummary.allPassedWithPayloadJson "summary files were not equal"
             }
         ]
         testList "Execute_JUnitReportCreation" [
@@ -98,7 +136,7 @@ let ``Toplevel API Setup tests`` =
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                     NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
-                |> Execute.Validation
+                |> Execute.Validation()
                 |> Execute.JUnitReportCreation path
 
                 let actual = (File.ReadAllText path).ReplaceLineEndings("\n")
@@ -115,7 +153,7 @@ let ``Toplevel API Setup tests`` =
                     CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
                     NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
                 )
-                |> Execute.Validation
+                |> Execute.Validation()
                 |> Execute.BadgeCreation(path, labelText="allPassedWithHook")
 
                 let actual = (File.ReadAllText path).ReplaceLineEndings("\n")

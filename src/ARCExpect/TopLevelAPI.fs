@@ -8,9 +8,10 @@ open AVPRIndex
 type Setup =
     
     static member Metadata(
-        frontmatter: string
+        frontmatter: string,
+        programmingLanguage: FrontmatterLanguage
     ) =
-        ValidationPackageMetadata.extractFromString frontmatter
+        ValidationPackageMetadata.extractFromString programmingLanguage frontmatter
 
     static member ValidationPackage(
         metadata: ValidationPackageMetadata,
@@ -30,6 +31,7 @@ type Setup =
         majorVersion: int,
         minorVersion: int,
         patchVersion: int,
+        programmingLanguage: string,
         ?Publish: bool,
         ?Authors: Author array,
         ?Tags: OntologyAnnotation array,
@@ -46,6 +48,7 @@ type Setup =
                 majorVersion = majorVersion,
                 minorVersion = minorVersion,
                 patchVersion = patchVersion,
+                programmingLanguage = programmingLanguage,
                 ?Publish = Publish,
                 ?Authors = Authors,
                 ?Tags = Tags,
@@ -56,18 +59,25 @@ type Setup =
             ?NonCriticalValidationCases = NonCriticalValidationCases
         )
 
+open System.Collections.Generic
 type Execute =
 
 // ------------------ New API with ARCValidationPackage, metadata support and custom summaries ------------------
-    static member Validation (arcValidationPackage: ARCValidationPackage) =
-        let criticalResults = performTest arcValidationPackage.CriticalValidationCases
-        let nonCriticalResults = performTest arcValidationPackage.NonCriticalValidationCases
+    
+    static member Validation (
+        ?Payload: Dictionary<string, obj>
+    ) =
+        fun (arcValidationPackage: ARCValidationPackage) ->
+
+            let criticalResults = performTest arcValidationPackage.CriticalValidationCases
+            let nonCriticalResults = performTest arcValidationPackage.NonCriticalValidationCases
         
-        ValidationSummary.ofExpectoTestRunSummaries(
-            criticalSummary = criticalResults,
-            nonCriticalSummary = nonCriticalResults,
-            package = ValidationPackageSummary.create(arcValidationPackage.Metadata)
-        )
+            ValidationSummary.ofExpectoTestRunSummaries(
+                criticalSummary = criticalResults,
+                nonCriticalSummary = nonCriticalResults,
+                package = ValidationPackageSummary.create(arcValidationPackage.Metadata),
+                ?Payload = Payload
+            )
 
     static member SummaryCreation(
         path: string
@@ -116,7 +126,8 @@ type Execute =
         ?BadgeLabelText: string,
         ?ValueSuffix: string,
         ?Thresholds: Map<int, Color>,
-        ?DefaultColor: Color
+        ?DefaultColor: Color,
+        ?Payload: Dictionary<string, obj>
     ) =
         fun (arcValidationPackage: ARCValidationPackage) ->
 
@@ -133,7 +144,7 @@ type Execute =
 
             let results = 
                 arcValidationPackage
-                |> Execute.Validation
+                |> Execute.Validation(?Payload = Payload)
 
             results |> Execute.SummaryCreation(summaryPath)
             results |> Execute.JUnitReportCreation(jUnitPath)

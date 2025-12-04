@@ -2,18 +2,21 @@ name: Build and test
 
 on:
   push:
-    branches: [ main ]
+    branches: ['dev', 'release']
     paths:
 # this ensures that tests are run when adding new tests, but docker image is only published with the other pipeline when source code is changed
       - 'tests/**'
+      - 'src/**'
       - 'build/**'
+      - '.github/**'
   pull_request:
-    branches: [ main ]
+    branches: ['dev', 'release']
     paths:
 # here, also run tests when a pr targets source files
       - 'tests/**'
       - 'src/**'
       - 'build/**'
+      - '.github/**'
 
 jobs:
   build-and-test-linux:
@@ -25,7 +28,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.x.x
+        dotnet-version: 10.x.x
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
     - name: make script executable
       run: chmod u+x build.sh
     - name: Build and test
@@ -43,7 +48,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.x.x
+        dotnet-version: 10.x.x
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
     - name: Build and test
       env:
         ARC_VALIDATE_GITHUB_API_TEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}

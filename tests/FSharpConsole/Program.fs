@@ -1,10 +1,9 @@
-﻿open ARCValidate
-open ARCValidate.CLICommands
+﻿open ARCValidationPackages
+open ARCValidationPackages.API
 
-let parser = ARCValidateCommand.createParser()
+let resultFS = FSharpScript.run @"W:\repos\nfdi4plants\arc-validate\tests\ARCValidationPackages.Tests\fixtures\testScript.fsx"
+let resultPY = PythonScript.run @"W:\repos\nfdi4plants\arc-validate\tests\ARCValidationPackages.Tests\fixtures\testScript.py"
 
-let args = parser.Parse(inputs = [|"--verbose";"package";"install";"test"|])
+printfn "FSharpScript result: ExitCode=%d, Messages=%A" resultFS.ExitCode resultFS.Messages
+printfn "Python result: ExitCode=%d, Messages=%A" resultPY.ExitCode resultPY.Messages
 
-printfn "%A" args
-
-ARCValidate.CommandHandling.handleARCValidateCommand true None (args.GetSubCommand())

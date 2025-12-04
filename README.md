@@ -24,10 +24,6 @@ Validation of ARCs based on:
 - **ARCExpect**: Expecto-like API for creating validation cases
 - **Validation Packages**: API for installing and executing additional validation packages
 
-## Development
-
-For how to contribute to and how to develop on this project, please read the [Contributing guidelines](https://github.com/nfdi4plants/arc-validate/blob/release/CONTRIBUTING.md).
-
 ## Project layout
 
 ### Dependency visualization
@@ -82,3 +78,31 @@ ARCGraph --depends on--> OBO.NET
 - [Argu](https://github.com/fsprojects/Argu)
 - [Expecto](https://github.com/haf/expecto)
 - [Spectre.Console](https://github.com/spectreconsole/spectre.console)
+
+
+## Development
+
+For how to contribute to and how to develop on this project, please read the [Contributing guidelines](https://github.com/nfdi4plants/arc-validate/blob/release/CONTRIBUTING.md).
+
+
+Just call `build.sh` or `build.cmd` depending on your OS.
+
+### Test
+
+test setup is interconnected with production services, running tests for the compiled `arc-validate` tool with validation packages with source https://avpr.nfdi4plants.org.
+
+since testing the cli tool relies on it being compiled via `dotnet publish`, either use the build scripts or manually publish `arc-validate` to the `/publish` folder when using e.g. TestExplorers.
+
+```bash
+build.sh runtests
+```
+
+```bash
+build.cmd runtests
+```
+
+### Create Nuget package
+
+```bash
+build.sh pack
+```

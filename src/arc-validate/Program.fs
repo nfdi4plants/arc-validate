@@ -20,10 +20,8 @@ let main argv =
         let args = parser.ParseCommandLine()
 
         let verbose = args.TryGetResult(ARCValidateCommand.Verbose) |> Option.isSome
-
-        let token = args.TryGetResult(ARCValidateCommand.Token)
         
-        handleARCValidateCommand verbose token (args.GetSubCommand())
+        handleARCValidateCommand verbose (args.GetSubCommand())
         |> int
 
     with

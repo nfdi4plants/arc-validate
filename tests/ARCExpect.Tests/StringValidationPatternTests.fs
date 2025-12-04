@@ -16,6 +16,14 @@ let dummyOrcidSumRight = "0123-4567-8910-1111"
 let dummyOrcidWrong = "1111-2222-3333-4444"
 let dummyOrcidTotallyWrong = "abcd-efgh-ijkl-mnox"
 let dummyOrcidRight = "0000-0001-5874-2232"
+let dummyOrcidUrl1 = "http://orcid.org/0000-0001-5874-2232"
+let dummyOrcidUrl2 = "http://orcid.org/0000-0001-5874-2232/"
+let dummyOrcidUrl3 = "http://www.orcid.org/0000-0001-5874-2232"
+let dummyOrcidUrl4 = "http://www.orcid.org/0000-0001-5874-2232/"
+let dummyOrcidUrl5 = "https://orcid.org/0000-0001-5874-2232"
+let dummyOrcidUrl6 = "https://orcid.org/0000-0001-5874-2232/"
+let dummyOrcidUrl7 = "https://www.orcid.org/0000-0001-5874-2232"
+let dummyOrcidUrl8 = "https://www.orcid.org/0000-0001-5874-2232/"
 
 let dummyString1 = "asd"
 let dummyString2 = "asdasdasdasdasdasdasdasdasdasd"
@@ -51,6 +59,14 @@ let ``StringValidationPattern tests`` =
             testList "checkValid" [
                 testCase "Is valid" <| fun _ ->
                     Expect.isTrue (checkValid dummyOrcidRight) "ORCID is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl1) "ORCID URL 1 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl2) "ORCID URL 2 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl3) "ORCID URL 3 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl4) "ORCID URL 4 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl5) "ORCID URL 5 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl6) "ORCID URL 6 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl7) "ORCID URL 7 is invalid"
+                    Expect.isTrue (checkValid dummyOrcidUrl8) "ORCID URL 8 is invalid"
                 testCase "Is invalid" <| fun _ ->
                     Expect.isFalse (checkValid dummyOrcidWrong) "ORCID is valid (though it mustn't)"
                 testCase "Is totally invalid" <| fun _ ->
