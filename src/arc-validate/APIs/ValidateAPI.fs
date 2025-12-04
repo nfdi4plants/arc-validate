@@ -109,8 +109,12 @@ module ValidateAPI =
                             AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
                             AnsiConsole.MarkupLine("")
 
-                        let result = FSharpScript.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
-
+                        let result = 
+                            match validationPackage.Metadata.ProgrammingLanguage.ToLowerInvariant() with
+                            | "fsharp" -> FSharpScript.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
+                            | "python" -> PythonScript.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
+                            | _ -> failwithf $"programming '{validationPackage.Metadata.ProgrammingLanguage}' language used in validation package '{validationPackage.FileName}' is not supported"
+                        
                         if result.OK then
                             exitCode <- ExitCode.Success
                         else

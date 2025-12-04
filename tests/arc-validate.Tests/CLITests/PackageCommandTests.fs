@@ -384,5 +384,29 @@ let ``PackageCommand CLI Tests`` =
                             fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("test @ version 5.0.0-use+suffixes")) (ErrorMessage.withProcessDiagnostics $"Console output {proc.Result.Output} did contain the package" proc tool args)
                     ]
             ])
+            testSequenced (testList "install test-py" [
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        true
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "package"; "install"; "test-py"; "-v"; "0.0.2"|]
+                        
+                    ) [
+                        "Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args)
+                        "Cache folder exists" ,  
+                            fun tool args proc -> Expect.isTrue (Directory.Exists(expected_package_cache_folder_path)) (ErrorMessage.withCLIDiagnostics $"package cache folder was not created at {expected_package_cache_folder_path}." tool args)
+                        "Cache exists" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(expected_package_cache_file_path)) (ErrorMessage.withCLIDiagnostics $"package cache was not created at {expected_package_cache_file_path}." tool args)
+                        "Package script exists" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test-py@0.0.2.py"))) (ErrorMessage.withCLIDiagnostics $"package file was not installed at expected location." tool args)
+                        "Package script has correct content" ,
+                            fun tool args proc -> 
+                                Expect.equal 
+                                    (File.ReadAllText(Path.Combine(expected_package_cache_folder_path, "test-py@0.0.2.py")).ReplaceLineEndings("\n"))
+                                    ``test_py_package_script_content_v0.0.2``
+                                    (ErrorMessage.withCLIDiagnostics $"Package script did not have correct content" tool args)
+                    ]
+            ])
         ])
     ])

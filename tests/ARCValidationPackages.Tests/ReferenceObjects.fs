@@ -26,7 +26,7 @@ let testPackageIndex =
             fileName = "test@1.0.0.fsx",
             lastUpdated = testDate1,
             contentHash = "",
-            metadata = ValidationPackageMetadata.create("test","this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
+            metadata = ValidationPackageMetadata.create("test","this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0, "FSharp")
         )
     |]
 
@@ -192,6 +192,7 @@ module AVPRIndexDomain =
             patchVersion = 0,
             summary = "this package is here for testing purposes only.",
             description = "this package is here for testing purposes only.",
+            programmingLanguage = "FSharp",
             Authors = [|
                 AVPRIndex.Domain.Author.create(
                     fullName = "John Doe",
@@ -222,6 +223,7 @@ module AVPRIndexDomain =
             patchVersion = 0,
             summary = "this package is here for testing purposes only.",
             description = "this package is here for testing purposes only.",
+            programmingLanguage = "FSharp",
             Authors = [|
                 AVPRIndex.Domain.Author.create(
                     fullName = "John Doe",
@@ -252,6 +254,7 @@ module AVPRIndexDomain =
             patchVersion = 0,
             summary = "this package is here for testing purposes only.",
             description = "this package is here for testing purposes only.",
+            programmingLanguage = "FSharp",
             PreReleaseVersionSuffix = "use",
             BuildMetadataVersionSuffix = "suffixes",
             Authors = [|
@@ -386,7 +389,7 @@ module CachedValidationPackage =
             "test@1.0.0.fsx",
             testDate1,
             (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
-            ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
+            ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0, "FSharp")
         )
 
     let testValidationPackage2 =
@@ -394,7 +397,7 @@ module CachedValidationPackage =
             "test@1.0.0.fsx",
             testDate2,
             (Path.Combine(expected_package_cache_folder_path, "test@1.0.0.fsx").Replace("\\","/")),
-            ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0)
+            ValidationPackageMetadata.create("test", "this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0, "FSharp")
         )
 
     let testPackage_3_0_0 =

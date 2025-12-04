@@ -1,6 +1,6 @@
 ### 6.0.0 - (Released 2025-12-04)
 
-- Add JSON Payload
+- Support multiple programming languages
 - Remove preview package APIs
 
 ### 5.0.1 - (Released 2025-09-26)

@@ -180,9 +180,9 @@ let ``ValidateCommand CLI Tests`` =
                         "Install: Exit code is 0" , 
                             fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
                         "Install: Console output indicates that the package was installed" , 
-                            fun tool args proc -> Expect.stringContains proc.Result.Output "installed package test@6.0.2.fsx at" (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                            fun tool args proc -> Expect.stringContains proc.Result.Output "installed package test@6.0.3.fsx at" (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         "Install: Package script exists in avpr cache after running package install test" ,  
-                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test@6.0.2.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test@6.0.3.fsx")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
 
                     ]
                 yield! 
@@ -197,9 +197,42 @@ let ``ValidateCommand CLI Tests`` =
                         "Validate: Console output does not indicate that package is not installed" , 
                             fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         "Validate: Console Output is correct" ,
-                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v6.0.1!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you successfully executed test package v6.0.3!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                         ]
                 ])
+            testSequenced (testList "package test-py version 002" [
+                yield! 
+                // run:
+                // - arc-validate --verbose package install test-py -v 0.0.2
+                    testFixture (Fixtures.withToolExecution 
+                        true
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "package"; "install"; "test-py"; "-v"; "0.0.2"|]
+                        
+                    ) [
+                        "Install: Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Install: Console output indicates that the package was installed" , 
+                            fun tool args proc -> Expect.stringContains proc.Result.Output "installed package test-py@0.0.2.py at" (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Install: Package script exists in avpr cache after running package install test" ,  
+                            fun tool args proc -> Expect.isTrue (File.Exists(Path.Combine(expected_package_cache_folder_path, "test-py@0.0.2.py")))  (ErrorMessage.withCLIDiagnostics "package file was not installed at expected location" tool args )
+
+                    ]
+                yield! 
+                    testFixture (Fixtures.withToolExecution 
+                        false
+                        "../../../../../publish/arc-validate" 
+                        [|"--verbose"; "validate"; "-p"; "test-py"; "-v"; "0.0.2"; "-i"; "fixtures/arcs/inveniotestarc"|]
+                        
+                    ) [
+                        "Validate: Exit code is 0" , 
+                            fun tool args proc -> Expect.equal proc.ExitCode 0 (ErrorMessage.withProcessDiagnostics "incorrect exit code" proc tool args )
+                        "Validate: Console output does not indicate that package is not installed" , 
+                            fun tool args proc -> Expect.isFalse (proc.Result.Output.Contains("Package test not installed. You can run run arc-validate package install ")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                        "Validate: Console Output is correct" ,
+                            fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you are executing test-py package v0.0.2!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
+                    ]
+            ])
         ])
         testSequenced (testList "specification validation" [
             testSequenced (testList "latest" [

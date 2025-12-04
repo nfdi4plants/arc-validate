@@ -36,7 +36,11 @@ type CachedValidationPackage =
         /// <param name="Date">Optional. The date to set the CacheDate to. Defaults to the current date.</param>
         static member ofPackageMetadata (packageMetadata: ValidationPackageMetadata, ?Date: System.DateTimeOffset, ?CacheFolder: string) =
             let path = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER())
-            let filename = $"{packageMetadata.Name}@{ValidationPackageMetadata.getSemanticVersionString packageMetadata}.fsx"
+            let filename = 
+                match packageMetadata.ProgrammingLanguage.ToLowerInvariant() with
+                | "fsharp" -> $"{packageMetadata.Name}@{ValidationPackageMetadata.getSemanticVersionString packageMetadata}.fsx"
+                | "python" -> $"{packageMetadata.Name}@{ValidationPackageMetadata.getSemanticVersionString packageMetadata}.py"
+                | _ -> failwithf $"unknown programming language {packageMetadata.ProgrammingLanguage}"
             CachedValidationPackage.create(
                 fileName = filename,
                 cacheDate = (defaultArg Date System.DateTimeOffset.Now),

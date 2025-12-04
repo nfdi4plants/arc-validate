@@ -203,7 +203,8 @@ module ValidationPackageMetadata =
             MinorVersion = 0,
             PatchVersion = 0,
             Summary = "A package without CQC hook.",
-            Description = "A package without CQC hook. More text here."
+            Description = "A package without CQC hook. More text here.",
+            ProgrammingLanguage = "FSharp"
         )
 
     let validWithHook = 

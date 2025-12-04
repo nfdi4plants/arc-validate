@@ -8,9 +8,10 @@ open AVPRIndex
 type Setup =
     
     static member Metadata(
-        frontmatter: string
+        frontmatter: string,
+        programmingLanguage: FrontmatterLanguage
     ) =
-        ValidationPackageMetadata.extractFromString frontmatter
+        ValidationPackageMetadata.extractFromString programmingLanguage frontmatter
 
     static member ValidationPackage(
         metadata: ValidationPackageMetadata,
@@ -30,6 +31,7 @@ type Setup =
         majorVersion: int,
         minorVersion: int,
         patchVersion: int,
+        programmingLanguage: string,
         ?Publish: bool,
         ?Authors: Author array,
         ?Tags: OntologyAnnotation array,
@@ -46,6 +48,7 @@ type Setup =
                 majorVersion = majorVersion,
                 minorVersion = minorVersion,
                 patchVersion = patchVersion,
+                programmingLanguage = programmingLanguage,
                 ?Publish = Publish,
                 ?Authors = Authors,
                 ?Tags = Tags,
