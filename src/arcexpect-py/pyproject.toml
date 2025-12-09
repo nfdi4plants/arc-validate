@@ -1,0 +1,17 @@
+[project]
+name = "arcexpect"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "anybadge>=1.16.0",
+    "arctrl==3.0.0b14",
+    "junit-xml>=1.9",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
