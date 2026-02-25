@@ -6,6 +6,12 @@ open System.Text.Json.Serialization
 open System.IO
 open AVPRIndex
 
+module JsonOptions =
+    let options =
+        JsonFSharpOptions.Default()
+            .WithSkippableOptionFields() // if option is none, do not include a property, but include it if option is some.
+            .ToJsonSerializerOptions()
+
 /// <summary>
 /// Represents a brief summary of the result of validating an ARC against a set of validation cases.
 /// </summary>

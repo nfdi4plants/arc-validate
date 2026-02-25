@@ -22,13 +22,6 @@ module InternalUtils =
     open OBO.NET
     open ControlledVocabulary
 
-    /// internal json options for better F# type support in serialization (mainly for Options)
-    module JsonOptions =
-        let options =
-            JsonFSharpOptions.Default()
-                .WithSkippableOptionFields() // if option is none, do not include a property, but include it if option is some.
-                .ToJsonSerializerOptions()
-
 
     module String =
 

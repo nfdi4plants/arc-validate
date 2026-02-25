@@ -76,6 +76,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ARCExpect", "ARCExpect", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ARCValidationPackages", "ARCValidationPackages", "{DEC9AEAB-AF5A-4290-9889-A6457C2687E6}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ARCExpect.Core", "src\ARCExpect.Core\ARCExpect.Core\ARCExpect.Core.fsproj", "{B5C1C3A1-A041-425C-88B4-20CF154C5608}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,10 @@ Global
 		{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C41FAD1A-6E44-4C11-B915-CD928E0ED72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5C1C3A1-A041-425C-88B4-20CF154C5608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5C1C3A1-A041-425C-88B4-20CF154C5608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5C1C3A1-A041-425C-88B4-20CF154C5608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5C1C3A1-A041-425C-88B4-20CF154C5608}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{E6A037FA-C367-4C2A-9B87-2A04CA25D3C9} = {DB01DF70-3713-4445-AC79-A09ECE093294}
 		{AE7B2617-6AD7-4A90-84A4-7EE29B1BD94F} = {DB01DF70-3713-4445-AC79-A09ECE093294}
 		{DEC9AEAB-AF5A-4290-9889-A6457C2687E6} = {DB01DF70-3713-4445-AC79-A09ECE093294}
+		{B5C1C3A1-A041-425C-88B4-20CF154C5608} = {6275F297-567B-421B-B055-4F88B2785765}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF9C2722-38D9-48C4-8095-4726C56E92DE}
