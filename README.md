@@ -21,7 +21,8 @@ Validation of ARCs based on:
     - code genearation of ontology modules with accessible terms
 - **ARCGraph**: Graph representation of file content based on structural ontologies via **OBO graph**
 - **Graph-based** completion of File content (missing cells -> empty tokens) via **ARCGraph**
-- **ARCExpect**: Expecto-like API for creating validation cases
+- **ARCExpect.Core**: Expecto-like API for validation
+- **ARCExpect**: ARC aware API for validation cases
 - **Validation Packages**: API for installing and executing additional validation packages
 
 ## Project layout
@@ -35,7 +36,8 @@ ControlledVocabulary("<b>ControlledVocabulary:</b><br>Data model for CVs")
 ARCTokenization("<b>ARCTokenization:</b><br>Tokenization of ARCs into CVs")
 OBO.NET("<b>OBO.NET:</b><br>OBO Ontology data model and parsing")
 ARCGraph("<b>ARCGraph:</b><br>Graph based on structural ontologies")
-ARCExpect("<b>ARCExpect:</b><br>Expecto-like API for validation")
+ARCExpect("<b>ARCExpect:</b><br>ARC aware API for validation")
+ARCExpect.Core("<b>ARCExpect.Core:</b><br>Expecto-like API for validation")
 ARCValidationPackages("<b>ARCValidationPackages:</b><br>API for additional validation packages")
 arc-validate("<b>arc-validate:</b><br>validation CLI tool")
 
@@ -43,6 +45,7 @@ arc-validate --depends on--> ARCExpect
 arc-validate --depends on--> ARCValidationPackages
 ARCTokenization --depends on--> ControlledVocabulary
 ARCTokenization --depends on--> OBO.NET
+ARCExpect --depends on--> ARCExpect.Core
 ARCExpect --depends on--> ARCGraph
 ARCExpect --depends on--> ARCTokenization
 ARCGraph --depends on--> ARCTokenization
