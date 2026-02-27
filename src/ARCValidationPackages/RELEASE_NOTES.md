@@ -1,4 +1,10 @@
-﻿### 6.0.0 - (Released 2025-12-04)
+﻿### 7.0.0-alpha - (Released 2026-02-27)
+
+- Split ARCExpect into
+  - ARCExpect (functionality to create validation cases) & 
+  - ARCExpect.Core (Core functionality to create ARC validation package scripts)
+
+### 6.0.0 - (Released 2025-12-04)
 
 - Remove all preview package functionality
 - Add python execution and validation package support
