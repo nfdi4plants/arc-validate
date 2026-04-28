@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -23,8 +23,8 @@
     <PackageReference Include="Fake.Core.Process" Version="[6.1.4]" />
     <PackageReference Include="FsHttp" Version="[14.5.0]" />
     <PackageReference Include="AVPRIndex" Version="[0.4.0]" />
-    <PackageReference Include="AVPRClient" Version="[0.2.0]" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.3" />
+    <PackageReference Include="AVPRClient" Version="[0.2.1]" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.7" />
   </ItemGroup>
 
 </Project>

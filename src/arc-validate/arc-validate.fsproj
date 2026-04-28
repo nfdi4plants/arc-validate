@@ -21,9 +21,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Argu" Version="[6.2.5]" />
-    <PackageReference Include="Spectre.Console" Version="[0.54.0]" />
-    <PackageReference Include="Spectre.Console.CLI" Version="[0.53.1]" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.3" />
+    <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
+    <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[4.0.0, 5.0.0)" />
