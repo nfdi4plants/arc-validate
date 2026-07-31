@@ -1,7 +1,7 @@
 ﻿module ARCValidationPackageTests
 
 open Expecto
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open ReferenceObjects
 open Common.TestUtils
 open TestUtils

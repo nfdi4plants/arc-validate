@@ -1,4 +1,5 @@
-﻿module ValidationPackagesTests
+module PackageManagementTests
+
 open Expecto
 
 [<EntryPoint>]

@@ -16,7 +16,6 @@ open Helpers
 let pack = BuildTask.create "Pack" [ clean; build ] {
     [
         CoreProject
-        ValidationPackagesProject
     ]
     |> List.iter (fun pInfo ->
         if promptYesNo $"creating stable package for {pInfo.Name}{System.Environment.NewLine}\tpackage version: {pInfo.PackageVersionTag}{System.Environment.NewLine}\tassembly version: {pInfo.AssemblyVersion}{System.Environment.NewLine}\tassembly informational version: {pInfo.AssemblyInformationalVersion}{System.Environment.NewLine} OK?" then
@@ -72,7 +71,6 @@ let packPrerelease =
         ] {
         [
             CoreProject
-            ValidationPackagesProject
         ]
         |> List.iter (fun pInfo ->
             printfn $"Please enter pre-release package suffix for {pInfo.Name}"

@@ -3,7 +3,7 @@
 open System
 open System.IO
 open type System.Environment
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open Common.TestUtils
 
 module Expect =
@@ -113,7 +113,7 @@ module Fixtures =
 
     let withFreshConfigAndCache (f: Config * PackageCache -> unit) () =
         resetConfigEnvironment()
-        let freshConfig, freshCache = API.Common.GetSyncedConfigAndCache() |> Result.okValue
+        let freshConfig, freshCache = Common.GetSyncedConfigAndCache() |> Result.okValue
         f (freshConfig, freshCache)
 
     //let saveAndCachePackage (token:string option) (package:Package) =
@@ -124,4 +124,7 @@ module Fixtures =
 module AVPR =
 
     let baseUri = System.Uri("https://avpr-dev.nfdi4plants.org")
-    let api = new AVPRAPI(BaseUri = baseUri)
+    let api = new RegistryClient(BaseUri = baseUri)
+
+    let await (task: System.Threading.Tasks.Task<'T>) =
+        task.GetAwaiter().GetResult()

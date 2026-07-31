@@ -55,7 +55,6 @@ let ARCExpectCoreProject = ProjectInfo.create("ARCExpect.Core", "src/ARCExpect.C
 let ARCExpectCorePortableProject = "src/ARCExpect.Core.Portable/ARCExpect.Core.Portable.fsproj"
 let ARCExpectCorePortableTestsProject = "tests/ARCExpect.Core.Portable.Tests/ARCExpect.Core.Portable.Tests.fsproj"
 let ARCExpectCorePortablePackageSmokeProject = "tests/ARCExpect.Core.Portable.PackageSmoke/ARCExpect.Core.Portable.PackageSmoke.fsproj"
-let ValidationPackagesProject = ProjectInfo.create("ARCValidationPackages", "src/ARCValidationPackages/ARCValidationPackages.fsproj", "src/ARCValidationPackages/RELEASE_NOTES.md")
 let CLIProject = ProjectInfo.create("arc-validate", "src/arc-validate/arc-validate.fsproj", "src/arc-validate/RELEASE_NOTES.md")
 
 let projects = 
@@ -64,7 +63,6 @@ let projects =
         // e.g. ProjectInfo.create("MyProject", "src/MyProject/MyProject.fsproj", "src/MyProject/RELEASE_NOTES.md")
         CoreProject
         ARCExpectCoreProject
-        ValidationPackagesProject
         CLIProject
     ]
 
@@ -75,7 +73,7 @@ let testProjects =
         // add relative paths (from project root) to your testprojects here
         // e.g. ProjectInfo.create("MyTestProject", "tests/MyTestProject/MyTestProject.fsproj")
         ProjectInfo.create("ARCExpect.Tests", "tests/ARCExpect.Tests/ARCExpect.Tests.fsproj")
-        ProjectInfo.create("ARCValidationPackages.Tests", "tests/ARCValidationPackages.Tests/ARCValidationPackages.Tests.fsproj")
+        ProjectInfo.create("arc-validate.PackageManagement.Tests", "tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj")
         ProjectInfo.create("arc-validate.Tests", "tests/arc-validate.Tests/arc-validate.Tests.fsproj")
     ]
 

@@ -110,7 +110,9 @@ let publish = BuildTask.create "Publish" [clean] {
                 MSBuildParams = msBuildParams
                 OutputPath = Some "publish"
         }
-        |> DotNet.Options.withCustomParams (Some "-tl")
+        // .NET 10 can silently fail the parallel GetTargetFrameworks traversal
+        // for the nested F# project-reference graph during publish.
+        |> DotNet.Options.withCustomParams (Some "-tl -m:1")
     )
 }
 

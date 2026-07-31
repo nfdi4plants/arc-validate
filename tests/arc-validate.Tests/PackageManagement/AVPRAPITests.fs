@@ -1,8 +1,7 @@
 ﻿module AVPRAPITests
 
 open Expecto
-open ARCValidationPackages
-open FsHttp
+open ARCValidate.PackageManagement
 open System
 open System.Text
 open Common.TestUtils
@@ -17,19 +16,19 @@ let ``AVPRAPI tests`` =
     testList "AVPR API tests" [
         testList "GetPackageByNameAndVersion" [
             test "test_3_0_0" {
-                let vp = AVPR.api.GetPackageByNameAndVersion "test" "3.0.0"
+                let vp = AVPR.api.GetPackageByNameAndVersionAsync("test", "3.0.0") |> AVPR.await
                 Expect.AVPRClient.validationPackageEqual vp ReferenceObjects.AVPRClientDomain.ValidationPackage.testPackage_3_0_0
             }
             test "test_5_0_0 - CQCHookEndpoint addition" {
-                let vp = AVPR.api.GetPackageByNameAndVersion "test" "5.0.0"
+                let vp = AVPR.api.GetPackageByNameAndVersionAsync("test", "5.0.0") |> AVPR.await
                 Expect.AVPRClient.validationPackageEqual vp ReferenceObjects.AVPRClientDomain.ValidationPackage.testPackage_5_0_0
             }
             test "test_5_0_0-use+suffixes - SemVer addition" {
-                let vp = AVPR.api.GetPackageByNameAndVersion "test" "5.0.0-use+suffixes"
+                let vp = AVPR.api.GetPackageByNameAndVersionAsync("test", "5.0.0-use+suffixes") |> AVPR.await
                 Expect.AVPRClient.validationPackageEqual vp ReferenceObjects.AVPRClientDomain.ValidationPackage.``testPackage_5_0_0-use+suffixes``
             }
             test "test_7_0_0 exposes CWL command inputs from the development registry" {
-                let vp = AVPR.api.GetPackageByNameAndVersion "test" "7.0.0"
+                let vp = AVPR.api.GetPackageByNameAndVersionAsync("test", "7.0.0") |> AVPR.await
                 let clientInput = vp.Inputs |> Seq.find (fun input -> input.Id = "test")
 
                 Expect.equal vp.Inputs.Count 2 "CWL input count was not correct"
@@ -50,14 +49,14 @@ let ``AVPRAPI tests`` =
         
         ]
         test "GetAllPackages contains a test package" {
-            let indexedPackages = AVPR.api.GetAllPackages()
+            let indexedPackages = AVPR.api.GetAllPackagesAsync() |> AVPR.await
             Expect.isTrue (indexedPackages |> Array.exists (fun package -> package.Name = "test")) "package index did not contain test script"
         }
         testList "downloadPackageScript" [
             test "test_3_0_0" {
                 Expect.equal 
                     (
-                        AVPR.api.downloadPackageScript( "test", "3.0.0")
+                        AVPR.api.DownloadPackageScriptAsync("test", Version = "3.0.0") |> AVPR.await
                         |> fun content -> content.ReplaceLineEndings("\n")
                     )
                     ReferenceObjects.testScriptContentAVPR_test_3_0_0
@@ -66,7 +65,7 @@ let ``AVPRAPI tests`` =
             test "test_5_0_0 - CQCHookEndpoint addition" {
                 Expect.equal 
                     (
-                        AVPR.api.downloadPackageScript( "test", "5.0.0")
+                        AVPR.api.DownloadPackageScriptAsync("test", Version = "5.0.0") |> AVPR.await
                         |> fun content -> content.ReplaceLineEndings("\n")
                     )
                     ReferenceObjects.testScriptContentAVPR_test_5_0_0
@@ -75,7 +74,7 @@ let ``AVPRAPI tests`` =
             test "test_5_0_0-use+suffixes - SemVer addition" {
                 Expect.equal 
                     (
-                        AVPR.api.downloadPackageScript( "test", "5.0.0-use+suffixes")
+                        AVPR.api.DownloadPackageScriptAsync("test", Version = "5.0.0-use+suffixes") |> AVPR.await
                         |> fun content -> content.ReplaceLineEndings("\n")
                     )
                     ReferenceObjects.``testScriptContentAVPR_test_5_0_0-use+suffixes``

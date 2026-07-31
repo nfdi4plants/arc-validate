@@ -4,7 +4,6 @@ Starting from 1.0.0, Versions of the packages in this project are decoupled, mea
 
 For the individual package release notes, please refer to these files:
 - [ARCExpect](./src/ARCExpect/RELEASE_NOTES.md) - the base validation library
-- [ARCValidationPackages](./src/ARCValidationPackages/RELEASE_NOTES.md) - validation package library
 - [arc-validate](./src/arc-validate/RELEASE_NOTES.md) - validation CLI tool
 
 ### 0.0.1+6c5010d (Released 2023-12-11)

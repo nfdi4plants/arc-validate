@@ -33,13 +33,14 @@ Keep the roadmap issues separate:
 - `src/ARCExpect.Core/ARCExpect.Core/`: validation-package setup and execution,
   result output, and the current Expecto/.NET compatibility boundary.
 - `src/ARCExpect/`: ARC-specific validation APIs and specification validation.
-- `src/ARCValidationPackages/`: registry access, package cache management, and
-  F#/Python script execution. This is a transitional library whose application
-  infrastructure is planned to move into the CLI.
-- `src/arc-validate/`: CLI arguments, commands, orchestration, and presentation.
+- `src/arc-validate/PackageManagement/`: internal registry access,
+  configuration, cache management, installation, and uninstallation.
+- `src/arc-validate/PackageRunner/`: internal F# and Python script execution.
+- `src/arc-validate/`: CLI arguments, commands, orchestration, presentation,
+  package management, and package execution.
 - `tests/ARCExpect.Tests/`: ARCExpect and ARCExpect.Core tests.
-- `tests/ARCValidationPackages.Tests/`: registry, cache, configuration, and
-  script-execution tests.
+- `tests/arc-validate.Tests/PackageManagement/`: registry, cache,
+  configuration, and script-execution tests.
 - `tests/arc-validate.Tests/`: CLI and output-contract tests.
 - `tests/Common/`: shared .NET test helpers.
 - `build/`: BlackFox/FAKE build project containing build, test, pack,
@@ -66,7 +67,7 @@ dotnet build arc-validate.sln
 
 # Focused test projects
 dotnet test tests/ARCExpect.Tests/ARCExpect.Tests.fsproj
-dotnet test tests/ARCValidationPackages.Tests/ARCValidationPackages.Tests.fsproj
+dotnet test tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj
 dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
 
 # Documentation
@@ -82,11 +83,11 @@ builds/tests while developing, then run the affected solution-level target
 before handing off.
 
 `RunTests` is not hermetic today: it can clone the `invenio-test-arc` fixture,
-publishes the CLI locally before testing, requires `uv`, and includes existing
-ARCValidationPackages tests that call the live AVPR service. Some package-cache
-tests write under the platform application-data directory. Inspect these side
-effects before running the full target in a restricted or shared environment.
-Do not add new tests that depend on live production services.
+publishes the CLI locally before testing, requires `uv`, and includes legacy
+package-management contract tests that call the AVPR development service. Some
+legacy cache tests write under the platform application-data directory. Inspect
+these side effects before running the full target in a restricted or shared
+environment. Do not add new tests that depend on live services.
 
 ## Build-project conventions
 
@@ -249,8 +250,9 @@ current Expecto runner and .NET filesystem behavior.
 
 ## Package management and execution
 
-`ARCValidationPackages` is transitional application infrastructure, not a
-general-purpose portable authoring library.
+Validation-package management is internal application infrastructure, not a
+general-purpose portable authoring library. The former `ARCValidationPackages`
+project has been absorbed into the CLI.
 
 - Registry configuration, cache management, installation, and uninstallation
   belong in internal CLI package-management modules when migrated.

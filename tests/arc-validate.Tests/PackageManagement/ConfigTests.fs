@@ -1,6 +1,6 @@
 ﻿module ConfigTests
 
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open Expecto
 open System.IO
 

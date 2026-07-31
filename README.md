@@ -3,7 +3,6 @@
 Home of all the tools and libraries to create and run validation of ARCs:
 
 - **ARCExpect** ([docs :notebook:](https://nfdi4plants.github.io/arc-validate/ARCExpect/introduction.html)) - easy to use and understand APIs to create and execute validation cases.
-- **ARCValidationPackages** ([docs :notebook:](https://nfdi4plants.github.io/arc-validate/ARCValidationPackages/introduction.html)) - package for installing, updating, and executing ARC validation packages.
 - **arc-validate/** ([docs :notebook:](https://nfdi4plants.github.io/arc-validate/arc-validate/introduction.html)) - CLI tool that offers commands for validating ARCs and managing validation packages.
 
 ## Docker container
@@ -38,11 +37,13 @@ OBO.NET("<b>OBO.NET:</b><br>OBO Ontology data model and parsing")
 ARCGraph("<b>ARCGraph:</b><br>Graph based on structural ontologies")
 ARCExpect("<b>ARCExpect:</b><br>ARC aware API for validation")
 ARCExpect.Core("<b>ARCExpect.Core:</b><br>Expecto-like API for validation")
-ARCValidationPackages("<b>ARCValidationPackages:</b><br>API for additional validation packages")
+PackageManagement("<b>PackageManagement:</b><br>internal validation-package install/cache infrastructure")
+PackageRunner("<b>PackageRunner:</b><br>internal F# and Python execution")
 arc-validate("<b>arc-validate:</b><br>validation CLI tool")
 
 arc-validate --depends on--> ARCExpect
-arc-validate --depends on--> ARCValidationPackages
+arc-validate --owns--> PackageManagement
+arc-validate --owns--> PackageRunner
 ARCTokenization --depends on--> ControlledVocabulary
 ARCTokenization --depends on--> OBO.NET
 ARCExpect --depends on--> ARCExpect.Core
@@ -57,27 +58,21 @@ ARCGraph --depends on--> OBO.NET
 #### ARCExpect
 
 - [ARCTokenization](https://github.com/nfdi4plants/ARCTokenization)
-- [AVPRIndex](https://github.com/nfdi4plants/arc-validate-package-registry)
+- [ValidationPackage.Model](https://github.com/nfdi4plants/arc-validate-package-registry)
+- [ValidationPackage.Codecs](https://github.com/nfdi4plants/arc-validate-package-registry)
 - [OBO.NET](https://github.com/CSBiology/OBO.NET)
 - [Graphoscope](https://github.com/fslaborg/Graphoscope)
 - [Cytoscape.NET](https://github.com/fslaborg/Cytoscape.NET)
-- [AnyBadge.NET](https://github.com/kMutagene/AnyBadge.NET)
-- [FSharp.SystemTextJson](https://github.com/Tarmil/FSharp.SystemTextJson)
 - [FSharpAux](https://github.com/CSBiology/FSharpAux)
 - [FsSpreadsheet](https://github.com/fslaborg/FsSpreadsheet)
 - [Expecto](https://github.com/haf/expecto)
 
-### ARCValidationPackages
-
-- [Fake.DotNet.Cli](https://github.com/fsprojects/FAKE)
-- [FsHttp](https://github.com/fsprojects/FsHttp)
-- [AVPRIndex](https://github.com/nfdi4plants/arc-validate-package-registry)
-- [AVPRClient](https://github.com/nfdi4plants/arc-validate-package-registry)
-
 #### arc-validate
 
 - ARCExpect
-- ARCValidationPackages
+- [AVPRClient](https://github.com/nfdi4plants/arc-validate-package-registry)
+- [AVPRClient.Interop](https://github.com/nfdi4plants/arc-validate-package-registry)
+- ValidationPackage.Model
 - [Argu](https://github.com/fsprojects/Argu)
 - [Expecto](https://github.com/haf/expecto)
 - [Spectre.Console](https://github.com/spectreconsole/spectre.console)
@@ -104,7 +99,7 @@ build.sh runtests
 build.cmd runtests
 ```
 
-### Create Nuget package
+### Create NuGet packages
 
 ```bash
 build.sh pack

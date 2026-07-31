@@ -1,7 +1,7 @@
 ﻿module DefaultsTests
 
 open Expecto
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open System
 open System.IO
 open type System.Environment

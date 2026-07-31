@@ -3,7 +3,7 @@
 open System
 open System.IO
 open type System.Environment
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open Common.TestUtils
 open TestUtils
 open ValidationPackage.Model

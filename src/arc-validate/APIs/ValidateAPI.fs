@@ -4,7 +4,8 @@ open ARCValidate
 open ARCValidate.CLIArguments
 open ARCExpect
 open ARCTokenization
-open ARCValidationPackages
+open ARCValidate.PackageManagement
+open ARCValidate.PackageRunner
 
 open Expecto
 open System.IO
@@ -86,7 +87,7 @@ module ValidateAPI =
                     AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
                     AnsiConsole.MarkupLine("")
                 
-                match ARCValidationPackages.API.Common.GetSyncedConfigAndCache() with
+                match Common.GetSyncedConfigAndCache() with
                 | Error e -> 
                     PackageAPI.printGetSyncedConfigAndCacheError e
                     exitCode <- ExitCode.InternalError

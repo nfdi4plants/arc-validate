@@ -1,3 +1,0 @@
-# ARCValidationPackages
-
-docs comming soon

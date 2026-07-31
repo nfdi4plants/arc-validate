@@ -14,9 +14,8 @@ updates:
           - "ARCTokenization*"
           - "ControlledVocabulary*"
           - "ARCExpect*"
-          - "ARCValidationPackages*"
           - "AVPRClient*"
-          - "AVPRIndex*"
+          - "ValidationPackage.*"
       Tests:
         patterns:
           - "xunit*"
@@ -33,9 +32,8 @@ updates:
           - "ARCTokenization*"
           - "ControlledVocabulary*"
           - "ARCExpect*"
-          - "ARCValidationPackages*"
           - "AVPRClient*"
-          - "AVPRIndex*"
+          - "ValidationPackage.*"
           - "xunit*"
           - "Expecto*"
           - "Fable.Pyxpecto*"

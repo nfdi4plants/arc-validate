@@ -1,7 +1,7 @@
 ﻿module DomainTests
 
 open Expecto
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open System
 open System.IO
 

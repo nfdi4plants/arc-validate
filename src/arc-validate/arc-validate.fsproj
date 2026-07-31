@@ -7,6 +7,14 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="RELEASE_NOTES.md" />
+    <Compile Include="PackageManagement\Defaults.fs" />
+    <Compile Include="PackageManagement\AtomicFile.fs" />
+    <Compile Include="PackageManagement\Domain.fs" />
+    <Compile Include="PackageManagement\Config.fs" />
+    <Compile Include="PackageManagement\PackageCache.fs" />
+    <Compile Include="PackageManagement\RegistryClient.fs" />
+    <Compile Include="PackageManagement\Operations.fs" />
+    <Compile Include="PackageRunner\ScriptExecution.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
@@ -22,10 +30,12 @@
     <PackageReference Include="Argu" Version="[6.2.5]" />
     <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
     <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
+    <PackageReference Include="AVPRClient" Version="[0.3.0-preview.1]" />
+    <PackageReference Include="AVPRClient.Interop" Version="[0.1.0-preview.1]" />
+    <PackageReference Include="ValidationPackage.Model" Version="[0.1.0-preview.1]" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[4.0.0, 5.0.0)" />
-    <ProjectReference Include="..\ARCValidationPackages\ARCValidationPackages.fsproj" PackageVersion="[5.0.0, 6.0.0)" />
   </ItemGroup>
   <Target Name="UseExplicitPackageVersions" BeforeTargets="GenerateNuspec">
     <ItemGroup>

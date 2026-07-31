@@ -16,7 +16,7 @@ module asd
 //    |> Proc.run
 
 
-//if Directory.Exists(ARCValidationPackages.Defaults.CONFIG_FOLDER()) then Directory.Delete(ARCValidationPackages.Defaults.CONFIG_FOLDER(), true)
+//if Directory.Exists(ARCValidate.PackageManagement.Defaults.CONFIG_FOLDER()) then Directory.Delete(ARCValidate.PackageManagement.Defaults.CONFIG_FOLDER(), true)
 //[<Tests>]
 //let ``CLI Tests`` =
 //    testSequenced (
@@ -65,17 +65,17 @@ module asd
 //                    }
 
 //                    test "package cache folder is created" {
-//                        Expect.isTrue (Directory.Exists(ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER())) "package cache folder was not created"
+//                        Expect.isTrue (Directory.Exists(ARCValidate.PackageManagement.Defaults.PACKAGE_CACHE_FOLDER())) "package cache folder was not created"
 //                    }
 
 //                    test "package cache file is created" {
-//                        Expect.isTrue (File.Exists(ARCValidationPackages.Defaults.PACKAGE_CACHE_FILE_PATH())) "package cache was not created at expected location"
+//                        Expect.isTrue (File.Exists(ARCValidate.PackageManagement.Defaults.PACKAGE_CACHE_FILE_PATH())) "package cache was not created at expected location"
 //                    }
 
 //                    test "installed package file exists" {
 //                        let package = 
 //                            Path.Combine(
-//                                ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER(),
+//                                ARCValidate.PackageManagement.Defaults.PACKAGE_CACHE_FOLDER(),
 //                                "test.fsx"
 //                            )
 //                        Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
@@ -87,7 +87,7 @@ module asd
 //                    test "installed package file exists before deletion" {
 //                        let package = 
 //                            Path.Combine(
-//                                ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER(),
+//                                ARCValidate.PackageManagement.Defaults.PACKAGE_CACHE_FOLDER(),
 //                                "test.fsx"
 //                            )
 //                        Expect.isTrue (File.Exists(package)) "package file was not installed at expected location"
@@ -99,7 +99,7 @@ module asd
 //                    test "installed package file is deleted" {
 //                        let package = 
 //                            Path.Combine(
-//                                ARCValidationPackages.Defaults.PACKAGE_CACHE_FOLDER(),
+//                                ARCValidate.PackageManagement.Defaults.PACKAGE_CACHE_FOLDER(),
 //                                "test.fsx"
 //                            )
 //                        Expect.isFalse (File.Exists(package)) "package file was not deleted"

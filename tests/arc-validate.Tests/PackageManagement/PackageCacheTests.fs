@@ -1,7 +1,7 @@
 ﻿module PackageCacheTests
 
 open Expecto
-open ARCValidationPackages
+open ARCValidate.PackageManagement
 open System.IO
 open ReferenceObjects
 open TestUtils

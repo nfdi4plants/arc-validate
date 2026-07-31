@@ -1,6 +1,7 @@
 ﻿module FSharpScriptExecutionTests
 
-open ARCValidationPackages
+open ARCValidate.PackageManagement
+open ARCValidate.PackageRunner
 open Expecto
 open System.IO
 
