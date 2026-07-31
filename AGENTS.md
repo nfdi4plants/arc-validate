@@ -77,10 +77,6 @@ dotnet run --project tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsp
 dotnet test tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj
 dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
 
-# Verify explicit AVPR NuGet/npm/Python candidates built by PackCandidatePackages
-$env:AVPR_CANDIDATE_PACKAGE_DIR = '../arc-validate-package-registry/artifacts/packages'
-./build.cmd TestAVPRCandidate
-
 # Shared ARCExpect contracts on .NET, JavaScript, and Python
 ./build.cmd TestPortableARCExpect
 
@@ -268,8 +264,9 @@ current Expecto runner and .NET filesystem behavior.
 - During preview-package integration, pin exact prerelease versions, verify
   they are indexed before restore, and do not republish packages that are still
   indexing.
-- Cross-repository contract changes require candidate AVPR artifacts to be
-  tested against the affected arc-validate projects before publication.
+- AVPR package compatibility is covered by this repository's normal build,
+  contract, packed-consumer, and release checks. Do not require AVPR CI to
+  clone and rebuild this repository.
 - The final target dependency graph uses matching native Model and Codecs
   artifacts: NuGet for .NET, npm for JavaScript, and PyPI for Python. Treat
   bundled Fable-generated dependency code as a bootstrap state only.

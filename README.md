@@ -100,18 +100,3 @@ To build and verify the three ARCExpect artifacts (`ARCExpect` for NuGet and
 ```bash
 build.cmd TestPortableARCExpect
 ```
-
-To verify an unpublished, explicit AVPR candidate set, first run
-`PackCandidatePackages` in `arc-validate-package-registry`. Then point this
-repository at the resulting artifact directory:
-
-```powershell
-$env:AVPR_CANDIDATE_PACKAGE_DIR = '../arc-validate-package-registry/artifacts/packages'
-./build.cmd TestAVPRCandidate
-```
-
-The candidate target infers the exact versions from the four NuGet packages,
-builds the solution against that local feed, runs a packed client/interop/model/
-codecs consumer, and executes the packed ARCExpect NuGet, npm, and Python
-consumers against the matching native Model/Codecs artifacts. It does not query
-or publish to a live registry.
