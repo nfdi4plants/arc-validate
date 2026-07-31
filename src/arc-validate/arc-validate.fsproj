@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -30,9 +30,9 @@
     <PackageReference Include="Argu" Version="[6.2.5]" />
     <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
     <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
-    <PackageReference Include="AVPRClient" Version="[0.3.0-preview.1]" />
-    <PackageReference Include="AVPRClient.Interop" Version="[0.1.0-preview.1]" />
-    <PackageReference Include="ValidationPackage.Model" Version="[0.1.0-preview.1]" />
+    <PackageReference Include="AVPRClient" Version="$(AVPRClientPackageVersion)" />
+    <PackageReference Include="AVPRClient.Interop" Version="$(AVPRClientInteropPackageVersion)" />
+    <PackageReference Include="ValidationPackage.Model" Version="$(ValidationPackageModelPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[7.0.0-alpha.1]" ExactVersion="true" />

@@ -64,10 +64,20 @@ let testARCExpectPython =
 let testARCExpectPackage =
     BuildTask.create "TestARCExpectPackage" [ testARCExpectPython; packARCExpect ] {
         let cacheDirectory = Path.Combine(packageCacheDir, "arcexpect") |> Path.GetFullPath
-        let nugetConfig =
-            writeNuGetConfig
-                (Path.Combine(portableArtifactsDir, "arcexpect-package-smoke.NuGet.config"))
+        let candidatePackageDirectory =
+            Environment.GetEnvironmentVariable "AVPR_CANDIDATE_PACKAGE_DIR"
+
+        let packageSources =
+            [
                 packageDir
+                if not (String.IsNullOrWhiteSpace candidatePackageDirectory) then
+                    candidatePackageDirectory
+            ]
+
+        let nugetConfig =
+            writeNuGetConfigWithSources
+                (Path.Combine(portableArtifactsDir, "arcexpect-package-smoke.NuGet.config"))
+                packageSources
 
         recreateDirectory cacheDirectory
 

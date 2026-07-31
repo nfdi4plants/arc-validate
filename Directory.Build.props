@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <AVPRClientPackageVersion Condition="'$(AVPRClientPackageVersion)' == ''">[0.3.0-preview.1]</AVPRClientPackageVersion>
+    <AVPRClientInteropPackageVersion Condition="'$(AVPRClientInteropPackageVersion)' == ''">[0.1.0-preview.1]</AVPRClientInteropPackageVersion>
+    <ValidationPackageModelPackageVersion Condition="'$(ValidationPackageModelPackageVersion)' == ''">[0.1.0-preview.1]</ValidationPackageModelPackageVersion>
+    <ValidationPackageCodecsPackageVersion Condition="'$(ValidationPackageCodecsPackageVersion)' == ''">[0.1.0-preview.1]</ValidationPackageCodecsPackageVersion>
+  </PropertyGroup>
+</Project>

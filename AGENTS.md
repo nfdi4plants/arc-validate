@@ -77,11 +77,12 @@ dotnet run --project tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsp
 dotnet test tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj
 dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
 
-# Before native AVPR dependencies are published, point packed smoke tests at local candidates
-$env:AVPR_NATIVE_PACKAGE_DIR = '..\arc-validate-package-registry\artifacts\packages'
+# Verify explicit AVPR NuGet/npm/Python candidates built by PackCandidatePackages
+$env:AVPR_CANDIDATE_PACKAGE_DIR = '../arc-validate-package-registry/artifacts/packages'
+./build.cmd TestAVPRCandidate
 
 # Shared ARCExpect contracts on .NET, JavaScript, and Python
-.\build.cmd TestPortableARCExpect
+./build.cmd TestPortableARCExpect
 
 # Build ARCExpect NuGet, npm, and wheel artifacts under artifacts/packages
 .\build.cmd PackARCExpect

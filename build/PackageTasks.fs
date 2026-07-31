@@ -172,6 +172,14 @@ let private externalizeARCExpectJavaScriptDependencies outputDirectory =
         outputDirectory
         "\"\\./fable_modules/ValidationPackage\\.Codecs\\.[^/]+/([^\"]+)\\.fs\\.js\""
         "\"validationpackage-codecs/$1.js\""
+    rewriteFiles
+        outputDirectory
+        "validationpackage-codecs/JsonRuntime\.js"
+        "validationpackage-codecs/Json/Runtime.js"
+    rewriteFiles
+        outputDirectory
+        "validationpackage-codecs/ValidationPackageYaml\.js"
+        "validationpackage-codecs/Yaml/ValidationPackageYaml.js"
 
     let fableModules = Path.Combine(outputDirectory, "fable_modules")
     deleteMatchingDirectories fableModules "ValidationPackage.Model.*"
@@ -186,6 +194,14 @@ let private externalizeARCExpectPythonDependencies packageDirectory =
         packageDirectory
         @"from \.fable_modules\.validation_package_codecs\."
         "from validation_package_codecs."
+    rewriteFiles
+        packageDirectory
+        @"from validation_package_codecs\.json_runtime"
+        "from validation_package_codecs.Json.runtime"
+    rewriteFiles
+        packageDirectory
+        @"from validation_package_codecs\.validation_package_yaml"
+        "from validation_package_codecs.Yaml.validation_package_yaml"
 
     let fableModules = Path.Combine(packageDirectory, "fable_modules")
     deleteMatchingDirectories fableModules "validation_package_model"

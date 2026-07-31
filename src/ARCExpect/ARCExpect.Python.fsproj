@@ -23,8 +23,8 @@
     <PackageReference Include="Fable.Pyxpecto" Version="[2.0.0]" />
     <PackageReference Include="Fable.Python" Version="5.4.0" />
     <PackageReference Include="Thoth.Json.Core" Version="[0.9.0]" />
-    <PackageReference Include="ValidationPackage.Codecs" Version="[0.1.0-preview.1]" />
-    <PackageReference Include="ValidationPackage.Model" Version="[0.1.0-preview.1]" />
+    <PackageReference Include="ValidationPackage.Codecs" Version="$(ValidationPackageCodecsPackageVersion)" />
+    <PackageReference Include="ValidationPackage.Model" Version="$(ValidationPackageModelPackageVersion)" />
   </ItemGroup>
 
 </Project>
