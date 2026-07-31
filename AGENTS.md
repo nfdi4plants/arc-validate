@@ -1,0 +1,276 @@
+# AGENTS.md
+
+## Repository purpose
+
+This repository contains the `arc-validate` command-line application and the
+F# libraries used to author, execute, and report ARC validation packages. The
+CLI is used in DataHUB validation pipelines and supports validation packages
+retrieved from the ARC validation package registry (AVPR).
+
+The codebase is currently .NET-oriented, but the portable validation-package
+roadmap introduces Fable-transpiled libraries for .NET, JavaScript, and Python.
+Treat portability and the emitted JavaScript/Python API as public contract
+concerns whenever a project or source boundary is designated portable.
+
+The cross-repository roadmap is maintained in:
+
+`../arc-validate-package-registry/plans/portable-validation-package-boundaries/roadmap.md`
+
+The AVPR repository owns the shared validation-package model, codecs, registry
+service, generated HTTP client, and client/model interop. Do not duplicate
+those responsibilities here.
+
+Keep the roadmap issues separate:
+
+- arc-validate #242: portable ARCExpect result and output contracts.
+- arc-validate #243: absorb ARCValidationPackages infrastructure into the CLI.
+- arc-validate #244: prepare ARC-specific APIs for Fable through ARCtrl.
+- arc-validate #245: replace the Expecto runner after structured Pyxpecto
+  results are available.
+
+## Repository map
+
+- `src/ARCExpect.Core/ARCExpect.Core/`: validation-package setup and execution,
+  result output, and the current Expecto/.NET compatibility boundary.
+- `src/ARCExpect/`: ARC-specific validation APIs and specification validation.
+- `src/ARCValidationPackages/`: registry access, package cache management, and
+  F#/Python script execution. This is a transitional library whose application
+  infrastructure is planned to move into the CLI.
+- `src/arc-validate/`: CLI arguments, commands, orchestration, and presentation.
+- `tests/ARCExpect.Tests/`: ARCExpect and ARCExpect.Core tests.
+- `tests/ARCValidationPackages.Tests/`: registry, cache, configuration, and
+  script-execution tests.
+- `tests/arc-validate.Tests/`: CLI and output-contract tests.
+- `tests/Common/`: shared .NET test helpers.
+- `build/`: BlackFox/FAKE build project containing build, test, pack,
+  documentation, and release targets.
+- `.github/workflows/`: cross-platform build/test, documentation, and container
+  publication workflows.
+- `docs/`: fsdocs content.
+
+## Toolchain and common commands
+
+The SDK is pinned in `global.json` (currently .NET 10). Python validation
+package execution uses `uv`; do not install Python dependencies ad hoc into a
+system interpreter.
+
+```shell
+# Default solution build
+.\build.cmd
+
+# Full build/test orchestration
+.\build.cmd RunTests
+
+# Direct solution build
+dotnet build arc-validate.sln
+
+# Focused test projects
+dotnet test tests/ARCExpect.Tests/ARCExpect.Tests.fsproj
+dotnet test tests/ARCValidationPackages.Tests/ARCValidationPackages.Tests.fsproj
+dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
+
+# Documentation
+.\build.cmd BuildDocs
+
+# Create local NuGet artifacts; these targets are interactive
+.\build.cmd Pack
+.\build.cmd PackPrerelease
+```
+
+Use `./build.sh` instead of `.\build.cmd` on Linux or macOS. Prefer focused
+builds/tests while developing, then run the affected solution-level target
+before handing off.
+
+`RunTests` is not hermetic today: it can clone the `invenio-test-arc` fixture,
+publishes the CLI locally before testing, requires `uv`, and includes existing
+ARCValidationPackages tests that call the live AVPR service. Some package-cache
+tests write under the platform application-data directory. Inspect these side
+effects before running the full target in a restricted or shared environment.
+Do not add new tests that depend on live production services.
+
+## Build-project conventions
+
+- Keep build and CI command details in the `build/` project. Workflows should
+  install platform toolchains and invoke a named build target instead of
+  duplicating orchestration in YAML.
+- Register every buildable, testable, or published project in
+  `build/ProjectInfo.fs` as appropriate. Published projects need their own
+  release notes, version ownership, pack target, and focused tests.
+- `ARCExpect.Core` must gain explicit build/release ownership when its portable
+  contract work is introduced; do not rely on `ARCExpect` to version it
+  implicitly.
+- Keep targets composable: separate restore/build/test/transpile/pack from
+  external publication. A target that verifies or packs an artifact must not
+  publish it as a side effect.
+- Add named portable targets that run the same contract suite on .NET,
+  JavaScript, and Python and verify packed consumers. Keep the Fable compiler
+  and Python `fable-library` pins coordinated.
+- Put generated/transpiled output under ignored `artifacts/`; never commit it.
+  New or modernized pack targets should emit to `artifacts/packages/`, matching
+  AVPR. The current `pkg/` output is legacy until those targets are migrated;
+  do not create additional artifact layouts.
+- When packing a Fable library, include its project and ordered `.fs`/`.fsi`
+  sources under the NuGet package's `fable/` path so downstream Fable consumers
+  can compile the package.
+- Keep F# source order explicit in every `.fsproj`. Adding or moving a source
+  file requires updating project order deliberately.
+- Do not invoke `Release`, `PreRelease`, `ReleaseNoDocs`,
+  `PreReleaseNoDocs`, tag-push, NuGet-push, documentation-push, or container
+  publication paths unless the user explicitly requests the external action
+  and provides the required authorization.
+
+## Code and test conventions
+
+- Follow the style already present in the touched project: F# modules,
+  pipeline-oriented transformations, explicit domain functions, and small
+  compatibility adapters.
+- Preserve public behavior and output schemas unless the task explicitly
+  authorizes a breaking change.
+- Use the existing Expecto/YoloDev test setup for current .NET-only projects.
+  Give tests behavior-oriented names consistent with neighboring tests.
+- Use small in-repository fixtures and injected/local HTTP handlers for new
+  package-management tests. Do not extend the current live-AVPR test pattern.
+- Keep filesystem, HTTP, process execution, serialization, and framework
+  adapters at explicit boundaries so pure logic can be tested without external
+  state.
+- Preserve unrelated working-tree changes. Avoid broad formatting, line-ending,
+  generated-file, or dependency churn unrelated to the task.
+- Do not edit `bin/`, `obj/`, `.vs/`, `.fake/`, `publish/`, or generated
+  `artifacts/` output.
+- Validation package scripts may access the network, traverse input data, or do
+  substantial computation. Read a script before executing it locally.
+
+## Portable Fable code style
+
+Portable code is compiled once from F# and consumed from .NET, JavaScript, and
+Python. Treat its native API shape and cross-target behavior as part of the
+public contract.
+
+- Keep portable projects free of filesystem and directory APIs, process
+  execution, environment access, HTTP, FAKE, Expecto, System.Text.Json,
+  FSharp.SystemTextJson, generated clients, and other .NET-only infrastructure.
+  Those concerns belong in .NET compatibility or application boundaries.
+- Keep serialization out of domain/result types. Portable YAML/frontmatter and
+  domain JSON behavior belongs to `ValidationPackage.Codecs`; output writers
+  should generate content from portable contracts without performing file I/O.
+- Prefer public classes over records when values are intended for direct use
+  from JavaScript or Python. Mark every public portable class with
+  `[<AttachMembers>]` so instance and static members stay attached to the
+  emitted class.
+- Implement settable public properties with explicitly named mutable backing
+  fields such as `_name`. Do not use `member val ... with get, set` on portable
+  public classes: Fable emits compiler-generated fields such as `Name@`, which
+  leak an awkward native API.
+- Do not shadow constructor parameters with backing fields.
+- Prefer static members on public classes when behavior belongs to a domain
+  type. Private implementation modules are fine; avoid public modules that
+  transpile into detached functions for class-owned behavior.
+- Avoid reflection and target-specific standard-library APIs. When a BCL or
+  FSharp.Core API may behave differently across targets, cover it in the shared
+  cross-target suite.
+- Make null, option, collection, and enum/union representations intentional at
+  JavaScript and Python boundaries. Do not assume .NET serialization or
+  reflection behavior survives transpilation.
+- Keep pure transformations deterministic. Inject time, environment, and other
+  ambient state at the compatibility boundary.
+- After changing a portable public type, transpile it and inspect generated
+  JavaScript and Python under `artifacts/`. Check for detached functions,
+  `@`-suffixed fields, mangled public names, unexpected wrapper shapes, and
+  target-only failures.
+
+## Portable tests and runtime setup
+
+Portable contract tests use only `Fable.Pyxpecto` as their test framework.
+They are regular executables, not VSTest projects.
+
+- Run the .NET form with `dotnet run`, not `dotnet test`.
+- Transpile the same suite with the pinned local Fable tool, then run the
+  emitted entry point with Node and with the `uv`-managed Python interpreter.
+- Keep the root `package.json` marked as `"type": "module"` when JavaScript
+  output is introduced so Node treats Fable output as ESM.
+- Declare Python runtime dependencies in the root `pyproject.toml`, commit
+  `uv.lock`, and run Python output with `uv run`.
+- `.venv` is platform-specific and must remain ignored. Recreate it after
+  moving a workspace between operating systems; never reuse a foreign-platform
+  environment.
+- Treat Fable compiler and `fable-library` upgrades as coordinated changes:
+  update the lockfile, run all three targets, inspect generated APIs, and run
+  packed-consumer checks.
+
+## ARCExpect portability boundary
+
+The roadmap separates framework-neutral result/output contracts from the
+current Expecto runner and .NET filesystem behavior.
+
+- Replace validation-package metadata/frontmatter dependencies with
+  `ValidationPackage.Model` and `ValidationPackage.Codecs`; never reintroduce
+  `AVPRIndex`.
+- Portable ARCExpect owns framework-neutral case outcomes, per-case results,
+  run summaries, and pure summary/JUnit/badge content generation.
+- `Expecto.TestRunSummary` conversion, the current Expecto runner, filesystem
+  writes, and .NET-only badge or serialization compatibility remain behind a
+  thin .NET boundary.
+- Do not let portable writers consume `Expecto.TestRunSummary` directly.
+- Preserve the existing output layout and semantics:
+  `.arc-validate-results/<name>@<version>/`, `validation_summary.json`,
+  `validation_report.xml`, and `badge.svg`.
+- Prefer semantic/schema equivalence across targets over incidental whitespace
+  or serializer formatting equality.
+- ARC-specific dependencies such as ARCTokenization, OBO.NET, Graphoscope, and
+  Cytoscape.NET are not portable merely because they are F# packages. Keep them
+  outside the portable boundary until their Fable compatibility or ARCtrl
+  replacements are verified.
+- Do not replace the Expecto runner as part of portable result/output work. The
+  Pyxpecto runner transition is a later, separately tracked change.
+
+## AVPR dependency boundary
+
+- `ValidationPackage.Model` is the canonical portable metadata, author, tag,
+  CWL input, identity, and semantic-version model.
+- `ValidationPackage.Codecs` is the canonical portable YAML/frontmatter and
+  domain JSON implementation.
+- `AVPRClient` is generated-only. Do not add domain helpers or hand-written
+  mappings to it.
+- `AVPRClient.Interop` owns generated-client DTO to portable-model mappings.
+- Do not reference AVPR staging, registry service, database, or the retired
+  `AVPRIndex` infrastructure from production code in this repository.
+- During preview-package integration, pin exact prerelease versions, verify
+  they are indexed before restore, and do not republish packages that are still
+  indexing.
+- Cross-repository contract changes require candidate AVPR artifacts to be
+  tested against the affected arc-validate projects before publication.
+
+## Package management and execution
+
+`ARCValidationPackages` is transitional application infrastructure, not a
+general-purpose portable authoring library.
+
+- Registry configuration, cache management, installation, and uninstallation
+  belong in internal CLI package-management modules when migrated.
+- FSI and `uv run` process execution belong in internal CLI package-runner
+  modules.
+- Preserve the existing application-data cache location and readable cache
+  format during migration.
+- Honor configured cache folders and registry endpoints, use atomic cache
+  writes, use asynchronous HTTP with status-based error classification, and
+  pass process arguments safely.
+- Cover install, list, update, uninstall, and execution with injected or local
+  endpoints rather than the production registry.
+- Keep CLI handlers focused on arguments, orchestration, exit codes, and
+  presentation.
+
+## CI and release safety
+
+- Pushes and pull requests targeting `dev` or `release` run the cross-platform
+  build/test workflow when source, tests, build logic, or workflows change.
+- Pushes changing `src/arc-validate/**` or `Dockerfile` can publish a GHCR
+  container after Linux and Windows tests pass.
+- Documentation changes can deploy the `gh-pages` branch through the docs
+  workflow.
+- Preserve least-privilege workflow permissions and deliberate action versions.
+  Never print tokens, NuGet keys, registry credentials, or other secrets.
+- Treat release-note and build-project edits as release-sensitive. Check the
+  affected pack/version behavior before handing off.
+- Before completing a change, report focused and solution-level checks run,
+  cross-target checks run for portable code, and anything skipped because it
+  requires unavailable network access or external services.
