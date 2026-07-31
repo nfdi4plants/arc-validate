@@ -80,19 +80,11 @@ let runNpm args workingDirectory =
             "npm"
     runCommand executable ([ "--cache"; cacheDirectory ] @ args) workingDirectory
 
-let writeNuGetConfigWithSources path localPackageSources =
+let writeNuGetConfig path localPackageSource =
     let fullPath = resolveRepositoryPath path
     ensureDirectory (Path.GetDirectoryName fullPath)
 
-    let localSources =
-        localPackageSources
-        |> Seq.map Path.GetFullPath
-        |> Seq.distinct
-        |> Seq.mapi (fun index source ->
-            let escapedSource = SecurityElement.Escape source
-            $"    <add key='local-{index}' value='{escapedSource}' />"
-        )
-        |> String.concat Environment.NewLine
+    let localSource = SecurityElement.Escape(Path.GetFullPath localPackageSource)
     let publicSource = SecurityElement.Escape "https://api.nuget.org/v3/index.json"
 
     let content =
@@ -100,7 +92,7 @@ let writeNuGetConfigWithSources path localPackageSources =
 <configuration>
   <packageSources>
     <clear />
-{localSources}
+    <add key="local" value="{localSource}" />
     <add key="nuget.org" value="{publicSource}" protocolVersion="3" />
   </packageSources>
 </configuration>
@@ -108,9 +100,6 @@ let writeNuGetConfigWithSources path localPackageSources =
 
     File.WriteAllText(fullPath, content)
     fullPath
-
-let writeNuGetConfig path localPackageSource =
-    writeNuGetConfigWithSources path [ localPackageSource ]
 
 let runOrDefault defaultTarget args =
     Trace.trace (sprintf "%A" args)

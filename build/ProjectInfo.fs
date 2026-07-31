@@ -58,16 +58,9 @@ let ARCExpectJavaScriptTestsProject = "tests/ARCExpect.Javascript.Tests/ARCExpec
 let ARCExpectPythonTestsProject = "tests/ARCExpect.Python.Tests/ARCExpect.Python.Tests.fsproj"
 let ARCExpectPackageSmokeProject = "tests/ARCExpect.PackageSmoke/ARCExpect.PackageSmoke.fsproj"
 let ARCExpectPackageVersion = CoreProject.ReleaseNotes.Value.NugetVersion
-let private configuredVersion environmentVariable fallback =
-    match System.Environment.GetEnvironmentVariable environmentVariable with
-    | value when System.String.IsNullOrWhiteSpace value -> fallback
-    | value -> value
+let ValidationPackageModelNativeVersion = "0.1.0"
 
-let ValidationPackageModelNativeVersion =
-    configuredVersion "VALIDATION_PACKAGE_MODEL_NATIVE_VERSION" "0.1.0"
-
-let ValidationPackageCodecsNativeVersion =
-    configuredVersion "VALIDATION_PACKAGE_CODECS_NATIVE_VERSION" "0.1.0"
+let ValidationPackageCodecsNativeVersion = "0.1.0"
 let CLIProject = ProjectInfo.create("arc-validate", "src/arc-validate/arc-validate.fsproj", "src/arc-validate/RELEASE_NOTES.md")
 
 let projects = 
