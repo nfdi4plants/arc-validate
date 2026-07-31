@@ -1,0 +1,15 @@
+<Project>
+
+  <!-- The three project files share a directory, so their NuGet graphs must
+       not overwrite one another between .NET builds and Fable transpilation. -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ARCExpect.Javascript'">
+    <BaseIntermediateOutputPath>obj\Javascript\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>obj\Javascript\</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ARCExpect.Python'">
+    <BaseIntermediateOutputPath>obj\Python\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>obj\Python\</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+
+</Project>

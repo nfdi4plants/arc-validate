@@ -66,6 +66,20 @@ let runUv args workingDirectory =
     ensureDirectory cacheDirectory
     runCommand "uv" ([ "--cache-dir"; cacheDirectory ] @ args) workingDirectory
 
+let runNpm args workingDirectory =
+    let cacheDirectory = Path.Combine("artifacts", "npm-cache") |> Path.GetFullPath
+    ensureDirectory cacheDirectory
+    let executable =
+        if OperatingSystem.IsWindows() then
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                "nodejs",
+                "npm.cmd"
+            )
+        else
+            "npm"
+    runCommand executable ([ "--cache"; cacheDirectory ] @ args) workingDirectory
+
 let writeNuGetConfig path localPackageSource =
     let fullPath = resolveRepositoryPath path
     ensureDirectory (Path.GetDirectoryName fullPath)

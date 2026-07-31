@@ -52,7 +52,7 @@ let buildSolution =
                     MSBuildParams = msBuildParams
                     
             }
-            |> DotNet.Options.withCustomParams (Some "-tl")
+            |> DotNet.Options.withCustomParams (Some "-tl -m:1")
         )
     }
 

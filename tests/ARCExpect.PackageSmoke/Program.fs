@@ -1,4 +1,4 @@
-module ARCExpect.Core.Portable.PackageSmoke.Program
+module ARCExpect.PackageSmoke.Program
 
 open ARCExpect
 open ARCExpect.Badge

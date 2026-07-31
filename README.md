@@ -13,16 +13,14 @@ Use the containers tagged with [main](https://github.com/nfdi4plants/arc-validat
 
 ## Project aim
 
-Validation of ARCs based on:
-- **ARCTokenization**: Structural ontologies for file formats (for parsing/tokenizing files): INVMSO, STDMSO, ASSMSO
-- **OBO.NET**:
-    - parsing ontologies, generation of **OBO graphs** based on ontology term relation
-    - code genearation of ontology modules with accessible terms
-- **ARCGraph**: Graph representation of file content based on structural ontologies via **OBO graph**
-- **Graph-based** completion of File content (missing cells -> empty tokens) via **ARCGraph**
-- **ARCExpect.Core**: Expecto-like API for validation
-- **ARCExpect**: ARC aware API for validation cases
-- **Validation Packages**: API for installing and executing additional validation packages
+Validation of ARCs is based on:
+
+- **ARCExpect**: portable result, summary, JUnit, and badge APIs for .NET,
+  JavaScript, and Python, plus .NET-only validation-case, Expecto,
+  filesystem, ARCTokenization, and ControlledVocabulary compatibility APIs.
+- **Validation packages**: installable F# and Python validation scripts with
+  shared metadata contracts from AVPR.
+- **arc-validate**: package management, execution, and CLI orchestration.
 
 ## Project layout
 
@@ -31,12 +29,9 @@ Validation of ARCs based on:
 ```mermaid
 flowchart TD
 
-ControlledVocabulary("<b>ControlledVocabulary:</b><br>Data model for CVs")
-ARCTokenization("<b>ARCTokenization:</b><br>Tokenization of ARCs into CVs")
-OBO.NET("<b>OBO.NET:</b><br>OBO Ontology data model and parsing")
-ARCGraph("<b>ARCGraph:</b><br>Graph based on structural ontologies")
-ARCExpect("<b>ARCExpect:</b><br>ARC aware API for validation")
-ARCExpect.Core("<b>ARCExpect.Core:</b><br>Expecto-like API for validation")
+ValidationPackageModel("<b>ValidationPackage.Model:</b><br>Portable package metadata")
+ValidationPackageCodecs("<b>ValidationPackage.Codecs:</b><br>Portable metadata codecs")
+ARCExpect("<b>ARCExpect:</b><br>Portable contracts and .NET validation APIs")
 PackageManagement("<b>PackageManagement:</b><br>internal validation-package install/cache infrastructure")
 PackageRunner("<b>PackageRunner:</b><br>internal F# and Python execution")
 arc-validate("<b>arc-validate:</b><br>validation CLI tool")
@@ -44,13 +39,9 @@ arc-validate("<b>arc-validate:</b><br>validation CLI tool")
 arc-validate --depends on--> ARCExpect
 arc-validate --owns--> PackageManagement
 arc-validate --owns--> PackageRunner
-ARCTokenization --depends on--> ControlledVocabulary
-ARCTokenization --depends on--> OBO.NET
-ARCExpect --depends on--> ARCExpect.Core
-ARCExpect --depends on--> ARCGraph
-ARCExpect --depends on--> ARCTokenization
-ARCGraph --depends on--> ARCTokenization
-ARCGraph --depends on--> OBO.NET
+ARCExpect --depends on--> ValidationPackageModel
+ARCExpect --depends on--> ValidationPackageCodecs
+PackageManagement --depends on--> ValidationPackageModel
 ```
 
 ### Libraries used
@@ -60,11 +51,9 @@ ARCGraph --depends on--> OBO.NET
 - [ARCTokenization](https://github.com/nfdi4plants/ARCTokenization)
 - [ValidationPackage.Model](https://github.com/nfdi4plants/arc-validate-package-registry)
 - [ValidationPackage.Codecs](https://github.com/nfdi4plants/arc-validate-package-registry)
-- [OBO.NET](https://github.com/CSBiology/OBO.NET)
-- [Graphoscope](https://github.com/fslaborg/Graphoscope)
-- [Cytoscape.NET](https://github.com/fslaborg/Cytoscape.NET)
-- [FSharpAux](https://github.com/CSBiology/FSharpAux)
-- [FsSpreadsheet](https://github.com/fslaborg/FsSpreadsheet)
+- [Fable](https://fable.io/)
+- [Fable.Pyxpecto](https://github.com/Freymaurer/Fable.Pyxpecto)
+- [Thoth.Json](https://github.com/thoth-org/Thoth.Json)
 - [Expecto](https://github.com/haf/expecto)
 
 #### arc-validate
@@ -103,4 +92,11 @@ build.cmd runtests
 
 ```bash
 build.sh pack
+```
+
+To build and verify the three ARCExpect artifacts (`ARCExpect` for NuGet and
+`arcexpect` for npm/Python), run:
+
+```bash
+build.cmd TestPortableARCExpect
 ```

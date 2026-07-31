@@ -1,4 +1,4 @@
-module ARCExpect.Core.Portable.Tests.Main
+module ARCExpect.Contract.Tests.Main
 
 open Fable.Pyxpecto
 

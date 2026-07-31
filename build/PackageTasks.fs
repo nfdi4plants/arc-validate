@@ -11,6 +11,8 @@ open Fake.Core
 open Fake.DotNet
 open Fake.IO.Globbing.Operators
 open Helpers
+open System.IO
+open System.Text.RegularExpressions
 
 
 let pack = BuildTask.create "Pack" [ clean; build ] {
@@ -134,10 +136,89 @@ let private packPortableProject project =
                 { options.MSBuildParams with
                     DisableInternalBinLog = true } })
 
-let packARCExpectCore = BuildTask.create "PackARCExpectCore" [ cleanPortablePackages ] {
-    packPortableProject ARCExpectCoreProject.ProjFile
-}
+let private removeFableModulesGitIgnore outputDirectory =
+    let path = Path.Combine(outputDirectory, "fable_modules", ".gitignore")
 
-let packARCExpectCorePortable = BuildTask.create "PackARCExpectCorePortable" [ cleanPortablePackages ] {
-    packPortableProject ARCExpectCorePortableProject
+    if File.Exists path then
+        File.Delete path
+
+let private transpileARCExpect project language outputDirectory =
+    recreateDirectory outputDirectory
+    runDotNetCommand "fable" $"{project} --lang {language} --outDir \"{outputDirectory}\" --noCache" "."
+    removeFableModulesGitIgnore outputDirectory
+
+let private writeVersionedJavaScriptManifest outputDirectory =
+    let source = Path.Combine("src", "ARCExpect", "package.json")
+    let target = Path.Combine(outputDirectory, "package.json")
+    let content =
+        Regex("\"version\"\\s*:\\s*\"[^\"]+\"")
+            .Replace(
+                File.ReadAllText source,
+                $"\"version\": \"{ARCExpectPackageVersion}\"",
+                1
+            )
+
+    File.WriteAllText(target, content)
+    File.Copy(Path.Combine("src", "ARCExpect", "index.js"), Path.Combine(outputDirectory, "index.js"), true)
+
+let private pythonPackageVersion =
+    ARCExpectPackageVersion
+        .Replace("-alpha.", "a")
+        .Replace("-beta.", "b")
+        .Replace("-rc.", "rc")
+
+let private writePythonBuildProject outputDirectory =
+    let packageDirectory = Path.Combine(outputDirectory, "arcexpect")
+    File.Copy(Path.Combine("src", "ARCExpect", "__init__.py"), Path.Combine(packageDirectory, "__init__.py"), true)
+
+    let pyproject =
+        $"""[project]
+name = "arcexpect"
+version = "{pythonPackageVersion}"
+description = "Portable ARC validation result contracts and output writers."
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = ["fable-library==5.11.0"]
+
+[project.urls]
+Homepage = "https://github.com/nfdi4plants/arc-validate"
+Repository = "https://github.com/nfdi4plants/arc-validate.git"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["arcexpect"]
+exclude = [
+    "**/*.fs",
+    "**/*.fsproj",
+    "**/*.fableproj",
+    "**/obj/**",
+    "**/pyproject.toml",
+    "**/*.md",
+]
+"""
+
+    File.WriteAllText(Path.Combine(outputDirectory, "pyproject.toml"), pyproject)
+
+let private packARCExpectJavaScript () =
+    let outputDirectory = Path.Combine(portableArtifactsDir, "arcexpect-package", "javascript")
+    transpileARCExpect ARCExpectJavaScriptProject "javascript" outputDirectory
+    writeVersionedJavaScriptManifest outputDirectory
+    runNpm [ "pack"; Path.GetFullPath(outputDirectory); "--pack-destination"; Path.GetFullPath(packageDir) ] "."
+
+let private packARCExpectPython () =
+    let outputDirectory = Path.Combine(portableArtifactsDir, "arcexpect-package", "python")
+    let packageDirectory = Path.Combine(outputDirectory, "arcexpect")
+    recreateDirectory outputDirectory
+    runDotNetCommand "fable" $"{ARCExpectPythonProject} --lang python --outDir \"{packageDirectory}\" --noCache" "."
+    removeFableModulesGitIgnore packageDirectory
+    writePythonBuildProject outputDirectory
+    runUv [ "build"; "--wheel"; "--out-dir"; Path.GetFullPath(packageDir); Path.GetFullPath(outputDirectory) ] "."
+
+let packARCExpect = BuildTask.create "PackARCExpect" [ cleanPortablePackages ] {
+    packPortableProject CoreProject.ProjFile
+    packARCExpectJavaScript ()
+    packARCExpectPython ()
 }

@@ -1,4 +1,4 @@
-﻿module ProjectInfo
+module ProjectInfo
 
 open Fake.Core
 
@@ -51,10 +51,13 @@ type ProjectInfo = {
 
 // adapt this to reflect the core project in your repository. The only effect this will have is the version displayed in the docs, as it is currently only possible to have one version displayed there.
 let CoreProject = ProjectInfo.create("ARCExpect", "src/ARCExpect/ARCExpect.fsproj", "src/ARCExpect/RELEASE_NOTES.md")
-let ARCExpectCoreProject = ProjectInfo.create("ARCExpect.Core", "src/ARCExpect.Core/ARCExpect.Core/ARCExpect.Core.fsproj", "src/ARCExpect.Core/ARCExpect.Core/RELEASE_NOTES.md")
-let ARCExpectCorePortableProject = "src/ARCExpect.Core.Portable/ARCExpect.Core.Portable.fsproj"
-let ARCExpectCorePortableTestsProject = "tests/ARCExpect.Core.Portable.Tests/ARCExpect.Core.Portable.Tests.fsproj"
-let ARCExpectCorePortablePackageSmokeProject = "tests/ARCExpect.Core.Portable.PackageSmoke/ARCExpect.Core.Portable.PackageSmoke.fsproj"
+let ARCExpectContractTestsProject = "tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsproj"
+let ARCExpectJavaScriptProject = "src/ARCExpect/ARCExpect.Javascript.fsproj"
+let ARCExpectPythonProject = "src/ARCExpect/ARCExpect.Python.fsproj"
+let ARCExpectJavaScriptTestsProject = "tests/ARCExpect.Javascript.Tests/ARCExpect.Javascript.Tests.fsproj"
+let ARCExpectPythonTestsProject = "tests/ARCExpect.Python.Tests/ARCExpect.Python.Tests.fsproj"
+let ARCExpectPackageSmokeProject = "tests/ARCExpect.PackageSmoke/ARCExpect.PackageSmoke.fsproj"
+let ARCExpectPackageVersion = CoreProject.ReleaseNotes.Value.NugetVersion
 let CLIProject = ProjectInfo.create("arc-validate", "src/arc-validate/arc-validate.fsproj", "src/arc-validate/RELEASE_NOTES.md")
 
 let projects = 
@@ -62,7 +65,6 @@ let projects =
         // add relative paths (from project root) to your projects here, including individual reslease notes files
         // e.g. ProjectInfo.create("MyProject", "src/MyProject/MyProject.fsproj", "src/MyProject/RELEASE_NOTES.md")
         CoreProject
-        ARCExpectCoreProject
         CLIProject
     ]
 

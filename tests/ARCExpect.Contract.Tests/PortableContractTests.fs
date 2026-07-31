@@ -1,4 +1,4 @@
-module ARCExpect.Core.Portable.Tests.PortableContractTests
+module ARCExpect.Contract.Tests.PortableContractTests
 
 open ARCExpect
 open ARCExpect.Badge
@@ -11,6 +11,16 @@ let private passed name =
 
 let private failed name message =
     CaseResult.create([| name |], CaseOutcome.failed(message), DurationMilliseconds = 250.0)
+
+let private errored name message stackTrace =
+    CaseResult.create(
+        [| name |],
+        CaseOutcome.errored(message, StackTrace = stackTrace),
+        DurationMilliseconds = 500.0
+    )
+
+let private skipped name message =
+    CaseResult.create([| name |], CaseOutcome.skipped(message))
 
 let private package =
     ValidationPackageSummary.create(
@@ -29,6 +39,17 @@ let private summary =
         Payload = Json.Object [ "runtime", Json.String "portable"; "count", Json.Number 2.0 ]
     )
 
+let private allOutcomes =
+    RunSummary.create(
+        [|
+            passed "passed"
+            failed "failed" "assertion failed"
+            errored "errored" "unexpected error" "portable stack"
+            skipped "skipped" "not applicable"
+        |],
+        SuiteName = "all-outcomes"
+    )
+
 let tests =
     testList "portable ARCExpect contracts" [
         testCase "run summaries expose framework-neutral case outcomes" <| fun () ->
@@ -38,6 +59,13 @@ let tests =
             Expect.equal summary.NonCritical.Failed 1 "Noncritical failed"
             Expect.isTrue summary.NonCritical.HasFailures "Noncritical failure"
             Expect.equal summary.NonCritical.Cases[0].FullName "[ noncritical ]" "Portable case name"
+
+            Expect.equal allOutcomes.Total 4 "All outcomes total"
+            Expect.equal allOutcomes.Passed 1 "Passed count"
+            Expect.equal allOutcomes.Failed 1 "Failed count"
+            Expect.equal allOutcomes.Errored 1 "Errored count"
+            Expect.equal allOutcomes.Skipped 1 "Skipped count"
+            Expect.isTrue allOutcomes.HasFailures "Errors and failures make the run unsuccessful"
 
         testCase "summary JSON preserves the established wire shape" <| fun () ->
             let json = ValidationSummary.toJson summary
@@ -52,10 +80,12 @@ let tests =
             Expect.equal decoded.Payload summary.Payload "Decoded payload"
 
         testCase "JUnit output maps outcomes and escapes XML" <| fun () ->
-            let combined = RunSummary.combine [| summary.Critical; summary.NonCritical |]
+            let combined = RunSummary.combine [| summary.Critical; summary.NonCritical; allOutcomes |]
             let xml = ARCExpect.JUnit.Writer.toXml(combined, SuiteName = "suite & contract")
             Expect.isTrue (xml.Contains("name=\"suite &amp; contract\"")) "Suite name is escaped"
             Expect.isTrue (xml.Contains("<failure message=\"expected &lt;actual&gt; &amp; more\" />")) "Failure is escaped"
+            Expect.isTrue (xml.Contains("<error message=\"unexpected error\" />")) "Error is encoded"
+            Expect.isTrue (xml.Contains("<skipped message=\"not applicable\" />")) "Skipped case is encoded"
             Expect.isTrue (xml.Contains("time=\"0.250\"")) "Duration is invariant"
 
         testCase "badge output is deterministic and escapes labels" <| fun () ->

@@ -1,33 +1,62 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>ARCExpect</PackageId>
+    <AssemblyName>ARCExpect</AssemblyName>
+    <RootNamespace>ARCExpect</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>nfdi4plants</Authors>
+    <Description>Portable ARC validation contracts with additional .NET validation and execution APIs.</Description>
+    <Summary>ARC validation results, writers, package authoring, and .NET compatibility APIs for .NET and Fable.</Summary>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>F#;FSharp;ARC;validation;JUnit;badge;fable-dotnet;fable-javascript;fable-python</PackageTags>
+    <PackageProjectUrl>https://github.com/nfdi4plants/arc-validate</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nfdi4plants/arc-validate</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/RELEASE_NOTES.md"))</PackageReleaseNotes>
+    <PackageVersion>7.0.0-alpha.1</PackageVersion>
+  </PropertyGroup>
+
   <ItemGroup>
+    <Compile Include="Results.fs" />
+    <Compile Include="ValidationSummary.fs" />
+    <Compile Include="JUnit.fs" />
+    <Compile Include="Badge.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="DotNet\ARCValidationPackage.fs" />
+    <Compile Include="DotNet\ValidationSummary.fs" />
+    <Compile Include="DotNet\ExpectoExtensions.fs" />
+    <Compile Include="DotNet\TopLevelAPI.fs" />
+    <Compile Include="DotNet\StringValidationPattern.fs" />
+    <Compile Include="DotNet\ParamCollection.fs" />
+    <Compile Include="DotNet\CVExtensions.fs" />
+    <Compile Include="DotNet\ErrorMessage.fs" />
+    <Compile Include="DotNet\ARCExpect.fs" />
+    <Compile Include="DotNet\ValidationFunctions.fs" />
+    <Compile Include="DotNet\SpecificationValidation\V2_0_0_Draft.fs" />
+    <Compile Include="DotNet\SpecificationValidation\SpecificationSelection.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
     <None Include="RELEASE_NOTES.md" />
-    <Compile Include="InternalUtils.fs" />
-    <Compile Include="StringValidationPattern.fs" />
-    <Compile Include="ParamCollection.fs" />
-    <Compile Include="CVExtensions.fs" />
-    <Compile Include="ErrorMessage.fs" />
-    <Compile Include="ARCRelation.fs" />
-    <Compile Include="OboGraph.fs" />
-    <Compile Include="ARCGraph.fs" />
-    <Compile Include="ARCExpect.fs" />
-    <Compile Include="ValidationFunctions.fs" />
-    <Compile Include="SpecificationValidation\V2_0_0_Draft.fs" />
-    <Compile Include="SpecificationValidation\SpecificationSelection.fs" />
+    <PackageReference Include="Fable.Core" Version="5.2.0" />
+    <PackageReference Include="Thoth.Json.Core" Version="[0.9.0]" />
+    <PackageReference Include="ValidationPackage.Codecs" Version="[0.1.0-preview.1]" />
+    <PackageReference Include="ValidationPackage.Model" Version="[0.1.0-preview.1]" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="FsSpreadsheet" Version="[6.1.2]" />
-    <PackageReference Include="FsSpreadsheet.Net" Version="[6.1.2]" />
     <PackageReference Include="ARCTokenization" Version="[6.0.0]" />
-    <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]" />
-    <PackageReference Include="Cytoscape.NET" Version="[0.2.0]" />
-    <PackageReference Include="OBO.NET" Version="[0.4.2]" />
-    <PackageReference Include="FSharp.SystemTextJson" Version="[1.4.36]" />
+    <PackageReference Include="Expecto" Version="[10.2.3]" />
+    <PackageReference Include="FSharpAux" Version="[2.0.0]" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ARCExpect.Core\ARCExpect.Core\ARCExpect.Core.fsproj" />
-  </ItemGroup>
+
 </Project>

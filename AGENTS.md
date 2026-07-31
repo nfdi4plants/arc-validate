@@ -24,21 +24,27 @@ Keep the roadmap issues separate:
 
 - arc-validate #242: portable ARCExpect result and output contracts.
 - arc-validate #243: absorb ARCValidationPackages infrastructure into the CLI.
-- arc-validate #244: prepare ARC-specific APIs for Fable through ARCtrl.
+- arc-validate #244: build ARCExpect through three parallel .NET, JavaScript, and
+  Python project files, with CV helpers retained only on .NET.
 - arc-validate #245: replace the Expecto runner after structured Pyxpecto
   results are available.
 
 ## Repository map
 
-- `src/ARCExpect.Core/ARCExpect.Core/`: validation-package setup and execution,
-  result output, and the current Expecto/.NET compatibility boundary.
-- `src/ARCExpect/`: ARC-specific validation APIs and specification validation.
+- `src/ARCExpect/`: one ARCExpect source tree with three parallel project files:
+  `ARCExpect.fsproj` for .NET, `ARCExpect.Javascript.fsproj` for Fable
+  JavaScript/TypeScript, and `ARCExpect.Python.fsproj` for Fable Python.
+  The root ARCExpect source files are compiled by all three; `DotNet/` is
+  compiled only by .NET.
 - `src/arc-validate/PackageManagement/`: internal registry access,
   configuration, cache management, installation, and uninstallation.
 - `src/arc-validate/PackageRunner/`: internal F# and Python script execution.
 - `src/arc-validate/`: CLI arguments, commands, orchestration, presentation,
   package management, and package execution.
-- `tests/ARCExpect.Tests/`: ARCExpect and ARCExpect.Core tests.
+- `tests/ARCExpect.Tests/`: .NET-only ARCExpect compatibility and CV tests.
+- `tests/ARCExpect.Contract.Tests/`: shared Fable.Pyxpecto contract suite for
+  portable ARCExpect APIs. The JavaScript and Python sibling projects compile
+  the same test sources against their corresponding ARCExpect project.
 - `tests/arc-validate.Tests/PackageManagement/`: registry, cache,
   configuration, and script-execution tests.
 - `tests/arc-validate.Tests/`: CLI and output-contract tests.
@@ -63,12 +69,19 @@ system interpreter.
 .\build.cmd RunTests
 
 # Direct solution build
-dotnet build arc-validate.sln
+dotnet build arc-validate.sln -m:1
 
 # Focused test projects
 dotnet test tests/ARCExpect.Tests/ARCExpect.Tests.fsproj
+dotnet run --project tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsproj
 dotnet test tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj
 dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
+
+# Shared ARCExpect contracts on .NET, JavaScript, and Python
+.\build.cmd TestPortableARCExpect
+
+# Build ARCExpect NuGet, npm, and wheel artifacts under artifacts/packages
+.\build.cmd PackARCExpect
 
 # Documentation
 .\build.cmd BuildDocs
@@ -97,9 +110,13 @@ environment. Do not add new tests that depend on live services.
 - Register every buildable, testable, or published project in
   `build/ProjectInfo.fs` as appropriate. Published projects need their own
   release notes, version ownership, pack target, and focused tests.
-- `ARCExpect.Core` must gain explicit build/release ownership when its portable
-  contract work is introduced; do not rely on `ARCExpect` to version it
-  implicitly.
+- ARCExpect has one source tree and one API identity, implemented by three
+  parallel project files following the DataHubClient/ARCtrl pattern. Keep the
+  portable `<Compile>` lists duplicated, ordered, and synchronized in all
+  three projects; do not factor them into an imported props file.
+- The .NET NuGet package is `ARCExpect`; JavaScript and Python distributions
+  use the package name `arcexpect`. Do not expose `Core`,
+  `Portable`, `.NET`, `.Javascript`, or `.Python` in public namespaces.
 - Keep targets composable: separate restore/build/test/transpile/pack from
   external publication. A target that verifies or packs an artifact must not
   publish it as a side effect.
@@ -110,9 +127,10 @@ environment. Do not add new tests that depend on live services.
   New or modernized pack targets should emit to `artifacts/packages/`, matching
   AVPR. The current `pkg/` output is legacy until those targets are migrated;
   do not create additional artifact layouts.
-- When packing a Fable library, include its project and ordered `.fs`/`.fsi`
-  sources under the NuGet package's `fable/` path so downstream Fable consumers
-  can compile the package.
+- ARCExpect packaging follows DataHubClient: `ARCExpect.fsproj` produces the
+  NuGet package, while the JavaScript and Python projects are transpiled into
+  separate `arcexpect` npm and wheel artifacts. Do not use the NuGet package as
+  the Fable source-distribution mechanism.
 - Keep F# source order explicit in every `.fsproj`. Adding or moving a source
   file requires updating project order deliberately.
 - Do not invoke `Release`, `PreRelease`, `ReleaseNoDocs`,
@@ -143,9 +161,9 @@ environment. Do not add new tests that depend on live services.
 
 ## Portable Fable code style
 
-Portable code is compiled once from F# and consumed from .NET, JavaScript, and
-Python. Treat its native API shape and cross-target behavior as part of the
-public contract.
+Portable code is compiled from the same ordered F# files by the .NET,
+JavaScript, and Python ARCExpect projects. Treat its native API shape and
+cross-target behavior as part of the public contract.
 
 - Keep portable projects free of filesystem and directory APIs, process
   execution, environment access, HTTP, FAKE, Expecto, System.Text.Json,
@@ -219,12 +237,18 @@ current Expecto runner and .NET filesystem behavior.
   `validation_report.xml`, and `badge.svg`.
 - Prefer semantic/schema equivalence across targets over incidental whitespace
   or serializer formatting equality.
-- ARC-specific dependencies such as ARCTokenization, OBO.NET, Graphoscope, and
-  Cytoscape.NET are not portable merely because they are F# packages. Keep them
-  outside the portable boundary until their Fable compatibility or ARCtrl
-  replacements are verified.
-- Do not replace the Expecto runner as part of portable result/output work. The
-  Pyxpecto runner transition is a later, separately tracked change.
+- ARCTokenization and ControlledVocabulary compatibility APIs belong only to
+  the .NET project. JavaScript and Python intentionally expose no stubs for
+  those APIs. ARCGraph/OboGraph and the direct OBO.NET, Graphoscope, and
+  Cytoscape.NET dependencies were retired; do not reintroduce them.
+- `Setup`, `ARCValidationPackage`, and the top-level `Execute` facade are
+  required shared APIs on .NET, JavaScript, and Python; output writers alone
+  are not a complete transpiled ARCExpect surface.
+- Portable validation packages use Fable.Pyxpecto test cases. Prefer upstream
+  structured results, but a focused ARCExpect adapter is allowed when waiting
+  for a Pyxpecto release would leave JavaScript/Python without `Execute`.
+- Keep existing Expecto execution and filesystem-writing APIs as .NET-only
+  compatibility adapters during the migration.
 
 ## AVPR dependency boundary
 
@@ -242,6 +266,9 @@ current Expecto runner and .NET filesystem behavior.
   indexing.
 - Cross-repository contract changes require candidate AVPR artifacts to be
   tested against the affected arc-validate projects before publication.
+- The final target dependency graph uses matching native Model and Codecs
+  artifacts: NuGet for .NET, npm for JavaScript, and PyPI for Python. Treat
+  bundled Fable-generated dependency code as a bootstrap state only.
 - All network-backed AVPR integration tests target
   `https://avpr-dev.nfdi4plants.org`, never the production registry. The dev
   instance carries candidate metadata fields such as CWL-style command-line

@@ -14,12 +14,12 @@ initializeContext()
 open BasicTasks
 open TestTasks
 open PackageTasks
-open PortableCoreTasks
+open ARCExpectPortableTasks
 open DocumentationTasks
 open ReleaseTasks
 
 // Force module initialization so every portable target is registered.
-let _testPortableARCExpectCore = testPortableARCExpectCore
+let _testPortableARCExpect = testPortableARCExpect
 
 
 /// Full release of nuget package, git tag, and documentation for the stable version.

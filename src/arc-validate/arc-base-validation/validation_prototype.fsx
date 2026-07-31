@@ -2,7 +2,6 @@ namespace ARCValidate.BaselineValidation
 #r "nuget: FSharpAux"
 #r "nuget: FsSpreadsheet, 5.2.0"
 #r "nuget: FsSpreadsheet.ExcelIO, 5.2.0"
-#r "nuget: OBO.NET, 0.5.0-alpha.0"
 
 //#r "nuget: ARCTokenization, 4.0.0"
 #r "/Users/lux/Documents/GitHub/ARCTokenization/src/ARCTokenization/bin/Release/netstandard2.0/ARCTokenization.dll"
@@ -11,7 +10,6 @@ namespace ARCValidate.BaselineValidation
 #r "nuget: Expecto"
 
 //ARCValidate
-#r "/Users/lux/Documents/GitHub/arc-validate/src/arc-validate/bin/Release/net8.0/AnyBadge.NET.dll"
 #r "/Users/lux/Documents/GitHub/arc-validate/src/arc-validate/bin/Release/net8.0/arc-validate.dll"
 #r "/Users/lux/Documents/GitHub/arc-validate/src/arc-validate/bin/Release/net8.0/ARCtrl.Contract.dll"
 #r "/Users/lux/Documents/GitHub/arc-validate/src/arc-validate/bin/Release/net8.0/ARCtrl.dll"

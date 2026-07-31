@@ -13,9 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fable.Python" Version="5.4.0" />
     <PackageReference Include="Fable.Pyxpecto" Version="2.0.0" />
-    <ProjectReference Include="..\..\src\ARCExpect.Core.Portable\ARCExpect.Core.Portable.fsproj" />
+    <ProjectReference Include="..\..\src\ARCExpect\ARCExpect.fsproj" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,14 @@
-### 7.0.0-alpha - (Released 2026-02-27)
+### 7.0.0-alpha.1 - (Released 2026-07-31)
 
-- Split ARCExpect into
-  - ARCExpect (functionality to create validation cases) & 
-  - ARCExpect.Core (Core functionality to create ARC validation package scripts)
+- Consolidate portable result/output contracts and the .NET compatibility
+  implementation behind the single public ARCExpect package identity.
+- Build the shared portable sources through separate .NET, JavaScript, and
+  Python projects and produce `ARCExpect` NuGet plus `arcexpect` npm/wheel
+  artifacts.
+- Keep Expecto, filesystem, ARC specification, and
+  ARCTokenization/ControlledVocabulary APIs available only on the .NET target.
+- Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, and Cytoscape.NET
+  functionality instead of porting it to JavaScript and Python.
 
 ### 6.0.0 - (Released 2025-12-04)
 

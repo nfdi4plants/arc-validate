@@ -1,0 +1,30 @@
+{
+  "name": "arcexpect",
+  "version": "0.0.0",
+  "description": "Portable ARC validation result contracts and output writers.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nfdi4plants/arc-validate.git"
+  },
+  "homepage": "https://github.com/nfdi4plants/arc-validate",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./Badge": "./Badge.js",
+    "./JUnit": "./JUnit.js"
+  },
+  "files": [
+    "index.js",
+    "*.js",
+    "fable_modules/**/*.js",
+    "fable_modules/**/package.json"
+  ],
+  "keywords": [
+    "ARC",
+    "DataPLANT",
+    "validation",
+    "Fable"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "type": "module",
   "scripts": {
-    "test:arcexpect-core:js": "node artifacts/portable/arcexpect-core-tests/javascript/Main.js"
+    "test:arcexpect:js": "node artifacts/portable/arcexpect-tests/javascript/Main.js"
   }
 }
