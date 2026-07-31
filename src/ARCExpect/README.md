@@ -42,3 +42,51 @@ The shared `Setup.ValidationPackage` accepts Pyxpecto test-case arrays and
 exposes the same operation as a Promise; Python consumers use
 `await Execute.validation(...)`. Both native packages re-export Pyxpecto case
 constructors such as `testCase`/`ptestCase` and `test_case`/`ptest_case`.
+
+## Migrating package authoring from Expecto
+
+Existing .NET validation packages can continue using the Expecto overloads
+during the compatibility window. New portable packages should use
+`Fable.Pyxpecto` cases and the shared API:
+
+```fsharp
+open ARCExpect
+open Fable.Pyxpecto
+
+let validationPackage =
+    Setup.ValidationPackage(
+        metadata,
+        CriticalValidationCases = [|
+            testCase "required metadata" <| fun () -> ()
+        |]
+    )
+
+let summary = Execute.Validation(validationPackage) |> Async.RunSynchronously
+```
+
+The equivalent JavaScript API returns a Promise:
+
+```javascript
+import { Execute, Setup, testCase } from "arcexpect";
+
+const validationPackage = Setup.ValidationPackage(metadata, [
+  testCase("required metadata", () => {})
+]);
+const summary = await Execute.Validation(validationPackage);
+```
+
+The equivalent Python API is awaitable:
+
+```python
+from arcexpect import Execute, Setup, test_case
+
+validation_package = Setup.ValidationPackage(
+    metadata,
+    [test_case("required metadata", lambda: None)],
+)
+summary = await Execute.validation(validation_package)
+```
+
+Move filesystem output orchestration to the caller when targeting JavaScript
+or Python. The legacy Expecto runner and filesystem-writing pipeline remain
+available only from the .NET package and are not portable APIs.
