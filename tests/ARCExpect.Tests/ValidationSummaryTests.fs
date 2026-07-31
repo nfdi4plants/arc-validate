@@ -3,7 +3,7 @@
 open ARCExpect
 open Expecto
 open TestUtils
-open AVPRIndex
+open Thoth.Json.Core
 
     
 let dummyTestPassed = ReferenceObjects.TestCase.dummyTestWillPass |> performTest
@@ -34,13 +34,8 @@ let testPackageWithHook = ValidationPackageSummary.create(
     CQCHookEndpoint = testHook
 )
 
-open System.Collections.Generic
-
 let testPayload = 
-    Dictionary<string, obj>([
-        KeyValuePair("key1", box "value1")
-        KeyValuePair("key2", box 2)
-    ])
+    Json.Object [ "key1", Json.String "value1"; "key2", Json.Number 2.0 ]
 
 [<Tests>]
 let ``ValidationResult tests`` =
@@ -197,7 +192,7 @@ let ``ValidationResult tests`` =
 
                 Expect.validationSummaryEqualIgnoringOriginal actual ReferenceObjects.ValidationSummary.allPassedWithPayload
             }
-            test "roundtrip looses original summary" {
+            test "roundtrip preserves aggregate results without compatibility state" {
                 
                 let initial = ValidationSummary.ofExpectoTestRunSummaries(dummyTestPassed, dummyTestPassed, ReferenceObjects.ValidationPackageSummary.noHook)
                 let actual = 
@@ -205,10 +200,10 @@ let ``ValidationResult tests`` =
                     |> ValidationSummary.toJson
                     |> ValidationSummary.fromJson
 
-                Expect.isSome initial.Critical.OriginalRunSummary "OriginalRunSummary was not some initially"
-                Expect.isNone actual.Critical.OriginalRunSummary "OriginalRunSummary was not none after json roundtrip"
-                Expect.isSome initial.NonCritical.OriginalRunSummary "OriginalRunSummary was not some initially"
-                Expect.isNone actual.NonCritical.OriginalRunSummary "OriginalRunSummary was not none after json roundtrip"
+                Expect.validationSummaryEqualIgnoringOriginal actual initial
+                Expect.equal initial.Critical.Cases[0].Name [| "dummyTest1" |] "Expecto case name was not retained in memory"
+                Expect.equal actual.Critical.Total initial.Critical.Total "Critical aggregate was not retained"
+                Expect.equal actual.NonCritical.Total initial.NonCritical.Total "NonCritical aggregate was not retained"
 
             }
         ]

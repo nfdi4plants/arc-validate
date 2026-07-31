@@ -13,8 +13,6 @@ open Argu
 open Spectre.Console
 
 open ControlledVocabulary
-open AnyBadge.NET
-
 module ValidateAPI = 
 
     let validate (verbose: bool) (args: ParseResults<ValidateArgs>)=

@@ -1,9 +1,23 @@
 ﻿namespace ARCExpect
 
-open AnyBadge.NET
+open ARCExpect.Badge
+open ARCExpect.JUnit
 open Expecto
 open System.IO
-open AVPRIndex
+open ValidationPackage.Codecs
+open ValidationPackage.Model
+
+type FrontmatterLanguage =
+    | FSharpFrontmatter
+    | PythonFrontmatter
+
+[<RequireQualifiedAccess>]
+module private FrontmatterLanguage =
+
+    let toCodec language =
+        match language with
+        | FSharpFrontmatter -> ValidationPackage.Codecs.FrontmatterLanguage.FSharp
+        | PythonFrontmatter -> ValidationPackage.Codecs.FrontmatterLanguage.Python
 
 type Setup =
     
@@ -11,7 +25,15 @@ type Setup =
         frontmatter: string,
         programmingLanguage: FrontmatterLanguage
     ) =
-        ValidationPackageMetadata.extractFromString programmingLanguage frontmatter
+        ValidationPackageYaml.extractOrFail
+            (FrontmatterLanguage.toCodec programmingLanguage)
+            frontmatter
+
+    static member Metadata(
+        frontmatter: string,
+        programmingLanguage: ValidationPackage.Codecs.FrontmatterLanguage
+    ) =
+        ValidationPackageYaml.extractOrFail programmingLanguage frontmatter
 
     static member ValidationPackage(
         metadata: ValidationPackageMetadata,
@@ -75,15 +97,15 @@ type Execute =
             ValidationSummary.ofExpectoTestRunSummaries(
                 criticalSummary = criticalResults,
                 nonCriticalSummary = nonCriticalResults,
-                package = ValidationPackageSummary.create(arcValidationPackage.Metadata),
-                ?Payload = Payload
+                package = ValidationPackageSummary.fromMetadata(arcValidationPackage.Metadata),
+                ?Payload = (Payload |> Option.map PayloadConversion.fromDictionary)
             )
 
     static member SummaryCreation(
         path: string
     ) =  
         fun (validationSummary: ValidationSummary) -> 
-            ValidationSummary.writeJson path validationSummary
+            File.WriteAllText(path, ValidationSummary.toJson validationSummary)
 
     static member JUnitReportCreation(
         path: string,
@@ -91,17 +113,13 @@ type Execute =
     ) =
         let verbose = defaultArg Verbose false
 
-        fun (validationSummary: ValidationSummary) -> 
-            match validationSummary.Critical.OriginalRunSummary, validationSummary.NonCritical.OriginalRunSummary with
-            | None, None ->
-                printfn "No validation results to summarize"
-            | Some criticalResults, None ->
-                writeJUnitSummary verbose path criticalResults
-            | None, Some nonCriticalResults ->
-                writeJUnitSummary verbose path nonCriticalResults
-            | Some criticalResults, Some nonCriticalResults ->
-                combineTestRunSummaries [criticalResults; nonCriticalResults]
-                |> writeJUnitSummary verbose path
+        fun (validationSummary: ValidationSummary) ->
+            RunSummary.combine [|
+                validationSummary.Critical
+                validationSummary.NonCritical
+            |]
+            |> fun summary -> ARCExpect.JUnit.Writer.toXml(summary, Verbose = verbose)
+            |> fun content -> File.WriteAllText(path, content)
 
     static member BadgeCreation(
         path: string,
@@ -110,16 +128,27 @@ type Execute =
         ?Thresholds: Map<int, Color>,
         ?DefaultColor: Color
     ) =
-        fun (validationSummary: ValidationSummary) -> 
+        fun (validationSummary: ValidationSummary) ->
+            let portableThresholds =
+                Thresholds
+                |> Option.map (fun thresholds ->
+                    thresholds
+                    |> Map.toArray
+                    |> Array.map (fun (value, color) ->
+                        Threshold.create(value, color)
+                    )
+                )
 
             validationSummary
-            |> BadgeCreation.ofValidationSummary(
-                labelText,
-                ?ValueSuffix = ValueSuffix,
-                ?Thresholds = Thresholds,
-                ?DefaultColor = DefaultColor
-            )
-            |> fun b -> b.WriteBadge(path)
+            |> fun summary ->
+                ARCExpect.Badge.Writer.toSvg(
+                    summary,
+                    labelText,
+                    ?ValueSuffix = ValueSuffix,
+                    ?Thresholds = portableThresholds,
+                    ?DefaultColor = DefaultColor
+                )
+            |> fun content -> File.WriteAllText(path, content)
 
     static member ValidationPipeline(
         basePath: string,

@@ -207,6 +207,8 @@ current Expecto runner and .NET filesystem behavior.
   `AVPRIndex`.
 - Portable ARCExpect owns framework-neutral case outcomes, per-case results,
   run summaries, and pure summary/JUnit/badge content generation.
+- Keep owned output APIs under `ARCExpect.Badge` and `ARCExpect.JUnit`; do not
+  reintroduce AnyBadge.NET or platform XML dependencies into ARCExpect.
 - `Expecto.TestRunSummary` conversion, the current Expecto runner, filesystem
   writes, and .NET-only badge or serialization compatibility remain behind a
   thin .NET boundary.
@@ -239,6 +241,11 @@ current Expecto runner and .NET filesystem behavior.
   indexing.
 - Cross-repository contract changes require candidate AVPR artifacts to be
   tested against the affected arc-validate projects before publication.
+- All network-backed AVPR integration tests target
+  `https://avpr-dev.nfdi4plants.org`, never the production registry. The dev
+  instance carries candidate metadata fields such as CWL-style command-line
+  inputs. Keep the endpoint explicit or injected in tests so production
+  defaults remain unchanged.
 
 ## Package management and execution
 
@@ -254,8 +261,9 @@ general-purpose portable authoring library.
 - Honor configured cache folders and registry endpoints, use atomic cache
   writes, use asynchronous HTTP with status-based error classification, and
   pass process arguments safely.
-- Cover install, list, update, uninstall, and execution with injected or local
-  endpoints rather than the production registry.
+- Cover install, list, update, uninstall, and execution with injected/local
+  endpoints or the explicit AVPR development instance, never the production
+  registry.
 - Keep CLI handlers focused on arguments, orchestration, exit codes, and
   presentation.
 

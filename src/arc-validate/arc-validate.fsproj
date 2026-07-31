@@ -7,7 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="RELEASE_NOTES.md" />
-    <Compile Include="BadgeCreation.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
@@ -23,7 +22,6 @@
     <PackageReference Include="Argu" Version="[6.2.5]" />
     <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
     <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[4.0.0, 5.0.0)" />

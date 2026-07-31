@@ -37,11 +37,17 @@ module AVPRAPI =
         | _ -> 
             raise (Errors.GeneralError(e.Message))
 
-type AVPRAPI () =
-    member private this.BaseUri = Uri("https://avpr.nfdi4plants.org")
-    member private this.HttpClienHandler = new HttpClientHandler (UseCookies = false)
-    member private this.HttpClient = new HttpClient(this.HttpClienHandler, true, BaseAddress=this.BaseUri)
-    member this.Client = AVPRClient.Client(this.HttpClient)
+type AVPRAPI (?BaseUri: Uri) =
+    let baseUri = defaultArg BaseUri (Uri("https://avpr.nfdi4plants.org"))
+    let httpClientHandler = new HttpClientHandler(UseCookies = false)
+    let httpClient = new HttpClient(httpClientHandler, true, BaseAddress = baseUri)
+    let client =
+        let generatedClient = AVPRClient.Client(httpClient)
+        generatedClient.BaseUrl <- baseUri.ToString().TrimEnd('/')
+        generatedClient
+
+    member _.BaseUri = baseUri
+    member _.Client = client
     member this.GetAllPackages (): ValidationPackage [] = 
         try
             this.Client.GetAllPackagesAsync(System.Threading.CancellationToken.None)

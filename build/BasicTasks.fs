@@ -6,6 +6,7 @@ open Fake.DotNet
 open Fake.IO.Globbing.Operators
 
 open ProjectInfo
+open Helpers
 
 let clean = BuildTask.create "Clean" [] {
     // let's try if this is not necessary anymore with .net 8!
@@ -111,4 +112,14 @@ let publish = BuildTask.create "Publish" [clean] {
         }
         |> DotNet.Options.withCustomParams (Some "-tl")
     )
+}
+
+let cleanPortableArtifacts = BuildTask.create "CleanPortableArtifacts" [] {
+    recreateDirectory portableArtifactsDir
+    recreateDirectory packageCacheDir
+}
+
+let preparePortableToolchain = BuildTask.create "PreparePortableToolchain" [] {
+    runDotNetCommand "tool" "restore" "."
+    runUv [ "sync"; "--locked" ] "."
 }

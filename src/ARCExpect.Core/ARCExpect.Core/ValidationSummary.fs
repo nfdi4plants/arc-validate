@@ -1,141 +1,33 @@
-﻿namespace ARCExpect
-
-open Expecto
-open System.Text.Json
-open System.Text.Json.Serialization
-open System.IO
-open AVPRIndex
-
-module JsonOptions =
-    let options =
-        JsonFSharpOptions.Default()
-            .WithSkippableOptionFields() // if option is none, do not include a property, but include it if option is some.
-            .ToJsonSerializerOptions()
-
-/// <summary>
-/// Represents a brief summary of the result of validating an ARC against a set of validation cases.
-/// </summary>
-type ValidationResult = {
-    HasFailures: bool
-    Total: int
-    Passed: int
-    Failed: int
-    Errored: int
-    [<JsonIgnore>]
-    OriginalRunSummary: Impl.TestRunSummary option
-} with
-    static member create(
-        hasFailures: bool,
-        total: int,
-        passed: int,
-        failed: int,
-        errored: int,
-        ?OriginalRunSummary: Impl.TestRunSummary
-    ) = {
-        HasFailures = hasFailures
-        Total = total
-        Passed = passed
-        Failed = failed
-        Errored = errored
-        OriginalRunSummary = OriginalRunSummary
-    }
-    
-    static member create (total: int, passed: int, failed: int, errored: int, ?OriginalRunSummary: Impl.TestRunSummary) =
-        ValidationResult.create(
-            hasFailures = (failed > 0 || errored > 0),
-            total = total,
-            passed = passed,
-            failed = failed,
-            errored = errored,
-            ?OriginalRunSummary = OriginalRunSummary
-        )
-
-    static member ofExpectoTestRunSummary (summary: Impl.TestRunSummary) =
-
-        let totalTests = summary.errored @ summary.failed @ summary.ignored @ summary.passed
-
-        ValidationResult.create(
-            total = totalTests.Length,
-            passed = summary.passed.Length,
-            errored = summary.errored.Length,
-            failed = summary.failed.Length,
-            OriginalRunSummary = summary
-        )
-
-/// <summary>
-/// Represents a brief summary of a validation package. Should be expanded to include full package metadata in the future.
-/// </summary>
-type ValidationPackageSummary = {
-    Name: string
-    Version: string
-    Summary: string
-    Description: string
-    CQCHookEndpoint: string option
-} with
-    static member create(
-        name: string,
-        version: string,
-        summary: string,
-        description: string,
-        ?CQCHookEndpoint: string
-    ) = {
-        Name = name
-        Version = version
-        Summary = summary
-        Description = description
-        CQCHookEndpoint = CQCHookEndpoint
-    }
-    static member create (
-        metadata: ValidationPackageMetadata
-    ) =
-        ValidationPackageSummary.create(
-            name = metadata.Name,
-            version = ValidationPackageMetadata.getSemanticVersionString metadata,
-            summary = metadata.Summary,
-            description = metadata.Description,
-            ?CQCHookEndpoint = if metadata.CQCHookEndpoint = "" then None else Some metadata.CQCHookEndpoint
-        )
+namespace ARCExpect
 
 open System.Collections.Generic
+open System.Text.Json
+open Thoth.Json.Core
 
-/// <summary>
-/// Represents a summary of the validation results of an ARC against a validation package containing critical and non-critical validation cases.
-/// </summary>
-type ValidationSummary = {
-    Critical: ValidationResult
-    NonCritical: ValidationResult
-    ValidationPackage: ValidationPackageSummary
-    Payload: Dictionary<string, obj> option
-} with
-    static member create(
-        critical: ValidationResult,
-        nonCritical: ValidationResult,
-        validationPackage: ValidationPackageSummary,
-        ?Payload: Dictionary<string, obj>
-    ) = {
-        Critical = critical
-        NonCritical = nonCritical
-        ValidationPackage = validationPackage
-        Payload = Payload
-    }
-    static member ofExpectoTestRunSummaries (
-        criticalSummary: Impl.TestRunSummary,
-        nonCriticalSummary: Impl.TestRunSummary,
-        package: ValidationPackageSummary,
-        ?Payload: Dictionary<string, obj>
-    ) =
-        ValidationSummary.create(
-            critical = ValidationResult.ofExpectoTestRunSummary criticalSummary,
-            nonCritical = ValidationResult.ofExpectoTestRunSummary nonCriticalSummary,
-            validationPackage = package,
-            ?Payload = Payload
-        )
-    
-    static member toJson (summary: ValidationSummary) =
-        JsonSerializer.Serialize(summary, JsonOptions.options)
+[<RequireQualifiedAccess>]
+module internal PayloadConversion =
 
-    static member fromJson (json: string) =
-        JsonSerializer.Deserialize<ValidationSummary>(json, JsonOptions.options)
+    let rec private fromElement(element: JsonElement) =
+        match element.ValueKind with
+        | JsonValueKind.Null
+        | JsonValueKind.Undefined -> Json.Null
+        | JsonValueKind.True -> Json.Boolean true
+        | JsonValueKind.False -> Json.Boolean false
+        | JsonValueKind.String -> Json.String(element.GetString())
+        | JsonValueKind.Number -> Json.Number(element.GetDouble())
+        | JsonValueKind.Array ->
+            element.EnumerateArray()
+            |> Seq.map fromElement
+            |> Seq.toList
+            |> Json.Array
+        | JsonValueKind.Object ->
+            element.EnumerateObject()
+            |> Seq.map (fun property -> property.Name, fromElement property.Value)
+            |> Seq.toList
+            |> Json.Object
+        | _ -> Json.Null
 
-    static member writeJson (path: string) (summary: ValidationSummary) =
-        File.WriteAllText(path, ValidationSummary.toJson summary)
+    let fromDictionary(payload: Dictionary<string, obj>) =
+        payload
+        |> JsonSerializer.SerializeToElement
+        |> fromElement

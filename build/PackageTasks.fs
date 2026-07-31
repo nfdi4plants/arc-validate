@@ -10,6 +10,7 @@ open BlackFox.Fake
 open Fake.Core
 open Fake.DotNet
 open Fake.IO.Globbing.Operators
+open Helpers
 
 
 let pack = BuildTask.create "Pack" [ clean; build ] {
@@ -118,3 +119,27 @@ let packPrerelease =
                 failwith "aborted"
         )
     }
+
+let cleanPortablePackages = BuildTask.create "CleanPortablePackages" [] {
+    recreateDirectory packageDir
+}
+
+let private packPortableProject project =
+    ensureDirectory packageDir
+
+    project
+    |> DotNet.pack (fun options ->
+        { options with
+            Configuration = DotNet.BuildConfiguration.Release
+            OutputPath = Some packageDir
+            MSBuildParams =
+                { options.MSBuildParams with
+                    DisableInternalBinLog = true } })
+
+let packARCExpectCore = BuildTask.create "PackARCExpectCore" [ cleanPortablePackages ] {
+    packPortableProject ARCExpectCoreProject.ProjFile
+}
+
+let packARCExpectCorePortable = BuildTask.create "PackARCExpectCorePortable" [ cleanPortablePackages ] {
+    packPortableProject ARCExpectCorePortableProject
+}

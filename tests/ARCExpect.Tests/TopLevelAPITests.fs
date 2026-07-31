@@ -1,7 +1,6 @@
 ﻿module TopLevelAPITests
 
 open ARCExpect
-open AVPRIndex
 open Expecto
 open TestUtils
 open System.IO

@@ -92,7 +92,7 @@ Just call `build.sh` or `build.cmd` depending on your OS.
 
 ### Test
 
-test setup is interconnected with production services, running tests for the compiled `arc-validate` tool with validation packages with source https://avpr.nfdi4plants.org.
+test setup uses the AVPR development service, running tests for the compiled `arc-validate` tool with validation packages from https://avpr-dev.nfdi4plants.org. Network-backed tests must not target the production registry.
 
 since testing the cli tool relies on it being compiled via `dotnet publish`, either use the build scripts or manually publish `arc-validate` to the `/publish` folder when using e.g. TestExplorers.
 

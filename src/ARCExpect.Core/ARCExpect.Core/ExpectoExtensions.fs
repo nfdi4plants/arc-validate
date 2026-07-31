@@ -1,5 +1,7 @@
 ﻿namespace ARCExpect
 
+open ARCExpect.JUnit
+
 [<AutoOpen>]
 module Expecto =
     open System
@@ -95,6 +97,54 @@ module Expecto =
 
     let assemblyName = Reflection.Assembly.GetEntryAssembly().GetName().Name
 
+    let private toCaseResult (flatTest: FlatTest) (test: TestSummary) =
+        let outcome =
+            match test.result with
+            | Passed -> CaseOutcome.passed()
+            | Failed message -> CaseOutcome.failed(message)
+            | Error error ->
+                CaseOutcome.errored(
+                    error.Message,
+                    ?StackTrace =
+                        (if isNull error.StackTrace then None else Some error.StackTrace)
+                )
+            | Ignored message -> CaseOutcome.skipped(message)
+
+        CaseResult.create(
+            List.toArray flatTest.name,
+            outcome,
+            DurationMilliseconds = test.duration.TotalMilliseconds
+        )
+
+    type ValidationResult with
+
+        static member ofExpectoTestRunSummary(summary: TestRunSummary) =
+            let cases =
+                summary.results
+                |> List.map (fun (flatTest, test) -> toCaseResult flatTest test)
+                |> List.toArray
+
+            ValidationResult.create(
+                cases,
+                DurationMilliseconds = summary.duration.TotalMilliseconds,
+                SuiteName = assemblyName
+            )
+
+    type ValidationSummary with
+
+        static member ofExpectoTestRunSummaries(
+            criticalSummary: TestRunSummary,
+            nonCriticalSummary: TestRunSummary,
+            package: ValidationPackageSummary,
+            ?Payload: Thoth.Json.Core.Json
+        ) =
+            ValidationSummary.create(
+                ValidationResult.ofExpectoTestRunSummary criticalSummary,
+                ValidationResult.ofExpectoTestRunSummary nonCriticalSummary,
+                package,
+                ?Payload = Payload
+            )
+
     let xmlSave fileName (doc : XDocument) =
         let path = Path.GetFullPath fileName
         Path.GetDirectoryName path
@@ -107,64 +157,13 @@ module Expecto =
 
     /// Generate test results at a given filepath using in a minimal JUnit schema. If `verbose` is true, error stack is printed into failure message.
     let writeJUnitSummary verbose file (summary: Impl.TestRunSummary) =
+        let path = Path.GetFullPath file
+        Path.GetDirectoryName path |> Directory.CreateDirectory |> ignore
 
-        /// Prints the actual message of an error message, without the error stack.
-        let truncateMsg msg = 
-            try String.toLines msg
-                |> Seq.head
-            with _ -> msg
-
-        // junit does not have an official xml spec
-        // this is a minimal implementation to get gitlab to recognize the tests:
-        // https://docs.gitlab.com/ee/ci/junit_test_reports.html
-        let totalTests = summary.errored @ summary.failed @ summary.ignored @ summary.passed
-        let testCaseElements =
-            totalTests
-            |> Seq.sortByDescending (fun (_,test) -> test.result.order,test.duration.TotalSeconds)
-            |> Seq.map (fun (flatTest, test) ->
-            
-                // flatTest.name string list gets squashed when upcast to XObject, therefore the list gets folded into a single string
-                let fullnameString = 
-                    flatTest.name 
-                    |> List.fold (fun acc s -> acc + s + "; " ) "[ "
-                    |> fun s -> s[.. String.length s - 3] + " ]"
-
-                let content: XObject[] =
-                    let makeMessageNode messageType (message: string) =
-                        XElement(XName.Get messageType,
-                            XAttribute(XName.Get "message", if verbose then message else truncateMsg message))
-                    match test.result with
-                    | Passed -> [||]
-                    | Error e ->
-                        let message = makeMessageNode "error" e.Message
-                        //message.Add(XCData(e.ToString()))     // commented out to tackle unnecessary error stack trace in error message
-                        [|message|]
-                    | Failed msg -> 
-                        
-                        [|makeMessageNode "failure" msg|]
-                    | Ignored msg -> [|makeMessageNode "skipped" msg|]
-
-                XElement(XName.Get "testcase",
-                    [|
-                        yield XAttribute(XName.Get "name", fullnameString) :> XObject
-                        yield XAttribute(XName.Get "time",
-                            System.String.Format(CultureInfo.InvariantCulture,
-                                "{0:0.000}", test.duration.TotalSeconds)) :> XObject
-                        yield! content
-                    |]) :> XObject)
-        let element =
-            XElement(
-                XName.Get "testsuites",
-                    XElement(XName.Get "testsuite",
-                        [|
-                            yield XAttribute(XName.Get "name", assemblyName) :> XObject
-                            yield! testCaseElements
-                        |])
-                )
-
-        element
-        |> XDocument
-        |> xmlSave file
+        summary
+        |> ValidationResult.ofExpectoTestRunSummary
+        |> fun result -> Writer.toXml(result, Verbose = verbose)
+        |> fun content -> File.WriteAllText(path, content)
 
 
     /// Generate test results using NUnit v2 schema.

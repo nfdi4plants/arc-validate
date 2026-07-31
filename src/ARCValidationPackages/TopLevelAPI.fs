@@ -89,12 +89,13 @@ type AVPR =
         cache: PackageCache,
         packageName: string,
         ?packageVersion: string,
-        ?CacheFolder: string
+        ?CacheFolder: string,
+        ?RegistryApi: AVPRAPI
     ) =
 
         try
             let cacheFolder = defaultArg CacheFolder (Defaults.PACKAGE_CACHE_FOLDER())
-            let avprapi = new AVPRAPI()
+            let avprapi = defaultArg RegistryApi (new AVPRAPI())
             
             let validationPackage =
                 match packageVersion with
@@ -122,7 +123,8 @@ type AVPR =
         cache: PackageCache,
         packageName: string,
         ?SemVer: string,
-        ?Verbose: bool
+        ?Verbose: bool,
+        ?RegistryApi: AVPRAPI
     ) =
         let verbose = defaultArg Verbose false
         let cachedPackage =
@@ -141,7 +143,7 @@ type AVPR =
             if verbose then printfn $"package {packageName} is already cached locally from {cachedPackage.CacheDate}"
             if verbose then printfn $"updating package index and looking for a newer version..."
 
-            let avprapi = new AVPRAPI()
+            let avprapi = defaultArg RegistryApi (new AVPRAPI())
             
             let latestPackage =
                 avprapi.GetPackageByName packageName
@@ -151,7 +153,8 @@ type AVPR =
                 if verbose then printfn $"package {packageName} is available in a newer version({ValidationPackageMetadata.getSemanticVersionString (latestPackage.ToModel())} vs {ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata}). downloading..."
                 AVPR.SaveAndCachePackage(
                     cache = cache,
-                    packageName = packageName
+                    packageName = packageName,
+                    RegistryApi = avprapi
                 )
 
         |None -> 
@@ -159,7 +162,8 @@ type AVPR =
             AVPR.SaveAndCachePackage(
                 cache = cache,
                 packageName = packageName,
-                ?packageVersion = SemVer
+                ?packageVersion = SemVer,
+                ?RegistryApi = RegistryApi
             )
 
     static member UninstallPackage(

@@ -2,7 +2,8 @@
 
 open ControlledVocabulary
 open ARCExpect
-open AVPRIndex
+open ValidationPackage.Model
+open Thoth.Json.Core
 
 open Expecto
 
@@ -35,127 +36,75 @@ module CvParams =
 
 module ValidationResult =
     
-    let allPassed = {
-        HasFailures = false
-        Total = 1
-        Passed = 1
-        Failed = 0
-        Errored = 0
-        OriginalRunSummary = None
-    }
+    let allPassed = ValidationResult.fromCounts(1, 1, 0, 0)
 
-    let allFailed = {
-        HasFailures = true
-        Total = 1
-        Passed = 0
-        Failed = 1
-        Errored = 0
-        OriginalRunSummary = None
-    }
+    let allFailed = ValidationResult.fromCounts(1, 0, 1, 0)
 
 module ValidationPackageSummary = 
 
-    let noHook = {
-        Name = "test"
-        Version = "1.0.0"
-        Summary = "A package without CQC hook."
-        Description = "A package without CQC hook. More text here."
-        CQCHookEndpoint = None
-    }
+    let noHook =
+        ValidationPackageSummary.create(
+            "test",
+            "1.0.0",
+            "A package without CQC hook.",
+            "A package without CQC hook. More text here."
+        )
 
-    let withHook = {
-        Name = "test"
-        Version = "1.0.0"
-        Summary = "A package with CQC hook."
-        Description = "A package with CQC hook. More text here."
-        CQCHookEndpoint = Some "http://test.com"
-    }
+    let withHook =
+        ValidationPackageSummary.create(
+            "test",
+            "1.0.0",
+            "A package with CQC hook.",
+            "A package with CQC hook. More text here.",
+            CQCHookEndpoint = "http://test.com"
+        )
 
 module ValidationSummary =
 
-    open System.Collections.Generic
+    let private create critical nonCritical validationPackage payload =
+        ValidationSummary.create(
+            critical,
+            nonCritical,
+            validationPackage,
+            ?Payload = payload
+        )
 
     let allPassedNoHook = 
-        {
-            Critical = ValidationResult.allPassed
-            NonCritical = ValidationResult.allPassed
-            ValidationPackage = ValidationPackageSummary.noHook
-            Payload = None
-        }
+        create ValidationResult.allPassed ValidationResult.allPassed ValidationPackageSummary.noHook None
 
     let allPassedNoHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package without CQC hook.","Description":"A package without CQC hook. More text here."}}"""
 
     let allPassedWithHook = 
-        {
-            Critical = ValidationResult.allPassed
-            NonCritical = ValidationResult.allPassed
-            ValidationPackage = ValidationPackageSummary.withHook
-            Payload = None
-        }
+        create ValidationResult.allPassed ValidationResult.allPassed ValidationPackageSummary.withHook None
 
     let allPassedWithHookJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","CQCHookEndpoint":"http://test.com"}}""" 
 
     let allPassedWithPayload = 
-        {
-            Critical = ValidationResult.allPassed
-            NonCritical = ValidationResult.allPassed
-            ValidationPackage = ValidationPackageSummary.withHook
-            Payload = Some (
-                Dictionary<string, obj>([
-                    KeyValuePair("key1", box "value1")
-                    KeyValuePair("key2", box 2)
-                ]))
-        }
+        create
+            ValidationResult.allPassed
+            ValidationResult.allPassed
+            ValidationPackageSummary.withHook
+            (Some (Json.Object [ "key1", Json.String "value1"; "key2", Json.Number 2.0 ]))
 
     let allPassedWithPayloadJson = """{"Critical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"NonCritical":{"HasFailures":false,"Total":1,"Passed":1,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"test","Version":"1.0.0","Summary":"A package with CQC hook.","Description":"A package with CQC hook. More text here.","CQCHookEndpoint":"http://test.com"},"Payload":{"key1":"value1","key2":2}}""" 
 
     let allFailedNoHook = 
-        {
-            Critical = ValidationResult.allFailed
-            NonCritical = ValidationResult.allFailed
-            ValidationPackage = ValidationPackageSummary.noHook
-            Payload = None
-        }
+        create ValidationResult.allFailed ValidationResult.allFailed ValidationPackageSummary.noHook None
 
     let allFailedWithHook = 
-        {
-            Critical = ValidationResult.allFailed
-            NonCritical = ValidationResult.allFailed
-            ValidationPackage = ValidationPackageSummary.withHook
-            Payload = None
-        }
+        create ValidationResult.allFailed ValidationResult.allFailed ValidationPackageSummary.withHook None
 
     let nonCriticalFailedNoHook = 
-        {
-            Critical = ValidationResult.allPassed
-            NonCritical = ValidationResult.allFailed
-            ValidationPackage = ValidationPackageSummary.noHook
-            Payload = None
-        }
+        create ValidationResult.allPassed ValidationResult.allFailed ValidationPackageSummary.noHook None
 
     let nonCriticalFailedWithHook = 
-        {
-            Critical = ValidationResult.allPassed
-            NonCritical = ValidationResult.allFailed
-            ValidationPackage = ValidationPackageSummary.withHook
-            Payload = None
-        }
+        create ValidationResult.allPassed ValidationResult.allFailed ValidationPackageSummary.withHook None
 
     let criticalFailedNoHook = 
-        {
-            Critical = ValidationResult.allFailed
-            NonCritical = ValidationResult.allPassed
-            ValidationPackage = ValidationPackageSummary.noHook
-            Payload = None
-        }
+        create ValidationResult.allFailed ValidationResult.allPassed ValidationPackageSummary.noHook None
 
     let criticalFailedWithHook = 
-        {
-            Critical = ValidationResult.allFailed
-            NonCritical = ValidationResult.allPassed
-            ValidationPackage = ValidationPackageSummary.withHook
-            Payload = None
-        }
+        create ValidationResult.allFailed ValidationResult.allPassed ValidationPackageSummary.withHook None
          
 module Frontmatter =
     
@@ -216,6 +165,7 @@ module ValidationPackageMetadata =
             PatchVersion = 0,
             Summary = "A package with CQC hook.",
             Description = "A package with CQC hook. More text here.",
+            ProgrammingLanguage = "FSharp",
             CQCHookEndpoint = "http://test.com"
         )
 
@@ -231,10 +181,10 @@ module Badge =
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
-    <mask id="1">
+    <mask id="arc-validate-badge">
         <rect width="150" height="20" rx="3" fill="#fff"/>
     </mask>
-    <g mask="url(#1)">
+    <g mask="url(#arc-validate-badge)">
         <path fill="#555" d="M0 0h121v20H0z"/>
         <path fill="#4C1" d="M121 0h29v20H121z"/>
         <path fill="url(#b)" d="M0 0h150v20H0z"/>
@@ -256,10 +206,10 @@ module Badge =
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
-    <mask id="2">
+    <mask id="arc-validate-badge">
         <rect width="104" height="20" rx="3" fill="#fff"/>
     </mask>
-    <g mask="url(#2)">
+    <g mask="url(#arc-validate-badge)">
         <path fill="#555" d="M0 0h75v20H0z"/>
         <path fill="#4C1" d="M75 0h29v20H75z"/>
         <path fill="url(#b)" d="M0 0h104v20H0z"/>

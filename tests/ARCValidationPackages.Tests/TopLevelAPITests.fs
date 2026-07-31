@@ -47,7 +47,7 @@ let ``Toplevel API tests`` =
                 let _, avprCache = Result.okValue (API.Common.GetSyncedConfigAndCache())
 
                 test "SaveAndCachePackage returns OK" {
-                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "3.0.0" )) "SaveAndCachePackage did not return OK"
+                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "3.0.0", RegistryApi = AVPR.api)) "SaveAndCachePackage did not return OK"
                 }
                 test "package is cached after running SaveAndCachePackage" {
                     avprCache 
@@ -68,7 +68,7 @@ let ``Toplevel API tests`` =
                 let _, avprCache = Result.okValue (API.Common.GetSyncedConfigAndCache())
 
                 test "SaveAndCachePackage returns OK" {
-                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "5.0.0" )) "SaveAndCachePackage did not return OK"
+                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "5.0.0", RegistryApi = AVPR.api)) "SaveAndCachePackage did not return OK"
                 }
                 test "package is cached after running SaveAndCachePackage" {
                     avprCache 
@@ -89,7 +89,7 @@ let ``Toplevel API tests`` =
                 let _, avprCache= Result.okValue (API.Common.GetSyncedConfigAndCache())
 
                 test "SaveAndCachePackage returns OK" {
-                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "5.0.0-use+suffixes" )) "SaveAndCachePackage did not return OK"
+                    Expect.isOk (API.AVPR.SaveAndCachePackage(avprCache, "test", packageVersion = "5.0.0-use+suffixes", RegistryApi = AVPR.api)) "SaveAndCachePackage did not return OK"
                 }
                 test "package is cached after running SaveAndCachePackage" {
                     avprCache 
@@ -110,7 +110,7 @@ let ``Toplevel API tests`` =
                 let _, avprCache= Result.okValue (API.Common.GetSyncedConfigAndCache())
 
                 test "InstallPackage returns OK" {
-                    Expect.isOk (API.AVPR.InstallPackage(avprCache, "test", SemVer = "3.0.0")) "InstallPackage did not return OK"
+                    Expect.isOk (API.AVPR.InstallPackage(avprCache, "test", SemVer = "3.0.0", RegistryApi = AVPR.api)) "InstallPackage did not return OK"
                 }
                 test "package is cached after running InstallPackage" {
                     avprCache 
@@ -126,7 +126,7 @@ let ``Toplevel API tests`` =
                 let config, avprCache = Result.okValue (API.Common.GetSyncedConfigAndCache())
 
                 test "InstallPackage returns OK" {
-                    Expect.isOk (API.AVPR.InstallPackage(avprCache, "test", SemVer = "3.0.0")) "InstallPackage did not return OK"
+                    Expect.isOk (API.AVPR.InstallPackage(avprCache, "test", SemVer = "3.0.0", RegistryApi = AVPR.api)) "InstallPackage did not return OK"
                 }
                 test "package is cached after running InstallPackage" {
                     avprCache 

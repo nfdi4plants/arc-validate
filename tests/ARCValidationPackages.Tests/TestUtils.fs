@@ -122,5 +122,6 @@ module Fixtures =
     //    updatedCache
 
 module AVPR =
-    
-    let api = new AVPRAPI()
+
+    let baseUri = System.Uri("https://avpr-dev.nfdi4plants.org")
+    let api = new AVPRAPI(BaseUri = baseUri)

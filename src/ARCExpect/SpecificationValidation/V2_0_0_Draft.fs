@@ -4,7 +4,7 @@ open ControlledVocabulary
 open ARCTokenization
 open ARCExpect
 open Expecto
-open AVPRIndex
+open ValidationPackage.Model
 
 module V2_0_0_Draft =
 

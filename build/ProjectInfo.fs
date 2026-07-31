@@ -51,6 +51,10 @@ type ProjectInfo = {
 
 // adapt this to reflect the core project in your repository. The only effect this will have is the version displayed in the docs, as it is currently only possible to have one version displayed there.
 let CoreProject = ProjectInfo.create("ARCExpect", "src/ARCExpect/ARCExpect.fsproj", "src/ARCExpect/RELEASE_NOTES.md")
+let ARCExpectCoreProject = ProjectInfo.create("ARCExpect.Core", "src/ARCExpect.Core/ARCExpect.Core/ARCExpect.Core.fsproj", "src/ARCExpect.Core/ARCExpect.Core/RELEASE_NOTES.md")
+let ARCExpectCorePortableProject = "src/ARCExpect.Core.Portable/ARCExpect.Core.Portable.fsproj"
+let ARCExpectCorePortableTestsProject = "tests/ARCExpect.Core.Portable.Tests/ARCExpect.Core.Portable.Tests.fsproj"
+let ARCExpectCorePortablePackageSmokeProject = "tests/ARCExpect.Core.Portable.PackageSmoke/ARCExpect.Core.Portable.PackageSmoke.fsproj"
 let ValidationPackagesProject = ProjectInfo.create("ARCValidationPackages", "src/ARCValidationPackages/ARCValidationPackages.fsproj", "src/ARCValidationPackages/RELEASE_NOTES.md")
 let CLIProject = ProjectInfo.create("arc-validate", "src/arc-validate/arc-validate.fsproj", "src/arc-validate/RELEASE_NOTES.md")
 
@@ -59,6 +63,7 @@ let projects =
         // add relative paths (from project root) to your projects here, including individual reslease notes files
         // e.g. ProjectInfo.create("MyProject", "src/MyProject/MyProject.fsproj", "src/MyProject/RELEASE_NOTES.md")
         CoreProject
+        ARCExpectCoreProject
         ValidationPackagesProject
         CLIProject
     ]
@@ -88,6 +93,11 @@ let gitHome = $"https://github.com/{gitOwner}"
 let projectRepo = $"https://github.com/{gitOwner}/{project}"
 
 let pkgDir = "pkg"
+
+let artifactsDir = "artifacts"
+let portableArtifactsDir = System.IO.Path.Combine(artifactsDir, "portable")
+let packageDir = System.IO.Path.Combine(artifactsDir, "packages")
+let packageCacheDir = System.IO.Path.Combine(artifactsDir, "package-cache")
 
 
 /// docs are always targeting the version of the core project

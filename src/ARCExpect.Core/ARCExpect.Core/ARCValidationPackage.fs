@@ -1,7 +1,7 @@
 ﻿namespace ARCExpect
 
-open AVPRIndex
 open Expecto
+open ValidationPackage.Model
 
 type ARCValidationPackage = 
     {
