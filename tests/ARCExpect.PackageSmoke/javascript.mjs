@@ -2,10 +2,15 @@ import {
   Badge,
   CaseOutcome,
   CaseResult,
+  Execute,
   JUnit,
   ValidationPackageSummary,
+  Setup,
   ValidationResult,
-  ValidationSummary
+  ValidationSummary,
+  ptestCase,
+  testCase,
+  testCaseAsync
 } from "arcexpect";
 import {
   CommandInputBinding,
@@ -35,12 +40,23 @@ metadata.Inputs = [
   )
 ];
 const packageSummary = ValidationPackageSummary.fromMetadata(metadata);
+const validationPackage = Setup.ValidationPackage(
+  metadata,
+  [
+    testCase("native pass", () => {}),
+    testCaseAsync("native async pass", async () => {})
+  ],
+  [ptestCase("native pending", () => {})]
+);
+const executionSummary = await Execute.Validation(validationPackage);
 const summary = ValidationSummary.create(result, ValidationResult.create([]), packageSummary);
 
 if (
   result.Passed !== 1 ||
   packageSummary.Version !== "1.0.0" ||
   metadata.Inputs[0].InputBinding.Prefix !== "--arc-directory" ||
+  executionSummary.Critical.Passed !== 2 ||
+  executionSummary.NonCritical.Skipped !== 1 ||
   !ValidationSummary.toJson(summary).includes('"Passed":1') ||
   !Badge.Writer.toSvg(summary, "packed").includes("1/1") ||
   !JUnit.Writer.toXml(result).includes("<testcase")

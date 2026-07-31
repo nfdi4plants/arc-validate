@@ -8,6 +8,9 @@
 - Depend on native ValidationPackage.Model and ValidationPackage.Codecs
   distributions in npm and Python artifacts instead of bundling generated
   copies.
+- Restore shared `Setup`, `ARCValidationPackage`, and top-level `Execute` APIs
+  with Pyxpecto cases across .NET, JavaScript, and Python while retaining the
+  Expecto runner and filesystem pipeline as .NET compatibility APIs.
 - Keep Expecto, filesystem, ARC specification, and
   ARCTokenization/ControlledVocabulary APIs available only on the .NET target.
 - Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, and Cytoscape.NET

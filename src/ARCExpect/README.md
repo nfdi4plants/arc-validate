@@ -1,7 +1,8 @@
 # ARCExpect
 
-ARCExpect provides portable ARC validation result contracts and output writers
-for .NET, JavaScript, and Python from one F# source tree.
+ARCExpect provides portable ARC validation package authoring, execution, result
+contracts, and output writers for .NET, JavaScript, and Python from one F#
+source tree.
 
 The source tree follows the DataHubClient/ARCtrl layout:
 
@@ -35,3 +36,9 @@ JavaScript and Python intentionally do not expose compatibility stubs for the
 .NET-only CV APIs. Portable validation packages and the shared top-level
 `Execute` facade use Fable.Pyxpecto test cases; the existing Expecto runner and
 filesystem writes remain .NET-only compatibility APIs.
+
+The shared `Setup.ValidationPackage` accepts Pyxpecto test-case arrays and
+`Execute.Validation` returns an F# `Async<ValidationSummary>`. The npm entry point
+exposes the same operation as a Promise; Python consumers use
+`await Execute.validation(...)`. Both native packages re-export Pyxpecto case
+constructors such as `testCase`/`ptestCase` and `test_case`/`ptest_case`.

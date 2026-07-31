@@ -227,7 +227,7 @@ let private writePythonBuildProject outputDirectory =
         $"""[project]
 name = "arcexpect"
 version = "{pythonPackageVersion}"
-description = "Portable ARC validation result contracts and output writers."
+description = "Portable ARC validation package authoring, execution, result contracts, and output writers."
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [

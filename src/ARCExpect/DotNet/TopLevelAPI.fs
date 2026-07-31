@@ -1,33 +1,17 @@
-﻿namespace ARCExpect
+﻿[<AutoOpen>]
+module ARCExpect.TopLevelCompatibility
 
+open ARCExpect
 open ARCExpect.Badge
 open ARCExpect.JUnit
 open Expecto
+open System.Collections.Generic
 open System.IO
 open ValidationPackage.Codecs
 open ValidationPackage.Model
 
-type FrontmatterLanguage =
-    | FSharpFrontmatter
-    | PythonFrontmatter
 
-[<RequireQualifiedAccess>]
-module private FrontmatterLanguage =
-
-    let toCodec language =
-        match language with
-        | FSharpFrontmatter -> ValidationPackage.Codecs.FrontmatterLanguage.FSharp
-        | PythonFrontmatter -> ValidationPackage.Codecs.FrontmatterLanguage.Python
-
-type Setup =
-    
-    static member Metadata(
-        frontmatter: string,
-        programmingLanguage: FrontmatterLanguage
-    ) =
-        ValidationPackageYaml.extractOrFail
-            (FrontmatterLanguage.toCodec programmingLanguage)
-            frontmatter
+type Setup with
 
     static member Metadata(
         frontmatter: string,
@@ -40,8 +24,8 @@ type Setup =
         ?CriticalValidationCases: Test list,
         ?NonCriticalValidationCases: Test list
     ) =
-        ARCValidationPackage.create(
-            metadata = metadata,
+        ExpectoValidationPackage.create(
+            metadata,
             ?CriticalValidationCasesList = CriticalValidationCases,
             ?NonCriticalValidationCasesList = NonCriticalValidationCases
         )
@@ -54,42 +38,46 @@ type Setup =
         minorVersion: int,
         patchVersion: int,
         programmingLanguage: string,
+        ?PreReleaseVersionSuffix: string,
+        ?BuildMetadataVersionSuffix: string,
         ?Publish: bool,
         ?Authors: Author array,
         ?Tags: OntologyAnnotation array,
         ?ReleaseNotes: string,
+        ?CQCHookEndpoint: string,
+        ?Inputs: CommandInputParameter array,
         ?CriticalValidationCases: Test list,
-        ?NonCriticalValidationCases: Test list,
-        ?CQCHookEndpoint: string
+        ?NonCriticalValidationCases: Test list
     ) =
         Setup.ValidationPackage(
             metadata = ValidationPackageMetadata.create(
-                name = name,
-                summary = summary,
-                description = description,
-                majorVersion = majorVersion,
-                minorVersion = minorVersion,
-                patchVersion = patchVersion,
-                programmingLanguage = programmingLanguage,
+                name,
+                summary,
+                description,
+                majorVersion,
+                minorVersion,
+                patchVersion,
+                programmingLanguage,
+                ?PreReleaseVersionSuffix = PreReleaseVersionSuffix,
+                ?BuildMetadataVersionSuffix = BuildMetadataVersionSuffix,
                 ?Publish = Publish,
                 ?Authors = Authors,
                 ?Tags = Tags,
                 ?ReleaseNotes = ReleaseNotes,
-                ?CQCHookEndpoint = CQCHookEndpoint
+                ?CQCHookEndpoint = CQCHookEndpoint,
+                ?Inputs = Inputs
             ),
             ?CriticalValidationCases = CriticalValidationCases,
             ?NonCriticalValidationCases = NonCriticalValidationCases
         )
+type Execute with
 
-open System.Collections.Generic
-type Execute =
-
-// ------------------ New API with ARCValidationPackage, metadata support and custom summaries ------------------
+// ------------------ .NET Expecto and filesystem compatibility API ------------------
     
     static member Validation (
         ?Payload: Dictionary<string, obj>
     ) =
-        fun (arcValidationPackage: ARCValidationPackage) ->
+        fun (arcValidationPackage: ExpectoValidationPackage) ->
 
             let criticalResults = performTest arcValidationPackage.CriticalValidationCases
             let nonCriticalResults = performTest arcValidationPackage.NonCriticalValidationCases
@@ -158,7 +146,7 @@ type Execute =
         ?DefaultColor: Color,
         ?Payload: Dictionary<string, obj>
     ) =
-        fun (arcValidationPackage: ARCValidationPackage) ->
+        fun (arcValidationPackage: ExpectoValidationPackage) ->
 
             let labelText = defaultArg BadgeLabelText $"{arcValidationPackage.Metadata.Name}@{ValidationPackageMetadata.getSemanticVersionString arcValidationPackage.Metadata}"
 

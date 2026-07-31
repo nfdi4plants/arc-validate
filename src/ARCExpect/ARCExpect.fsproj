@@ -10,8 +10,8 @@
 
   <PropertyGroup>
     <Authors>nfdi4plants</Authors>
-    <Description>Portable ARC validation contracts with additional .NET validation and execution APIs.</Description>
-    <Summary>ARC validation results, writers, package authoring, and .NET compatibility APIs for .NET and Fable.</Summary>
+    <Description>Portable ARC validation package authoring, execution, result contracts, and output writers.</Description>
+    <Summary>ARC validation package authoring, execution, results, writers, and .NET compatibility APIs for .NET and Fable.</Summary>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>F#;FSharp;ARC;validation;JUnit;badge;fable-dotnet;fable-javascript;fable-python</PackageTags>
     <PackageProjectUrl>https://github.com/nfdi4plants/arc-validate</PackageProjectUrl>
@@ -25,6 +25,9 @@
   <ItemGroup>
     <Compile Include="Results.fs" />
     <Compile Include="ValidationSummary.fs" />
+    <Compile Include="ARCValidationPackage.fs" />
+    <Compile Include="Setup.fs" />
+    <Compile Include="Execution.fs" />
     <Compile Include="JUnit.fs" />
     <Compile Include="Badge.fs" />
   </ItemGroup>
@@ -48,6 +51,8 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
     <None Include="RELEASE_NOTES.md" />
     <PackageReference Include="Fable.Core" Version="5.2.0" />
+    <PackageReference Include="Fable.Pyxpecto" Version="[2.0.0]" />
+    <PackageReference Include="Fable.Python" Version="5.4.0" />
     <PackageReference Include="Thoth.Json.Core" Version="[0.9.0]" />
     <PackageReference Include="ValidationPackage.Codecs" Version="[0.1.0-preview.1]" />
     <PackageReference Include="ValidationPackage.Model" Version="[0.1.0-preview.1]" />

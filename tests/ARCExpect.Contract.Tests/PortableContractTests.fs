@@ -93,4 +93,78 @@ let tests =
             Expect.isTrue (svg.Contains("id=\"arc-validate-badge\"")) "Stable mask id"
             Expect.isTrue (svg.Contains("portable &amp; result")) "Label is escaped"
             Expect.isTrue (svg.Contains("1/2")) "Passed and total counts"
+
+        testCaseAsync "top-level Execute runs Pyxpecto validation packages" <| async {
+            let metadata =
+                ValidationPackage.Model.ValidationPackageMetadata.create(
+                    "portable-execute",
+                    "Portable Execute",
+                    "Runs the shared Pyxpecto adapter.",
+                    1,
+                    2,
+                    3,
+                    "FSharp"
+                )
+            let parsedMetadata =
+                Setup.Metadata(
+                    """(*
+---
+Name: portable-execute
+MajorVersion: 1
+MinorVersion: 2
+PatchVersion: 3
+Summary: Portable Execute
+Description: Runs the shared Pyxpecto adapter.
+---
+*)""",
+                    FrontmatterLanguage.FSharpFrontmatter
+                )
+            Expect.equal parsedMetadata.Name metadata.Name "Portable metadata setup"
+
+            let validationPackage =
+                Setup.ValidationPackage(
+                    metadata = metadata,
+                    CriticalValidationCases = [|
+                        testCase "sync pass" <| fun () -> ()
+                        testCaseAsync "async pass" <| async { return () }
+                    |],
+                    NonCriticalValidationCases = [|
+                        testCase "captured failure" <| fun () ->
+                            Expect.equal 1 2 "nested assertion"
+                        testCase "captured error" <| fun () ->
+                            failwith "nested error"
+                        ptestCase "pending case" <| fun () -> ()
+                    |]
+                )
+
+            let! actual =
+                Execute.Validation(
+                    validationPackage,
+                    Payload = Json.Object [ "runtime", Json.String "portable-execute" ]
+                )
+
+            Expect.equal actual.Critical.Total 2 "Critical total"
+            Expect.equal actual.Critical.Passed 2 "Critical passed"
+            Expect.equal actual.NonCritical.Total 3 "Noncritical total"
+            Expect.equal actual.NonCritical.Failed 1 "Captured assertion failure"
+            Expect.equal actual.NonCritical.Errored 1 "Captured unexpected error"
+            Expect.equal actual.NonCritical.Skipped 1 "Captured pending case"
+            Expect.equal actual.ValidationPackage.Name metadata.Name "Package metadata"
+            Expect.equal
+                actual.Payload
+                (Some(Json.Object [ "runtime", Json.String "portable-execute" ]))
+                "Portable payload"
+
+            let focusedPackage =
+                Setup.ValidationPackage(
+                    metadata,
+                    CriticalValidationCases = [|
+                        testCase "unfocused" <| fun () -> ()
+                        ftestCase "focused" <| fun () -> ()
+                    |]
+                )
+            let! focused = Execute.Validation(focusedPackage)
+            Expect.equal focused.Critical.Passed 1 "Focused case ran"
+            Expect.equal focused.Critical.Skipped 1 "Unfocused case was represented"
+        }
     ]

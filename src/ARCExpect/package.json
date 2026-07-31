@@ -1,7 +1,7 @@
 {
   "name": "arcexpect",
   "version": "0.0.0",
-  "description": "Portable ARC validation result contracts and output writers.",
+  "description": "Portable ARC validation package authoring, execution, result contracts, and output writers.",
   "type": "module",
   "license": "MIT",
   "repository": {

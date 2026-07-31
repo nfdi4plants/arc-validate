@@ -26,8 +26,8 @@ Keep the roadmap issues separate:
 - arc-validate #243: absorb ARCValidationPackages infrastructure into the CLI.
 - arc-validate #244: build ARCExpect through three parallel .NET, JavaScript, and
   Python project files, with CV helpers retained only on .NET.
-- arc-validate #245: replace the Expecto runner after structured Pyxpecto
-  results are available.
+- arc-validate #245: provide shared Pyxpecto package authoring and top-level
+  execution, using the focused result adapter until Pyxpecto exposes structured results.
 
 ## Repository map
 

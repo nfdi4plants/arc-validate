@@ -551,7 +551,7 @@ module V2_0_0_Draft =
                 }
             ]
 
-        ARCValidationPackage.create(
+        ExpectoValidationPackage.create(
             metadata = ValidationPackageMetadata.create(
                 name = "arc_specification",
                 summary = "Validate whether an ARC conforms to Specification V2.0.0-draft",
