@@ -2,6 +2,7 @@ module ARCExpectPortableTasks
 
 open BlackFox.Fake
 open Fake.DotNet
+open System
 open System.IO
 
 open Helpers
@@ -11,6 +12,32 @@ open PackageTasks
 
 let private testsDir = Path.Combine(portableArtifactsDir, "arcexpect-tests")
 let private packageSmokeDir = Path.Combine(portableArtifactsDir, "arcexpect-package-smoke")
+let private nativeDependencyPackageDirectory () =
+    let configured = Environment.GetEnvironmentVariable "AVPR_NATIVE_PACKAGE_DIR"
+    let directory =
+        if String.IsNullOrWhiteSpace configured then
+            Path.Combine("..", "arc-validate-package-registry", "artifacts", "packages")
+            |> Path.GetFullPath
+        else
+            Path.GetFullPath configured
+
+    if not (Directory.Exists directory) then
+        failwithf
+            "AVPR native package directory does not exist: %s. Build AVPR PackPortablePackages or set AVPR_NATIVE_PACKAGE_DIR."
+            directory
+
+    directory
+
+let private nativeDependencyArtifact fileName =
+    let path = Path.Combine(nativeDependencyPackageDirectory (), fileName)
+
+    if not (File.Exists path) then
+        failwithf
+            "Required AVPR native package is missing: %s. Build AVPR PackPortablePackages first."
+            path
+
+    path
+
 let private fable project language outputDirectory noRestore =
     let restoreArgument = if noRestore then " --noRestore" else ""
     runDotNetCommand "fable" $"{project} --outDir \"{outputDirectory}\" --lang {language} --noCache{restoreArgument}" "."
@@ -69,7 +96,20 @@ let testARCExpectPackage =
         let javaScriptPackage =
             Path.Combine(packageDir, $"arcexpect-{ARCExpectPackageVersion}.tgz")
             |> Path.GetFullPath
-        runNpm [ "install"; javaScriptPackage; "--no-audit"; "--no-fund" ] javaScriptDirectory
+        let javaScriptModelPackage =
+            nativeDependencyArtifact $"validationpackage-model-{ValidationPackageModelNativeVersion}.tgz"
+        let javaScriptCodecsPackage =
+            nativeDependencyArtifact $"validationpackage-codecs-{ValidationPackageCodecsNativeVersion}.tgz"
+        runNpm
+            [
+                "install"
+                javaScriptModelPackage
+                javaScriptCodecsPackage
+                javaScriptPackage
+                "--no-audit"
+                "--no-fund"
+            ]
+            javaScriptDirectory
         runCommand "node" [ "javascript.mjs" ] javaScriptDirectory
 
         let pythonDirectory = Path.Combine(packageSmokeDir, "python")
@@ -88,12 +128,26 @@ let testARCExpectPackage =
             Path.Combine(packageDir, $"arcexpect-{pythonPackageVersion}-py3-none-any.whl")
             |> Path.GetFullPath
         runUv [ "venv"; pythonEnvironment ] "."
-        runUv [ "pip"; "install"; "--python"; pythonEnvironment; pythonPackage ] "."
         let pythonExecutable =
-            if System.OperatingSystem.IsWindows() then
+            if OperatingSystem.IsWindows() then
                 Path.Combine(pythonEnvironment, "Scripts", "python.exe")
             else
                 Path.Combine(pythonEnvironment, "bin", "python")
+        let pythonModelPackage =
+            nativeDependencyArtifact $"validationpackage_model-{ValidationPackageModelNativeVersion}-py3-none-any.whl"
+        let pythonCodecsPackage =
+            nativeDependencyArtifact $"validationpackage_codecs-{ValidationPackageCodecsNativeVersion}-py3-none-any.whl"
+        runUv
+            [
+                "pip"
+                "install"
+                "--python"
+                pythonExecutable
+                pythonModelPackage
+                pythonCodecsPackage
+                pythonPackage
+            ]
+            "."
         runCommand pythonExecutable [ "python.py" ] pythonDirectory
 
     }

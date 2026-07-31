@@ -19,6 +19,12 @@ public namespaces. Distribution names are `ARCExpect` on NuGet and
 `TestPortableARCExpect` runs the shared contract suite on each runtime and then
 installs each freshly packed artifact in an isolated consumer.
 
+The npm and Python artifacts depend on the corresponding native
+`validationpackage-model` and `validationpackage-codecs` packages rather than
+bundling Fable-generated copies. Before those dependencies are published, set
+`AVPR_NATIVE_PACKAGE_DIR` to the AVPR `artifacts/packages` directory when
+running the packed-consumer target.
+
 The portable API contains framework-neutral case and run results, validation
 summaries, Thoth.Json codecs, JUnit XML generation, and dependency-free SVG
 badges. The .NET target additionally contains the current Expecto execution and
@@ -26,5 +32,6 @@ filesystem adapters, ARC specification validation, and the legacy
 ARCTokenization/ControlledVocabulary validation helpers.
 
 JavaScript and Python intentionally do not expose compatibility stubs for the
-.NET-only CV APIs. The final portable validation-case API will use
-Fable.Pyxpecto after its structured result surface is available.
+.NET-only CV APIs. Portable validation packages and the shared top-level
+`Execute` facade use Fable.Pyxpecto test cases; the existing Expecto runner and
+filesystem writes remain .NET-only compatibility APIs.

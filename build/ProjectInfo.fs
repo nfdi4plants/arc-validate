@@ -58,6 +58,8 @@ let ARCExpectJavaScriptTestsProject = "tests/ARCExpect.Javascript.Tests/ARCExpec
 let ARCExpectPythonTestsProject = "tests/ARCExpect.Python.Tests/ARCExpect.Python.Tests.fsproj"
 let ARCExpectPackageSmokeProject = "tests/ARCExpect.PackageSmoke/ARCExpect.PackageSmoke.fsproj"
 let ARCExpectPackageVersion = CoreProject.ReleaseNotes.Value.NugetVersion
+let ValidationPackageModelNativeVersion = "0.1.0"
+let ValidationPackageCodecsNativeVersion = "0.1.0"
 let CLIProject = ProjectInfo.create("arc-validate", "src/arc-validate/arc-validate.fsproj", "src/arc-validate/RELEASE_NOTES.md")
 
 let projects = 

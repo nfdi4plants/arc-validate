@@ -77,6 +77,9 @@ dotnet run --project tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsp
 dotnet test tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj
 dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
 
+# Before native AVPR dependencies are published, point packed smoke tests at local candidates
+$env:AVPR_NATIVE_PACKAGE_DIR = '..\arc-validate-package-registry\artifacts\packages'
+
 # Shared ARCExpect contracts on .NET, JavaScript, and Python
 .\build.cmd TestPortableARCExpect
 

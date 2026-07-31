@@ -5,6 +5,9 @@
 - Build the shared portable sources through separate .NET, JavaScript, and
   Python projects and produce `ARCExpect` NuGet plus `arcexpect` npm/wheel
   artifacts.
+- Depend on native ValidationPackage.Model and ValidationPackage.Codecs
+  distributions in npm and Python artifacts instead of bundling generated
+  copies.
 - Keep Expecto, filesystem, ARC specification, and
   ARCTokenization/ControlledVocabulary APIs available only on the .NET target.
 - Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, and Cytoscape.NET

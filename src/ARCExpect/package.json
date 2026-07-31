@@ -15,6 +15,10 @@
     "./Badge": "./Badge.js",
     "./JUnit": "./JUnit.js"
   },
+  "dependencies": {
+    "validationpackage-codecs": "0.1.0",
+    "validationpackage-model": "0.1.0"
+  },
   "files": [
     "index.js",
     "*.js",

@@ -1,4 +1,4 @@
-﻿module PackageTasks
+module PackageTasks
 
 open ProjectInfo
 
@@ -147,6 +147,50 @@ let private transpileARCExpect project language outputDirectory =
     runDotNetCommand "fable" $"{project} --lang {language} --outDir \"{outputDirectory}\" --noCache" "."
     removeFableModulesGitIgnore outputDirectory
 
+let private rewriteFiles outputDirectory (pattern: string) (replacement: string) =
+    Directory.EnumerateFiles(outputDirectory, "*", SearchOption.AllDirectories)
+    |> Seq.filter (fun path -> path.EndsWith(".js") || path.EndsWith(".py"))
+    |> Seq.iter (fun path ->
+        let source = File.ReadAllText path
+        let rewritten = Regex.Replace(source, pattern, replacement)
+
+        if rewritten <> source then
+            File.WriteAllText(path, rewritten)
+    )
+
+let private deleteMatchingDirectories parentDirectory pattern =
+    if Directory.Exists parentDirectory then
+        Directory.EnumerateDirectories(parentDirectory, pattern)
+        |> Seq.iter (fun path -> Directory.Delete(path, true))
+
+let private externalizeARCExpectJavaScriptDependencies outputDirectory =
+    rewriteFiles
+        outputDirectory
+        "\"\\./fable_modules/ValidationPackage\\.Model\\.[^/]+/([^\"]+)\\.fs\\.js\""
+        "\"validationpackage-model/$1.js\""
+    rewriteFiles
+        outputDirectory
+        "\"\\./fable_modules/ValidationPackage\\.Codecs\\.[^/]+/([^\"]+)\\.fs\\.js\""
+        "\"validationpackage-codecs/$1.js\""
+
+    let fableModules = Path.Combine(outputDirectory, "fable_modules")
+    deleteMatchingDirectories fableModules "ValidationPackage.Model.*"
+    deleteMatchingDirectories fableModules "ValidationPackage.Codecs.*"
+
+let private externalizeARCExpectPythonDependencies packageDirectory =
+    rewriteFiles
+        packageDirectory
+        @"from \.fable_modules\.validation_package_model\."
+        "from validation_package_model."
+    rewriteFiles
+        packageDirectory
+        @"from \.fable_modules\.validation_package_codecs\."
+        "from validation_package_codecs."
+
+    let fableModules = Path.Combine(packageDirectory, "fable_modules")
+    deleteMatchingDirectories fableModules "validation_package_model"
+    deleteMatchingDirectories fableModules "validation_package_codecs"
+
 let private writeVersionedJavaScriptManifest outputDirectory =
     let source = Path.Combine("src", "ARCExpect", "package.json")
     let target = Path.Combine(outputDirectory, "package.json")
@@ -157,6 +201,14 @@ let private writeVersionedJavaScriptManifest outputDirectory =
                 $"\"version\": \"{ARCExpectPackageVersion}\"",
                 1
             )
+
+    let content =
+        Regex("\"validationpackage-model\"\\s*:\\s*\"[^\"]+\"")
+            .Replace(content, $"\"validationpackage-model\": \"{ValidationPackageModelNativeVersion}\"", 1)
+
+    let content =
+        Regex("\"validationpackage-codecs\"\\s*:\\s*\"[^\"]+\"")
+            .Replace(content, $"\"validationpackage-codecs\": \"{ValidationPackageCodecsNativeVersion}\"", 1)
 
     File.WriteAllText(target, content)
     File.Copy(Path.Combine("src", "ARCExpect", "index.js"), Path.Combine(outputDirectory, "index.js"), true)
@@ -178,7 +230,11 @@ version = "{pythonPackageVersion}"
 description = "Portable ARC validation result contracts and output writers."
 license = "MIT"
 requires-python = ">=3.12"
-dependencies = ["fable-library==5.11.0"]
+dependencies = [
+    "fable-library==5.11.0",
+    "validationpackage-model=={ValidationPackageModelNativeVersion}",
+    "validationpackage-codecs=={ValidationPackageCodecsNativeVersion}",
+]
 
 [project.urls]
 Homepage = "https://github.com/nfdi4plants/arc-validate"
@@ -205,6 +261,7 @@ exclude = [
 let private packARCExpectJavaScript () =
     let outputDirectory = Path.Combine(portableArtifactsDir, "arcexpect-package", "javascript")
     transpileARCExpect ARCExpectJavaScriptProject "javascript" outputDirectory
+    externalizeARCExpectJavaScriptDependencies outputDirectory
     writeVersionedJavaScriptManifest outputDirectory
     runNpm [ "pack"; Path.GetFullPath(outputDirectory); "--pack-destination"; Path.GetFullPath(packageDir) ] "."
 
@@ -214,6 +271,7 @@ let private packARCExpectPython () =
     recreateDirectory outputDirectory
     runDotNetCommand "fable" $"{ARCExpectPythonProject} --lang python --outDir \"{packageDirectory}\" --noCache" "."
     removeFableModulesGitIgnore packageDirectory
+    externalizeARCExpectPythonDependencies packageDirectory
     writePythonBuildProject outputDirectory
     runUv [ "build"; "--wheel"; "--out-dir"; Path.GetFullPath(packageDir); Path.GetFullPath(outputDirectory) ] "."
 
