@@ -1,7 +1,6 @@
 ﻿namespace ARCValidationPackages
 open System.IO
 open System.Text.Json
-open AVPRIndex.Domain
 
 type Config = {
     PackageCacheFolder: string

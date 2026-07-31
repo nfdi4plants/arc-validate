@@ -3,7 +3,7 @@
 open System.Collections.Generic
 open System.IO
 open System.Text.Json
-open AVPRIndex.Domain
+open ValidationPackage.Model
 
 type PackageCache =
     inherit Dictionary<string, Dictionary<string,CachedValidationPackage>>

@@ -3,8 +3,8 @@
 open ARCValidationPackages
 open System.IO
 open AVPRClient
-open AVPRIndex
-open AVPRIndex.Domain
+open AVPRClient.Interop
+open ValidationPackage.Model
 
 type APIError = 
 | RateLimitExceeded of msg: string
@@ -103,7 +103,7 @@ type AVPR =
                 | None -> 
                     avprapi.GetPackageByName packageName
                     
-            let metadata = validationPackage.toValidationPackageMetadata()
+            let metadata = validationPackage.ToModel()
             let package = CachedValidationPackage.ofPackageMetadata(metadata, ?CacheFolder = CacheFolder)
 
             File.WriteAllBytes(package.LocalPath, validationPackage.PackageContent)
@@ -145,10 +145,10 @@ type AVPR =
             
             let latestPackage =
                 avprapi.GetPackageByName packageName
-            if ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata = ValidationPackageMetadata.getSemanticVersionString (latestPackage.toValidationPackageMetadata()) then
+            if ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata = ValidationPackageMetadata.getSemanticVersionString (latestPackage.ToModel()) then
                 Ok ($"package {packageName} is already installed with the latest version.")
             else
-                if verbose then printfn $"package {packageName} is available in a newer version({ValidationPackageMetadata.getSemanticVersionString (latestPackage.toValidationPackageMetadata())} vs {ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata}). downloading..."
+                if verbose then printfn $"package {packageName} is available in a newer version({ValidationPackageMetadata.getSemanticVersionString (latestPackage.ToModel())} vs {ValidationPackageMetadata.getSemanticVersionString cachedPackage.Metadata}). downloading..."
                 AVPR.SaveAndCachePackage(
                     cache = cache,
                     packageName = packageName

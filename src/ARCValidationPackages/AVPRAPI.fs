@@ -2,7 +2,6 @@ namespace ARCValidationPackages
 
 open AVPRClient
 open ARCValidationPackages
-open AVPRIndex
 open System
 open System.Net.Http
 

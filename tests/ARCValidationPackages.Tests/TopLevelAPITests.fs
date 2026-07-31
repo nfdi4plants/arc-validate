@@ -7,7 +7,7 @@ open System.IO
 open Common.TestUtils
 open TestUtils
 open ReferenceObjects
-open AVPRIndex.Domain
+open ValidationPackage.Model
 
 [<Tests>]
 let ``Toplevel API tests`` =

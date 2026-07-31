@@ -6,7 +6,7 @@ open ARCValidate.CLICommands
 open ARCExpect
 open ARCValidationPackages
 open ARCValidationPackages.API
-open AVPRIndex.Domain
+open ValidationPackage.Model
 
 open Argu
 
@@ -120,26 +120,6 @@ type PackageAPI =
                                 |> Seq.sortByDescending (fun p -> ValidationPackageMetadata.getSemanticVersionString p.Metadata)
                                 |> Seq.iter (fun p -> printfn $"  - {ValidationPackageMetadata.getSemanticVersionString p.Metadata}")
                             )
-
-            let printIndexedPackageList (verbose: bool) (packages: ValidationPackageIndex list) =
-                packages
-                |> fun p -> 
-                    if p.Length = 0 then 
-                        printfn $"No validation packages indexed."
-                    else 
-                        if verbose then
-                            p |> List.iteri (fun i p -> printfn $"{System.Environment.NewLine}[{i}]: {p.PrettyPrint()}")
-                        else
-                            p 
-                            |> List.groupBy (fun p -> p.Metadata.Name)
-                            |> List.iter (fun (name,packages) ->
-                                printfn $"- {name}:"
-                                packages 
-                                |> List.sortByDescending (fun p -> ValidationPackageMetadata.getSemanticVersionString p.Metadata)
-                                |> List.iter (fun p -> printfn $"  - {ValidationPackageMetadata.getSemanticVersionString p.Metadata}")
-                            )
-                        
-
 
             let installed = Common.ListCachedPackages(avprCache, verbose)
 

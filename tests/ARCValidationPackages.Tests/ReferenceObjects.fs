@@ -6,7 +6,7 @@ open type System.Environment
 open ARCValidationPackages
 open Common.TestUtils
 open TestUtils
-open AVPRIndex.Domain
+open ValidationPackage.Model
 
 
 let testDate1 = System.DateTimeOffset.ParseExact("2023-08-15 10:00:00 +02:00", "yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture)
@@ -18,17 +18,6 @@ let fsharpTestScriptArgsPath = "fixtures/testScriptArgs.fsx"
 
 let pythonTestScriptPath = "fixtures/testScript.py"
 let pythonTestScriptArgsPath = "fixtures/testScriptArgs.py"
-
-let testPackageIndex = 
-    [|
-        ValidationPackageIndex.create(
-            repoPath = "arc-validate-packages/test.fsx", 
-            fileName = "test@1.0.0.fsx",
-            lastUpdated = testDate1,
-            contentHash = "",
-            metadata = ValidationPackageMetadata.create("test","this package is here for testing purposes only.", "this package is here for testing purposes only.", 1, 0, 0, "FSharp")
-        )
-    |]
 
 let testScriptContent = """(*
 ---
@@ -181,7 +170,7 @@ CQCHookEndpoint: https://avpr.nfdi4plants.org
 
 printfn \"If you can read this in your console, you successfully executed test package v5.0.0-use+suffixes!\" ".ReplaceLineEndings("\n")
 
-module AVPRIndexDomain =
+module ValidationPackageModel =
 
     module ValidationPackageMetadata =
 
@@ -194,13 +183,13 @@ module AVPRIndexDomain =
             description = "this package is here for testing purposes only.",
             programmingLanguage = "FSharp",
             Authors = [|
-                AVPRIndex.Domain.Author.create(
+                ValidationPackage.Model.Author.create(
                     fullName = "John Doe",
                     Email = "j@d.com",
                     Affiliation = "University of Nowhere",
                     AffiliationLink = "https://nowhere.edu"
                 )
-                AVPRIndex.Domain.Author.create(
+                ValidationPackage.Model.Author.create(
                     fullName = "Jane Doe",
                     Email = "jj@d.com",
                     Affiliation = "University of Somewhere",
@@ -208,9 +197,9 @@ module AVPRIndexDomain =
                 )
             |],
             Tags = [|
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "validation")
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "my-package")
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "thing")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "validation")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "my-package")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "thing")
             |],
             ReleaseNotes = "add authors and tags for further testing",
             CQCHookEndpoint = ""
@@ -225,13 +214,13 @@ module AVPRIndexDomain =
             description = "this package is here for testing purposes only.",
             programmingLanguage = "FSharp",
             Authors = [|
-                AVPRIndex.Domain.Author.create(
+                ValidationPackage.Model.Author.create(
                     fullName = "John Doe",
                     Email = "j@d.com",
                     Affiliation = "University of Nowhere",
                     AffiliationLink = "https://nowhere.edu"
                 )
-                AVPRIndex.Domain.Author.create(
+                ValidationPackage.Model.Author.create(
                     fullName = "Jane Doe",
                     Email = "jj@d.com",
                     Affiliation = "University of Somewhere",
@@ -239,9 +228,9 @@ module AVPRIndexDomain =
                 )
             |],
             Tags = [|
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "validation")
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "my-package")
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "thing")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "validation")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "my-package")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "thing")
             |],
             ReleaseNotes = "Use ARCExpect v3",
             CQCHookEndpoint = "https://avpr.nfdi4plants.org"
@@ -258,13 +247,13 @@ module AVPRIndexDomain =
             PreReleaseVersionSuffix = "use",
             BuildMetadataVersionSuffix = "suffixes",
             Authors = [|
-                AVPRIndex.Domain.Author.create(
+                ValidationPackage.Model.Author.create(
                     fullName = "John Doe",
                     Email = "j@d.com",
                     Affiliation = "University of Nowhere",
                     AffiliationLink = "https://nowhere.edu"
                 )
-                AVPRIndex.Domain.Author.create(
+                ValidationPackage.Model.Author.create(
                     fullName = "Jane Doe",
                     Email = "jj@d.com",
                     Affiliation = "University of Somewhere",
@@ -272,9 +261,9 @@ module AVPRIndexDomain =
                 )
             |],
             Tags = [|
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "validation")
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "my-package")
-                AVPRIndex.Domain.OntologyAnnotation.create(name = "thing")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "validation")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "my-package")
+                ValidationPackage.Model.OntologyAnnotation.create(name = "thing")
             |],
             ReleaseNotes = "Use pre-release and build metadata version suffixes",
             CQCHookEndpoint = "https://avpr.nfdi4plants.org"
@@ -405,7 +394,7 @@ module CachedValidationPackage =
             fileName = "test@3.0.0.fsx",
             cacheDate = testDate3,
             localPath = (Path.Combine(expected_package_cache_folder_path, "test@3.0.0.fsx").Replace("\\","/")),
-            metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_3_0_0_metadata
+            metadata = ValidationPackageModel.ValidationPackageMetadata.testPackage_3_0_0_metadata
                 
         )
 
@@ -414,7 +403,7 @@ module CachedValidationPackage =
             fileName = "test@5.0.0.fsx",
             cacheDate = testDate3,
             localPath = (Path.Combine(expected_package_cache_folder_path, "test@5.0.0.fsx").Replace("\\","/")),
-            metadata = AVPRIndexDomain.ValidationPackageMetadata.testPackage_5_0_0_metadata
+            metadata = ValidationPackageModel.ValidationPackageMetadata.testPackage_5_0_0_metadata
         )
 
     let ``testPackage_5_0_0-use+suffixes`` =
@@ -422,7 +411,7 @@ module CachedValidationPackage =
             fileName = "test@5.0.0-use+suffixes.fsx",
             cacheDate = testDate3,
             localPath = (Path.Combine(expected_package_cache_folder_path, "test@5.0.0-use+suffixes.fsx").Replace("\\","/")),
-            metadata = AVPRIndexDomain.ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
+            metadata = ValidationPackageModel.ValidationPackageMetadata.``testPackage_5_0_0-use+suffixes_metadata``
         )
 
     let fsharpTestScriptPackage = CachedValidationPackage.create("fsharpTestScript", testDate1, fsharpTestScriptPath, ValidationPackageMetadata())

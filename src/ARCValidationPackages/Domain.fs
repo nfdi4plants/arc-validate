@@ -3,7 +3,7 @@
 open System.IO
 open System.Text.Json
 open System.Text.Json.Serialization
-open AVPRIndex.Domain
+open ValidationPackage.Model
 open System.Runtime.CompilerServices
 
 /// <summary>
