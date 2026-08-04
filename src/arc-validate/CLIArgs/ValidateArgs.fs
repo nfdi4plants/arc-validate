@@ -15,7 +15,7 @@ type ValidateArgs =
             match s with
             | Out_Directory _ -> "Optional. Specify a output directory for the test results file (arc-validate-results.xml). Default: file gets written to the arc root folder."
             | ARC_Directory _ -> "Optional. Specify a directory that contains the arc to convert. Default: content of the ARC_PATH environment variable. If ARC_PATH is not set: current directory."
-            | Package _       -> "Optional. Specify a validation package to use on top of the default validation for invenio export. Default: no package is used, only structural validation for invenio export."
+            | Package _       -> "Optional. Specify a validation package. Package-defined arguments may follow the command's '--' boundary."
             | Package_Version _ -> "Optional. Specify a version of the validation package to use. If no version is specified, the latest version will be used."
             | Specification_Version _ -> "Optional. Only has an effect if no package is specified via '-p' Specify a version of the ARC specification to validate against. Default: 'latest'."
             | Source_Branch _ -> "Optional. Record the source branch in generated validation outputs."

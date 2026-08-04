@@ -66,8 +66,15 @@ let testARCExpectPackage =
         let cacheDirectory = Path.Combine(packageCacheDir, "arcexpect") |> Path.GetFullPath
         let nugetConfig =
             writeNuGetConfig
-                (Path.Combine(portableArtifactsDir, "arcexpect-package-smoke.NuGet.config"))
-                packageDir
+                (Path.Combine(
+                    portableArtifactsDir,
+                    "arcexpect-package-smoke-dotnet",
+                    "NuGet.Config"
+                ))
+                [
+                    packageDir
+                    nativeDependencyPackageDirectory()
+                ]
 
         recreateDirectory cacheDirectory
 
@@ -81,7 +88,27 @@ let testARCExpectPackage =
                     { options.MSBuildParams with
                         DisableInternalBinLog = true } })
 
-        runDotNetCommand "run" $"--project {ARCExpectPackageSmokeProject} --configuration Release --no-restore" "."
+        runDotNetCommand
+            "run"
+            $"--project {ARCExpectPackageSmokeProject} --configuration Release --no-restore -- -i packed-arc -o packed-out --echo \"literal; $(not-executed)\""
+            "."
+
+        let fsharpSmokeSource =
+            Path.Combine("tests", "ARCExpect.PackageSmoke", "fsharp.fsx")
+            |> Path.GetFullPath
+
+        let fsharpSmokeDirectory = Path.GetDirectoryName nugetConfig
+        let fsharpSmokeScript = Path.Combine(fsharpSmokeDirectory, "fsharp.fsx")
+        let localNuGetSource = Uri(Path.GetFullPath packageDir).AbsoluteUri
+        File.WriteAllText(
+            fsharpSmokeScript,
+            $"#i \"nuget: {localNuGetSource}\"{Environment.NewLine}{File.ReadAllText fsharpSmokeSource}"
+        )
+
+        runDotNetCommand
+            "fsi"
+            $"\"{fsharpSmokeScript}\" -i packed-arc -o packed-out --echo \"literal; $(not-executed)\""
+            fsharpSmokeDirectory
 
         let javaScriptDirectory = Path.Combine(packageSmokeDir, "javascript")
         recreateDirectory javaScriptDirectory
@@ -110,7 +137,18 @@ let testARCExpectPackage =
                 "--no-fund"
             ]
             javaScriptDirectory
-        runCommand "node" [ "javascript.mjs" ] javaScriptDirectory
+        runCommand
+            "node"
+            [
+                "javascript.mjs"
+                "-i"
+                "packed-arc"
+                "-o"
+                "packed-out"
+                "--echo"
+                "literal; $(not-executed)"
+            ]
+            javaScriptDirectory
 
         let pythonDirectory = Path.Combine(packageSmokeDir, "python")
         let pythonEnvironment = Path.Combine(pythonDirectory, ".venv")
@@ -145,7 +183,18 @@ let testARCExpectPackage =
                 pythonPackage
             ]
             "."
-        runCommand pythonExecutable [ "python.py" ] pythonDirectory
+        runCommand
+            pythonExecutable
+            [
+                "python.py"
+                "-i"
+                "packed-arc"
+                "-o"
+                "packed-out"
+                "--echo"
+                "literal; $(not-executed)"
+            ]
+            pythonDirectory
 
     }
 

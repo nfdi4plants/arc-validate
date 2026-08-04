@@ -18,11 +18,15 @@ module CommandHandling =
             if verbose then printfn "Command: list"
             PackageAPI.List(verbose)
 
-    let handleARCValidateCommand (verbose:bool) command = 
+    let handleARCValidateCommand
+        (verbose: bool)
+        (packageArguments: string array)
+        command
+        =
         match command with
         | ARCValidateCommand.Validate subcommand -> 
             if verbose then printfn "Command: validate"
-            ValidateAPI.validate verbose (subcommand)
+            ValidateAPI.validate verbose subcommand packageArguments
 
         | ARCValidateCommand.Package subcommand -> 
             if verbose then printfn "Subcommand: package"

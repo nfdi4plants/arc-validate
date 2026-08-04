@@ -10,23 +10,23 @@ open System.IO
 open ValidationPackage.Codecs
 open ValidationPackage.Model
 
-module private SourceArguments =
+[<RequireQualifiedAccess>]
+module private CurrentPackageArguments =
 
-    let private tryFind name (arguments: string array) =
-        arguments
-        |> Array.tryFindIndex ((=) name)
-        |> Option.bind (fun index ->
-            if index + 1 < arguments.Length then
-                Some arguments[index + 1]
-            else
-                None
-        )
-        |> Option.filter (System.String.IsNullOrWhiteSpace >> not)
+    let tryParse metadata =
+        let arguments = TargetCommandLine.arguments()
 
-    let current() =
-        let arguments = System.Environment.GetCommandLineArgs()
-        tryFind "--source-branch" arguments,
-        tryFind "--source-commit-hash" arguments
+        let hasArgument names =
+            arguments
+            |> Array.exists (fun argument -> Array.contains argument names)
+
+        if
+            hasArgument [| "-i"; "--arc-directory" |]
+            && hasArgument [| "-o"; "--out-directory" |]
+        then
+            Some(PackageArguments.parse(metadata, arguments))
+        else
+            None
 
 
 type Setup with
@@ -174,7 +174,8 @@ type Execute with
         ?DefaultColor: Color,
         ?Payload: Dictionary<string, obj>,
         ?SourceBranch: string,
-        ?SourceCommitHash: string
+        ?SourceCommitHash: string,
+        ?Arguments: PackageArguments
     ) =
         fun (arcValidationPackage: ExpectoValidationPackage) ->
 
@@ -189,11 +190,24 @@ type Execute with
 
             Directory.CreateDirectory(resultFolder) |> ignore
 
-            let commandLineSourceBranch, commandLineSourceCommitHash =
-                SourceArguments.current()
-            let sourceBranch = SourceBranch |> Option.orElse commandLineSourceBranch
+            let packageArguments =
+                Arguments
+                |> Option.orElseWith (fun () ->
+                    CurrentPackageArguments.tryParse arcValidationPackage.Metadata
+                )
+
+            let sourceBranch =
+                SourceBranch
+                |> Option.orElseWith (fun () ->
+                    packageArguments |> Option.bind (fun value -> value.SourceBranch)
+                )
+
             let sourceCommitHash =
-                SourceCommitHash |> Option.orElse commandLineSourceCommitHash
+                SourceCommitHash
+                |> Option.orElseWith (fun () ->
+                    packageArguments
+                    |> Option.bind (fun value -> value.SourceCommitHash)
+                )
 
             let results = 
                 arcValidationPackage
@@ -213,6 +227,28 @@ type Execute with
                 ?Thresholds = Thresholds, 
                 ?DefaultColor = DefaultColor
             )
+
+    static member ValidationPipeline(
+        arguments: PackageArguments,
+        ?BadgeLabelText: string,
+        ?ValueSuffix: string,
+        ?Thresholds: Map<int, Color>,
+        ?DefaultColor: Color,
+        ?Payload: Dictionary<string, obj>,
+        ?SourceBranch: string,
+        ?SourceCommitHash: string
+    ) =
+        Execute.ValidationPipeline(
+            arguments.OutputDirectory,
+            ?BadgeLabelText = BadgeLabelText,
+            ?ValueSuffix = ValueSuffix,
+            ?Thresholds = Thresholds,
+            ?DefaultColor = DefaultColor,
+            ?Payload = Payload,
+            ?SourceBranch = SourceBranch,
+            ?SourceCommitHash = SourceCommitHash,
+            Arguments = arguments
+        )
 
 // ------------------ Legacy API without ARCValidationPackage, metadata, or custom Summaries ------------------
 

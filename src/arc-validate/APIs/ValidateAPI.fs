@@ -16,7 +16,11 @@ open Spectre.Console
 open ControlledVocabulary
 module ValidateAPI = 
 
-    let validate (verbose: bool) (args: ParseResults<ValidateArgs>)=
+    let validate
+        (verbose: bool)
+        (args: ParseResults<ValidateArgs>)
+        (forwardedPackageArguments: string array)
+        =
 
         let root = 
             args.TryGetResult(ARC_Directory)
@@ -43,25 +47,12 @@ module ValidateAPI =
             args.TryGetResult(Source_Commit_Hash)
 
         let packageArguments =
-            [
-                "-i"
+            PackageProcessArguments.create
                 root
-                "-o"
                 outPath
-
-                match sourceBranch with
-                | Some branch ->
-                    "--source-branch"
-                    branch
-                | None -> ()
-
-                match sourceCommitHash with
-                | Some commitHash ->
-                    "--source-commit-hash"
-                    commitHash
-                | None -> ()
-            ]
-            |> List.toArray
+                sourceBranch
+                sourceCommitHash
+                forwardedPackageArguments
 
         let mutable exitCode = ExitCode.Success
 

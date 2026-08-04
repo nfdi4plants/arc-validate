@@ -38,6 +38,15 @@ let ``FSharp ScriptExecution tests`` =
                     ["""args: [|"hello"; "world"|]"""]
                     "script execution did not print correct mesages."
             }
+
+            test "hostile-looking arguments remain literal process values" {
+                let hostileValue = "\"; Write-Output INJECTED; $(touch injected) & <xml>"
+                let result = FSharpScript.runWithArgs fsharpTestScriptArgsPath [| hostileValue |]
+
+                Expect.equal result.ExitCode 0 "Literal argument execution failed."
+                Expect.equal result.Messages.Length 1 "The value must not create another command or output line."
+                Expect.stringContains result.Messages.Head hostileValue "The script must receive the unchanged value."
+            }
         ]
         testList "ARCValidationpackages" [
             test "can execute script from package without errors" {

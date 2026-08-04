@@ -64,8 +64,15 @@ automatically.
 
 See the [arc-validate argument documentation](docs/arc-validate/introduction.md#validation-package-arguments)
 for the complete distinction between CLI-only and package-process arguments.
-Arbitrary/CWL-defined package arguments are not yet accepted by the CLI; that
-is a separate follow-up feature.
+Package-defined arguments follow the first `--` and are parsed by ARCExpect
+against the package's CWL `Inputs` metadata:
+
+```bash
+arc-validate validate -p example -i ./arc -- --test --echo "literal value"
+```
+
+arc-validate and its script runners preserve every value as a separate process
+argument; they do not construct or evaluate shell commands.
 
 ### Libraries used
 

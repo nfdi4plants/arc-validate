@@ -4,6 +4,7 @@ import {
   CaseResult,
   Execute,
   JUnit,
+  PackageArguments,
   ValidationPackageSummary,
   Setup,
   ValidationResult,
@@ -34,11 +35,12 @@ const metadata = ValidationPackageMetadata.create(
 );
 metadata.Inputs = [
   CommandInputParameter.create(
-    "arc-directory",
-    CommandInputType.create(CwlPrimitive.String),
-    CommandInputBinding.create(undefined, "--arc-directory", false)
+    "echo",
+    CommandInputType.create(CwlPrimitive.String, true),
+    CommandInputBinding.create(undefined, "--echo", true)
   )
 ];
+const packageArguments = PackageArguments.fromCommandLine(metadata);
 const packageSummary = ValidationPackageSummary.fromMetadata(metadata);
 const validationPackage = Setup.ValidationPackage(
   metadata,
@@ -48,13 +50,22 @@ const validationPackage = Setup.ValidationPackage(
   ],
   [ptestCase("native pending", () => {})]
 );
-const executionSummary = await Execute.Validation(validationPackage);
+const executionSummary = await Execute.Validation(
+  validationPackage,
+  undefined,
+  undefined,
+  undefined,
+  packageArguments
+);
 const summary = ValidationSummary.create(result, ValidationResult.create([]), packageSummary);
 
 if (
   result.Passed !== 1 ||
   packageSummary.Version !== "1.0.0" ||
-  metadata.Inputs[0].InputBinding.Prefix !== "--arc-directory" ||
+  metadata.Inputs[0].InputBinding.Prefix !== "--echo" ||
+  packageArguments.ArcDirectory !== "packed-arc" ||
+  packageArguments.OutputDirectory !== "packed-out" ||
+  packageArguments.TryGetString("echo") !== "literal; $(not-executed)" ||
   executionSummary.Critical.Passed !== 2 ||
   executionSummary.NonCritical.Skipped !== 1 ||
   !ValidationSummary.toJson(summary).includes('"Passed":1') ||

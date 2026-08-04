@@ -208,5 +208,40 @@ let ``Toplevel API Setup tests`` =
                 Expect.stringContains actualBadge "SourceBranch=\"feature/source-metadata\"" "badge source branch"
                 Expect.stringContains actualBadge "SourceCommitHash=\"abc123&amp;456\"" "badge source commit"
             }
+            test "Parsed package arguments drive output and provenance" {
+                let outputPath =
+                    Path.Combine(Path.GetTempPath(), $"arcexpect-arguments-{System.Guid.NewGuid():N}")
+
+                let metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook
+                let arguments =
+                    PackageArguments.parse(
+                        metadata,
+                        [|
+                            "-i"
+                            "arc-directory"
+                            "-o"
+                            outputPath
+                            "--source-branch"
+                            "feature/package-arguments"
+                            "--source-commit-hash"
+                            "def456"
+                        |]
+                    )
+
+                Setup.ValidationPackage(
+                    metadata = metadata,
+                    CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
+                )
+                |> Execute.ValidationPipeline(arguments)
+
+                let resultFolder = Path.Combine(outputPath, ".arc-validate-results/test@1.0.0")
+                let summary =
+                    File.ReadAllText(Path.Combine(resultFolder, "validation_summary.json"))
+                    |> ValidationSummary.fromJson
+
+                Expect.equal summary.SourceBranch (Some "feature/package-arguments") "summary source branch"
+                Expect.equal summary.SourceCommitHash (Some "def456") "summary source commit"
+            }
         ]
     ])

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ARCExpect" Version="[7.0.0-preview.1]" />
+    <PackageReference Include="ARCExpect" Version="[7.0.0-preview.2]" />
   </ItemGroup>
 
 </Project>

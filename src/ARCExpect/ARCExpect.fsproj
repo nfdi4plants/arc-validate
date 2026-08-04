@@ -19,10 +19,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/RELEASE_NOTES.md"))</PackageReleaseNotes>
-    <PackageVersion>7.0.0-preview.1</PackageVersion>
+    <PackageVersion>7.0.0-preview.2</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CommandLine.DotNet.fs" />
+    <Compile Include="PackageArguments.fs" />
     <Compile Include="Results.fs" />
     <Compile Include="ValidationSummary.fs" />
     <Compile Include="ARCValidationPackage.fs" />

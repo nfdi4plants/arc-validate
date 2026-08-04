@@ -6,6 +6,7 @@ from arcexpect import (
     CaseResult,
     Execute,
     JUnit,
+    PackageArguments,
     ValidationPackageSummary,
     Setup,
     ValidationResult,
@@ -40,11 +41,12 @@ metadata = ValidationPackageMetadata.create(
 )
 metadata.Inputs = [
     CommandInputParameter.create(
-        "arc-directory",
-        CommandInputType.create(CwlPrimitive.String),
-        CommandInputBinding.create(None, "--arc-directory", False),
+        "echo",
+        CommandInputType.create(CwlPrimitive.String, True),
+        CommandInputBinding.create(None, "--echo", True),
     )
 ]
+package_arguments = PackageArguments.from_command_line(metadata)
 package_summary = ValidationPackageSummary.from_metadata(metadata)
 validation_package = Setup.ValidationPackage(
     metadata,
@@ -54,7 +56,9 @@ validation_package = Setup.ValidationPackage(
     ],
     [ptest_case("native pending", lambda: None)],
 )
-execution_summary = asyncio.run(Execute.validation(validation_package))
+execution_summary = asyncio.run(
+    Execute.validation(validation_package, arguments=package_arguments)
+)
 summary = ValidationSummary.create(
     result, ValidationResult.create([]), package_summary
 )
@@ -62,7 +66,10 @@ summary = ValidationSummary.create(
 if (
     result.Passed != 1
     or package_summary.Version != "1.0.0"
-    or metadata.Inputs[0].InputBinding.Prefix != "--arc-directory"
+    or metadata.Inputs[0].InputBinding.Prefix != "--echo"
+    or package_arguments.ArcDirectory != "packed-arc"
+    or package_arguments.OutputDirectory != "packed-out"
+    or package_arguments.TryGetString("echo") != "literal; $(not-executed)"
     or execution_summary.Critical.Passed != 2
     or execution_summary.NonCritical.Skipped != 1
     or '"Passed":1' not in ValidationSummary.to_json(summary)

@@ -33,6 +33,7 @@ USAGE: arc-validate validate [--help] [--arc-directory <path>]
                              [--specification-version <specification version>]
                              [--source-branch <branch>]
                              [--source-commit-hash <commit hash>]
+                             [-- <package arguments>]
 
 OPTIONS:
 
@@ -87,27 +88,48 @@ Values remain separate process arguments, so paths, branch names, and other
 values containing spaces do not require package-specific shell escaping. The
 source arguments are independent: either, both, or neither may be supplied.
 
-ARCExpect's current .NET filesystem pipeline recognizes the two source
-provenance arguments automatically. Existing packages remain responsible for
-reading `-i` and `-o`. A unified ARCExpect API for reading all four standard
-arguments on .NET, JavaScript, and Python is a follow-up feature.
+ARCExpect's `PackageArguments.fromCommandLine` API reads all four standard
+arguments on .NET, JavaScript, and Python. The .NET filesystem pipeline also
+uses the parsed output directory and source provenance when supplied with the
+resulting `PackageArguments` value.
 
 ### Package-defined and CWL arguments
 
-Arbitrary package arguments are **not passed through by the current CLI**.
-Unknown options and the conventional `--` separator are currently rejected by
-the arc-validate argument parser.
+Use the first `--` as the strict boundary between arc-validate options and
+package-defined arguments:
 
-The `Inputs` collection in validation-package metadata describes package input
-types and CWL `inputBinding` prefixes, but it does not yet add options to the
-arc-validate parser or parse process arguments inside ARCExpect. Until the
-follow-up argument feature lands, metadata authors must not assume that a CWL
-input can be supplied through `arc-validate validate`.
+```bash
+arc-validate validate \
+  -p example \
+  -i ./my-arc \
+  --source-branch dev \
+  -- \
+  --test \
+  --echo "hello world"
+```
 
-The follow-up design will cover a pass-through boundary for arbitrary values,
-CWL type/binding validation, and one target-specific ARCExpect reader with the
-same public contract on .NET, JavaScript, and Python. Its exact syntax and API
-remain intentionally unspecified until the current batch has been reviewed.
+The boundary is valid only for `validate` with `--package`/`-p`. Standard
+arguments stay to its left. arc-validate parses only the left side, strips the
+boundary, and appends every token on the right unchanged to the package process
+argument list. It never joins those tokens into a shell command.
+
+ARCExpect validates the package side against `ValidationPackageMetadata.Inputs`:
+
+- `inputBinding.prefix` defines the option spelling.
+- A boolean prefix is a flag: present means `true`; an absent required boolean
+  means `false`; an absent nullable `boolean?` remains optional.
+- `separate: true` consumes the next process argument as the value.
+- `separate: false` expects the value joined to the prefix.
+- Inputs without a prefix are positional and ordered by `position`.
+- A `?` CWL type is optional. Missing non-nullable, non-boolean inputs fail.
+- Unknown arguments, duplicates, malformed scalar values, duplicate bindings,
+  and collisions with the four standard arguments fail with an actionable
+  error.
+
+ARCExpect supports the scalar CWL types `boolean`, `int`, `long`, `float`,
+`double`, and `string`. Numeric syntax is invariant across all three runtimes.
+Package metadata, rather than arc-validate, remains the single source of truth
+for package-specific options.
 
 ### The package command
 

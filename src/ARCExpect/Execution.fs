@@ -87,7 +87,8 @@ type Execute =
         arcValidationPackage: ARCValidationPackage,
         ?Payload: Json,
         ?SourceBranch: string,
-        ?SourceCommitHash: string
+        ?SourceCommitHash: string,
+        ?Arguments: PackageArguments
     ) =
         async {
             let! critical =
@@ -99,13 +100,25 @@ type Execute =
                     "NonCritical"
                     arcValidationPackage.NonCriticalValidationCases
 
+            let sourceBranch =
+                SourceBranch
+                |> Option.orElseWith (fun () ->
+                    Arguments |> Option.bind (fun value -> value.SourceBranch)
+                )
+
+            let sourceCommitHash =
+                SourceCommitHash
+                |> Option.orElseWith (fun () ->
+                    Arguments |> Option.bind (fun value -> value.SourceCommitHash)
+                )
+
             return
                 ValidationSummary.create(
                     critical,
                     nonCritical,
                     ValidationPackageSummary.fromMetadata arcValidationPackage.Metadata,
                     ?Payload = Payload,
-                    ?SourceBranch = SourceBranch,
-                    ?SourceCommitHash = SourceCommitHash
+                    ?SourceBranch = sourceBranch,
+                    ?SourceCommitHash = sourceCommitHash
                 )
         }

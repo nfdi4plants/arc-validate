@@ -39,6 +39,17 @@ let ``Python ScriptExecution tests`` =
                     ["""args: ['hello', 'world']"""]
                     "script execution did not print correct mesages."
             }
+
+            test "hostile-looking arguments remain literal process values" {
+                let hostileValue = "\"; print('INJECTED'); $(touch injected) & <xml>"
+                let result = PythonScript.runWithArgs pythonTestScriptArgsPath [| hostileValue |]
+
+                Expect.equal result.ExitCode 0 "Literal argument execution failed."
+                Expect.equal result.Messages.Length 1 "The value must not create another command or output line."
+                Expect.stringContains result.Messages.Head "print(\\'INJECTED\\')" "Python repr preserves the quoted text."
+                Expect.stringContains result.Messages.Head "$(touch injected)" "Shell syntax must remain literal."
+                Expect.stringContains result.Messages.Head "& <xml>" "Shell and markup characters must remain literal."
+            }
         ]
         testList "ARCValidationpackages" [
             test "can execute script from package without errors" {

@@ -19,15 +19,23 @@ let main _ =
             1,
             0,
             0,
-            "FSharp"
+            "FSharp",
+            Inputs = [|
+                CommandInputParameter.create(
+                    "echo",
+                    CommandInputType.create(CwlPrimitive.String, IsNullable = true),
+                    CommandInputBinding.create(Prefix = "--echo")
+                )
+            |]
         )
+    let arguments = PackageArguments.fromCommandLine(metadata)
     let validationPackage =
         Setup.ValidationPackage(
             metadata,
             CriticalValidationCases = [| testCase "packed execute" <| fun () -> () |]
         )
     let executed =
-        Execute.Validation(validationPackage)
+        Execute.Validation(validationPackage, Arguments = arguments)
         |> Async.RunSynchronously
 
     let package = ValidationPackageSummary.fromMetadata metadata
@@ -38,6 +46,9 @@ let main _ =
     if
         result.Passed <> 1
         || executed.Critical.Passed <> 1
+        || arguments.ArcDirectory <> "packed-arc"
+        || arguments.OutputDirectory <> "packed-out"
+        || arguments.TryGetString("echo") <> Some "literal; $(not-executed)"
         || not (json.Contains("\"Passed\":1"))
         || not (badge.Contains("1/1"))
     then

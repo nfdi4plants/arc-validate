@@ -15,6 +15,7 @@
     <Compile Include="PackageCacheTests.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="InfrastructureTests.fs" />
+    <Compile Include="CommandLineArgumentTests.fs" />
     <Compile Include="FSharpScriptExecutionTests.fs" />
     <Compile Include="PythonScriptExecution.fs" />
     <Compile Include="TopLevelAPITests.fs" />

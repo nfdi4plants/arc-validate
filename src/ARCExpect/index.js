@@ -27,13 +27,28 @@ export {
 } from "./ValidationSummary.js";
 
 export { ARCValidationPackage } from "./ARCValidationPackage.js";
+export { PackageArguments } from "./PackageArguments.js";
 export { FrontmatterLanguage, Setup } from "./Setup.js";
 export * as Badge from "./Badge.js";
 export * as JUnit from "./JUnit.js";
 
 export class Execute {
-  static Validation(validationPackage, payload) {
-    return startAsPromise(PortableExecute.Validation(validationPackage, payload));
+  static Validation(
+    validationPackage,
+    payload,
+    sourceBranch,
+    sourceCommitHash,
+    packageArguments
+  ) {
+    return startAsPromise(
+      PortableExecute.Validation(
+        validationPackage,
+        payload,
+        sourceBranch,
+        sourceCommitHash,
+        packageArguments
+      )
+    );
   }
 }
 

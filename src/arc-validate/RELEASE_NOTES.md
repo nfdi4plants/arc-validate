@@ -7,3 +7,5 @@
   arguments without FAKE runtime dependencies.
 - Accept optional `--source-branch` and `--source-commit-hash` validation
   arguments and carry them into every generated validation output.
+- Accept package-defined arguments after a strict `--` boundary and forward
+  every token unchanged through argument-list process execution.

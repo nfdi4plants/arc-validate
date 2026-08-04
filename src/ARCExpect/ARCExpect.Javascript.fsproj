@@ -9,6 +9,8 @@
 
   <!-- Keep this portable source list in the same order in all three projects. -->
   <ItemGroup>
+    <Compile Include="CommandLine.Javascript.fs" />
+    <Compile Include="PackageArguments.fs" />
     <Compile Include="Results.fs" />
     <Compile Include="ValidationSummary.fs" />
     <Compile Include="ARCValidationPackage.fs" />

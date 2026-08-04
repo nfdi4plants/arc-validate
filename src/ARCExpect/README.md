@@ -42,11 +42,34 @@ remains unchanged. The .NET filesystem pipeline also consumes the corresponding
 arc-validate; portable code never reads process state or CI environment
 variables.
 
-arc-validate currently forwards four standard package arguments: `-i`, `-o`,
-`--source-branch`, and `--source-commit-hash`. ARCExpect does not yet expose a
-cross-target API that reads all four, and CWL `Inputs` do not yet create or
-parse arbitrary CLI options. That argument API is intentionally deferred until
-the current portable package batch has been reviewed.
+arc-validate forwards four standard package arguments: `-i`, `-o`,
+`--source-branch`, and `--source-commit-hash`. Package-defined arguments follow
+the CLI's first `--` boundary. `PackageArguments.fromCommandLine(metadata)`
+reads the target's native argument array and validates all values against the
+metadata's CWL `Inputs`; `PackageArguments.parse(metadata, arguments)` provides
+the same pure API for explicit arrays and browser JavaScript callers.
+
+```fsharp
+let metadata = Setup.Metadata(PACKAGE_METADATA, FrontmatterLanguage.FSharpFrontmatter)
+let arguments = PackageArguments.fromCommandLine(metadata)
+
+let arcDirectory = arguments.ArcDirectory
+let outputDirectory = arguments.OutputDirectory
+let testMode = arguments.TryGetBoolean("test")
+let echo = arguments.TryGetString("echo")
+```
+
+Typed `GetBoolean`/`TryGetBoolean`, `GetInt`/`TryGetInt`, `GetLong`, `GetFloat`,
+`GetDouble`, and `GetString` pairs cover the supported CWL scalar types. A
+`TryGet` result is absent only when a nullable input was not supplied; it does
+not hide type or metadata errors. Unknown, duplicate, missing required, or
+malformed values fail before package validation starts.
+
+The equivalent native entry points are
+`PackageArguments.fromCommandLine(metadata)` in JavaScript and
+`PackageArguments.from_command_line(metadata)` in Python. Instance properties
+and typed getter names retain their documented PascalCase API in both emitted
+packages.
 
 JavaScript and Python intentionally do not expose compatibility stubs for the
 .NET-only CV APIs. Portable validation packages and the shared top-level
@@ -77,7 +100,10 @@ let validationPackage =
         |]
     )
 
-let summary = Execute.Validation(validationPackage) |> Async.RunSynchronously
+let arguments = PackageArguments.fromCommandLine(metadata)
+let summary =
+    Execute.Validation(validationPackage, Arguments = arguments)
+    |> Async.RunSynchronously
 ```
 
 The equivalent JavaScript API returns a Promise:

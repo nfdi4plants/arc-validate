@@ -239,10 +239,16 @@ current Expecto runner and .NET filesystem behavior.
   `--source-branch` and `--source-commit-hash`, forwards supplied values to
   package processes, and never infers them from CI environment variables.
   Omit absent values from summary JSON, JUnit properties, and SVG metadata.
-- The current CLI forwards only `-i`, `-o`, `--source-branch`, and
-  `--source-commit-hash` to package processes. It does not yet accept arbitrary
-  or CWL-defined pass-through arguments. Keep that limitation explicit until
-  the cross-target ARCExpect argument feature is designed and implemented.
+- The CLI forwards `-i`, `-o`, `--source-branch`, and
+  `--source-commit-hash`, followed by package-defined arguments after the first
+  `--` boundary. Keep the left/right boundary strict and preserve right-side
+  tokens as process argument-list elements; never construct a shell command.
+- `PackageArguments` owns shared standard/CWL parsing and typed getters.
+  Target-specific readers are limited to .NET `Environment`, Node `process.argv`,
+  and Python `sys.argv`; browser JavaScript callers use the pure `parse` API.
+- CWL input prefixes must not shadow standard arguments. Unknown, duplicate,
+  malformed, and missing required values fail rather than being silently
+  accepted. Keep invariant scalar behavior covered by all three contract suites.
 - Prefer semantic/schema equivalence across targets over incidental whitespace
   or serializer formatting equality.
 - ARCTokenization and ControlledVocabulary compatibility APIs belong only to

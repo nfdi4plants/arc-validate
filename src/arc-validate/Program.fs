@@ -17,12 +17,34 @@ let main argv =
     let parser = ARCValidateCommand.createParser()
 
     try
-        let args = parser.ParseCommandLine()
+        let splitArguments = PackageArgumentBoundary.split argv
+        let args = parser.ParseCommandLine(inputs = splitArguments.CLIArguments)
 
         let verbose = args.TryGetResult(ARCValidateCommand.Verbose) |> Option.isSome
-        
-        handleARCValidateCommand verbose (args.GetSubCommand())
-        |> int
+
+        let command = args.GetSubCommand()
+
+        let packageBoundaryError =
+            if not splitArguments.HasBoundary then
+                None
+            else
+                match command with
+                | ARCValidateCommand.Validate validateArguments when
+                    validateArguments.TryGetResult(ValidateArgs.Package).IsSome
+                    -> None
+                | ARCValidateCommand.Validate _ ->
+                    Some "Package arguments after '--' require validation with '--package' or '-p'."
+                | _ ->
+                    Some "The '--' package-argument boundary is only valid for the validate command."
+
+        match packageBoundaryError with
+        | Some message ->
+            $"[red]Argument parsing error:[/] {Markup.Escape message}"
+            |> AnsiConsole.MarkupLine
+            ExitCode.ArgParseError |> int
+        | None ->
+            handleARCValidateCommand verbose splitArguments.PackageArguments command
+            |> int
 
     with
         | :? ArguParseException as ex ->
@@ -45,4 +67,3 @@ let main argv =
             AnsiConsole.WriteException(ex) // might want to add verbosity level to hide this
 
             ExitCode.InternalError |> int
-            

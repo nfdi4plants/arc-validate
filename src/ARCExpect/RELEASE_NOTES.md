@@ -1,3 +1,11 @@
+### 7.0.0-preview.2 - 2026-08-04
+
+- Add one cross-target `PackageArguments` API for the four standard package
+  arguments and typed CWL-defined inputs, with native .NET, Node, and Python
+  command-line readers.
+- Reject reserved-name collisions and unknown, duplicate, missing required, or
+  malformed values consistently across all three runtimes.
+
 ### 7.0.0-preview.1 - 2026-07-31
 
 - Consolidate portable result/output contracts and the .NET compatibility

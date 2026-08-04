@@ -18,6 +18,7 @@ from .fable_modules.fable_pyxpecto.pyxpecto import (
     Test_testList,
 )
 from .junit import Writer as _JUnitWriter
+from .package_arguments import PackageArguments
 from .results import CaseOutcome, CaseResult, RunSummary, ValidationResult
 from .setup import (
     FrontmatterLanguage_FSharpFrontmatter,
@@ -42,9 +43,21 @@ class FrontmatterLanguage:
 
 class Execute:
     @staticmethod
-    async def validation(validation_package, payload=None):
+    async def validation(
+        validation_package,
+        payload=None,
+        source_branch=None,
+        source_commit_hash=None,
+        arguments=None,
+    ):
         return await start_as_task(
-            _PortableExecute.Validation(validation_package, payload)
+            _PortableExecute.Validation(
+                validation_package,
+                payload,
+                source_branch,
+                source_commit_hash,
+                arguments,
+            )
         )
 
     Validation = validation
@@ -94,6 +107,7 @@ __all__ = [
     "Execute",
     "FrontmatterLanguage",
     "JUnit",
+    "PackageArguments",
     "RunSummary",
     "Setup",
     "ValidationPackageSummary",
