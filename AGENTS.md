@@ -235,6 +235,14 @@ current Expecto runner and .NET filesystem behavior.
 - Preserve the existing output layout and semantics:
   `.arc-validate-results/<name>@<version>/`, `validation_summary.json`,
   `validation_report.xml`, and `badge.svg`.
+- Source provenance is explicit and optional. `arc-validate validate` accepts
+  `--source-branch` and `--source-commit-hash`, forwards supplied values to
+  package processes, and never infers them from CI environment variables.
+  Omit absent values from summary JSON, JUnit properties, and SVG metadata.
+- The current CLI forwards only `-i`, `-o`, `--source-branch`, and
+  `--source-commit-hash` to package processes. It does not yet accept arbitrary
+  or CWL-defined pass-through arguments. Keep that limitation explicit until
+  the cross-target ARCExpect argument feature is designed and implemented.
 - Prefer semantic/schema equivalence across targets over incidental whitespace
   or serializer formatting equality.
 - ARCTokenization and ControlledVocabulary compatibility APIs belong only to

@@ -123,26 +123,43 @@ type ValidationSummary(
     critical: ValidationResult,
     nonCritical: ValidationResult,
     validationPackage: ValidationPackageSummary,
-    payload: Json option
+    payload: Json option,
+    ?sourceBranch: string,
+    ?sourceCommitHash: string
 ) =
 
     let _critical = critical
     let _nonCritical = nonCritical
     let _validationPackage = validationPackage
     let _payload = payload
+    let _sourceBranch = defaultArg sourceBranch ""
+    let _sourceCommitHash = defaultArg sourceCommitHash ""
 
     member _.Critical = _critical
     member _.NonCritical = _nonCritical
     member _.ValidationPackage = _validationPackage
     member _.Payload = _payload
+    member _.SourceBranch =
+        if _sourceBranch = "" then None else Some _sourceBranch
+    member _.SourceCommitHash =
+        if _sourceCommitHash = "" then None else Some _sourceCommitHash
 
     static member create(
         critical: ValidationResult,
         nonCritical: ValidationResult,
         validationPackage: ValidationPackageSummary,
-        ?Payload: Json
+        ?Payload: Json,
+        ?SourceBranch: string,
+        ?SourceCommitHash: string
     ) =
-        ValidationSummary(critical, nonCritical, validationPackage, Payload)
+        ValidationSummary(
+            critical,
+            nonCritical,
+            validationPackage,
+            Payload,
+            ?sourceBranch = SourceBranch,
+            ?sourceCommitHash = SourceCommitHash
+        )
 
     static member toJson(summary: ValidationSummary) =
         let encoder (value: ValidationSummary) =
@@ -153,6 +170,14 @@ type ValidationSummary(
 
                 match value.Payload with
                 | Some payload -> "Payload", Encode.value payload
+                | None -> ()
+
+                match value.SourceBranch with
+                | Some sourceBranch -> "SourceBranch", Encode.string sourceBranch
+                | None -> ()
+
+                match value.SourceCommitHash with
+                | Some sourceCommitHash -> "SourceCommitHash", Encode.string sourceCommitHash
                 | None -> ()
             ]
 
@@ -165,7 +190,9 @@ type ValidationSummary(
                     get.Required.Field "Critical" ValidationSummaryCodec.resultDecoder,
                     get.Required.Field "NonCritical" ValidationSummaryCodec.resultDecoder,
                     get.Required.Field "ValidationPackage" ValidationSummaryCodec.packageDecoder,
-                    ?Payload = get.Optional.Field "Payload" Decode.value
+                    ?Payload = get.Optional.Field "Payload" Decode.value,
+                    ?SourceBranch = get.Optional.Field "SourceBranch" Decode.string,
+                    ?SourceCommitHash = get.Optional.Field "SourceCommitHash" Decode.string
                 )
             )
 
@@ -180,6 +207,8 @@ type ValidationSummary(
             && this.NonCritical = summary.NonCritical
             && this.ValidationPackage = summary.ValidationPackage
             && this.Payload = summary.Payload
+            && this.SourceBranch = summary.SourceBranch
+            && this.SourceCommitHash = summary.SourceCommitHash
         | _ -> false
 
     override this.GetHashCode() =
@@ -187,5 +216,7 @@ type ValidationSummary(
             this.Critical,
             this.NonCritical,
             this.ValidationPackage,
-            this.Payload
+            this.Payload,
+            this.SourceBranch,
+            this.SourceCommitHash
         )

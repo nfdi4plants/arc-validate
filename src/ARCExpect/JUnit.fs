@@ -78,7 +78,9 @@ type Writer private () =
     static member toXml(
         summary: RunSummary,
         ?Verbose: bool,
-        ?SuiteName: string
+        ?SuiteName: string,
+        ?SourceBranch: string,
+        ?SourceCommitHash: string
     ) =
         let verbose = defaultArg Verbose false
         let suiteName = defaultArg SuiteName summary.SuiteName
@@ -122,6 +124,29 @@ type Writer private () =
             |> Array.map caseNode
             |> Array.toList
 
-        Xml.element "testsuite" [ Xml.attribute "name" suiteName ] cases
+        let sourceProperties = [
+            match SourceBranch with
+            | Some sourceBranch ->
+                Xml.element "property" [
+                    Xml.attribute "name" "SourceBranch"
+                    Xml.attribute "value" sourceBranch
+                ] []
+            | None -> ()
+
+            match SourceCommitHash with
+            | Some sourceCommitHash ->
+                Xml.element "property" [
+                    Xml.attribute "name" "SourceCommitHash"
+                    Xml.attribute "value" sourceCommitHash
+                ] []
+            | None -> ()
+        ]
+
+        let children =
+            match sourceProperties with
+            | [] -> cases
+            | properties -> Xml.element "properties" [] properties :: cases
+
+        Xml.element "testsuite" [ Xml.attribute "name" suiteName ] children
         |> fun suite -> Xml.element "testsuites" [] [ suite ]
         |> Xml.document

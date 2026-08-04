@@ -181,5 +181,32 @@ let ``Toplevel API Setup tests`` =
                 Expect.equal actualReport ReferenceObjects.JUnitReport.allPassedWithHookXml "report files were not equal"
                 Expect.equal actualBadge ReferenceObjects.Badge.allPassedWithHookBadgeSVGFromPipeline "badge files were not equal"
             }
+            test "Optional source metadata is written to every output" {
+                let path = Path.GetTempPath()
+                Setup.ValidationPackage(
+                    metadata = ReferenceObjects.ValidationPackageMetadata.validWithHook,
+                    CriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass],
+                    NonCriticalValidationCases = [ReferenceObjects.TestCase.dummyTestWillPass]
+                )
+                |> Execute.ValidationPipeline(
+                    basePath = path,
+                    SourceBranch = "feature/source-metadata",
+                    SourceCommitHash = "abc123&456"
+                )
+
+                let resultFolder = Path.Combine(path, ".arc-validate-results/test@1.0.0")
+                let actualSummary =
+                    File.ReadAllText(Path.Combine(resultFolder, "validation_summary.json"))
+                    |> ValidationSummary.fromJson
+                let actualReport = File.ReadAllText(Path.Combine(resultFolder, "validation_report.xml"))
+                let actualBadge = File.ReadAllText(Path.Combine(resultFolder, "badge.svg"))
+
+                Expect.equal actualSummary.SourceBranch (Some "feature/source-metadata") "summary source branch"
+                Expect.equal actualSummary.SourceCommitHash (Some "abc123&456") "summary source commit"
+                Expect.stringContains actualReport "name=\"SourceBranch\" value=\"feature/source-metadata\"" "JUnit source branch"
+                Expect.stringContains actualReport "name=\"SourceCommitHash\" value=\"abc123&amp;456\"" "JUnit source commit"
+                Expect.stringContains actualBadge "SourceBranch=\"feature/source-metadata\"" "badge source branch"
+                Expect.stringContains actualBadge "SourceCommitHash=\"abc123&amp;456\"" "badge source commit"
+            }
         ]
     ])

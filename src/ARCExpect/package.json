@@ -1,5 +1,5 @@
 {
-  "name": "arcexpect",
+  "name": "@nfdi4plants/arcexpect",
   "version": "0.0.0",
   "description": "Portable ARC validation package authoring, execution, result contracts, and output writers.",
   "type": "module",
@@ -16,8 +16,8 @@
     "./JUnit": "./JUnit.js"
   },
   "dependencies": {
-    "validationpackage-codecs": "0.1.0",
-    "validationpackage-model": "0.1.0"
+    "@nfdi4plants/validationpackage-codecs": "0.1.0-preview.2",
+    "@nfdi4plants/validationpackage-model": "0.1.0-preview.2"
   },
   "files": [
     "index.js",

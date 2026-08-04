@@ -85,7 +85,9 @@ type Execute =
 
     static member Validation(
         arcValidationPackage: ARCValidationPackage,
-        ?Payload: Json
+        ?Payload: Json,
+        ?SourceBranch: string,
+        ?SourceCommitHash: string
     ) =
         async {
             let! critical =
@@ -102,6 +104,8 @@ type Execute =
                     critical,
                     nonCritical,
                     ValidationPackageSummary.fromMetadata arcValidationPackage.Metadata,
-                    ?Payload = Payload
+                    ?Payload = Payload,
+                    ?SourceBranch = SourceBranch,
+                    ?SourceCommitHash = SourceCommitHash
                 )
         }

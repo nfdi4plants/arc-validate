@@ -10,6 +10,24 @@ open System.IO
 open ValidationPackage.Codecs
 open ValidationPackage.Model
 
+module private SourceArguments =
+
+    let private tryFind name (arguments: string array) =
+        arguments
+        |> Array.tryFindIndex ((=) name)
+        |> Option.bind (fun index ->
+            if index + 1 < arguments.Length then
+                Some arguments[index + 1]
+            else
+                None
+        )
+        |> Option.filter (System.String.IsNullOrWhiteSpace >> not)
+
+    let current() =
+        let arguments = System.Environment.GetCommandLineArgs()
+        tryFind "--source-branch" arguments,
+        tryFind "--source-commit-hash" arguments
+
 
 type Setup with
 
@@ -75,7 +93,9 @@ type Execute with
 // ------------------ .NET Expecto and filesystem compatibility API ------------------
     
     static member Validation (
-        ?Payload: Dictionary<string, obj>
+        ?Payload: Dictionary<string, obj>,
+        ?SourceBranch: string,
+        ?SourceCommitHash: string
     ) =
         fun (arcValidationPackage: ExpectoValidationPackage) ->
 
@@ -86,7 +106,9 @@ type Execute with
                 criticalSummary = criticalResults,
                 nonCriticalSummary = nonCriticalResults,
                 package = ValidationPackageSummary.fromMetadata(arcValidationPackage.Metadata),
-                ?Payload = (Payload |> Option.map PayloadConversion.fromDictionary)
+                ?Payload = (Payload |> Option.map PayloadConversion.fromDictionary),
+                ?SourceBranch = SourceBranch,
+                ?SourceCommitHash = SourceCommitHash
             )
 
     static member SummaryCreation(
@@ -106,7 +128,13 @@ type Execute with
                 validationSummary.Critical
                 validationSummary.NonCritical
             |]
-            |> fun summary -> ARCExpect.JUnit.Writer.toXml(summary, Verbose = verbose)
+            |> fun summary ->
+                ARCExpect.JUnit.Writer.toXml(
+                    summary,
+                    Verbose = verbose,
+                    ?SourceBranch = validationSummary.SourceBranch,
+                    ?SourceCommitHash = validationSummary.SourceCommitHash
+                )
             |> fun content -> File.WriteAllText(path, content)
 
     static member BadgeCreation(
@@ -144,7 +172,9 @@ type Execute with
         ?ValueSuffix: string,
         ?Thresholds: Map<int, Color>,
         ?DefaultColor: Color,
-        ?Payload: Dictionary<string, obj>
+        ?Payload: Dictionary<string, obj>,
+        ?SourceBranch: string,
+        ?SourceCommitHash: string
     ) =
         fun (arcValidationPackage: ExpectoValidationPackage) ->
 
@@ -159,9 +189,19 @@ type Execute with
 
             Directory.CreateDirectory(resultFolder) |> ignore
 
+            let commandLineSourceBranch, commandLineSourceCommitHash =
+                SourceArguments.current()
+            let sourceBranch = SourceBranch |> Option.orElse commandLineSourceBranch
+            let sourceCommitHash =
+                SourceCommitHash |> Option.orElse commandLineSourceCommitHash
+
             let results = 
                 arcValidationPackage
-                |> Execute.Validation(?Payload = Payload)
+                |> Execute.Validation(
+                    ?Payload = Payload,
+                    ?SourceBranch = sourceBranch,
+                    ?SourceCommitHash = sourceCommitHash
+                )
 
             results |> Execute.SummaryCreation(summaryPath)
             results |> Execute.JUnitReportCreation(jUnitPath)

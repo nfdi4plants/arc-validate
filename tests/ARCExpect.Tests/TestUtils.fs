@@ -17,3 +17,5 @@ module Expect =
         validationResultEqualIgnoringOriginal actual.NonCritical expected.NonCritical
         Expect.equal actual.ValidationPackage expected.ValidationPackage "ValidationPackage was not equal."
         Expect.equal actual.Payload expected.Payload "Payload was not equal."
+        Expect.equal actual.SourceBranch expected.SourceBranch "SourceBranch was not equal."
+        Expect.equal actual.SourceCommitHash expected.SourceCommitHash "SourceCommitHash was not equal."

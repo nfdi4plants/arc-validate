@@ -221,13 +221,24 @@ let ``ValidateCommand CLI Tests`` =
         ])
         testSequenced (testList "specification validation" [
             testSequenced (testList "latest" [
-                // run: arc-validate validate -i fixtures/arcs/specification/v2.0.0-draft
+                // run: arc-validate validate -i fixtures/arcs/specification/v2.0.0-draft --source-branch refs/heads/dev --source-commit-hash 0123456789abcdef
                 // adapt this when a new latest specification package is available!
                 yield!
                     testFixture (Fixtures.withToolExecution 
                         false
                         "../../../../../publish/arc-validate" 
-                        [|"--verbose"; "validate"; "-i"; "fixtures/arcs/specification/v2.0.0-draft"; "-o"; "."|]
+                        [|
+                            "--verbose"
+                            "validate"
+                            "-i"
+                            "fixtures/arcs/specification/v2.0.0-draft"
+                            "-o"
+                            "."
+                            "--source-branch"
+                            "refs/heads/dev"
+                            "--source-commit-hash"
+                            "0123456789abcdef"
+                        |]
                         
                     ) [
                         "Exit code is 0" , 
@@ -259,6 +270,16 @@ let ``ValidateCommand CLI Tests`` =
                                 Expect.equal summary.Critical.Failed 0 (ErrorMessage.withProcessDiagnostics "incorrect number of noncritical failures" proc tool args )
                                 Expect.equal summary.Critical.Errored 0 (ErrorMessage.withProcessDiagnostics "incorrect number of noncritical failures" proc tool args )
                                 Expect.isFalse summary.Critical.HasFailures (ErrorMessage.withProcessDiagnostics "expected no noncritical failures" proc tool args )
+
+                                Expect.equal summary.SourceBranch (Some "refs/heads/dev") (ErrorMessage.withProcessDiagnostics "incorrect source branch" proc tool args )
+                                Expect.equal summary.SourceCommitHash (Some "0123456789abcdef") (ErrorMessage.withProcessDiagnostics "incorrect source commit hash" proc tool args )
+
+                                let report = File.ReadAllText ".arc-validate-results/arc_specification@2.0.0-draft/validation_report.xml"
+                                let badge = File.ReadAllText ".arc-validate-results/arc_specification@2.0.0-draft/badge.svg"
+                                Expect.stringContains report "name=\"SourceBranch\" value=\"refs/heads/dev\"" (ErrorMessage.withProcessDiagnostics "JUnit source branch missing" proc tool args )
+                                Expect.stringContains report "name=\"SourceCommitHash\" value=\"0123456789abcdef\"" (ErrorMessage.withProcessDiagnostics "JUnit source commit missing" proc tool args )
+                                Expect.stringContains badge "SourceBranch=\"refs/heads/dev\"" (ErrorMessage.withProcessDiagnostics "badge source branch missing" proc tool args )
+                                Expect.stringContains badge "SourceCommitHash=\"0123456789abcdef\"" (ErrorMessage.withProcessDiagnostics "badge source commit missing" proc tool args )
 
                     ]
             ])

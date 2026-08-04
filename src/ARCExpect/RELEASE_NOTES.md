@@ -1,4 +1,4 @@
-### 7.0.0-alpha.1 - (Released 2026-07-31)
+### 7.0.0-preview.1 - 2026-07-31
 
 - Consolidate portable result/output contracts and the .NET compatibility
   implementation behind the single public ARCExpect package identity.
@@ -13,6 +13,8 @@
   Expecto runner and filesystem pipeline as .NET compatibility APIs.
 - Keep Expecto, filesystem, ARC specification, and
   ARCTokenization/ControlledVocabulary APIs available only on the .NET target.
+- Add optional source branch and commit provenance to summary JSON, JUnit
+  properties, and non-rendered SVG metadata.
 - Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, and Cytoscape.NET
   functionality instead of porting it to JavaScript and Python.
 

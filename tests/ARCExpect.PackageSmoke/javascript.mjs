@@ -11,14 +11,14 @@ import {
   ptestCase,
   testCase,
   testCaseAsync
-} from "arcexpect";
+} from "@nfdi4plants/arcexpect";
 import {
   CommandInputBinding,
   CommandInputParameter,
   CommandInputType,
   CwlPrimitive,
   ValidationPackageMetadata
-} from "validationpackage-model";
+} from "@nfdi4plants/validationpackage-model";
 
 const result = ValidationResult.create([
   CaseResult.create(["packed"], CaseOutcome.passed())

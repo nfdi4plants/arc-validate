@@ -39,6 +39,16 @@ let private summary =
         Payload = Json.Object [ "runtime", Json.String "portable"; "count", Json.Number 2.0 ]
     )
 
+let private summaryWithSource =
+    ValidationSummary.create(
+        summary.Critical,
+        summary.NonCritical,
+        summary.ValidationPackage,
+        ?Payload = summary.Payload,
+        SourceBranch = "feature/source-metadata",
+        SourceCommitHash = "abc123&456"
+    )
+
 let private allOutcomes =
     RunSummary.create(
         [|
@@ -72,12 +82,25 @@ let tests =
             Expect.isTrue (json.Contains("\"Critical\":{\"HasFailures\":false,\"Total\":1")) "Critical wire fields"
             Expect.isTrue (json.Contains("\"CQCHookEndpoint\":\"https://example.org/hook\"")) "Hook field"
             Expect.isTrue (json.Contains("\"Payload\":{\"runtime\":\"portable\",\"count\":2}")) "Payload field"
+            Expect.isFalse (json.Contains("SourceBranch")) "Legacy summaries omit source branch"
+            Expect.isFalse (json.Contains("SourceCommitHash")) "Legacy summaries omit source commit"
 
             let decoded = ValidationSummary.fromJson json
             Expect.equal decoded.Critical.Passed 1 "Decoded critical aggregate"
             Expect.equal decoded.NonCritical.Failed 1 "Decoded noncritical aggregate"
             Expect.equal decoded.ValidationPackage package "Decoded package"
             Expect.equal decoded.Payload summary.Payload "Decoded payload"
+            Expect.equal decoded.SourceBranch None "Missing source branch remains optional"
+            Expect.equal decoded.SourceCommitHash None "Missing source commit remains optional"
+
+        testCase "summary JSON roundtrips optional source metadata" <| fun () ->
+            let json = ValidationSummary.toJson summaryWithSource
+            Expect.isTrue (json.Contains("\"SourceBranch\":\"feature/source-metadata\"")) "Source branch field"
+            Expect.isTrue (json.Contains("\"SourceCommitHash\":\"abc123&456\"")) "Source commit field"
+
+            let decoded = ValidationSummary.fromJson json
+            Expect.equal decoded.SourceBranch summaryWithSource.SourceBranch "Decoded source branch"
+            Expect.equal decoded.SourceCommitHash summaryWithSource.SourceCommitHash "Decoded source commit"
 
         testCase "JUnit output maps outcomes and escapes XML" <| fun () ->
             let combined = RunSummary.combine [| summary.Critical; summary.NonCritical; allOutcomes |]
@@ -87,12 +110,29 @@ let tests =
             Expect.isTrue (xml.Contains("<error message=\"unexpected error\" />")) "Error is encoded"
             Expect.isTrue (xml.Contains("<skipped message=\"not applicable\" />")) "Skipped case is encoded"
             Expect.isTrue (xml.Contains("time=\"0.250\"")) "Duration is invariant"
+            Expect.isFalse (xml.Contains("<properties>")) "Source properties are omitted by default"
+
+            let xmlWithSource =
+                ARCExpect.JUnit.Writer.toXml(
+                    combined,
+                    SourceBranch = "feature/<source>",
+                    SourceCommitHash = "abc123&456"
+                )
+            Expect.isTrue (xmlWithSource.Contains("<properties>")) "JUnit properties container"
+            Expect.isTrue (xmlWithSource.Contains("name=\"SourceBranch\" value=\"feature/&lt;source&gt;\"")) "JUnit source branch"
+            Expect.isTrue (xmlWithSource.Contains("name=\"SourceCommitHash\" value=\"abc123&amp;456\"")) "JUnit source commit"
 
         testCase "badge output is deterministic and escapes labels" <| fun () ->
             let svg = ARCExpect.Badge.Writer.toSvg(summary, "portable & result")
             Expect.isTrue (svg.Contains("id=\"arc-validate-badge\"")) "Stable mask id"
             Expect.isTrue (svg.Contains("portable &amp; result")) "Label is escaped"
             Expect.isTrue (svg.Contains("1/2")) "Passed and total counts"
+            Expect.isFalse (svg.Contains("<metadata>")) "Source metadata is omitted by default"
+
+            let svgWithSource = ARCExpect.Badge.Writer.toSvg(summaryWithSource, "portable result")
+            Expect.isTrue (svgWithSource.Contains("<metadata>")) "SVG metadata container"
+            Expect.isTrue (svgWithSource.Contains("SourceBranch=\"feature/source-metadata\"")) "SVG source branch"
+            Expect.isTrue (svgWithSource.Contains("SourceCommitHash=\"abc123&amp;456\"")) "SVG source commit"
 
         testCaseAsync "top-level Execute runs Pyxpecto validation packages" <| async {
             let metadata =
@@ -140,7 +180,9 @@ Description: Runs the shared Pyxpecto adapter.
             let! actual =
                 Execute.Validation(
                     validationPackage,
-                    Payload = Json.Object [ "runtime", Json.String "portable-execute" ]
+                    Payload = Json.Object [ "runtime", Json.String "portable-execute" ],
+                    SourceBranch = "dev",
+                    SourceCommitHash = "0123456789"
                 )
 
             Expect.equal actual.Critical.Total 2 "Critical total"
@@ -154,6 +196,8 @@ Description: Runs the shared Pyxpecto adapter.
                 actual.Payload
                 (Some(Json.Object [ "runtime", Json.String "portable-execute" ]))
                 "Portable payload"
+            Expect.equal actual.SourceBranch (Some "dev") "Portable source branch"
+            Expect.equal actual.SourceCommitHash (Some "0123456789") "Portable source commit"
 
             let focusedPackage =
                 Setup.ValidationPackage(

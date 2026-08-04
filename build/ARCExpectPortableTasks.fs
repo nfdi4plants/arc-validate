@@ -94,12 +94,12 @@ let testARCExpectPackage =
             "{ \"name\": \"arcexpect-smoke\", \"private\": true, \"type\": \"module\" }"
         )
         let javaScriptPackage =
-            Path.Combine(packageDir, $"arcexpect-{ARCExpectPackageVersion}.tgz")
+            Path.Combine(packageDir, $"nfdi4plants-arcexpect-{ARCExpectPackageVersion}.tgz")
             |> Path.GetFullPath
         let javaScriptModelPackage =
-            nativeDependencyArtifact $"validationpackage-model-{ValidationPackageModelNativeVersion}.tgz"
+            nativeDependencyArtifact $"nfdi4plants-validationpackage-model-{ValidationPackageModelNativeVersion}.tgz"
         let javaScriptCodecsPackage =
-            nativeDependencyArtifact $"validationpackage-codecs-{ValidationPackageCodecsNativeVersion}.tgz"
+            nativeDependencyArtifact $"nfdi4plants-validationpackage-codecs-{ValidationPackageCodecsNativeVersion}.tgz"
         runNpm
             [
                 "install"
@@ -120,10 +120,7 @@ let testARCExpectPackage =
             Path.Combine(pythonDirectory, "python.py")
         )
         let pythonPackageVersion =
-            ARCExpectPackageVersion
-                .Replace("-alpha.", "a")
-                .Replace("-beta.", "b")
-                .Replace("-rc.", "rc")
+            toPythonPackageVersion ARCExpectPackageVersion
         let pythonPackage =
             Path.Combine(packageDir, $"arcexpect-{pythonPackageVersion}-py3-none-any.whl")
             |> Path.GetFullPath
@@ -134,9 +131,9 @@ let testARCExpectPackage =
             else
                 Path.Combine(pythonEnvironment, "bin", "python")
         let pythonModelPackage =
-            nativeDependencyArtifact $"validationpackage_model-{ValidationPackageModelNativeVersion}-py3-none-any.whl"
+            nativeDependencyArtifact $"validationpackage_model-{ValidationPackageModelPythonVersion}-py3-none-any.whl"
         let pythonCodecsPackage =
-            nativeDependencyArtifact $"validationpackage_codecs-{ValidationPackageCodecsNativeVersion}-py3-none-any.whl"
+            nativeDependencyArtifact $"validationpackage_codecs-{ValidationPackageCodecsPythonVersion}-py3-none-any.whl"
         runUv
             [
                 "pip"

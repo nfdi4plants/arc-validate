@@ -44,6 +44,29 @@ ARCExpect --depends on--> ValidationPackageCodecs
 PackageManagement --depends on--> ValidationPackageModel
 ```
 
+### Recording source provenance
+
+Validation output can optionally record the branch and commit that supplied
+the validated ARC:
+
+```bash
+arc-validate validate \
+  --source-branch "$CI_COMMIT_REF_NAME" \
+  --source-commit-hash "$CI_COMMIT_SHA"
+```
+
+Both options are independent and optional. When present, arc-validate writes
+them to `validation_summary.json`, standard JUnit `<properties>`, and
+non-rendered SVG `<metadata>`. When absent, those fields and elements are
+omitted. Package-based validation receives the same switches in the package
+process argument list; ARCExpect's .NET compatibility pipeline consumes them
+automatically.
+
+See the [arc-validate argument documentation](docs/arc-validate/introduction.md#validation-package-arguments)
+for the complete distinction between CLI-only and package-process arguments.
+Arbitrary/CWL-defined package arguments are not yet accepted by the CLI; that
+is a separate follow-up feature.
+
 ### Libraries used
 
 #### ARCExpect

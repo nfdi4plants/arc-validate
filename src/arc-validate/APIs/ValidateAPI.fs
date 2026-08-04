@@ -36,6 +36,33 @@ module ValidateAPI =
         let version = 
             args.TryGetResult(Package_Version)
 
+        let sourceBranch =
+            args.TryGetResult(Source_Branch)
+
+        let sourceCommitHash =
+            args.TryGetResult(Source_Commit_Hash)
+
+        let packageArguments =
+            [
+                "-i"
+                root
+                "-o"
+                outPath
+
+                match sourceBranch with
+                | Some branch ->
+                    "--source-branch"
+                    branch
+                | None -> ()
+
+                match sourceCommitHash with
+                | Some commitHash ->
+                    "--source-commit-hash"
+                    commitHash
+                | None -> ()
+            ]
+            |> List.toArray
+
         let mutable exitCode = ExitCode.Success
 
         match package with
@@ -71,7 +98,11 @@ module ValidateAPI =
                     AnsiConsole.MarkupLine("")
 
                 validationCases
-                |> Execute.ValidationPipeline outPath
+                |> Execute.ValidationPipeline(
+                    outPath,
+                    ?SourceBranch = sourceBranch,
+                    ?SourceCommitHash = sourceCommitHash
+                )
 
                 exitCode <- ExitCode.Success
             )
@@ -110,8 +141,8 @@ module ValidateAPI =
 
                         let result = 
                             match validationPackage.Metadata.ProgrammingLanguage.ToLowerInvariant() with
-                            | "fsharp" -> FSharpScript.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
-                            | "python" -> PythonScript.runPackageScriptWithArgs validationPackage [| "-i"; root; "-o"; outPath |]
+                            | "fsharp" -> FSharpScript.runPackageScriptWithArgs validationPackage packageArguments
+                            | "python" -> PythonScript.runPackageScriptWithArgs validationPackage packageArguments
                             | _ -> failwithf $"programming '{validationPackage.Metadata.ProgrammingLanguage}' language used in validation package '{validationPackage.FileName}' is not supported"
                         
                         if result.OK then

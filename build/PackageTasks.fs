@@ -167,19 +167,19 @@ let private externalizeARCExpectJavaScriptDependencies outputDirectory =
     rewriteFiles
         outputDirectory
         "\"\\./fable_modules/ValidationPackage\\.Model\\.[^/]+/([^\"]+)\\.fs\\.js\""
-        "\"validationpackage-model/$1.js\""
+        "\"@nfdi4plants/validationpackage-model/$1.js\""
     rewriteFiles
         outputDirectory
         "\"\\./fable_modules/ValidationPackage\\.Codecs\\.[^/]+/([^\"]+)\\.fs\\.js\""
-        "\"validationpackage-codecs/$1.js\""
+        "\"@nfdi4plants/validationpackage-codecs/$1.js\""
     rewriteFiles
         outputDirectory
-        "validationpackage-codecs/JsonRuntime\.js"
-        "validationpackage-codecs/Json/Runtime.js"
+        "@nfdi4plants/validationpackage-codecs/JsonRuntime\.js"
+        "@nfdi4plants/validationpackage-codecs/Json/Runtime.js"
     rewriteFiles
         outputDirectory
-        "validationpackage-codecs/ValidationPackageYaml\.js"
-        "validationpackage-codecs/Yaml/ValidationPackageYaml.js"
+        "@nfdi4plants/validationpackage-codecs/ValidationPackageYaml\.js"
+        "@nfdi4plants/validationpackage-codecs/Yaml/ValidationPackageYaml.js"
 
     let fableModules = Path.Combine(outputDirectory, "fable_modules")
     deleteMatchingDirectories fableModules "ValidationPackage.Model.*"
@@ -219,21 +219,18 @@ let private writeVersionedJavaScriptManifest outputDirectory =
             )
 
     let content =
-        Regex("\"validationpackage-model\"\\s*:\\s*\"[^\"]+\"")
-            .Replace(content, $"\"validationpackage-model\": \"{ValidationPackageModelNativeVersion}\"", 1)
+        Regex("\"@nfdi4plants/validationpackage-model\"\\s*:\\s*\"[^\"]+\"")
+            .Replace(content, $"\"@nfdi4plants/validationpackage-model\": \"{ValidationPackageModelNativeVersion}\"", 1)
 
     let content =
-        Regex("\"validationpackage-codecs\"\\s*:\\s*\"[^\"]+\"")
-            .Replace(content, $"\"validationpackage-codecs\": \"{ValidationPackageCodecsNativeVersion}\"", 1)
+        Regex("\"@nfdi4plants/validationpackage-codecs\"\\s*:\\s*\"[^\"]+\"")
+            .Replace(content, $"\"@nfdi4plants/validationpackage-codecs\": \"{ValidationPackageCodecsNativeVersion}\"", 1)
 
     File.WriteAllText(target, content)
     File.Copy(Path.Combine("src", "ARCExpect", "index.js"), Path.Combine(outputDirectory, "index.js"), true)
 
 let private pythonPackageVersion =
-    ARCExpectPackageVersion
-        .Replace("-alpha.", "a")
-        .Replace("-beta.", "b")
-        .Replace("-rc.", "rc")
+    toPythonPackageVersion ARCExpectPackageVersion
 
 let private writePythonBuildProject outputDirectory =
     let packageDirectory = Path.Combine(outputDirectory, "arcexpect")
@@ -248,8 +245,8 @@ license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "fable-library==5.11.0",
-    "validationpackage-model=={ValidationPackageModelNativeVersion}",
-    "validationpackage-codecs=={ValidationPackageCodecsNativeVersion}",
+    "validationpackage-model=={ValidationPackageModelPythonVersion}",
+    "validationpackage-codecs=={ValidationPackageCodecsPythonVersion}",
 ]
 
 [project.urls]

@@ -136,13 +136,17 @@ module Expecto =
             criticalSummary: TestRunSummary,
             nonCriticalSummary: TestRunSummary,
             package: ValidationPackageSummary,
-            ?Payload: Thoth.Json.Core.Json
+            ?Payload: Thoth.Json.Core.Json,
+            ?SourceBranch: string,
+            ?SourceCommitHash: string
         ) =
             ValidationSummary.create(
                 ValidationResult.ofExpectoTestRunSummary criticalSummary,
                 ValidationResult.ofExpectoTestRunSummary nonCriticalSummary,
                 package,
-                ?Payload = Payload
+                ?Payload = Payload,
+                ?SourceBranch = SourceBranch,
+                ?SourceCommitHash = SourceCommitHash
             )
 
     let xmlSave fileName (doc : XDocument) =

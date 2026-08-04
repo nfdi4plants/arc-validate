@@ -129,9 +129,26 @@ type Writer private () =
         let label = Text.escapeXml labelText
         let displayedValue = Text.escapeXml valueText
         let maskId = "arc-validate-badge"
+        let sourceAttributes = [
+            match summary.SourceBranch with
+            | Some sourceBranch ->
+                $" SourceBranch=\"{Text.escapeXml sourceBranch}\""
+            | None -> ()
+
+            match summary.SourceCommitHash with
+            | Some sourceCommitHash ->
+                $" SourceCommitHash=\"{Text.escapeXml sourceCommitHash}\""
+            | None -> ()
+        ]
+        let sourceMetadata =
+            match sourceAttributes with
+            | [] -> ""
+            | attributes ->
+                let encodedAttributes = String.concat "" attributes
+                $"\n    <metadata>\n        <arcexpect:source xmlns:arcexpect=\"https://github.com/nfdi4plants/arc-validate#ARCExpect\"{encodedAttributes} />\n    </metadata>"
 
         let template = """<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="{{badge-width}}" height="20">
+<svg xmlns="http://www.w3.org/2000/svg" width="{{badge-width}}" height="20">{{source-metadata}}
     <linearGradient id="b" x2="0" y2="100%">
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
@@ -157,6 +174,7 @@ type Writer private () =
 
         template
             .Replace("{{badge-width}}", string badgeWidth)
+            .Replace("{{source-metadata}}", sourceMetadata)
             .Replace("{{mask-id}}", maskId)
             .Replace("{{label-width}}", string labelWidth)
             .Replace("{{value-width}}", string valueWidth)
