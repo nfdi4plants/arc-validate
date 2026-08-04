@@ -86,6 +86,29 @@ let private argumentMetadata inputs =
 
 let tests =
     testList "portable ARCExpect contracts" [
+        testCase "Python PACKAGE_METADATA runtime values retain YAML frontmatter" <| fun () ->
+            let packageMetadata =
+                """
+---
+Name: python-runtime-frontmatter
+Summary: Python runtime frontmatter
+Description: The bound string no longer contains its source-code triple quotes.
+MajorVersion: 1
+MinorVersion: 0
+PatchVersion: 0
+Publish: false
+---
+"""
+
+            let actual =
+                Setup.Metadata(
+                    packageMetadata,
+                    FrontmatterLanguage.PythonFrontmatter
+                )
+
+            Expect.equal actual.Name "python-runtime-frontmatter" "metadata name"
+            Expect.equal actual.ProgrammingLanguage "Python" "source language"
+
         testCase "run summaries expose framework-neutral case outcomes" <| fun () ->
             Expect.equal summary.Critical.Total 1 "Critical total"
             Expect.equal summary.Critical.Passed 1 "Critical passed"

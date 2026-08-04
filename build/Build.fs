@@ -15,11 +15,13 @@ open BasicTasks
 open TestTasks
 open PackageTasks
 open ARCExpectPortableTasks
+open DocsSampleTasks
 open DocumentationTasks
 open ReleaseTasks
 
 // Force module initialization so every portable target is registered.
 let _testPortableARCExpect = testPortableARCExpect
+let _runDocsSamples = runDocsSamples
 
 
 /// Full release of nuget package, git tag, and documentation for the stable version.

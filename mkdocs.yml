@@ -1,0 +1,58 @@
+site_name: arc-validate
+site_url: https://nfdi4plants.github.io/arc-validate/
+site_description: Polyglot ARC validation package authoring with ARCExpect and the arc-validate CLI.
+repo_url: https://github.com/nfdi4plants/arc-validate
+repo_name: nfdi4plants/arc-validate
+
+exclude_docs: |
+  fsdocs/
+  ARCExpect/introduction.ipynb
+
+validation:
+  links:
+    absolute_links: ignore
+
+theme:
+  name: material
+  custom_dir: overrides
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.footer
+    - navigation.instant
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra:
+  version: !ENV [ARC_VALIDATE_DOCS_VERSION, "dev"]
+
+nav:
+  - Home: index.md
+  - ARCExpect:
+      - Simple validation package: ARCExpect/simple-validation-package.md
+      - Command-line arguments: ARCExpect/command-line-arguments.md
+      - API design: ARCExpect/design.md
+  - arc-validate CLI: arc-validate/introduction.md
+  - API reference: reference.md

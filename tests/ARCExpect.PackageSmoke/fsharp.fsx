@@ -1,4 +1,4 @@
-#r "nuget: ARCExpect, 7.0.0-preview.2"
+#r "nuget: ARCExpect, 7.0.0-preview.3"
 
 open ARCExpect
 open ValidationPackage.Model

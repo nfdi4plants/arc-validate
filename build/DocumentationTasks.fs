@@ -1,52 +1,64 @@
-﻿module DocumentationTasks
-
-open Helpers
-open ProjectInfo
-open BasicTasks
+module DocumentationTasks
 
 open BlackFox.Fake
+open System
+open System.IO
 
+open BasicTasks
+open Helpers
+open ProjectInfo
+
+let private fsdocsRoot = "/arc-validate/fsdocs/"
+
+let private buildARCExpectForDocs =
+    BuildTask.create "BuildARCExpectForDocs" [] {
+        runDotNetCommand
+            "build"
+            $"{CoreProject.ProjFile} --configuration {configuration} /p:warnon=3390"
+            "."
+    }
+
+let private buildSite version =
+    printfn "building docs with ARCExpect version %s" version
+    Environment.SetEnvironmentVariable("ARC_VALIDATE_DOCS_VERSION", version)
+    runUv [ "run"; "--group"; "docs"; "mkdocs"; "build"; "--strict" ] "."
+    runDotNet
+        (sprintf
+            "fsdocs build --eval --clean --input docs/fsdocs --output site/fsdocs --projects %s --properties Configuration=%s --parameters fsdocs-package-version %s root %s"
+            (Path.GetFullPath CoreProject.ProjFile)
+            configuration
+            version
+            fsdocsRoot)
+        "."
 
 let buildDocs =
-    BuildTask.create "BuildDocs" [ build ] {
-        printfn "building docs with stable version %s" stableDocsVersionTag
-
-        runDotNet
-            (sprintf
-                "fsdocs build --clean --properties Configuration=Release --parameters fsdocs-package-version %s"
-                stableDocsVersionTag)
-            "./"
+    BuildTask.create "BuildDocs" [ buildARCExpectForDocs ] {
+        buildSite stableDocsVersionTag
     }
 
 let buildDocsPrerelease =
-    BuildTask.create "BuildDocsPrerelease" [ setPrereleaseTag; build ] {
-        printfn "building docs with prerelease version %s" prereleaseTag
-
-        runDotNet
-            (sprintf
-                "fsdocs build --clean --properties Configuration=Release --parameters fsdocs-package-version %s"
-                prereleaseTag)
-            "./"
+    BuildTask.create "BuildDocsPrerelease" [ setPrereleaseTag; buildARCExpectForDocs ] {
+        buildSite prereleaseTag
     }
 
 let watchDocs =
-    BuildTask.create "WatchDocs" [ build ] {
-        printfn "watching docs with stable version %s" stableDocsVersionTag
-
-        runDotNet
-            (sprintf
-                "fsdocs watch --clean --properties Configuration=Release --parameters fsdocs-package-version %s"
-                stableDocsVersionTag)
-            "./"
+    BuildTask.create "WatchDocs" [] {
+        runUv [ "run"; "--group"; "docs"; "mkdocs"; "serve" ] "."
     }
 
 let watchDocsPrerelease =
-    BuildTask.create "WatchDocsPrerelease" [ setPrereleaseTag; build ] {
-        printfn "watching docs with prerelease version %s" prereleaseTag
+    BuildTask.create "WatchDocsPrerelease" [ setPrereleaseTag ] {
+        Environment.SetEnvironmentVariable("ARC_VALIDATE_DOCS_VERSION", prereleaseTag)
+        runUv [ "run"; "--group"; "docs"; "mkdocs"; "serve" ] "."
+    }
 
+let watchApiDocs =
+    BuildTask.create "WatchApiDocs" [ buildARCExpectForDocs ] {
         runDotNet
             (sprintf
-                "fsdocs watch --clean --properties Configuration=Release --parameters fsdocs-package-version %s"
-                prereleaseTag)
-            "./"
+                "fsdocs watch --eval --input docs/fsdocs --projects %s --properties Configuration=%s --parameters fsdocs-package-version %s root /"
+                (Path.GetFullPath CoreProject.ProjFile)
+                configuration
+                stableDocsVersionTag)
+            "."
     }

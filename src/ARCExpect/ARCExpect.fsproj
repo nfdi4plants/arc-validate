@@ -19,7 +19,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/RELEASE_NOTES.md"))</PackageReleaseNotes>
-    <PackageVersion>7.0.0-preview.2</PackageVersion>
+    <PackageVersion>7.0.0-preview.3</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

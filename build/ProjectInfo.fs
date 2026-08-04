@@ -117,7 +117,7 @@ let packageCacheDir = System.IO.Path.Combine(artifactsDir, "package-cache")
 
 
 /// docs are always targeting the version of the core project
-let stableDocsVersionTag = CoreProject.PackageVersionTag
+let stableDocsVersionTag = ARCExpectPackageVersion
 
 /// branch tag is always the version of the core project
 let branchTag = CoreProject.PackageVersionTag

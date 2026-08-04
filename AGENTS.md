@@ -53,7 +53,10 @@ Keep the roadmap issues separate:
   documentation, and release targets.
 - `.github/workflows/`: cross-platform build/test, documentation, and container
   publication workflows.
-- `docs/`: fsdocs content.
+- `docs/`: MkDocs guide pages, fsdocs API-reference input, and executable
+  validation-package samples under `docs/samples/<topic>/sample.{fsx,py}`.
+- `mkdocs.yml` and `overrides/`: Material guide configuration and theme
+  override; generated guide/API output belongs under ignored `site/`.
 
 ## Toolchain and common commands
 
@@ -85,6 +88,9 @@ dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
 
 # Documentation
 .\build.cmd BuildDocs
+.\build.cmd RunDocsSamples
+.\build.cmd WatchDocs
+.\build.cmd WatchApiDocs
 
 # Create local NuGet artifacts; these targets are interactive
 .\build.cmd Pack
@@ -216,6 +222,51 @@ They are regular executables, not VSTest projects.
   update the lockfile, run all three targets, inspect generated APIs, and run
   packed-consumer checks.
 
+## Polyglot documentation
+
+The documentation scaffold follows DataHubClient's verified-sample pattern.
+MkDocs Material renders the guide and language tabs; fsdocs is restricted to
+the generated F# API reference under `site/fsdocs/`.
+
+- Never duplicate a substantial code sample directly in Markdown. Put one
+  runnable validation package per supported format under
+  `docs/samples/<topic>/sample.{fsx,py}` and include it with
+  `pymdownx.snippets` in synchronized language tabs. Keep the JavaScript tab as
+  “Coming soon” until JavaScript package execution and frontmatter conventions
+  are deliberately designed; do not invent them in documentation.
+- `RunDocsSamples` must pack ARCExpect, install the relevant NuGet/wheel
+  artifacts like an end user, and execute every committed sample. Samples must
+  be deterministic and offline except for package restoration. Each package
+  writes `validation_summary.json`, `validation_report.xml`, and `badge.svg`.
+  The runner regenerates the checked-in output under the sample topic from the
+  F#/.NET execution, then verifies the Python execution emits the same portable
+  summary and badge plus a valid JUnit report. Documentation pages display all
+  three generated artifacts; do not hand-edit them.
+- Keep F# sample references pinned to the exact current ARCExpect version in
+  the committed `.fsx`; the runner injects only the local package source into
+  its scratch copy. Python samples run unmodified against an isolated wheel
+  install.
+- Package samples begin with AVPR-compatible YAML frontmatter bound to
+  `PACKAGE_METADATA` as the very first construct in the file. No imports,
+  directives, comments, or executable code may precede it. Imports and NuGet
+  references follow the complete frontmatter block, and package code parses the
+  bound value with `Setup.Metadata`. Do not construct metadata programmatically
+  in practical guides. Link to AVPR documentation for the authoritative schema
+  instead of duplicating its field reference here.
+- Documentation packages declare ARCExpect explicitly after frontmatter: an
+  exact `#r "nuget: ARCExpect, ..."` in F# and a PEP 723 dependency in Python.
+  Keep both pins synchronized with the ARCExpect release-notes version; the
+  sample runner rejects stale pins and injects only the local artifact source.
+- `BuildDocs` builds MkDocs into `site/` first and fsdocs into
+  `site/fsdocs/` second because MkDocs cleans the shared output root.
+- `WatchDocs` previews the guide. `WatchApiDocs` separately previews the F# API
+  reference. Do not expect the fsdocs link to work in a guide-only preview.
+- The root `pyproject.toml` owns the MkDocs dependency group and `uv.lock` must
+  be updated whenever documentation tooling changes.
+- Documentation CI runs samples and a strict site build on `dev`/`release`
+  pushes and pull requests. Only a `release` push or manual dispatch deploys
+  GitHub Pages.
+
 ## ARCExpect portability boundary
 
 The roadmap separates framework-neutral result/output contracts from the
@@ -317,8 +368,8 @@ project has been absorbed into the CLI.
   build/test workflow when source, tests, build logic, or workflows change.
 - Pushes changing `src/arc-validate/**` or `Dockerfile` can publish a GHCR
   container after Linux and Windows tests pass.
-- Documentation changes can deploy the `gh-pages` branch through the docs
-  workflow.
+- Documentation changes run verified polyglot samples and a strict site build.
+  A `release` push or manual docs workflow dispatch can deploy GitHub Pages.
 - Preserve least-privilege workflow permissions and deliberate action versions.
   Never print tokens, NuGet keys, registry credentials, or other secrets.
 - Treat release-note and build-project edits as release-sensitive. Check the

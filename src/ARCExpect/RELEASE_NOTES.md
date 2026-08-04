@@ -1,3 +1,10 @@
+### 7.0.0-preview.3 - 2026-08-04
+
+- Accept the runtime value of Python `PACKAGE_METADATA` frontmatter directly;
+  package authors no longer need to reconstruct source-code triple quotes.
+- Add verified F# and Python validation-package documentation samples and the
+  MkDocs Material/fsdocs documentation scaffold.
+
 ### 7.0.0-preview.2 - 2026-08-04
 
 - Add one cross-target `PackageArguments` API for the four standard package

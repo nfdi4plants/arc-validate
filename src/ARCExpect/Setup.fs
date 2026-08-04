@@ -18,6 +18,27 @@ module private FrontmatterLanguageConversion =
         | FSharpFrontmatter -> ValidationPackage.Codecs.FrontmatterLanguage.FSharp
         | PythonFrontmatter -> ValidationPackage.Codecs.FrontmatterLanguage.Python
 
+[<RequireQualifiedAccess>]
+module private RuntimeFrontmatter =
+
+    let normalize language (frontmatter: string) =
+        if isNull frontmatter then
+            frontmatter
+        else
+            match language with
+            | PythonFrontmatter ->
+                let normalized =
+                    frontmatter.Replace("\r\n", "\n").Replace("\r", "\n")
+
+                if
+                    normalized.StartsWith("\n---\n", System.StringComparison.Ordinal)
+                    && normalized.EndsWith("---\n", System.StringComparison.Ordinal)
+                then
+                    "\"\"\"" + normalized + "\"\"\""
+                else
+                    frontmatter
+            | FSharpFrontmatter -> frontmatter
+
 [<AttachMembers>]
 type Setup =
 
@@ -27,7 +48,7 @@ type Setup =
     ) =
         ValidationPackageYaml.extractOrFail
             (FrontmatterLanguageConversion.toCodec programmingLanguage)
-            frontmatter
+            (RuntimeFrontmatter.normalize programmingLanguage frontmatter)
 
     static member ValidationPackage(
         metadata: ValidationPackageMetadata,

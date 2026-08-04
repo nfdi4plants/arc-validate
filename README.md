@@ -2,8 +2,8 @@
 
 Home of all the tools and libraries to create and run validation of ARCs:
 
-- **ARCExpect** ([docs :notebook:](https://nfdi4plants.github.io/arc-validate/ARCExpect/introduction.html)) - easy to use and understand APIs to create and execute validation cases.
-- **arc-validate/** ([docs :notebook:](https://nfdi4plants.github.io/arc-validate/arc-validate/introduction.html)) - CLI tool that offers commands for validating ARCs and managing validation packages.
+- **ARCExpect** ([polyglot guide](https://nfdi4plants.github.io/arc-validate/ARCExpect/simple-validation-package/)) - portable APIs to create and execute validation packages.
+- **arc-validate** ([CLI guide](https://nfdi4plants.github.io/arc-validate/arc-validate/introduction/)) - commands for validating ARCs and managing validation packages.
 
 ## Docker container
 
@@ -103,6 +103,25 @@ For how to contribute to and how to develop on this project, please read the [Co
 
 
 Just call `build.sh` or `build.cmd` depending on your OS.
+
+### Documentation
+
+The documentation site combines a MkDocs Material guide with an fsdocs API
+reference. Every available F# and Python validation-package example is a real
+program under `docs/samples/`; the guide includes those files verbatim and the
+build installs and runs them against freshly packed artifacts. Each verification
+pass also regenerates the checked-in JSON summary, JUnit report, and SVG badge
+shown beside the sample. JavaScript package examples remain marked “Coming
+soon” until that package format exists.
+
+```shell
+./build.sh RunDocsSamples # pack and execute every language sample
+./build.sh BuildDocs      # build the guide and API reference into site/
+./build.sh WatchDocs      # preview the MkDocs guide with live reload
+./build.sh WatchApiDocs   # preview the generated F# API reference
+```
+
+Use the corresponding `build.cmd` commands on Windows.
 
 ### Test
 

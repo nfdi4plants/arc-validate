@@ -1,32 +1,79 @@
-name: deploy-gh-pages
+name: Documentation
 
 on:
   push:
-    branches: [ main, V2 ]
+    branches: [dev, release]
     paths:
       - 'docs/**'
+      - 'src/ARCExpect/**'
+      - 'build/**'
+      - 'mkdocs.yml'
+      - 'overrides/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.config/dotnet-tools.json'
+      - '.github/workflows/build-and-deploy-docs.yml'
+  pull_request:
+    branches: [dev, release]
+    paths:
+      - 'docs/**'
+      - 'src/ARCExpect/**'
+      - 'build/**'
+      - 'mkdocs.yml'
+      - 'overrides/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.config/dotnet-tools.json'
+      - '.github/workflows/build-and-deploy-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-deploy:
-    
+  docs:
+    name: Build and verify documentation
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 10.x.x
-    - name: Restore tools
-      run: dotnet tool restore
-    - name: make script executable
-      run: chmod u+x build.sh
-    - name: Build example docs
-      run: ./build.sh buildDocs
-    - name: deploy
-      uses: JamesIves/github-pages-deploy-action@3.7.1
-      with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: ./output # The folder the action should deploy.
-          CLEAN: true # Automatically remove deleted files from the deploy branch
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: astral-sh/setup-uv@v7
+      - name: Restore local tools
+        run: dotnet tool restore
+      - name: Make build script executable
+        run: chmod +x build.sh
+      - name: Sync locked Python environment
+        run: uv sync --locked
+      - name: Run packed documentation samples
+        run: ./build.sh RunDocsSamples
+      - name: Build documentation site
+        run: ./build.sh BuildDocs
+      - name: Upload Pages artifact
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy documentation
+    runs-on: ubuntu-latest
+    needs: docs
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || github.event_name == 'workflow_dispatch'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
