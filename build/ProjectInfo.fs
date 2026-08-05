@@ -121,7 +121,7 @@ let testProjects =
 
 let project = "arc-validate"
 
-let solutionFile  = $"{project}.sln"
+let solutionFile  = $"{project}.slnx"
 
 let configuration = "Release"
 

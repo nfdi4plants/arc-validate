@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/build/">
+    <Project Path="build/build.fsproj" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/arc-validate/">
+    <Project Path="src/arc-validate/arc-validate.fsproj" />
+  </Folder>
+  <Folder Name="/src/ARCExpect/">
+    <Project Path="src/ARCExpect/ARCExpect.fsproj" />
+    <Project Path="src/ARCExpect/ARCExpect.Javascript.fsproj" />
+    <Project Path="src/ARCExpect/ARCExpect.Python.fsproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/arc-validate/">
+    <Project Path="tests/arc-validate.Tests/arc-validate.Tests.fsproj" />
+    <Project Path="tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj" />
+  </Folder>
+  <Folder Name="/tests/ARCExpect/">
+    <Project Path="tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsproj" />
+    <Project Path="tests/ARCExpect.Javascript.Tests/ARCExpect.Javascript.Tests.fsproj" />
+    <Project Path="tests/ARCExpect.Python.Tests/ARCExpect.Python.Tests.fsproj" />
+    <Project Path="tests/ARCExpect.Tests/ARCExpect.Tests.fsproj" />
+  </Folder>
+  <Folder Name="/tests/shared/">
+    <Project Path="tests/Common/Common.fsproj" />
+    <Project Path="tests/FSharpConsole/FSharpConsole.fsproj" />
+  </Folder>
+</Solution>

@@ -75,7 +75,7 @@ system interpreter.
 .\build.cmd RunTests
 
 # Direct solution build
-dotnet build arc-validate.sln -m:1
+dotnet build arc-validate.slnx -m:1
 
 # Focused test projects
 dotnet test tests/ARCExpect.Tests/ARCExpect.Tests.fsproj

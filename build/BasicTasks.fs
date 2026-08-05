@@ -35,7 +35,7 @@ let setPrereleaseTag =
         prereleaseTag <- (sprintf "%s-%s" CoreProject.PackageVersionTag suffix)
     }
 
-/// builds the solution file (dotnet build solution.sln)
+/// builds the solution file (dotnet build solution.slnx)
 let buildSolution =
     BuildTask.create "BuildSolution" [ clean ] { 
         solutionFile 
