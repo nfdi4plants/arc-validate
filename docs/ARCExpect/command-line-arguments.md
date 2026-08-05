@@ -43,6 +43,10 @@ the ARC directory, output directory, source branch, and source commit hash.
 The source branch and commit supplied above are encoded into all three standard
 outputs. `RunDocsSamples` regenerates these files from the F#/.NET package and
 verifies the corresponding Python output during every sample verification pass.
+The package also uses its parsed `--strict`, `--minimum-files`, and `--label`
+values to create the `Payload` object in `validation_summary.json`. The docs
+test parses that JSON and asserts the three values, so the example verifies
+argument consumption rather than only successful parsing.
 
 ### Badge
 

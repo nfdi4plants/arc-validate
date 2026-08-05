@@ -6,7 +6,6 @@ repo_name: nfdi4plants/arc-validate
 
 exclude_docs: |
   fsdocs/
-  ARCExpect/introduction.ipynb
 
 validation:
   links:
@@ -52,6 +51,7 @@ nav:
   - Home: index.md
   - ARCExpect:
       - Simple validation package: ARCExpect/simple-validation-package.md
+      - Add a result payload: ARCExpect/payload.md
       - Command-line arguments: ARCExpect/command-line-arguments.md
       - API design: ARCExpect/design.md
   - arc-validate CLI: arc-validate/introduction.md

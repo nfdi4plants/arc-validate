@@ -1,1 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="configurable-validation"><properties><property name="SourceBranch" value="docs/polyglot" /><property name="SourceCommitHash" value="0123456789abcdef" /></properties><testcase name="[ Critical; minimum-files is positive ]" time="0.003" /><testcase name="[ Critical; strict mode has a label ]" time="0.000" /></testsuite></testsuites>
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="configurable-validation" tests="2" failures="0" errors="0" skipped="0" time="0.000">
+    <properties>
+      <property name="SourceBranch" value="docs/polyglot" />
+      <property name="SourceCommitHash" value="0123456789abcdef" />
+    </properties>
+    <testcase name="[ Critical; minimum-files is positive ]" time="0.000" />
+    <testcase name="[ Critical; strict mode has a label ]" time="0.000" />
+  </testsuite>
+</testsuites>

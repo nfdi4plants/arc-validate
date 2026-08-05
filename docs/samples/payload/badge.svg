@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="184" height="20">
+<svg xmlns="http://www.w3.org/2000/svg" width="191" height="20">
     <metadata>
         <arcexpect:source xmlns:arcexpect="https://github.com/nfdi4plants/arc-validate#ARCExpect" SourceBranch="docs/polyglot" SourceCommitHash="0123456789abcdef" />
     </metadata>
@@ -8,19 +8,19 @@
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
     <mask id="arc-validate-badge">
-        <rect width="184" height="20" rx="3" fill="#fff"/>
+        <rect width="191" height="20" rx="3" fill="#fff"/>
     </mask>
     <g mask="url(#arc-validate-badge)">
-        <path fill="#555" d="M0 0h155v20H0z"/>
-        <path fill="#4C1" d="M155 0h29v20H155z"/>
-        <path fill="url(#b)" d="M0 0h184v20H0z"/>
+        <path fill="#555" d="M0 0h162v20H0z"/>
+        <path fill="#4C1" d="M162 0h29v20H162z"/>
+        <path fill="url(#b)" d="M0 0h191v20H0z"/>
     </g>
     <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-        <text x="78.5" y="15" fill="#010101" fill-opacity=".3">simple-validation@1.0.0</text>
-        <text x="77.5" y="14">simple-validation@1.0.0</text>
+        <text x="82" y="15" fill="#010101" fill-opacity=".3">payload-validation@1.0.0</text>
+        <text x="81" y="14">payload-validation@1.0.0</text>
     </g>
     <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-        <text x="170.5" y="15" fill="#010101" fill-opacity=".3">1/1</text>
-        <text x="169.5" y="14">1/1</text>
+        <text x="177.5" y="15" fill="#010101" fill-opacity=".3">1/1</text>
+        <text x="176.5" y="14">1/1</text>
     </g>
 </svg>

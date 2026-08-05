@@ -31,32 +31,25 @@ Inputs:
 
 # /// script
 # dependencies = [
-#   "arcexpect==7.0.0a3",
+#   "arcexpect==7.0.0a6",
 # ]
 # ///
 
 import asyncio
-from pathlib import Path
 
 from arcexpect import (
-    Badge,
     Execute,
-    FrontmatterLanguage,
-    JUnit,
     PackageArguments,
-    RunSummary,
     Setup,
-    ValidationSummary,
     test_case,
 )
 
-metadata = Setup.Metadata(
-    PACKAGE_METADATA,
-    FrontmatterLanguage.PythonFrontmatter,
-)
+metadata = Setup.Metadata(PACKAGE_METADATA)
 
 arguments = PackageArguments.from_command_line(metadata)
 minimum_files = arguments.GetInt("minimum-files")
+strict = arguments.GetBoolean("strict")
+label = arguments.TryGetString("label")
 
 
 def validate_minimum_files():
@@ -65,7 +58,7 @@ def validate_minimum_files():
 
 
 def validate_strict_label():
-    if arguments.GetBoolean("strict") and arguments.TryGetString("label") is None:
+    if strict and label is None:
         raise RuntimeError("Strict mode requires a label.")
 
 
@@ -77,33 +70,20 @@ validation_package = Setup.ValidationPackage(
     ],
 )
 
-summary = asyncio.run(
-    Execute.validation(validation_package, arguments=arguments)
-)
+payload = {
+    "Strict": strict,
+    "MinimumFiles": minimum_files,
+}
 
-if summary.Critical.HasFailures:
-    raise RuntimeError("The configurable validation package failed.")
+if label is not None:
+    payload["Label"] = label
 
-output_directory = Path(arguments.OutputDirectory)
-output_directory.mkdir(parents=True, exist_ok=True)
-combined = RunSummary.combine([summary.Critical, summary.NonCritical])
-
-(output_directory / "validation_summary.json").write_text(
-    ValidationSummary.to_json(summary),
-    encoding="utf-8",
-)
-(output_directory / "validation_report.xml").write_text(
-    JUnit.Writer.to_xml(
-        combined,
-        SuiteName=metadata.Name,
-        SourceBranch=summary.SourceBranch,
-        SourceCommitHash=summary.SourceCommitHash,
-    ),
-    encoding="utf-8",
-)
-(output_directory / "badge.svg").write_text(
-    Badge.Writer.to_svg(summary, metadata.Name),
-    encoding="utf-8",
+asyncio.run(
+    Execute.validation_pipeline(
+        validation_package,
+        arguments=arguments,
+        payload=payload,
+    )
 )
 
 print(

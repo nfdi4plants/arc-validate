@@ -7,8 +7,8 @@ F# libraries used to author, execute, and report ARC validation packages. The
 CLI is used in DataHUB validation pipelines and supports validation packages
 retrieved from the ARC validation package registry (AVPR).
 
-The codebase is currently .NET-oriented, but the portable validation-package
-roadmap introduces Fable-transpiled libraries for .NET, JavaScript, and Python.
+The CLI remains .NET-oriented, while ARCExpect is a polyglot library compiled
+for .NET and transpiled to JavaScript and Python.
 Treat portability and the emitted JavaScript/Python API as public contract
 concerns whenever a project or source boundary is designated portable.
 
@@ -34,14 +34,17 @@ Keep the roadmap issues separate:
 - `src/ARCExpect/`: one ARCExpect source tree with three parallel project files:
   `ARCExpect.fsproj` for .NET, `ARCExpect.Javascript.fsproj` for Fable
   JavaScript/TypeScript, and `ARCExpect.Python.fsproj` for Fable Python.
-  The root ARCExpect source files are compiled by all three; `DotNet/` is
-  compiled only by .NET.
+  `Common/` is compiled by all three. `DotNet/`, `Python/`, and
+  `Javascript/` contain target runtime adapters and native package facades;
+  target folders are implementation boundaries and never public namespaces.
 - `src/arc-validate/PackageManagement/`: internal registry access,
   configuration, cache management, installation, and uninstallation.
 - `src/arc-validate/PackageRunner/`: internal F# and Python script execution.
 - `src/arc-validate/`: CLI arguments, commands, orchestration, presentation,
   package management, and package execution.
-- `tests/ARCExpect.Tests/`: .NET-only ARCExpect compatibility and CV tests.
+- `tests/ARCExpect.Tests/`: .NET filesystem pipeline, specification, and CV
+  tests. Expecto may be used as this test project's runner, but is not a
+  production ARCExpect dependency.
 - `tests/ARCExpect.Contract.Tests/`: shared Fable.Pyxpecto contract suite for
   portable ARCExpect APIs. The JavaScript and Python sibling projects compile
   the same test sources against their corresponding ARCExpect project.
@@ -120,6 +123,10 @@ environment. Do not add new tests that depend on live services.
   parallel project files following the DataHubClient/ARCtrl pattern. Keep the
   portable `<Compile>` lists duplicated, ordered, and synchronized in all
   three projects; do not factor them into an imported props file.
+- `Directory.Build.props` owns `ARCExpectPackageVersion` and the exact AVPR
+  package pins. The build verifies the ARCExpect value against the latest
+  release-notes entry and derives native manifest versions from these
+  properties; do not introduce another hand-maintained version constant.
 - The .NET NuGet package is `ARCExpect`; JavaScript and Python distributions
   use the package name `arcexpect`. Do not expose `Core`,
   `Portable`, `.NET`, `.Javascript`, or `.Python` in public namespaces.
@@ -151,8 +158,9 @@ environment. Do not add new tests that depend on live services.
   compatibility adapters.
 - Preserve public behavior and output schemas unless the task explicitly
   authorizes a breaking change.
-- Use the existing Expecto/YoloDev test setup for current .NET-only projects.
-  Give tests behavior-oriented names consistent with neighboring tests.
+- Existing .NET test projects may retain their Expecto/YoloDev test harness.
+  Production ARCExpect validation packages use Fable.Pyxpecto only. Give tests
+  behavior-oriented names consistent with neighboring tests.
 - Use small in-repository fixtures and injected/local HTTP handlers for new
   package-management tests. Do not extend the current live-AVPR test pattern.
 - Keep filesystem, HTTP, process execution, serialization, and framework
@@ -239,9 +247,10 @@ the generated F# API reference under `site/fsdocs/`.
   be deterministic and offline except for package restoration. Each package
   writes `validation_summary.json`, `validation_report.xml`, and `badge.svg`.
   The runner regenerates the checked-in output under the sample topic from the
-  F#/.NET execution, then verifies the Python execution emits the same portable
-  summary and badge plus a valid JUnit report. Documentation pages display all
-  three generated artifacts; do not hand-edit them.
+  F#/.NET execution, pretty-prints JSON and XML with stable line endings, and
+  normalizes JUnit case durations to `0.000`. It then requires Python to emit
+  the same summary, JUnit report, and badge byte-for-byte. Documentation pages
+  display all three generated artifacts; do not hand-edit them.
 - Keep F# sample references pinned to the exact current ARCExpect version in
   the committed `.fsx`; the runner injects only the local package source into
   its scratch copy. Python samples run unmodified against an isolated wheel
@@ -269,20 +278,37 @@ the generated F# API reference under `site/fsdocs/`.
 
 ## ARCExpect portability boundary
 
-The roadmap separates framework-neutral result/output contracts from the
-current Expecto runner and .NET filesystem behavior.
+The roadmap separates framework-neutral result/output contracts from
+target-specific filesystem behavior.
 
 - Replace validation-package metadata/frontmatter dependencies with
   `ValidationPackage.Model` and `ValidationPackage.Codecs`; never reintroduce
   `AVPRIndex`.
 - Portable ARCExpect owns framework-neutral case outcomes, per-case results,
   run summaries, and pure summary/JUnit/badge content generation.
+- Keep `Thoth.Json.Core.Json` as the canonical payload stored in portable
+  summaries. Native package boundaries convert JSON-compatible author values:
+  `IDictionary<string, obj>` on .NET, dictionaries/lists/scalars on Python,
+  and plain objects/arrays/scalars on JavaScript. All targets reject non-finite
+  payload numbers.
 - Keep owned output APIs under `ARCExpect.Badge` and `ARCExpect.JUnit`; do not
   reintroduce AnyBadge.NET or platform XML dependencies into ARCExpect.
-- `Expecto.TestRunSummary` conversion, the current Expecto runner, filesystem
-  writes, and .NET-only badge or serialization compatibility remain behind a
-  thin .NET boundary.
-- Do not let portable writers consume `Expecto.TestRunSummary` directly.
+- The internal output pipeline owns portable result combination and
+  summary/JUnit/badge encoding. Do not expose that bundle as a public package
+  authoring type; authors should use `Execute.ValidationPipeline` rather than
+  combining `RunSummary` values for the standard workflow. Preserve the public
+  individual `Execute.SummaryCreation`, `Execute.JUnitReportCreation`, and
+  `Execute.BadgeCreation` operations for custom workflows, along with the pure
+  content writers.
+- Filesystem writes remain target-specific: .NET owns them under `DotNet/`,
+  Python owns them in `Python/top_level_api.py`, and JavaScript package/file
+  conventions remain intentionally undesigned.
+- `Setup.Metadata(PACKAGE_METADATA)` chooses the frontmatter language from
+  the compiled target. Do not expose an ARCExpect language selector or mirror
+  the codec union. AVPR Codecs retains its own union because registry tooling
+  must parse multiple source languages. JavaScript metadata setup remains
+  explicitly unavailable until AVPR defines a JavaScript package/frontmatter
+  format.
 - Preserve the existing output layout and semantics:
   `.arc-validate-results/<name>@<version>/`, `validation_summary.json`,
   `validation_report.xml`, and `badge.svg`.
@@ -309,11 +335,16 @@ current Expecto runner and .NET filesystem behavior.
 - `Setup`, `ARCValidationPackage`, and the top-level `Execute` facade are
   required shared APIs on .NET, JavaScript, and Python; output writers alone
   are not a complete transpiled ARCExpect surface.
+- Keep native top-level facade implementations explicit under
+  `DotNet/TopLevelAPI.fs`, `Python/top_level_api.py`, and
+  `Javascript/TopLevelAPI.js`; package entry points should only expose or
+  re-export these APIs.
 - Portable validation packages use Fable.Pyxpecto test cases. Prefer upstream
   structured results, but a focused ARCExpect adapter is allowed when waiting
   for a Pyxpecto release would leave JavaScript/Python without `Execute`.
-- Keep existing Expecto execution and filesystem-writing APIs as .NET-only
-  compatibility adapters during the migration.
+- Do not add Expecto compatibility back to production ARCExpect. Immutable
+  historical packages keep their exact older ARCExpect pins; new versions use
+  Fable.Pyxpecto.
 
 ## AVPR dependency boundary
 

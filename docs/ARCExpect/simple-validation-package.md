@@ -5,6 +5,11 @@ test cases and converts their outcomes into a framework-neutral
 `ValidationSummary`. The same package structure works on .NET, Python, and
 JavaScript.
 
+This first package has no package-defined arguments and creates no custom
+payload. It only consumes the standard ARC and output paths supplied by the
+validation-package runtime. The next guide adds a calculated JSON payload;
+the following guide adds typed package arguments.
+
 ## Install ARCExpect
 
 === "F# / .NET"
@@ -36,6 +41,10 @@ summary.
 
 The frontmatter must be the first construct in the file. Put NuGet directives
 and imports only after its closing delimiter.
+
+ARCExpect selects the frontmatter language from the installed target: the
+.NET package parses F# frontmatter and the Python package parses the bound
+Python frontmatter value. Package code does not import or pass a language enum.
 
 The authoritative frontmatter schema, supported fields, and submission rules
 live in the [AVPR metadata documentation](https://github.com/nfdi4plants/arc-validate-package-registry/blob/dev/docs/packages/metadata.md).
@@ -82,15 +91,25 @@ the same portable summary and badge plus a valid JUnit report.
 --8<-- "docs/samples/simple-validation-package/validation_report.xml"
 ```
 
-`Execute.Validation` returns asynchronously on every target: `Async` in F#,
-an awaitable in Python, and a `Promise` in JavaScript. A failed assertion is
-captured in the summary; an unexpected exception is recorded as an error.
+`Execute.Validation` remains available when a caller only needs the portable
+summary. The higher-level `Execute.ValidationPipeline` API used by the samples
+executes the package, combines its critical and non-critical results, creates
+all three output formats, and writes them below
+`.arc-validate-results/<name>@<version>/`. Package authors do not need to call
+the individual summary, JUnit, or badge writers for the standard workflow. The
+pipeline is synchronous in F#/.NET and awaitable in Python. JavaScript package
+execution and its output boundary are intentionally still undesigned.
 
-The portable `ValidationSummary`, `JUnit.Writer`, and `Badge.Writer` APIs can
-then encode the standard JSON, JUnit XML, and SVG outputs. The .NET compatibility
-pipeline additionally provides the established filesystem-writing behavior.
+The individual output operations remain public for custom workflows. On .NET,
+pipe a `ValidationSummary` into `Execute.SummaryCreation`,
+`Execute.JUnitReportCreation`, or `Execute.BadgeCreation`; Python exposes the
+equivalent `Execute.summary_creation`, `Execute.junit_report_creation`, and
+`Execute.badge_creation` methods. The pure `ValidationSummary`, `JUnit.Writer`,
+and `Badge.Writer` encoders are available when callers want content without
+filesystem writes.
 
 ## Next step
 
-For configurable packages, declare CWL `Inputs` in the metadata and read the
-validated values through [ARCExpect command-line arguments](command-line-arguments.md).
+Continue with [adding a calculated result payload](payload.md), then declare
+CWL `Inputs` for configurable packages in
+[ARCExpect command-line arguments](command-line-arguments.md).

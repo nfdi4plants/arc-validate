@@ -12,29 +12,20 @@ Publish: false
 
 # /// script
 # dependencies = [
-#   "arcexpect==7.0.0a3",
+#   "arcexpect==7.0.0a6",
 # ]
 # ///
 
 import asyncio
-from pathlib import Path
 
 from arcexpect import (
-    Badge,
     Execute,
-    FrontmatterLanguage,
-    JUnit,
     PackageArguments,
-    RunSummary,
     Setup,
-    ValidationSummary,
     test_case,
 )
 
-metadata = Setup.Metadata(
-    PACKAGE_METADATA,
-    FrontmatterLanguage.PythonFrontmatter,
-)
+metadata = Setup.Metadata(PACKAGE_METADATA)
 
 arguments = PackageArguments.from_command_line(metadata)
 
@@ -49,33 +40,8 @@ validation_package = Setup.ValidationPackage(
     [test_case("the package has a stable name", validate_package_name)],
 )
 
-summary = asyncio.run(
-    Execute.validation(validation_package, arguments=arguments)
+asyncio.run(
+    Execute.validation_pipeline(validation_package, arguments=arguments)
 )
 
-if summary.Critical.HasFailures:
-    raise RuntimeError("The validation package reported a critical failure.")
-
-output_directory = Path(arguments.OutputDirectory)
-output_directory.mkdir(parents=True, exist_ok=True)
-combined = RunSummary.combine([summary.Critical, summary.NonCritical])
-
-(output_directory / "validation_summary.json").write_text(
-    ValidationSummary.to_json(summary),
-    encoding="utf-8",
-)
-(output_directory / "validation_report.xml").write_text(
-    JUnit.Writer.to_xml(
-        combined,
-        SuiteName=metadata.Name,
-        SourceBranch=summary.SourceBranch,
-        SourceCommitHash=summary.SourceCommitHash,
-    ),
-    encoding="utf-8",
-)
-(output_directory / "badge.svg").write_text(
-    Badge.Writer.to_svg(summary, metadata.Name),
-    encoding="utf-8",
-)
-
-print(f"Passed {summary.Critical.Passed}/{summary.Critical.Total} critical tests.")
+print(f"Validation outputs written below {arguments.OutputDirectory}.")

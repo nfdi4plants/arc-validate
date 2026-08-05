@@ -89,9 +89,9 @@ values containing spaces do not require package-specific shell escaping. The
 source arguments are independent: either, both, or neither may be supplied.
 
 ARCExpect's `PackageArguments.fromCommandLine` API reads all four standard
-arguments on .NET, JavaScript, and Python. The .NET filesystem pipeline also
-uses the parsed output directory and source provenance when supplied with the
-resulting `PackageArguments` value.
+arguments on .NET, JavaScript, and Python. The .NET and Python validation
+pipelines use the parsed output directory and source provenance when supplied
+with the resulting `PackageArguments` value.
 
 ### Package-defined and CWL arguments
 

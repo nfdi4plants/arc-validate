@@ -1,8 +1,8 @@
 {
   "Critical": {
     "HasFailures": false,
-    "Total": 2,
-    "Passed": 2,
+    "Total": 1,
+    "Passed": 1,
     "Failed": 0,
     "Errored": 0
   },
@@ -14,15 +14,16 @@
     "Errored": 0
   },
   "ValidationPackage": {
-    "Name": "configurable-validation",
+    "Name": "payload-validation",
     "Version": "1.0.0",
-    "Summary": "A validation package with typed inputs",
-    "Description": "Reads standard and CWL-defined arguments through ARCExpect."
+    "Summary": "A validation package with calculated output data",
+    "Description": "Shows how package computations become validation-summary payload JSON."
   },
   "Payload": {
-    "Strict": true,
-    "MinimumFiles": 2,
-    "Label": "documentation sample"
+    "Metrics": {
+      "FilesChecked": 2
+    },
+    "Package": "payload-validation"
   },
   "SourceBranch": "docs/polyglot",
   "SourceCommitHash": "0123456789abcdef"

@@ -15,9 +15,10 @@ Use the containers tagged with [main](https://github.com/nfdi4plants/arc-validat
 
 Validation of ARCs is based on:
 
-- **ARCExpect**: portable result, summary, JUnit, and badge APIs for .NET,
-  JavaScript, and Python, plus .NET-only validation-case, Expecto,
-  filesystem, ARCTokenization, and ControlledVocabulary compatibility APIs.
+- **ARCExpect**: portable Pyxpecto package execution, result, summary, JUnit,
+  and badge APIs for .NET, JavaScript, and Python, plus target-specific output
+  writing on .NET and Python and .NET-only ARCTokenization and
+  ControlledVocabulary helpers.
 - **Validation packages**: installable F# and Python validation scripts with
   shared metadata contracts from AVPR.
 - **arc-validate**: package management, execution, and CLI orchestration.
@@ -59,8 +60,8 @@ Both options are independent and optional. When present, arc-validate writes
 them to `validation_summary.json`, standard JUnit `<properties>`, and
 non-rendered SVG `<metadata>`. When absent, those fields and elements are
 omitted. Package-based validation receives the same switches in the package
-process argument list; ARCExpect's .NET compatibility pipeline consumes them
-automatically.
+process argument list; ARCExpect's .NET and Python validation pipelines consume
+them automatically.
 
 See the [arc-validate argument documentation](docs/arc-validate/introduction.md#validation-package-arguments)
 for the complete distinction between CLI-only and package-process arguments.
@@ -84,7 +85,6 @@ argument; they do not construct or evaluate shell commands.
 - [Fable](https://fable.io/)
 - [Fable.Pyxpecto](https://github.com/Freymaurer/Fable.Pyxpecto)
 - [Thoth.Json](https://github.com/thoth-org/Thoth.Json)
-- [Expecto](https://github.com/haf/expecto)
 
 #### arc-validate
 

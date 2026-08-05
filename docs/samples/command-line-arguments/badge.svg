@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="179" height="20">
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="20">
     <metadata>
         <arcexpect:source xmlns:arcexpect="https://github.com/nfdi4plants/arc-validate#ARCExpect" SourceBranch="docs/polyglot" SourceCommitHash="0123456789abcdef" />
     </metadata>
@@ -8,19 +8,19 @@
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
     <mask id="arc-validate-badge">
-        <rect width="179" height="20" rx="3" fill="#fff"/>
+        <rect width="220" height="20" rx="3" fill="#fff"/>
     </mask>
     <g mask="url(#arc-validate-badge)">
-        <path fill="#555" d="M0 0h150v20H0z"/>
-        <path fill="#4C1" d="M150 0h29v20H150z"/>
-        <path fill="url(#b)" d="M0 0h179v20H0z"/>
+        <path fill="#555" d="M0 0h191v20H0z"/>
+        <path fill="#4C1" d="M191 0h29v20H191z"/>
+        <path fill="url(#b)" d="M0 0h220v20H0z"/>
     </g>
     <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-        <text x="76" y="15" fill="#010101" fill-opacity=".3">configurable-validation</text>
-        <text x="75" y="14">configurable-validation</text>
+        <text x="96.5" y="15" fill="#010101" fill-opacity=".3">configurable-validation@1.0.0</text>
+        <text x="95.5" y="14">configurable-validation@1.0.0</text>
     </g>
     <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-        <text x="165.5" y="15" fill="#010101" fill-opacity=".3">2/2</text>
-        <text x="164.5" y="14">2/2</text>
+        <text x="206.5" y="15" fill="#010101" fill-opacity=".3">2/2</text>
+        <text x="205.5" y="14">2/2</text>
     </g>
 </svg>

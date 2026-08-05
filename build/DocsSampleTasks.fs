@@ -3,6 +3,10 @@ module DocsSampleTasks
 open BlackFox.Fake
 open System
 open System.IO
+open System.Text
+open System.Text.Json
+open System.Xml
+open System.Xml.Linq
 
 open Helpers
 open PackageTasks
@@ -16,6 +20,20 @@ let private outputFileNames =
         "validation_report.xml"
         "badge.svg"
     |]
+
+let private packageIdentityForTopic topic =
+    match topic with
+    | "command-line-arguments" -> "configurable-validation@1.0.0"
+    | "payload" -> "payload-validation@1.0.0"
+    | "simple-validation-package" -> "simple-validation@1.0.0"
+    | _ -> failwithf "Unknown documentation sample topic: %s" topic
+
+let private resultDirectory topic outputDirectory =
+    Path.Combine(
+        outputDirectory,
+        ".arc-validate-results",
+        packageIdentityForTopic topic
+    )
 
 let private normalizedSource path =
     File.ReadAllText(path).Replace("\r\n", "\n").Replace("\r", "\n")
@@ -66,16 +84,126 @@ let private prepareOutputDirectories runtimeDirectory topic =
     let outputDirectory = Path.Combine(topicDirectory, "output") |> Path.GetFullPath
     Directory.CreateDirectory(arcDirectory) |> ignore
     recreateDirectory outputDirectory
+
+    if topic = "payload" then
+        let studyDirectory = Path.Combine(arcDirectory, "studies")
+        Directory.CreateDirectory(studyDirectory) |> ignore
+        File.WriteAllText(
+            Path.Combine(arcDirectory, "investigation.xlsx"),
+            "documentation investigation"
+        )
+        File.WriteAllText(
+            Path.Combine(studyDirectory, "study.xlsx"),
+            "documentation study"
+        )
+
     arcDirectory, outputDirectory
 
+let private requiredJsonProperty topic (name: string) (element: JsonElement) =
+    let mutable value = Unchecked.defaultof<JsonElement>
+
+    if element.TryGetProperty(name, &value) then
+        value
+    else
+        failwithf "%s summary payload is missing %s" topic name
+
+let private verifyTopicPayload topic summaryPath =
+    use document = JsonDocument.Parse(File.ReadAllText(summaryPath))
+    let root = document.RootElement
+    let mutable payload = Unchecked.defaultof<JsonElement>
+    let hasPayload = root.TryGetProperty("Payload", &payload)
+
+    match topic with
+    | "simple-validation-package" ->
+        if hasPayload then
+            failwith "simple-validation-package must not generate a payload"
+    | "payload" ->
+        if not hasPayload then
+            failwith "payload sample did not generate a payload"
+
+        let filesChecked =
+            payload
+            |> requiredJsonProperty topic "Metrics"
+            |> requiredJsonProperty topic "FilesChecked"
+            |> fun value -> value.GetInt32()
+
+        if filesChecked <> 2 then
+            failwithf "payload sample checked %i files instead of 2" filesChecked
+    | "command-line-arguments" ->
+        if not hasPayload then
+            failwith "command-line-arguments sample did not generate a payload"
+
+        let strict =
+            payload
+            |> requiredJsonProperty topic "Strict"
+            |> fun value -> value.GetBoolean()
+        let minimumFiles =
+            payload
+            |> requiredJsonProperty topic "MinimumFiles"
+            |> fun value -> value.GetInt32()
+        let label =
+            payload
+            |> requiredJsonProperty topic "Label"
+            |> fun value -> value.GetString()
+
+        if not strict || minimumFiles <> 2 || label <> "documentation sample" then
+            failwithf
+                "command-line-arguments payload did not preserve the supplied values: strict=%b minimum-files=%i label=%s"
+                strict
+                minimumFiles
+                label
+    | _ -> failwithf "Unknown documentation sample topic: %s" topic
+
+let private formatSummaryJson (path: string) =
+    use document = JsonDocument.Parse(File.ReadAllText(path))
+    let options = JsonSerializerOptions(WriteIndented = true)
+    let formatted =
+        JsonSerializer.Serialize(document.RootElement, options)
+            .ReplaceLineEndings("\n")
+
+    File.WriteAllText(path, formatted + "\n", UTF8Encoding(false))
+
+let private formatJUnitXml (path: string) =
+    let document = XDocument.Load(path)
+
+    document.Descendants()
+    |> Seq.filter (fun (element: XElement) ->
+        element.Name.LocalName = "testcase"
+        || element.Name.LocalName = "testsuite"
+    )
+    |> Seq.iter (fun (element: XElement) ->
+        element.SetAttributeValue(XName.Get("time"), "0.000")
+    )
+
+    let settings =
+        XmlWriterSettings(
+            Encoding = UTF8Encoding(false),
+            Indent = true,
+            IndentChars = "  ",
+            NewLineChars = "\n",
+            NewLineHandling = NewLineHandling.None,
+            OmitXmlDeclaration = false
+        )
+
+    use writer = XmlWriter.Create(path, settings)
+    document.Save(writer)
+
+let private formatOutputFiles topic outputDirectory =
+    let outputDirectory = resultDirectory topic outputDirectory
+    formatSummaryJson(Path.Combine(outputDirectory, "validation_summary.json"))
+    formatJUnitXml(Path.Combine(outputDirectory, "validation_report.xml"))
+
 let private verifyOutputFiles topic outputDirectory =
+    let outputDirectory = resultDirectory topic outputDirectory
+
     for fileName in outputFileNames do
         let path = Path.Combine(outputDirectory, fileName)
 
         if not (File.Exists path) || FileInfo(path).Length = 0L then
             failwithf "%s did not generate a non-empty %s" topic fileName
 
-    let summary = File.ReadAllText(Path.Combine(outputDirectory, "validation_summary.json"))
+    let summaryPath = Path.Combine(outputDirectory, "validation_summary.json")
+    let summary = File.ReadAllText(summaryPath)
     let junit = File.ReadAllText(Path.Combine(outputDirectory, "validation_report.xml"))
     let badge = File.ReadAllText(Path.Combine(outputDirectory, "badge.svg"))
 
@@ -88,7 +216,10 @@ let private verifyOutputFiles topic outputDirectory =
     if not (badge.Contains "<svg") then
         failwithf "%s generated an invalid badge" topic
 
+    verifyTopicPayload topic summaryPath
+
 let private publishOutputFiles topic outputDirectory =
+    let outputDirectory = resultDirectory topic outputDirectory
     let destination = Path.Combine(samplesSourceDirectory, topic)
 
     for fileName in outputFileNames do
@@ -99,7 +230,9 @@ let private publishOutputFiles topic outputDirectory =
         )
 
 let private verifyPortableOutputs topic outputDirectory =
-    for fileName in [| "validation_summary.json"; "badge.svg" |] do
+    let outputDirectory = resultDirectory topic outputDirectory
+
+    for fileName in outputFileNames do
         let expected = normalizedSource(Path.Combine(samplesSourceDirectory, topic, fileName))
 
         let actual = normalizedSource(Path.Combine(outputDirectory, fileName))
@@ -121,9 +254,23 @@ let private pinnedFsx samplePath =
     if not (source.Contains fsxReferenceLine) then
         failwithf "%s must contain %s" samplePath fsxReferenceLine
 
-    let localSource = Uri(Path.GetFullPath packageDir).AbsoluteUri
+    let localSources =
+        [
+            packageDir
+            Environment.GetEnvironmentVariable("AVPR_NATIVE_PACKAGE_DIR")
+        ]
+        |> List.choose (fun directory ->
+            if String.IsNullOrWhiteSpace directory then
+                None
+            else
+                Some(Uri(Path.GetFullPath directory).AbsoluteUri)
+        )
+        |> List.distinct
+        |> List.map (fun source -> $"#i \"nuget: {source}\"")
+        |> String.concat Environment.NewLine
+
     let packageReference =
-        $"#i \"nuget: {localSource}\"{Environment.NewLine}{fsxReferenceLine}"
+        $"{localSources}{Environment.NewLine}{fsxReferenceLine}"
 
     source.Replace(fsxReferenceLine, packageReference)
 
@@ -145,6 +292,7 @@ let runDocsSamplesDotNet =
                  @ argumentsForTopic topic arcDirectory outputDirectory)
                 directory
             verifyOutputFiles topic outputDirectory
+            formatOutputFiles topic outputDirectory
             publishOutputFiles topic outputDirectory
     }
 
@@ -201,6 +349,7 @@ let runDocsSamplesPython =
                 (script :: argumentsForTopic topic arcDirectory outputDirectory)
                 directory
             verifyOutputFiles topic outputDirectory
+            formatOutputFiles topic outputDirectory
             verifyPortableOutputs topic outputDirectory
     }
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testsuites>
-  <testsuite name="simple-validation" tests="1" failures="0" errors="0" skipped="0" time="0.000">
+  <testsuite name="payload-validation" tests="1" failures="0" errors="0" skipped="0" time="0.000">
     <properties>
       <property name="SourceBranch" value="docs/polyglot" />
       <property name="SourceCommitHash" value="0123456789abcdef" />
     </properties>
-    <testcase name="[ Critical; the package has a stable name ]" time="0.000" />
+    <testcase name="[ Critical; the ARC contains files ]" time="0.000" />
   </testsuite>
 </testsuites>
