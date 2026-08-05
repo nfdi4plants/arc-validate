@@ -166,11 +166,11 @@ let private deleteMatchingDirectories parentDirectory pattern =
 let private externalizeARCExpectJavaScriptDependencies outputDirectory =
     rewriteFiles
         outputDirectory
-        "\"\\./fable_modules/ValidationPackage\\.Model\\.[^/]+/([^\"]+)\\.fs\\.js\""
+        "\"(?:\\.\\./|\\./)+fable_modules/ValidationPackage\\.Model\\.[^/]+/([^\"]+)\\.fs\\.js\""
         "\"@nfdi4plants/validationpackage-model/$1.js\""
     rewriteFiles
         outputDirectory
-        "\"\\./fable_modules/ValidationPackage\\.Codecs\\.[^/]+/([^\"]+)\\.fs\\.js\""
+        "\"(?:\\.\\./|\\./)+fable_modules/ValidationPackage\\.Codecs\\.[^/]+/([^\"]+)\\.fs\\.js\""
         "\"@nfdi4plants/validationpackage-codecs/$1.js\""
     rewriteFiles
         outputDirectory
@@ -188,11 +188,11 @@ let private externalizeARCExpectJavaScriptDependencies outputDirectory =
 let private externalizeARCExpectPythonDependencies packageDirectory =
     rewriteFiles
         packageDirectory
-        @"from \.fable_modules\.validation_package_model\."
+        @"from \.+fable_modules\.validation_package_model\."
         "from validation_package_model."
     rewriteFiles
         packageDirectory
-        @"from \.fable_modules\.validation_package_codecs\."
+        @"from \.+fable_modules\.validation_package_codecs\."
         "from validation_package_codecs."
     rewriteFiles
         packageDirectory
@@ -208,7 +208,7 @@ let private externalizeARCExpectPythonDependencies packageDirectory =
     deleteMatchingDirectories fableModules "validation_package_codecs"
 
 let private writeVersionedJavaScriptManifest outputDirectory =
-    let source = Path.Combine("src", "ARCExpect", "package.json")
+    let source = Path.Combine("src", "ARCExpect", "Javascript", "package.json")
     let target = Path.Combine(outputDirectory, "package.json")
     let content =
         Regex("\"version\"\\s*:\\s*\"[^\"]+\"")
@@ -227,14 +227,32 @@ let private writeVersionedJavaScriptManifest outputDirectory =
             .Replace(content, $"\"@nfdi4plants/validationpackage-codecs\": \"{ValidationPackageCodecsNativeVersion}\"", 1)
 
     File.WriteAllText(target, content)
-    File.Copy(Path.Combine("src", "ARCExpect", "index.js"), Path.Combine(outputDirectory, "index.js"), true)
+    File.Copy(
+        Path.Combine("src", "ARCExpect", "Javascript", "index.js"),
+        Path.Combine(outputDirectory, "index.js"),
+        true
+    )
+    File.Copy(
+        Path.Combine("src", "ARCExpect", "Javascript", "TopLevelAPI.js"),
+        Path.Combine(outputDirectory, "TopLevelAPI.js"),
+        true
+    )
 
 let private pythonPackageVersion =
     toPythonPackageVersion ARCExpectPackageVersion
 
 let private writePythonBuildProject outputDirectory =
     let packageDirectory = Path.Combine(outputDirectory, "arcexpect")
-    File.Copy(Path.Combine("src", "ARCExpect", "__init__.py"), Path.Combine(packageDirectory, "__init__.py"), true)
+    File.Copy(
+        Path.Combine("src", "ARCExpect", "Python", "__init__.py"),
+        Path.Combine(packageDirectory, "__init__.py"),
+        true
+    )
+    File.Copy(
+        Path.Combine("src", "ARCExpect", "Python", "top_level_api.py"),
+        Path.Combine(packageDirectory, "top_level_api.py"),
+        true
+    )
 
     let pyproject =
         $"""[project]

@@ -26,6 +26,22 @@ let runCommand command args workingDirectory =
     if result.ExitCode <> 0 then
         failwithf "%s failed with exit code %i" command result.ExitCode
 
+let runCommandWithEnvironmentVariable
+    command
+    args
+    workingDirectory
+    variableName
+    variableValue
+    =
+    let result =
+        CreateProcess.fromRawCommand command args
+        |> CreateProcess.withWorkingDirectory workingDirectory
+        |> CreateProcess.setEnvironmentVariable variableName variableValue
+        |> Proc.run
+
+    if result.ExitCode <> 0 then
+        failwithf "%s failed with exit code %i" command result.ExitCode
+
 let runDotNetCommand command arguments workingDirectory =
     let result =
         DotNet.exec

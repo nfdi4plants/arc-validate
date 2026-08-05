@@ -100,15 +100,36 @@ let testARCExpectPackage =
         let fsharpSmokeDirectory = Path.GetDirectoryName nugetConfig
         let fsharpSmokeScript = Path.Combine(fsharpSmokeDirectory, "fsharp.fsx")
         let localNuGetSource = Uri(Path.GetFullPath packageDir).AbsoluteUri
+        let versionedFsharpSmokeSource =
+            File.ReadAllText(fsharpSmokeSource)
+                .Replace(
+                    "__ARCEXPECT_VERSION__",
+                    ARCExpectPackageVersion
+                )
+                .Replace(
+                    "__ARCEXPECT_SOURCE__",
+                    localNuGetSource
+                )
         File.WriteAllText(
             fsharpSmokeScript,
-            $"#i \"nuget: {localNuGetSource}\"{Environment.NewLine}{File.ReadAllText fsharpSmokeSource}"
+            versionedFsharpSmokeSource
         )
 
-        runDotNetCommand
-            "fsi"
-            $"\"{fsharpSmokeScript}\" -i packed-arc -o packed-out --echo \"literal; $(not-executed)\""
+        runCommandWithEnvironmentVariable
+            "dotnet"
+            [
+                "fsi"
+                fsharpSmokeScript
+                "-i"
+                "packed-arc"
+                "-o"
+                "packed-out"
+                "--echo"
+                "literal; $(not-executed)"
+            ]
             fsharpSmokeDirectory
+            "NUGET_PACKAGES"
+            cacheDirectory
 
         let javaScriptDirectory = Path.Combine(packageSmokeDir, "javascript")
         recreateDirectory javaScriptDirectory

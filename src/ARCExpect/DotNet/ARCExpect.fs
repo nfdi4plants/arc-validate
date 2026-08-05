@@ -1,28 +1,63 @@
-﻿namespace ARCExpect
-open Expecto
+namespace ARCExpect
+
+open System
+open Fable.Pyxpecto
+
+type TestID =
+    | Guid
+    | Name of string
+
+type TestCaseBuilderSp(id: TestID) =
+    member _.TryFinally(body, compensation) =
+        try
+            body()
+        finally
+            compensation()
+
+    member _.TryWith(body, catchHandler) =
+        try
+            body()
+        with error ->
+            catchHandler error
+
+    member _.Using(disposable: #IDisposable, body) =
+        using disposable body
+
+    member _.For(sequence, body) =
+        for item in sequence do
+            body item
+
+    member _.While(condition, body) =
+        while condition() do
+            body()
+
+    member _.Combine(first, second) =
+        second()
+        first
+
+    member _.Zero() = ()
+    member _.Delay body = body
+
+    member _.Run body =
+        match id with
+        | Guid -> testCase (System.Guid.NewGuid().ToString()) body
+        | Name name -> testCase name body
 
 [<AutoOpen>]
 module ARCExpect =
 
-    /// <summary>
-    /// Computation expression for creating ARC validation cases.
-    /// </summary>
-    /// <param name="id">id of the test. can either be a guid or a string. Must be unique in the given context.</param>
-    let validationCase (id:TestID) = 
+    /// Creates an ARC validation case using the shared Pyxpecto test model.
+    let validationCase id =
         TestCaseBuilderSp(id)
 
-    /// <summary>
-    /// Passes if one of the given actions passes, and fails if both fail.
-    /// </summary>
-    /// <param name="arcExpect1"></param>
-    /// <param name="arcExpect2"></param>
-    let either arcExpect1 arcExpect2 = 
+    /// Passes if either supplied validation action succeeds.
+    let either first second =
         try
-            arcExpect1 () 
-        with
-        | ex1 -> 
+            first()
+        with firstError ->
             try
-                arcExpect2 () 
-            with
-            | ex2 ->                          
-                Expecto.Tests.failtestNoStackf "%s or %s" ex1.Message ex2.Message
+                second()
+            with secondError ->
+                Fable.Pyxpecto.Suspect.fail(
+                    $"{firstError.Message} or {secondError.Message}"
+                )

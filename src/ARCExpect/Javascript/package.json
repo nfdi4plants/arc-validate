@@ -12,8 +12,8 @@
   "main": "./index.js",
   "exports": {
     ".": "./index.js",
-    "./Badge": "./Badge.js",
-    "./JUnit": "./JUnit.js"
+    "./Badge": "./Common/Outputs/Badge.js",
+    "./JUnit": "./Common/Outputs/JUnit.js"
   },
   "dependencies": {
     "@nfdi4plants/validationpackage-codecs": "0.1.0-preview.2",
@@ -22,6 +22,8 @@
   "files": [
     "index.js",
     "*.js",
+    "Common/**/*.js",
+    "Javascript/**/*.js",
     "fable_modules/**/*.js",
     "fable_modules/**/package.json"
   ],

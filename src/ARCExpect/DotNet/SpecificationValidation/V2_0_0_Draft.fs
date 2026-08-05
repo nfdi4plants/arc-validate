@@ -3,7 +3,6 @@
 open ControlledVocabulary
 open ARCTokenization
 open ARCExpect
-open Expecto
 open ValidationPackage.Model
 
 module V2_0_0_Draft =
@@ -551,7 +550,7 @@ module V2_0_0_Draft =
                 }
             ]
 
-        ExpectoValidationPackage.create(
+        ARCValidationPackage.create(
             metadata = ValidationPackageMetadata.create(
                 name = "arc_specification",
                 summary = "Validate whether an ARC conforms to Specification V2.0.0-draft",
@@ -562,5 +561,5 @@ module V2_0_0_Draft =
                 programmingLanguage = "FSharp",
                 PreReleaseVersionSuffix = "draft"
             ),
-            CriticalValidationCasesList = cases
+            CriticalValidationCases = List.toArray cases
         )

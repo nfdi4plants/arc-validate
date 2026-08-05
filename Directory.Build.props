@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
+    <ARCExpectPackageVersion Condition="'$(ARCExpectPackageVersion)' == ''">7.0.0-preview.6</ARCExpectPackageVersion>
     <AVPRClientPackageVersion Condition="'$(AVPRClientPackageVersion)' == ''">[0.3.0-preview.2]</AVPRClientPackageVersion>
     <AVPRClientInteropPackageVersion Condition="'$(AVPRClientInteropPackageVersion)' == ''">[0.1.0-preview.2]</AVPRClientInteropPackageVersion>
     <ValidationPackageModelPackageVersion Condition="'$(ValidationPackageModelPackageVersion)' == ''">[0.1.0-preview.2]</ValidationPackageModelPackageVersion>

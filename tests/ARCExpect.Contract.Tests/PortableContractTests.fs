@@ -86,6 +86,7 @@ let private argumentMetadata inputs =
 
 let tests =
     testList "portable ARCExpect contracts" [
+#if FABLE_COMPILER_PYTHON
         testCase "Python PACKAGE_METADATA runtime values retain YAML frontmatter" <| fun () ->
             let packageMetadata =
                 """
@@ -100,14 +101,37 @@ Publish: false
 ---
 """
 
-            let actual =
-                Setup.Metadata(
-                    packageMetadata,
-                    FrontmatterLanguage.PythonFrontmatter
-                )
+            let actual = Setup.Metadata(packageMetadata)
 
             Expect.equal actual.Name "python-runtime-frontmatter" "metadata name"
             Expect.equal actual.ProgrammingLanguage "Python" "source language"
+#else
+#if FABLE_COMPILER_JAVASCRIPT
+        testCase "JavaScript metadata setup remains explicit until frontmatter is defined" <| fun () ->
+            Expect.throws
+                (fun () -> Setup.Metadata("not-defined") |> ignore)
+                "JavaScript frontmatter must not silently use another language format"
+#else
+        testCase "FSharp PACKAGE_METADATA selects FSharp frontmatter" <| fun () ->
+            let actual =
+                Setup.Metadata(
+                    """(*
+---
+Name: fsharp-runtime-frontmatter
+Summary: FSharp runtime frontmatter
+Description: The target selects the FSharp frontmatter codec.
+MajorVersion: 1
+MinorVersion: 0
+PatchVersion: 0
+Publish: false
+---
+*)"""
+                )
+
+            Expect.equal actual.Name "fsharp-runtime-frontmatter" "metadata name"
+            Expect.equal actual.ProgrammingLanguage "FSharp" "source language"
+#endif
+#endif
 
         testCase "run summaries expose framework-neutral case outcomes" <| fun () ->
             Expect.equal summary.Critical.Total 1 "Critical total"
@@ -149,6 +173,24 @@ Publish: false
             Expect.equal decoded.SourceBranch summaryWithSource.SourceBranch "Decoded source branch"
             Expect.equal decoded.SourceCommitHash summaryWithSource.SourceCommitHash "Decoded source commit"
 
+        testCase "summary counts reject inconsistent aggregate data" <| fun () ->
+            Expect.throws
+                (fun () ->
+                    ValidationResult.fromCounts(1, 1, 1, 0)
+                    |> ignore
+                )
+                "Outcome counts cannot exceed total"
+
+            let inconsistentJson =
+                """{"Critical":{"HasFailures":false,"Total":1,"Passed":0,"Failed":1,"Errored":0},"NonCritical":{"HasFailures":false,"Total":0,"Passed":0,"Failed":0,"Errored":0},"ValidationPackage":{"Name":"invalid","Version":"1.0.0","Summary":"invalid","Description":"invalid"}}"""
+
+            Expect.throws
+                (fun () ->
+                    ValidationSummary.fromJson(inconsistentJson)
+                    |> ignore
+                )
+                "HasFailures must agree with outcome counts"
+
         testCase "JUnit output maps outcomes and escapes XML" <| fun () ->
             let combined = RunSummary.combine [| summary.Critical; summary.NonCritical; allOutcomes |]
             let xml = ARCExpect.JUnit.Writer.toXml(combined, SuiteName = "suite & contract")
@@ -157,7 +199,20 @@ Publish: false
             Expect.isTrue (xml.Contains("<error message=\"unexpected error\" />")) "Error is encoded"
             Expect.isTrue (xml.Contains("<skipped message=\"not applicable\" />")) "Skipped case is encoded"
             Expect.isTrue (xml.Contains("time=\"0.250\"")) "Duration is invariant"
+            Expect.isTrue (xml.Contains("tests=\"6\"")) "Suite test count"
+            Expect.isTrue (xml.Contains("failures=\"2\"")) "Suite failure count"
+            Expect.isTrue (xml.Contains("errors=\"1\"")) "Suite error count"
+            Expect.isTrue (xml.Contains("skipped=\"1\"")) "Suite skipped count"
             Expect.isFalse (xml.Contains("<properties>")) "Source properties are omitted by default"
+            Expect.isTrue
+                (xml.IndexOf("[ critical ]") < xml.IndexOf("[ noncritical ]"))
+                "Execution order is retained"
+
+            let verboseXml =
+                ARCExpect.JUnit.Writer.toXml(allOutcomes, Verbose = true)
+            Expect.isTrue
+                (verboseXml.Contains("portable stack"))
+                "Verbose JUnit includes escaped stack trace content"
 
             let xmlWithSource =
                 ARCExpect.JUnit.Writer.toXml(
@@ -180,6 +235,36 @@ Publish: false
             Expect.isTrue (svgWithSource.Contains("<metadata>")) "SVG metadata container"
             Expect.isTrue (svgWithSource.Contains("SourceBranch=\"feature/source-metadata\"")) "SVG source branch"
             Expect.isTrue (svgWithSource.Contains("SourceCommitHash=\"abc123&amp;456\"")) "SVG source commit"
+
+        testCase "badge defaults use red, orange, and green lower bounds" <| fun () ->
+            let badgeSummary critical nonCritical =
+                ValidationSummary.create(
+                    critical,
+                    nonCritical,
+                    package
+                )
+
+            let nonePassed =
+                badgeSummary
+                    (ValidationResult.create(Array.empty))
+                    (ValidationResult.create([| failed "failed" "noncritical" |]))
+                |> fun value -> ARCExpect.Badge.Writer.toSvg(value, "none")
+
+            let halfPassed =
+                badgeSummary
+                    (ValidationResult.create([| passed "passed" |]))
+                    (ValidationResult.create([| skipped "skipped" "pending" |]))
+                |> fun value -> ARCExpect.Badge.Writer.toSvg(value, "half")
+
+            let allPassed =
+                badgeSummary
+                    (ValidationResult.create([| passed "passed" |]))
+                    (ValidationResult.create(Array.empty))
+                |> fun value -> ARCExpect.Badge.Writer.toSvg(value, "all")
+
+            Expect.isTrue (nonePassed.Contains("fill=\"#E05D44\"")) "Zero passed is red"
+            Expect.isTrue (halfPassed.Contains("fill=\"#FFA500\"")) "Half passed is orange"
+            Expect.isTrue (allPassed.Contains("fill=\"#4C1\"")) "All passed is green"
 
         testCase "package arguments parse standard and CWL inputs without evaluating values" <| fun () ->
             let metadata =
@@ -303,22 +388,6 @@ Publish: false
                     3,
                     "FSharp"
                 )
-            let parsedMetadata =
-                Setup.Metadata(
-                    """(*
----
-Name: portable-execute
-MajorVersion: 1
-MinorVersion: 2
-PatchVersion: 3
-Summary: Portable Execute
-Description: Runs the shared Pyxpecto adapter.
----
-*)""",
-                    FrontmatterLanguage.FSharpFrontmatter
-                )
-            Expect.equal parsedMetadata.Name metadata.Name "Portable metadata setup"
-
             let validationPackage =
                 Setup.ValidationPackage(
                     metadata = metadata,

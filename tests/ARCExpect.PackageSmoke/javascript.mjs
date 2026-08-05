@@ -50,12 +50,15 @@ const validationPackage = Setup.ValidationPackage(
   ],
   [ptestCase("native pending", () => {})]
 );
-const executionSummary = await Execute.Validation(
+const executionSummary = await Execute.validation(
   validationPackage,
-  undefined,
-  undefined,
-  undefined,
-  packageArguments
+  {
+    payload: {
+      Runtime: "javascript",
+      Nested: { Count: 2 }
+    },
+    arguments: packageArguments
+  }
 );
 const summary = ValidationSummary.create(result, ValidationResult.create([]), packageSummary);
 
@@ -68,6 +71,8 @@ if (
   packageArguments.TryGetString("echo") !== "literal; $(not-executed)" ||
   executionSummary.Critical.Passed !== 2 ||
   executionSummary.NonCritical.Skipped !== 1 ||
+  !ValidationSummary.toJson(executionSummary).includes('"Runtime":"javascript"') ||
+  !ValidationSummary.toJson(executionSummary).includes('"Count":2') ||
   !ValidationSummary.toJson(summary).includes('"Passed":1') ||
   !Badge.Writer.toSvg(summary, "packed").includes("1/1") ||
   !JUnit.Writer.toXml(result).includes("<testcase")

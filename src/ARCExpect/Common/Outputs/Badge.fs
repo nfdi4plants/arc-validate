@@ -83,9 +83,10 @@ module private Colors =
             let ordered = thresholds |> Array.sortBy (fun threshold -> threshold.Value)
 
             ordered
-            |> Array.tryFind (fun threshold -> value < threshold.Value)
+            |> Array.filter (fun threshold -> threshold.Value <= value)
+            |> Array.tryLast
             |> Option.map (fun threshold -> threshold.Color)
-            |> Option.defaultWith (fun () -> ordered[ordered.Length - 1].Color)
+            |> Option.defaultValue defaultColor
 
 [<AttachMembers>]
 type Writer private () =
@@ -108,7 +109,7 @@ type Writer private () =
                 let thresholds =
                     defaultArg Thresholds [|
                         Threshold.create(0, Color.red())
-                        Threshold.create(total / 2, Color.orange())
+                        Threshold.create((total + 1) / 2, Color.orange())
                         Threshold.create(total, Color.green())
                     |]
 

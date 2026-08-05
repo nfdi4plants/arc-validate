@@ -1,3 +1,36 @@
+### 7.0.0-preview.6 - 2026-08-05
+
+- Organize ARCExpect sources by shared and target-specific concerns and expose
+  explicit .NET, Python, and JavaScript top-level facades.
+- Select metadata frontmatter handling from the compilation target so F# and
+  Python package authors no longer pass or import a language discriminator.
+- Accept native JavaScript payload objects and reject non-finite payload
+  numbers consistently across .NET, JavaScript, and Python.
+- Preserve validation declaration order and exception stack traces in JUnit,
+  emit aggregate suite counts, and validate decoded summary counts.
+- Correct default badge threshold selection for failed, partial, and fully
+  successful validation results.
+
+### 7.0.0-preview.5 - 2026-08-04
+
+- Accept native JSON-compatible payload values at package boundaries:
+  `IDictionary<string, obj>` on .NET and dictionaries, lists, and scalar values
+  in Python, while retaining Thoth JSON as the shared output representation.
+- Add verified payload documentation and reproducibly formatted summary JSON
+  and JUnit artifacts for all documentation samples.
+
+### 7.0.0-preview.4 - 2026-08-04
+
+- Make Fable.Pyxpecto the single ARCExpect validation-package model on every
+  target and remove the production Expecto compatibility dependency.
+- Restore the high-level validation pipeline for portable packages, including
+  the standard result layout and automatic JSON, JUnit, and badge creation on
+  .NET and Python.
+- Keep result combination and output encoding inside ARCExpect instead of
+  requiring package authors to orchestrate individual writers.
+- Retain individual summary, JUnit, and badge creation APIs for custom output
+  workflows while keeping the shared orchestration bundle internal.
+
 ### 7.0.0-preview.3 - 2026-08-04
 
 - Accept the runtime value of Python `PACKAGE_METADATA` frontmatter directly;

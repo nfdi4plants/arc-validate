@@ -12,13 +12,11 @@
     <Compile Include="TestUtils.fs" />
     <Compile Include="StringValidationPatternTests.fs" />
     <Compile Include="ReferenceObjects.fs" />
-    <Compile Include="ExpectoExtensionsTests.fs" />
     <Compile Include="DirTokenizerTests.fs" />
     <Compile Include="CvParamExtensionsTest.fs" />
     <Compile Include="ParamCollectionTests.fs" />
     <Compile Include="ARCExpectTests.fs" />
-    <Compile Include="ValidationSummaryTests.fs" />
-    <Compile Include="TopLevelAPITests.fs" />
+    <Compile Include="PipelineTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 

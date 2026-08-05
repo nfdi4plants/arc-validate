@@ -37,14 +37,20 @@ module private PyxpectoResultAdapter =
                 return
                     CaseResult.create(
                         List.toArray flatTest.name,
-                        CaseOutcome.failed(error.Message),
+                        CaseOutcome.failed(
+                            error.Message,
+                            StackTrace = TargetException.stackTrace error
+                        ),
                         DurationMilliseconds = elapsedMilliseconds started
                     )
             | error ->
                 return
                     CaseResult.create(
                         List.toArray flatTest.name,
-                        CaseOutcome.errored(error.Message),
+                        CaseOutcome.errored(
+                            error.Message,
+                            StackTrace = TargetException.stackTrace error
+                        ),
                         DurationMilliseconds = elapsedMilliseconds started
                     )
         }

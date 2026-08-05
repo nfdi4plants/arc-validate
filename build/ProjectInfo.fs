@@ -1,6 +1,7 @@
 module ProjectInfo
 
 open Fake.Core
+open System.Xml.Linq
 
 
 /// Contains relevant information about a project (e.g. version info, project location)
@@ -57,10 +58,32 @@ let ARCExpectPythonProject = "src/ARCExpect/ARCExpect.Python.fsproj"
 let ARCExpectJavaScriptTestsProject = "tests/ARCExpect.Javascript.Tests/ARCExpect.Javascript.Tests.fsproj"
 let ARCExpectPythonTestsProject = "tests/ARCExpect.Python.Tests/ARCExpect.Python.Tests.fsproj"
 let ARCExpectPackageSmokeProject = "tests/ARCExpect.PackageSmoke/ARCExpect.PackageSmoke.fsproj"
-let ARCExpectPackageVersion = CoreProject.ReleaseNotes.Value.NugetVersion
-let ValidationPackageModelNativeVersion = "0.1.0-preview.2"
 
-let ValidationPackageCodecsNativeVersion = "0.1.0-preview.2"
+let private packageVersionProperty name =
+    let document = XDocument.Load("Directory.Build.props")
+
+    document.Descendants(XName.Get(name))
+    |> Seq.exactlyOne
+    |> fun element -> element.Value.Trim().Trim([| '['; ']' |])
+
+let ARCExpectPackageVersion =
+    packageVersionProperty "ARCExpectPackageVersion"
+
+do
+    let releaseNotesVersion =
+        CoreProject.ReleaseNotes.Value.NugetVersion
+
+    if ARCExpectPackageVersion <> releaseNotesVersion then
+        failwithf
+            "ARCExpectPackageVersion '%s' does not match the latest release-notes version '%s'."
+            ARCExpectPackageVersion
+            releaseNotesVersion
+
+let ValidationPackageModelNativeVersion =
+    packageVersionProperty "ValidationPackageModelPackageVersion"
+
+let ValidationPackageCodecsNativeVersion =
+    packageVersionProperty "ValidationPackageCodecsPackageVersion"
 
 let toPythonPackageVersion (version: string) =
     version

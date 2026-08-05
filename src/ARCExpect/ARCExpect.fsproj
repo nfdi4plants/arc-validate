@@ -19,25 +19,27 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/RELEASE_NOTES.md"))</PackageReleaseNotes>
-    <PackageVersion>7.0.0-preview.3</PackageVersion>
+    <PackageVersion>$(ARCExpectPackageVersion)</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="CommandLine.DotNet.fs" />
-    <Compile Include="PackageArguments.fs" />
-    <Compile Include="Results.fs" />
-    <Compile Include="ValidationSummary.fs" />
-    <Compile Include="ARCValidationPackage.fs" />
-    <Compile Include="Setup.fs" />
-    <Compile Include="Execution.fs" />
-    <Compile Include="JUnit.fs" />
-    <Compile Include="Badge.fs" />
+    <Compile Include="DotNet\Runtime\CommandLine.fs" />
+    <Compile Include="DotNet\Runtime\Frontmatter.fs" />
+    <Compile Include="DotNet\Runtime\Exception.fs" />
+    <Compile Include="Common\Arguments\PackageArguments.fs" />
+    <Compile Include="Common\Results\Results.fs" />
+    <Compile Include="Common\Results\ValidationSummary.fs" />
+    <Compile Include="Common\Package\ARCValidationPackage.fs" />
+    <Compile Include="Common\Package\Setup.fs" />
+    <Compile Include="Common\Execution\Execution.fs" />
+    <Compile Include="Common\Outputs\JUnit.fs" />
+    <Compile Include="Common\Outputs\Badge.fs" />
+    <Compile Include="Common\Outputs\OutputPipeline.fs" />
+    <Compile Include="DotNet\Runtime\Payload.fs" />
+    <Compile Include="DotNet\Runtime\OutputFileSystem.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="DotNet\ARCValidationPackage.fs" />
-    <Compile Include="DotNet\ValidationSummary.fs" />
-    <Compile Include="DotNet\ExpectoExtensions.fs" />
     <Compile Include="DotNet\TopLevelAPI.fs" />
     <Compile Include="DotNet\StringValidationPattern.fs" />
     <Compile Include="DotNet\ParamCollection.fs" />
@@ -62,7 +64,6 @@
 
   <ItemGroup>
     <PackageReference Include="ARCTokenization" Version="[6.0.0]" />
-    <PackageReference Include="Expecto" Version="[10.2.3]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
   </ItemGroup>
 

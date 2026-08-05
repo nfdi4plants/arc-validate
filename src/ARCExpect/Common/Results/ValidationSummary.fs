@@ -87,11 +87,27 @@ module private ValidationSummaryCodec =
 
     let resultDecoder: Decoder<ValidationResult> =
         Decode.object (fun get ->
-            ValidationResult.fromCounts(
-                get.Required.Field "Total" Decode.int,
-                get.Required.Field "Passed" Decode.int,
-                get.Required.Field "Failed" Decode.int,
+            let hasFailures =
+                get.Required.Field "HasFailures" Decode.bool
+            let total =
+                get.Required.Field "Total" Decode.int
+            let passed =
+                get.Required.Field "Passed" Decode.int
+            let failed =
+                get.Required.Field "Failed" Decode.int
+            let errored =
                 get.Required.Field "Errored" Decode.int
+
+            if hasFailures <> (failed > 0 || errored > 0) then
+                invalidArg
+                    "json"
+                    "Validation result HasFailures does not match its failed and errored counts."
+
+            ValidationResult.fromCounts(
+                total,
+                passed,
+                failed,
+                errored
             )
         )
 

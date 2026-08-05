@@ -24,7 +24,7 @@ module Validate =
             | true ->
                 param
                 |> ErrorMessage.ofIParam "is empty."                
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the value of the given Param is equal to the expected value.
@@ -38,7 +38,7 @@ module Validate =
             | false -> 
                 param
                 |> ErrorMessage.ofIParam $"should equal {targetValue}."
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the term of the given Param is equal to the expected term.
@@ -51,7 +51,7 @@ module Validate =
             | false ->
                 param
                 |> ErrorMessage.ofIParam $"should equal {expectedTerm}."              
-                |> Expecto.Tests.failtestNoStackf "%s"                        
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the value of the given Param matches a regex pattern.
@@ -68,7 +68,7 @@ module Validate =
             | false ->
                 param
                 |> ErrorMessage.ofIParam "is invalid."               
-                |> Expecto.Tests.failtestNoStackf "%s"                   
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the value of the given Param matches a regex.
@@ -85,7 +85,7 @@ module Validate =
             | false ->
                 param
                 |> ErrorMessage.ofIParam "is invalid."              
-                |> Expecto.Tests.failtestNoStackf "%s"                   
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the value of the given Param satisfies a predicate (meaning a function that for a given Param returns either true or false)
@@ -100,7 +100,7 @@ module Validate =
             if not (predicate tmp) then
                 param
                 |> ErrorMessage.ofIParam "is invalid."
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the given Param satisfies a predicate (meaning a function that for a given Param returns either true or false)
@@ -111,7 +111,7 @@ module Validate =
             if not (predicate param) then
                 param
                 |> ErrorMessage.ofIParam "is invalid."
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
     /// <summary>
     /// Validation functions to perform on a collection containing any type implementing the `IParam` interface.
@@ -129,7 +129,7 @@ module Validate =
             | false ->
                 expectedValue
                 |> ErrorMessage.ofValue $"does not exist"
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if at least one Param with the expected term in the given collection exists.
@@ -142,7 +142,7 @@ module Validate =
             | false ->
                 expectedTerm
                 |> ErrorMessage.ofCvTerm $"does not exist"
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if at least one Param with the expected term in the given collection exists, which is not a metadata section key.
@@ -155,7 +155,7 @@ module Validate =
             | false ->
                 expectedTerm
                 |> ErrorMessage.ofCvTerm $"value does not exist"
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Validates if the given Param is contained in the given collection át least once.
@@ -174,7 +174,7 @@ module Validate =
             | false ->
             expectedParam
             |> ErrorMessage.ofIParam $"does not exist"
-            |> Expecto.Tests.failtestNoStackf "%s"
+            |> Fable.Pyxpecto.Suspect.fail
 
         /// <summary>
         /// Generic method to validate wether a collection of IParams satisfies any kind of predicate.
@@ -189,7 +189,7 @@ module Validate =
             | true  -> ()
             | false ->
                 ErrorMessage.ofValue $"The does not satisfy the predicate." "paramCollection"
-                |> Expecto.Tests.failtestNoStackf "%s"
+                |> Fable.Pyxpecto.Suspect.fail
 
 
     /// <summary>
@@ -201,4 +201,3 @@ module Validate =
         param |> Param.ValueMatchesRegex StringValidationPattern.email
         param |> Param.TermIsEqualTo INVMSO.``Investigation Metadata``.``INVESTIGATION CONTACTS``.``Investigation Person Email``
 
-    

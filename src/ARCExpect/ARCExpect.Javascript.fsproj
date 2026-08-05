@@ -9,15 +9,18 @@
 
   <!-- Keep this portable source list in the same order in all three projects. -->
   <ItemGroup>
-    <Compile Include="CommandLine.Javascript.fs" />
-    <Compile Include="PackageArguments.fs" />
-    <Compile Include="Results.fs" />
-    <Compile Include="ValidationSummary.fs" />
-    <Compile Include="ARCValidationPackage.fs" />
-    <Compile Include="Setup.fs" />
-    <Compile Include="Execution.fs" />
-    <Compile Include="JUnit.fs" />
-    <Compile Include="Badge.fs" />
+    <Compile Include="Javascript\Runtime\CommandLine.fs" />
+    <Compile Include="Javascript\Runtime\Frontmatter.fs" />
+    <Compile Include="Javascript\Runtime\Exception.fs" />
+    <Compile Include="Common\Arguments\PackageArguments.fs" />
+    <Compile Include="Common\Results\Results.fs" />
+    <Compile Include="Common\Results\ValidationSummary.fs" />
+    <Compile Include="Common\Package\ARCValidationPackage.fs" />
+    <Compile Include="Common\Package\Setup.fs" />
+    <Compile Include="Common\Execution\Execution.fs" />
+    <Compile Include="Common\Outputs\JUnit.fs" />
+    <Compile Include="Common\Outputs\Badge.fs" />
+    <Compile Include="Common\Outputs\OutputPipeline.fs" />
   </ItemGroup>
 
   <ItemGroup>

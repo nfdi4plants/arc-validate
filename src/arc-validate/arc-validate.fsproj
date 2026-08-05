@@ -36,7 +36,7 @@
     <PackageReference Include="ValidationPackage.Model" Version="$(ValidationPackageModelPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[7.0.0-preview.3]" ExactVersion="true" />
+    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[$(ARCExpectPackageVersion)]" ExactVersion="true" />
   </ItemGroup>
   <Target Name="UseExplicitPackageVersions" BeforeTargets="GenerateNuspec">
     <ItemGroup>

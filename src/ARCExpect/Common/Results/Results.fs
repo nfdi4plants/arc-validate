@@ -24,8 +24,12 @@ type CaseOutcome(kind: CaseOutcomeKind, message: string, stackTrace: string) =
 
     static member passed() = CaseOutcome.create(CaseOutcomeKind.Passed)
 
-    static member failed(message: string) =
-        CaseOutcome.create(CaseOutcomeKind.Failed, Message = message)
+    static member failed(message: string, ?StackTrace: string) =
+        CaseOutcome.create(
+            CaseOutcomeKind.Failed,
+            Message = message,
+            ?StackTrace = StackTrace
+        )
 
     static member errored(message: string, ?StackTrace: string) =
         CaseOutcome.create(
@@ -185,7 +189,29 @@ type ValidationResult(cases: CaseResult array, durationMilliseconds: float, suit
         ?Skipped: int,
         ?SuiteName: string
     ) =
-        let skipped = defaultArg Skipped (max 0 (total - passed - failed - errored))
+        let namedCounts = [|
+            "total", total
+            "passed", passed
+            "failed", failed
+            "errored", errored
+        |]
+
+        for name, value in namedCounts do
+            if value < 0 then
+                invalidArg name "Validation result counts cannot be negative."
+
+        let skipped =
+            defaultArg Skipped (total - passed - failed - errored)
+
+        if skipped < 0 then
+            invalidArg
+                "total"
+                "Validation result total cannot be smaller than its outcome counts."
+
+        if total <> passed + failed + errored + skipped then
+            invalidArg
+                "total"
+                "Validation result total must equal passed, failed, errored, and skipped counts."
 
         let cases =
             [|
