@@ -67,6 +67,9 @@ Configure the following publishers:
 Enter workflow filenames only, without `.github/workflows/`. The npm values
 are case-sensitive. The npm package's repository URL must remain
 `https://github.com/nfdi4plants/arc-validate.git`.
+The workflow explicitly publishes prerelease versions with the `preview`
+dist-tag and stable versions with `latest`; npm rejects prerelease publication
+without a non-`latest` tag.
 
 NuGet trusted-publishing policies belong to a NuGet user or organization and
 cannot be scoped to an individual package. With `Mutagene` as policy owner, the

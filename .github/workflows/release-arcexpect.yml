@@ -122,7 +122,11 @@ jobs:
           if npm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
             echo "${package_name}@${package_version} is already published; skipping."
           else
-            npm publish "${packages[0]}" --access public
+            npm_tag=latest
+            if [[ "$package_version" == *-* ]]; then
+              npm_tag=preview
+            fi
+            npm publish "${packages[0]}" --access public --tag "$npm_tag"
           fi
 
   publish-pypi:

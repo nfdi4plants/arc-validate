@@ -411,6 +411,7 @@ project has been absorbed into the CLI.
   `release-arcexpect.yml`. It has no path filter, preserves one pack artifact,
   and keeps NuGet, npm, and PyPI jobs independently retriable. Trusted
   publisher policies must name this direct workflow and environment `release`.
+  npm prereleases use the `preview` dist-tag; stable releases use `latest`.
 - Preserve least-privilege workflow permissions and deliberate action versions.
   Never print tokens, NuGet keys, registry credentials, or other secrets.
 - Keep the public nuget.org policy-owner profile in the `NUGET_USER`
