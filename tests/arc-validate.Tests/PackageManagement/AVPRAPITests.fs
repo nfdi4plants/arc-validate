@@ -82,3 +82,4 @@ let ``AVPRAPI tests`` =
             }
         ]
     ]
+    |> testLabel "integration"

@@ -197,5 +197,5 @@ let ``Toplevel API tests`` =
                     Expect.isFalse (File.Exists (Path.Combine(expected_package_cache_folder_path, "test@3.0.0.fsx"))) $"test@3.0.0.fsx did not exist at {expected_package_cache_folder_path}"
                 }
             ])
-        ])
+        ] |> testLabel "integration")
     ])

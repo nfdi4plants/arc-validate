@@ -77,6 +77,9 @@ system interpreter.
 # Full build/test orchestration
 .\build.cmd RunTests
 
+# Automated CI suite without live AVPR integration groups
+.\build.cmd RunAutomatedTests
+
 # Direct solution build
 dotnet build arc-validate.slnx -m:1
 
@@ -110,6 +113,11 @@ package-management contract tests that call the AVPR development service. Some
 legacy cache tests write under the platform application-data directory. Inspect
 these side effects before running the full target in a restricted or shared
 environment. Do not add new tests that depend on live services.
+
+Mark existing tests that call AVPR dev with the `integration` test label.
+`RunAutomatedTests` excludes that label for push and pull-request CI, while the
+manually dispatched `Full tests with AVPR integration` workflow runs the full
+default `RunTests` target.
 
 ## Build-project conventions
 
@@ -402,7 +410,9 @@ project has been absorbed into the CLI.
 ## CI and release safety
 
 - Pushes and pull requests targeting `dev` or `release` run the cross-platform
-  build/test workflow when source, tests, build logic, or workflows change.
+  `RunAutomatedTests` workflow when source, tests, build logic, or workflows
+  change. Live AVPR tests remain part of `RunTests` and run in CI only through
+  the manually dispatched `integration-tests.yml` workflow.
 - Pushes changing `src/arc-validate/**` or `Dockerfile` can publish a GHCR
   container after Linux and Windows tests pass.
 - Documentation changes run verified polyglot samples and a strict site build.

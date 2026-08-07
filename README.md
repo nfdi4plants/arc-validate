@@ -125,7 +125,13 @@ Use the corresponding `build.cmd` commands on Windows.
 
 ### Test
 
-test setup uses the AVPR development service, running tests for the compiled `arc-validate` tool with validation packages from https://avpr-dev.nfdi4plants.org. Network-backed tests must not target the production registry.
+The full test setup uses the AVPR development service, running tests for the
+compiled `arc-validate` tool with validation packages from
+https://avpr-dev.nfdi4plants.org. Network-backed tests must not target the
+production registry. `RunTests` remains the default full suite. Push and
+pull-request CI uses `RunAutomatedTests`, which excludes the live `integration`
+groups; run the manually dispatched `Full tests with AVPR integration` workflow
+to execute the full suite in CI.
 
 since testing the cli tool relies on it being compiled via `dotnet publish`, either use the build scripts or manually publish `arc-validate` to the `/publish` folder when using e.g. TestExplorers.
 

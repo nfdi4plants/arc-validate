@@ -218,7 +218,7 @@ let ``ValidateCommand CLI Tests`` =
                             fun tool args proc -> Expect.isTrue (proc.Result.Output.Contains("If you can read this in your console, you are executing test-py package v0.0.2!")) (ErrorMessage.withProcessDiagnostics "incorrect console output" proc tool args )
                     ]
             ])
-        ])
+        ] |> testLabel "integration")
         testSequenced (testList "specification validation" [
             testSequenced (testList "latest" [
                 // run: arc-validate validate -i fixtures/arcs/specification/v2.0.0-draft --source-branch refs/heads/dev --source-commit-hash 0123456789abcdef

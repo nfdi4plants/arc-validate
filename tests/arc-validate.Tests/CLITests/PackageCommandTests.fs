@@ -409,4 +409,4 @@ let ``PackageCommand CLI Tests`` =
                     ]
             ])
         ])
-    ])
+    ] |> testLabel "integration")

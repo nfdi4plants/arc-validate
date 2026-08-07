@@ -32,12 +32,12 @@ let buildTests =
                     p with
                         MSBuildParams = { p.MSBuildParams with DisableInternalBinLog = true}
                 }
-                |> DotNet.Options.withCustomParams (Some "-tl")
+                |> DotNet.Options.withCustomParams (Some "-tl -m:1")
             )
         )
     }
 
-let runTests = BuildTask.create "RunTests" [clean; ensureArcFixtures; publish; buildTests] {
+let private runTestProjects filter =
     testProjects
     |> Seq.iter (fun testProjectInfo ->
         Fake.DotNet.DotNet.test
@@ -45,6 +45,7 @@ let runTests = BuildTask.create "RunTests" [clean; ensureArcFixtures; publish; b
                 { testParams with
                     Logger = Some "console;verbosity=detailed"
                     Configuration = DotNet.BuildConfiguration.fromString configuration
+                    Filter = filter
                     NoBuild = true
                     MSBuildParams = { testParams.MSBuildParams with DisableInternalBinLog = true }
                 }
@@ -52,5 +53,12 @@ let runTests = BuildTask.create "RunTests" [clean; ensureArcFixtures; publish; b
             )
             testProjectInfo.ProjFile
         )
+
+let runTests = BuildTask.create "RunTests" [clean; ensureArcFixtures; publish; buildTests] {
+    runTestProjects None
+}
+
+let runAutomatedTests = BuildTask.create "RunAutomatedTests" [clean; ensureArcFixtures; publish; buildTests] {
+    runTestProjects (Some "FullyQualifiedName!~integration")
 }
 
