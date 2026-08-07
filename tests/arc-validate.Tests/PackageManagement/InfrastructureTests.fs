@@ -13,7 +13,12 @@ open ARCValidate.PackageRunner
 type private StubHttpMessageHandler(response: HttpResponseMessage) =
     inherit HttpMessageHandler()
 
-    override _.SendAsync(_: HttpRequestMessage, _: CancellationToken) =
+    let mutable requestUri: Uri option = None
+
+    member _.RequestUri = requestUri
+
+    override _.SendAsync(request: HttpRequestMessage, _: CancellationToken) =
+        requestUri <- Option.ofObj request.RequestUri
         Task.FromResult(response)
 
 let private withTemporaryDirectory action =
@@ -112,6 +117,11 @@ let ``package infrastructure tests`` =
             match actual with
             | NotFound _ -> ()
             | error -> failtestf "expected NotFound, got %A" error
+
+            Expect.equal
+                handler.RequestUri
+                (Some(Uri("https://registry.invalid/api/v1/packages/missing/1.0.0")))
+                "generated client request URI was not rooted below the registry base URI"
         }
 
         test "F# runner preserves arguments containing spaces" {

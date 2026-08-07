@@ -49,7 +49,7 @@ type RegistryClient(?BaseUri: Uri, ?HttpClient: HttpClient) =
 
     let client =
         let generatedClient = AVPRClient.Client(httpClient)
-        generatedClient.BaseUrl <- baseUri.ToString().TrimEnd('/')
+        generatedClient.BaseUrl <- baseUri.ToString().TrimEnd('/') + "/"
         generatedClient
 
     let translateRequest (request: unit -> Task<'T>) =
