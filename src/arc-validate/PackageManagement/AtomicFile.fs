@@ -27,3 +27,4 @@ module internal AtomicFile =
 
     let writeAllBytes (path: string) (content: byte array) =
         writeWith (fun temporaryPath -> File.WriteAllBytes(temporaryPath, content)) path
+        

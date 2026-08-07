@@ -395,3 +395,4 @@ type PackageArguments private (
 
     static member fromCommandLine(metadata: ValidationPackageMetadata) =
         PackageArguments.parse(metadata, TargetCommandLine.arguments())
+        
