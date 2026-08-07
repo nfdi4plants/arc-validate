@@ -10,7 +10,7 @@ Publish: false
 ---
 *)"""
 
-#r "nuget: ARCExpect, 7.0.0-preview.6"
+#r "nuget: ARCExpect, 7.0.0-preview.3"
 
 open System.IO
 open ARCExpect

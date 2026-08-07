@@ -16,8 +16,8 @@
     "./JUnit": "./Common/Outputs/JUnit.js"
   },
   "dependencies": {
-    "@nfdi4plants/validationpackage-codecs": "0.1.0-preview.2",
-    "@nfdi4plants/validationpackage-model": "0.1.0-preview.2"
+    "@nfdi4plants/validationpackage-codecs": "0.1.0-preview.3",
+    "@nfdi4plants/validationpackage-model": "0.1.0-preview.3"
   },
   "files": [
     "index.js",

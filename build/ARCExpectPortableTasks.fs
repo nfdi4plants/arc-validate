@@ -12,38 +12,6 @@ open PackageTasks
 
 let private testsDir = Path.Combine(portableArtifactsDir, "arcexpect-tests")
 let private packageSmokeDir = Path.Combine(portableArtifactsDir, "arcexpect-package-smoke")
-let private localNativeDependencyPackageDirectory () =
-    let configured = Environment.GetEnvironmentVariable "AVPR_NATIVE_PACKAGE_DIR"
-
-    if String.IsNullOrWhiteSpace configured then
-        let siblingDirectory =
-            Path.Combine("..", "arc-validate-package-registry", "artifacts", "packages")
-            |> Path.GetFullPath
-
-        if Directory.Exists siblingDirectory then
-            Some siblingDirectory
-        else
-            None
-    else
-        let configuredDirectory = Path.GetFullPath configured
-
-        if not (Directory.Exists configuredDirectory) then
-            failwithf
-                "AVPR_NATIVE_PACKAGE_DIR does not exist: %s"
-                configuredDirectory
-
-        Some configuredDirectory
-
-let private localNativeDependencyArtifact directory fileName =
-    let path = Path.Combine(directory, fileName)
-
-    if not (File.Exists path) then
-        failwithf
-            "Required AVPR native package is missing: %s. Build AVPR PackPortablePackages first."
-            path
-
-    path
-
 let private fable project language outputDirectory noRestore =
     let restoreArgument = if noRestore then " --noRestore" else ""
     runDotNetCommand "fable" $"{project} --outDir \"{outputDirectory}\" --lang {language} --noCache{restoreArgument}" "."
@@ -105,7 +73,15 @@ let testARCExpectPackage =
 
         let fsharpSmokeDirectory = Path.GetDirectoryName nugetConfig
         let fsharpSmokeScript = Path.Combine(fsharpSmokeDirectory, "fsharp.fsx")
-        let localNuGetSource = Uri(Path.GetFullPath packageDir).AbsoluteUri
+        let arcExpectPackage =
+            Path.Combine(packageDir, $"ARCExpect.{ARCExpectPackageVersion}.nupkg")
+        let packageFingerprint = fileSha256 arcExpectPackage
+        let fsharpPackageSource =
+            prepareFingerprintedNuGetSource
+                (Path.Combine(fsharpSmokeDirectory, "packages"))
+                arcExpectPackage
+                ([ packageDir ] @ (localNativePackageDirectory |> Option.toList))
+        let localNuGetSource = Uri(fsharpPackageSource).AbsoluteUri
         let versionedFsharpSmokeSource =
             File.ReadAllText(fsharpSmokeSource)
                 .Replace(
@@ -115,6 +91,10 @@ let testARCExpectPackage =
                 .Replace(
                     "__ARCEXPECT_SOURCE__",
                     localNuGetSource
+                )
+                .Replace(
+                    "__ARCEXPECT_PACKAGE_FINGERPRINT__",
+                    packageFingerprint
                 )
         File.WriteAllText(
             fsharpSmokeScript,

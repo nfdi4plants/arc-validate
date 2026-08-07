@@ -1,70 +1,36 @@
-## 7.0.0-preview.6 - 2026-08-05
+## 7.0.0-preview.3 - 2026-08-07
 
-- Organize ARCExpect sources by shared and target-specific concerns and expose
-  explicit .NET, Python, and JavaScript top-level facades.
-- Select metadata frontmatter handling from the compilation target so F# and
-  Python package authors no longer pass or import a language discriminator.
-- Accept native JavaScript payload objects and reject non-finite payload
-  numbers consistently across .NET, JavaScript, and Python.
-- Preserve validation declaration order and exception stack traces in JUnit,
-  emit aggregate suite counts, and validate decoded summary counts.
-- Correct default badge threshold selection for failed, partial, and fully
-  successful validation results.
-
-### 7.0.0-preview.5 - 2026-08-04
-
-- Accept native JSON-compatible payload values at package boundaries:
-  `IDictionary<string, obj>` on .NET and dictionaries, lists, and scalar values
-  in Python, while retaining Thoth JSON as the shared output representation.
-- Add verified payload documentation and reproducibly formatted summary JSON
-  and JUnit artifacts for all documentation samples.
-
-### 7.0.0-preview.4 - 2026-08-04
-
-- Make Fable.Pyxpecto the single ARCExpect validation-package model on every
-  target and remove the production Expecto compatibility dependency.
-- Restore the high-level validation pipeline for portable packages, including
-  the standard result layout and automatic JSON, JUnit, and badge creation on
-  .NET and Python.
-- Keep result combination and output encoding inside ARCExpect instead of
-  requiring package authors to orchestrate individual writers.
-- Retain individual summary, JUnit, and badge creation APIs for custom output
-  workflows while keeping the shared orchestration bundle internal.
-
-### 7.0.0-preview.3 - 2026-08-04
-
-- Accept the runtime value of Python `PACKAGE_METADATA` frontmatter directly;
-  package authors no longer need to reconstruct source-code triple quotes.
-- Add verified F# and Python validation-package documentation samples and the
-  MkDocs Material/fsdocs documentation scaffold.
-
-### 7.0.0-preview.2 - 2026-08-04
-
-- Add one cross-target `PackageArguments` API for the four standard package
-  arguments and typed CWL-defined inputs, with native .NET, Node, and Python
-  command-line readers.
-- Reject reserved-name collisions and unknown, duplicate, missing required, or
-  malformed values consistently across all three runtimes.
-
-### 7.0.0-preview.1 - 2026-07-31
-
-- Consolidate portable result/output contracts and the .NET compatibility
-  implementation behind the single public ARCExpect package identity.
-- Build the shared portable sources through separate .NET, JavaScript, and
-  Python projects and produce `ARCExpect` NuGet plus `arcexpect` npm/wheel
-  artifacts.
-- Depend on native ValidationPackage.Model and ValidationPackage.Codecs
-  distributions in npm and Python artifacts instead of bundling generated
-  copies.
-- Restore shared `Setup`, `ARCValidationPackage`, and top-level `Execute` APIs
-  with Pyxpecto cases across .NET, JavaScript, and Python while retaining the
-  Expecto runner and filesystem pipeline as .NET compatibility APIs.
-- Keep Expecto, filesystem, ARC specification, and
-  ARCTokenization/ControlledVocabulary APIs available only on the .NET target.
+- Consolidate portable result and output contracts behind one public ARCExpect
+  package identity with separate .NET, JavaScript, and Python projects and
+  top-level facades.
+- Use Fable.Pyxpecto as the cross-target validation-package test model and keep
+  filesystem, ARC specification, and ControlledVocabulary functionality at the
+  .NET boundary.
+- Restore shared `Setup`, `ARCValidationPackage`, and high-level `Execute` APIs,
+  including the complete validation pipeline and individual summary, JUnit,
+  and badge creation functions.
+- Select frontmatter handling from the compilation target, including direct
+  support for Python `PACKAGE_METADATA`, without requiring authors to pass a
+  language discriminator.
+- Add one cross-target `PackageArguments` API for the standard package
+  arguments and typed CWL inputs, rejecting reserved-name collisions and
+  unknown, duplicate, missing, or malformed arguments consistently.
+- Accept native JSON-compatible payloads on each target while retaining Thoth
+  JSON as the shared output representation and rejecting non-finite numbers.
 - Add optional source branch and commit provenance to summary JSON, JUnit
   properties, and non-rendered SVG metadata.
-- Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, and Cytoscape.NET
-  functionality instead of porting it to JavaScript and Python.
+- Preserve validation declaration order and exception stack traces in JUnit,
+  emit aggregate suite counts, validate decoded summary counts, and correct
+  default badge thresholds for failed, partial, and successful results.
+- Depend on the native ValidationPackage.Model and ValidationPackage.Codecs
+  preview.3 distributions instead of bundling generated dependency copies.
+- Add verified F# and Python validation-package guides with reproducibly
+  generated and formatted summary JSON, JUnit, and badge artifacts.
+- Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, Cytoscape.NET, and
+  production Expecto compatibility functionality.
+- Replace legacy token-based release targets with one verified artifact set
+  and independent NuGet, npm, and PyPI trusted-publishing jobs, so a registry
+  failure does not cancel publication to the other registries.
 
 ### 6.0.0 - (Released 2025-12-04)
 

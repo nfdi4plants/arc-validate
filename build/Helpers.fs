@@ -6,10 +6,17 @@ open Fake.DotNet
 open System
 open System.IO
 open System.Security
+open System.Security.Cryptography
 
 let initializeContext () =
     let execContext = Context.FakeExecutionContext.Create false "build.fsx" [ ]
     Context.setExecutionContext (Context.RuntimeContext.Fake execContext)
+
+let fileSha256 path =
+    path
+    |> File.ReadAllBytes
+    |> SHA256.HashData
+    |> Convert.ToHexString
 
 /// Executes a dotnet command in the given working directory
 let runDotNet cmd workingDir =
@@ -77,6 +84,19 @@ let ensureDirectory path =
     |> Directory.CreateDirectory
     |> ignore
 
+let prepareFingerprintedNuGetSource destinationRoot primaryPackage packageDirectories =
+    let fingerprint = fileSha256 primaryPackage
+    let destination = Path.Combine(destinationRoot, fingerprint)
+    ensureDirectory destination
+
+    packageDirectories
+    |> Seq.collect (fun directory -> Directory.EnumerateFiles(directory, "*.nupkg"))
+    |> Seq.iter (fun package ->
+        File.Copy(package, Path.Combine(destination, Path.GetFileName package), true)
+    )
+
+    destination
+
 let runUv args workingDirectory =
     let cacheDirectory = Path.Combine("artifacts", "uv-cache") |> Path.GetFullPath
     ensureDirectory cacheDirectory
@@ -95,6 +115,38 @@ let runNpm args workingDirectory =
         else
             "npm"
     runCommand executable ([ "--cache"; cacheDirectory ] @ args) workingDirectory
+
+let localNativeDependencyPackageDirectory () =
+    let configured = Environment.GetEnvironmentVariable "AVPR_NATIVE_PACKAGE_DIR"
+
+    if String.IsNullOrWhiteSpace configured then
+        let siblingDirectory =
+            Path.Combine("..", "arc-validate-package-registry", "artifacts", "packages")
+            |> Path.GetFullPath
+
+        if Directory.Exists siblingDirectory then
+            Some siblingDirectory
+        else
+            None
+    else
+        let configuredDirectory = Path.GetFullPath configured
+
+        if not (Directory.Exists configuredDirectory) then
+            failwithf
+                "AVPR_NATIVE_PACKAGE_DIR does not exist: %s"
+                configuredDirectory
+
+        Some configuredDirectory
+
+let localNativeDependencyArtifact directory fileName =
+    let path = Path.Combine(directory, fileName)
+
+    if not (File.Exists path) then
+        failwithf
+            "Required AVPR native package is missing: %s. Build AVPR PackPortablePackages first."
+            path
+
+    path
 
 let writeNuGetConfig path localPackageSources =
     let fullPath = resolveRepositoryPath path

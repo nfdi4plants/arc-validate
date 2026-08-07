@@ -12,7 +12,7 @@ Publish: false
 
 # /// script
 # dependencies = [
-#   "arcexpect==7.0.0a6",
+#   "arcexpect==7.0.0a3",
 # ]
 # ///
 

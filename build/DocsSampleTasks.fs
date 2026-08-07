@@ -254,30 +254,34 @@ let private pinnedFsx samplePath =
     if not (source.Contains fsxReferenceLine) then
         failwithf "%s must contain %s" samplePath fsxReferenceLine
 
-    let localSources =
-        [
-            packageDir
-            Environment.GetEnvironmentVariable("AVPR_NATIVE_PACKAGE_DIR")
-        ]
-        |> List.choose (fun directory ->
-            if String.IsNullOrWhiteSpace directory then
-                None
-            else
-                Some(Uri(Path.GetFullPath directory).AbsoluteUri)
-        )
-        |> List.distinct
-        |> List.map (fun source -> $"#i \"nuget: {source}\"")
-        |> String.concat Environment.NewLine
-
     let packageReference =
-        $"{localSources}{Environment.NewLine}{fsxReferenceLine}"
+        let arcExpectPackage =
+            Path.Combine(packageDir, $"ARCExpect.{ARCExpectPackageVersion}.nupkg")
+        let packageFingerprint = fileSha256 arcExpectPackage
+        let packageSource =
+            prepareFingerprintedNuGetSource
+                (Path.Combine(samplesScratchDirectory, "nuget"))
+                arcExpectPackage
+                (packageDir :: (localNativeDependencyPackageDirectory () |> Option.toList))
+            |> Path.GetFullPath
+            |> Uri
+
+        String.concat
+            Environment.NewLine
+            [
+                $"#i \"nuget: {packageSource.AbsoluteUri}\""
+                fsxReferenceLine
+                $"// Package fingerprint: {packageFingerprint}"
+            ]
 
     source.Replace(fsxReferenceLine, packageReference)
 
 let runDocsSamplesDotNet =
     BuildTask.create "RunDocsSamplesDotNet" [ packARCExpect ] {
         let directory = Path.Combine(samplesScratchDirectory, "dotnet")
+        let cacheDirectory = Path.Combine(packageCacheDir, "docs-samples") |> Path.GetFullPath
         recreateDirectory directory
+        recreateDirectory cacheDirectory
 
         for sample in samplesByExtension ".fsx" do
             let topic = topicOf sample
@@ -286,11 +290,13 @@ let runDocsSamplesDotNet =
                 prepareOutputDirectories directory topic
 
             File.WriteAllText(Path.Combine(directory, script), pinnedFsx sample)
-            runCommand
+            runCommandWithEnvironmentVariable
                 "dotnet"
                 ([ "fsi"; script ]
                  @ argumentsForTopic topic arcDirectory outputDirectory)
                 directory
+                "NUGET_PACKAGES"
+                cacheDirectory
             verifyOutputFiles topic outputDirectory
             formatOutputFiles topic outputDirectory
             publishOutputFiles topic outputDirectory
@@ -317,7 +323,24 @@ let runDocsSamplesPython =
             else
                 Path.Combine(environmentDirectory, "bin", "python")
 
-        runUv [ "pip"; "install"; "--python"; python; wheel ] "."
+        let dependencyWheels =
+            match localNativeDependencyPackageDirectory () with
+            | Some directory ->
+                [
+                    localNativeDependencyArtifact
+                        directory
+                        $"validationpackage_model-{ValidationPackageModelPythonVersion}-py3-none-any.whl"
+                    localNativeDependencyArtifact
+                        directory
+                        $"validationpackage_codecs-{ValidationPackageCodecsPythonVersion}-py3-none-any.whl"
+                ]
+            | None -> []
+
+        runUv
+            ([ "pip"; "install"; "--python"; python ]
+             @ dependencyWheels
+             @ [ wheel ])
+            "."
 
         for sample in samplesByExtension ".py" do
             let source = normalizedSource sample

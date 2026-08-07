@@ -17,11 +17,32 @@ let cleanPortablePackages = BuildTask.create "CleanPortablePackages" [] {
 let private packPortableProject project =
     ensureDirectory packageDir
 
+    let restoredLocally =
+        match localNativeDependencyPackageDirectory () with
+        | Some directory ->
+            let nugetConfig =
+                writeNuGetConfig
+                    (Path.Combine(portableArtifactsDir, "arcexpect-pack", "NuGet.Config"))
+                    [ directory ]
+
+            project
+            |> DotNet.restore (fun options ->
+                { options with
+                    ConfigFile = Some nugetConfig
+                    NoCache = true
+                    MSBuildParams =
+                        { options.MSBuildParams with
+                            DisableInternalBinLog = true } })
+
+            true
+        | None -> false
+
     project
     |> DotNet.pack (fun options ->
         { options with
             Configuration = DotNet.BuildConfiguration.Release
             OutputPath = Some packageDir
+            NoRestore = restoredLocally
             MSBuildParams =
                 { options.MSBuildParams with
                     DisableInternalBinLog = true } })

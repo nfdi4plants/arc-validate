@@ -19,6 +19,7 @@ Inputs:
 
 #i "nuget: __ARCEXPECT_SOURCE__"
 #r "nuget: ARCExpect, __ARCEXPECT_VERSION__"
+// Package fingerprint: __ARCEXPECT_PACKAGE_FINGERPRINT__
 
 open ARCExpect
 

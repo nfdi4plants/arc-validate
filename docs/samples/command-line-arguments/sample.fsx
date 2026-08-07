@@ -29,7 +29,7 @@ Inputs:
 ---
 *)"""
 
-#r "nuget: ARCExpect, 7.0.0-preview.6"
+#r "nuget: ARCExpect, 7.0.0-preview.3"
 
 open ARCExpect
 open Fable.Pyxpecto

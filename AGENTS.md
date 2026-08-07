@@ -415,6 +415,9 @@ project has been absorbed into the CLI.
   Never print tokens, NuGet keys, registry credentials, or other secrets.
 - Treat release-note and build-project edits as release-sensitive. Check the
   affected pack/version behavior before handing off.
+- During a prerelease line, keep one rolling top release-notes entry and bump
+  its preview version in place. Preserve published non-preview entries as
+  immutable history.
 - ARCExpect publishing is an explicit `workflow_dispatch` of
   `release-arcexpect.yml`; it is never selected by changed paths. Keep the
   NuGet, npm, and PyPI trusted-publisher identity on that top-level workflow
