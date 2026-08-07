@@ -6,19 +6,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\fixtures\testScript*" Link="fixtures\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
-    <Compile Include="PackageManagementTestUtils.fs" />
-    <Compile Include="PackageManagementReferenceObjects.fs" />
-    <Compile Include="DefaultsTests.fs" />
-    <Compile Include="DomainTests.fs" />
-    <Compile Include="ARCValidationPackageTests.fs" />
-    <Compile Include="PackageCacheTests.fs" />
-    <Compile Include="ConfigTests.fs" />
-    <Compile Include="InfrastructureTests.fs" />
-    <Compile Include="CommandLineArgumentTests.fs" />
-    <Compile Include="FSharpScriptExecutionTests.fs" />
-    <Compile Include="PythonScriptExecution.fs" />
+    <Compile Include="..\PackageManagement\PackageManagementTestUtils.fs" Link="PackageManagementTestUtils.fs" />
+    <Compile Include="..\PackageManagement\PackageManagementReferenceObjects.fs" Link="PackageManagementReferenceObjects.fs" />
+    <Compile Include="AVPRAPITests.fs" />
     <Compile Include="TopLevelAPITests.fs" />
-    <Compile Include="Main.fs" />
+    <Compile Include="..\PackageManagement\Main.fs" Link="Main.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Expecto" Version="[10.2.3]" />

@@ -10,7 +10,6 @@
     <Compile Include="ReferenceObjects.fs" />
     <Compile Include="TestUtils.fs" />
     <Compile Include="CLITests\ValidateCommandTests.fs" />
-    <Compile Include="CLITests\PackageCommandTests.fs" />
     <Compile Include="CLITests/CLITests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>

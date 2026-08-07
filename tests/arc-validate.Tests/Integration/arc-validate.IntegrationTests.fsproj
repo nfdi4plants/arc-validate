@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\fixtures\**" Link="fixtures\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
+    <Compile Include="..\JUnit.fs" Link="JUnit.fs" />
+    <Compile Include="..\ReferenceObjects.fs" Link="ReferenceObjects.fs" />
+    <Compile Include="..\TestUtils.fs" Link="TestUtils.fs" />
+    <Compile Include="ValidateCommandTests.fs" />
+    <Compile Include="PackageCommandTests.fs" />
+    <Compile Include="..\Main.fs" Link="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="[10.2.3]" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageReference Update="FSharp.Core" Version="10.*" />
+    <PackageReference Include="Fake.Core.Process" Version="6.1.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.fsproj" />
+    <ProjectReference Include="..\..\..\src\ARCExpect\ARCExpect.fsproj" />
+  </ItemGroup>
+</Project>

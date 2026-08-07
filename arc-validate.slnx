@@ -14,7 +14,9 @@
   <Folder Name="/tests/" />
   <Folder Name="/tests/arc-validate/">
     <Project Path="tests/arc-validate.Tests/arc-validate.Tests.fsproj" />
+    <Project Path="tests/arc-validate.Tests/Integration/arc-validate.IntegrationTests.fsproj" />
     <Project Path="tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj" />
+    <Project Path="tests/arc-validate.Tests/PackageManagement.Integration/arc-validate.PackageManagement.IntegrationTests.fsproj" />
   </Folder>
   <Folder Name="/tests/ARCExpect/">
     <Project Path="tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsproj" />

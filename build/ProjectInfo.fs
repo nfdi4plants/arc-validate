@@ -153,6 +153,18 @@ let testProjects =
         ProjectInfo.create("arc-validate.Tests", "tests/arc-validate.Tests/arc-validate.Tests.fsproj")
     ]
 
+let integrationTestProjects =
+    [
+        ProjectInfo.create(
+            "arc-validate.PackageManagement.IntegrationTests",
+            "tests/arc-validate.Tests/PackageManagement.Integration/arc-validate.PackageManagement.IntegrationTests.fsproj"
+        )
+        ProjectInfo.create(
+            "arc-validate.IntegrationTests",
+            "tests/arc-validate.Tests/Integration/arc-validate.IntegrationTests.fsproj"
+        )
+    ]
+
 
 let project = "arc-validate"
 

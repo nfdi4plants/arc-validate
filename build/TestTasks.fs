@@ -21,9 +21,9 @@ let ensureArcFixtures = BuildTask.create "EnsureArcFixtures" [] {
     )
 }
 
-let buildTests = 
-    BuildTask.create "BuildTests" [clean; build] {
-        testProjects
+let private createBuildTestsTarget name projectsToBuild =
+    BuildTask.create name [clean; build] {
+        projectsToBuild
         |> List.iter (fun pInfo ->
             let proj = pInfo.ProjFile
             proj
@@ -37,15 +37,19 @@ let buildTests =
         )
     }
 
-let private runTestProjects filter =
-    testProjects
+let buildTests = createBuildTestsTarget "BuildTests" testProjects
+
+let buildIntegrationTests =
+    createBuildTestsTarget "BuildIntegrationTests" integrationTestProjects
+
+let private runTestProjects projectsToRun =
+    projectsToRun
     |> Seq.iter (fun testProjectInfo ->
         Fake.DotNet.DotNet.test
             (fun testParams ->
                 { testParams with
                     Logger = Some "console;verbosity=detailed"
                     Configuration = DotNet.BuildConfiguration.fromString configuration
-                    Filter = filter
                     NoBuild = true
                     MSBuildParams = { testParams.MSBuildParams with DisableInternalBinLog = true }
                 }
@@ -54,11 +58,17 @@ let private runTestProjects filter =
             testProjectInfo.ProjFile
         )
 
-let runTests = BuildTask.create "RunTests" [clean; ensureArcFixtures; publish; buildTests] {
-    runTestProjects None
+let runTests = BuildTask.create "RunTests" [clean; ensureArcFixtures; publish; buildTests; buildIntegrationTests] {
+    runTestProjects testProjects
+    runTestProjects integrationTestProjects
 }
 
 let runAutomatedTests = BuildTask.create "RunAutomatedTests" [clean; ensureArcFixtures; publish; buildTests] {
-    runTestProjects (Some "FullyQualifiedName!~integration")
+    runTestProjects testProjects
+}
+
+let runIntegrationTests =
+    BuildTask.create "RunIntegrationTests" [clean; ensureArcFixtures; publish; buildIntegrationTests] {
+        runTestProjects integrationTestProjects
 }
 

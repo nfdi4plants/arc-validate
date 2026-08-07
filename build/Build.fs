@@ -12,6 +12,7 @@ open DocumentationTasks
 // Force module initialization so every non-default target is registered.
 let _runTests = runTests
 let _runAutomatedTests = runAutomatedTests
+let _runIntegrationTests = runIntegrationTests
 let _testPortableARCExpect = testPortableARCExpect
 let _runDocsSamples = runDocsSamples
 let _buildDocs = buildDocs

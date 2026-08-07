@@ -1,4 +1,4 @@
-﻿module CLITests.PackageCommand
+module CLITests.PackageCommand
 
 open Expecto
 open Expecto.Tests
@@ -409,4 +409,4 @@ let ``PackageCommand CLI Tests`` =
                     ]
             ])
         ])
-    ] |> testLabel "integration")
+    ])

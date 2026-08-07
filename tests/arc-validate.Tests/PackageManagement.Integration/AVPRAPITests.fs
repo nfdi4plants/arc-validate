@@ -1,4 +1,4 @@
-﻿module AVPRAPITests
+module AVPRAPITests
 
 open Expecto
 open ARCValidate.PackageManagement
@@ -82,4 +82,3 @@ let ``AVPRAPI tests`` =
             }
         ]
     ]
-    |> testLabel "integration"

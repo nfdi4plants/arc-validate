@@ -129,9 +129,10 @@ The full test setup uses the AVPR development service, running tests for the
 compiled `arc-validate` tool with validation packages from
 https://avpr-dev.nfdi4plants.org. Network-backed tests must not target the
 production registry. `RunTests` remains the default full suite. Push and
-pull-request CI uses `RunAutomatedTests`, which excludes the live `integration`
-groups; run the manually dispatched `Full tests with AVPR integration` workflow
-to execute the full suite in CI.
+pull-request CI uses `RunAutomatedTests`, which runs only the normal test
+projects. Run the manually dispatched `AVPR integration tests` workflow to
+execute the dedicated integration-test projects in CI. `RunTests` runs both
+sets locally.
 
 since testing the cli tool relies on it being compiled via `dotnet publish`, either use the build scripts or manually publish `arc-validate` to the `/publish` folder when using e.g. TestExplorers.
 

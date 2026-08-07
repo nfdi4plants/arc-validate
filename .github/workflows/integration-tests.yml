@@ -1,4 +1,4 @@
-name: Full tests with AVPR integration
+name: AVPR integration tests
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
       - name: Make build script executable
         run: chmod u+x build.sh
-      - name: Run full test suite
+      - name: Run AVPR integration tests
         env:
           ARC_VALIDATE_GITHUB_API_TEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./build.sh RunTests
+        run: ./build.sh RunIntegrationTests

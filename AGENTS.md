@@ -77,8 +77,11 @@ system interpreter.
 # Full build/test orchestration
 .\build.cmd RunTests
 
-# Automated CI suite without live AVPR integration groups
+# Automated CI suite without live AVPR integration projects
 .\build.cmd RunAutomatedTests
+
+# Live AVPR development-service integration projects
+.\build.cmd RunIntegrationTests
 
 # Direct solution build
 dotnet build arc-validate.slnx -m:1
@@ -88,6 +91,8 @@ dotnet test tests/ARCExpect.Tests/ARCExpect.Tests.fsproj
 dotnet run --project tests/ARCExpect.Contract.Tests/ARCExpect.Contract.Tests.fsproj
 dotnet test tests/arc-validate.Tests/PackageManagement/arc-validate.PackageManagement.Tests.fsproj
 dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
+dotnet test tests/arc-validate.Tests/PackageManagement.Integration/arc-validate.PackageManagement.IntegrationTests.fsproj
+dotnet test tests/arc-validate.Tests/Integration/arc-validate.IntegrationTests.fsproj
 
 # Shared ARCExpect contracts on .NET, JavaScript, and Python
 ./build.cmd TestPortableARCExpect
@@ -114,10 +119,11 @@ legacy cache tests write under the platform application-data directory. Inspect
 these side effects before running the full target in a restricted or shared
 environment. Do not add new tests that depend on live services.
 
-Mark existing tests that call AVPR dev with the `integration` test label.
-`RunAutomatedTests` excludes that label for push and pull-request CI, while the
-manually dispatched `Full tests with AVPR integration` workflow runs the full
-default `RunTests` target.
+Keep tests that call AVPR dev in the dedicated integration-test projects.
+`RunAutomatedTests` runs only normal test projects for push and pull-request CI,
+`RunIntegrationTests` runs only the live projects, and the default `RunTests`
+target runs both. The manually dispatched `AVPR integration tests` workflow
+invokes `RunIntegrationTests`.
 
 ## Build-project conventions
 
