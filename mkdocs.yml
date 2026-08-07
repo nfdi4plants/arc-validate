@@ -55,4 +55,6 @@ nav:
       - Command-line arguments: ARCExpect/command-line-arguments.md
       - API design: ARCExpect/design.md
   - arc-validate CLI: arc-validate/introduction.md
+  - Development:
+      - Releasing ARCExpect: development/releases.md
   - API reference: reference.md

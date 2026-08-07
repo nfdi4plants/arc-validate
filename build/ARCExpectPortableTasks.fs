@@ -12,24 +12,30 @@ open PackageTasks
 
 let private testsDir = Path.Combine(portableArtifactsDir, "arcexpect-tests")
 let private packageSmokeDir = Path.Combine(portableArtifactsDir, "arcexpect-package-smoke")
-let private nativeDependencyPackageDirectory () =
+let private localNativeDependencyPackageDirectory () =
     let configured = Environment.GetEnvironmentVariable "AVPR_NATIVE_PACKAGE_DIR"
-    let directory =
-        if String.IsNullOrWhiteSpace configured then
+
+    if String.IsNullOrWhiteSpace configured then
+        let siblingDirectory =
             Path.Combine("..", "arc-validate-package-registry", "artifacts", "packages")
             |> Path.GetFullPath
+
+        if Directory.Exists siblingDirectory then
+            Some siblingDirectory
         else
-            Path.GetFullPath configured
+            None
+    else
+        let configuredDirectory = Path.GetFullPath configured
 
-    if not (Directory.Exists directory) then
-        failwithf
-            "AVPR native package directory does not exist: %s. Build AVPR PackPortablePackages or set AVPR_NATIVE_PACKAGE_DIR."
-            directory
+        if not (Directory.Exists configuredDirectory) then
+            failwithf
+                "AVPR_NATIVE_PACKAGE_DIR does not exist: %s"
+                configuredDirectory
 
-    directory
+        Some configuredDirectory
 
-let private nativeDependencyArtifact fileName =
-    let path = Path.Combine(nativeDependencyPackageDirectory (), fileName)
+let private localNativeDependencyArtifact directory fileName =
+    let path = Path.Combine(directory, fileName)
 
     if not (File.Exists path) then
         failwithf
@@ -43,7 +49,9 @@ let private fable project language outputDirectory noRestore =
     runDotNetCommand "fable" $"{project} --outDir \"{outputDirectory}\" --lang {language} --noCache{restoreArgument}" "."
 
 let testARCExpectDotNet =
-    BuildTask.create "TestARCExpectDotNet" [ cleanPortableArtifacts; preparePortableToolchain ] {
+    BuildTask.create
+        "TestARCExpectDotNet"
+        [ cleanPortableArtifacts; preparePortableToolchain; packARCExpect ] {
         runDotNetCommand "run" $"--project {ARCExpectContractTestsProject} --configuration Release" "."
     }
 
@@ -62,7 +70,8 @@ let testARCExpectPython =
     }
 
 let testARCExpectPackage =
-    BuildTask.create "TestARCExpectPackage" [ testARCExpectPython; packARCExpect ] {
+    BuildTask.create "TestARCExpectPackage" [ testARCExpectPython ] {
+        let localNativePackageDirectory = localNativeDependencyPackageDirectory ()
         let cacheDirectory = Path.Combine(packageCacheDir, "arcexpect") |> Path.GetFullPath
         let nugetConfig =
             writeNuGetConfig
@@ -71,10 +80,7 @@ let testARCExpectPackage =
                     "arcexpect-package-smoke-dotnet",
                     "NuGet.Config"
                 ))
-                [
-                    packageDir
-                    nativeDependencyPackageDirectory()
-                ]
+                ([ packageDir ] @ (localNativePackageDirectory |> Option.toList))
 
         recreateDirectory cacheDirectory
 
@@ -144,19 +150,23 @@ let testARCExpectPackage =
         let javaScriptPackage =
             Path.Combine(packageDir, $"nfdi4plants-arcexpect-{ARCExpectPackageVersion}.tgz")
             |> Path.GetFullPath
-        let javaScriptModelPackage =
-            nativeDependencyArtifact $"nfdi4plants-validationpackage-model-{ValidationPackageModelNativeVersion}.tgz"
-        let javaScriptCodecsPackage =
-            nativeDependencyArtifact $"nfdi4plants-validationpackage-codecs-{ValidationPackageCodecsNativeVersion}.tgz"
+        let javaScriptDependencyPackages =
+            match localNativePackageDirectory with
+            | Some directory ->
+                [
+                    localNativeDependencyArtifact
+                        directory
+                        $"nfdi4plants-validationpackage-model-{ValidationPackageModelNativeVersion}.tgz"
+                    localNativeDependencyArtifact
+                        directory
+                        $"nfdi4plants-validationpackage-codecs-{ValidationPackageCodecsNativeVersion}.tgz"
+                ]
+            | None -> []
+
         runNpm
-            [
-                "install"
-                javaScriptModelPackage
-                javaScriptCodecsPackage
-                javaScriptPackage
-                "--no-audit"
-                "--no-fund"
-            ]
+            ([ "install" ]
+             @ javaScriptDependencyPackages
+             @ [ javaScriptPackage; "--no-audit"; "--no-fund" ])
             javaScriptDirectory
         runCommand
             "node"
@@ -189,20 +199,23 @@ let testARCExpectPackage =
                 Path.Combine(pythonEnvironment, "Scripts", "python.exe")
             else
                 Path.Combine(pythonEnvironment, "bin", "python")
-        let pythonModelPackage =
-            nativeDependencyArtifact $"validationpackage_model-{ValidationPackageModelPythonVersion}-py3-none-any.whl"
-        let pythonCodecsPackage =
-            nativeDependencyArtifact $"validationpackage_codecs-{ValidationPackageCodecsPythonVersion}-py3-none-any.whl"
+        let pythonDependencyPackages =
+            match localNativePackageDirectory with
+            | Some directory ->
+                [
+                    localNativeDependencyArtifact
+                        directory
+                        $"validationpackage_model-{ValidationPackageModelPythonVersion}-py3-none-any.whl"
+                    localNativeDependencyArtifact
+                        directory
+                        $"validationpackage_codecs-{ValidationPackageCodecsPythonVersion}-py3-none-any.whl"
+                ]
+            | None -> []
+
         runUv
-            [
-                "pip"
-                "install"
-                "--python"
-                pythonExecutable
-                pythonModelPackage
-                pythonCodecsPackage
-                pythonPackage
-            ]
+            ([ "pip"; "install"; "--python"; pythonExecutable ]
+             @ pythonDependencyPackages
+             @ [ pythonPackage ])
             "."
         runCommand
             pythonExecutable

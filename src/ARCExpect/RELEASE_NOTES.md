@@ -1,4 +1,4 @@
-### 7.0.0-preview.6 - 2026-08-05
+## 7.0.0-preview.6 - 2026-08-05
 
 - Organize ARCExpect sources by shared and target-specific concerns and expose
   explicit .NET, Python, and JavaScript top-level facades.

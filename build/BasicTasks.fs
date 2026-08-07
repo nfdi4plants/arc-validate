@@ -8,6 +8,10 @@ open Fake.IO.Globbing.Operators
 open ProjectInfo
 open Helpers
 
+let validateReleaseMetadata = BuildTask.create "ValidateReleaseMetadata" [] {
+    ProjectInfo.validateReleaseMetadata ()
+}
+
 let clean = BuildTask.create "Clean" [] {
     // let's try if this is not necessary anymore with .net 8!
     //!! "src/**/bin"
@@ -19,25 +23,9 @@ let clean = BuildTask.create "Clean" [] {
     |> Shell.cleanDirs 
 }
 
-
-/// Buildtask for setting a prerelease tag (also sets the mutable isPrerelease to true, and the PackagePrereleaseTag of all project infos accordingly.)
-let setPrereleaseTag =
-    BuildTask.create "SetPrereleaseTag" [] {
-        printfn "Please enter pre-release package suffix"
-        let suffix = System.Console.ReadLine()
-        prereleaseSuffix <- suffix
-        isPrerelease <- true
-        projects
-        |> List.iter (fun p ->
-            p.PackagePrereleaseTag <- (sprintf "%s-%s" p.PackageVersionTag suffix)
-        )
-        // 
-        prereleaseTag <- (sprintf "%s-%s" CoreProject.PackageVersionTag suffix)
-    }
-
 /// builds the solution file (dotnet build solution.slnx)
 let buildSolution =
-    BuildTask.create "BuildSolution" [ clean ] { 
+    BuildTask.create "BuildSolution" [ clean; validateReleaseMetadata ] {
         solutionFile 
         |> DotNet.build (fun p ->
             let msBuildParams =
@@ -66,7 +54,7 @@ let buildSolution =
 ///
 /// - warnon:3390 for xml doc formatting warnings on compilation
 
-let build = BuildTask.create "Build" [clean] {
+let build = BuildTask.create "Build" [ clean; validateReleaseMetadata ] {
     projects
     |> List.iter (fun pInfo ->
         let proj = pInfo.ProjFile
@@ -93,7 +81,7 @@ let build = BuildTask.create "Build" [clean] {
 }
 
 
-let publish = BuildTask.create "Publish" [clean] {
+let publish = BuildTask.create "Publish" [ clean; validateReleaseMetadata ] {
     CLIProject.ProjFile
     |> DotNet.publish (fun p ->
         let msBuildParams =

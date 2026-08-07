@@ -36,19 +36,8 @@ let buildDocs =
         buildSite stableDocsVersionTag
     }
 
-let buildDocsPrerelease =
-    BuildTask.create "BuildDocsPrerelease" [ setPrereleaseTag; buildARCExpectForDocs ] {
-        buildSite prereleaseTag
-    }
-
 let watchDocs =
     BuildTask.create "WatchDocs" [] {
-        runUv [ "run"; "--group"; "docs"; "mkdocs"; "serve" ] "."
-    }
-
-let watchDocsPrerelease =
-    BuildTask.create "WatchDocsPrerelease" [ setPrereleaseTag ] {
-        Environment.SetEnvironmentVariable("ARC_VALIDATE_DOCS_VERSION", prereleaseTag)
         runUv [ "run"; "--group"; "docs"; "mkdocs"; "serve" ] "."
     }
 

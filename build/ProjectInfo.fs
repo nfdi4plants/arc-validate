@@ -1,6 +1,10 @@
 module ProjectInfo
 
 open Fake.Core
+open System
+open System.Globalization
+open System.IO
+open System.Text.RegularExpressions
 open System.Xml.Linq
 
 
@@ -8,9 +12,6 @@ open System.Xml.Linq
 type ProjectInfo = {
     Name: string
     ProjFile: string
-    ReleaseNotes: ReleaseNotes.ReleaseNotes Option
-    PackageVersionTag: string
-    mutable PackagePrereleaseTag: string
     AssemblyVersion: string
     AssemblyInformationalVersion: string
 } with 
@@ -30,9 +31,6 @@ type ProjectInfo = {
         {
             Name = name
             ProjFile = projFile
-            ReleaseNotes = Some release
-            PackagePrereleaseTag = ""
-            PackageVersionTag = stableVersionTag
             AssemblyVersion = assemblyVersion
             AssemblyInformationalVersion = assemblyInformationalVersion
         }    
@@ -43,9 +41,6 @@ type ProjectInfo = {
         {
             Name = name
             ProjFile = projFile
-            ReleaseNotes = None
-            PackagePrereleaseTag = ""
-            PackageVersionTag = ""
             AssemblyVersion = ""
             AssemblyInformationalVersion = ""
         }
@@ -69,15 +64,55 @@ let private packageVersionProperty name =
 let ARCExpectPackageVersion =
     packageVersionProperty "ARCExpectPackageVersion"
 
-do
+let private versionHeadingCandidate =
+    Regex(@"^#{1,6}\s+\[?v?\d+\.\d+\.\d+", RegexOptions.Compiled)
+
+let private canonicalReleaseHeading =
+    Regex(
+        @"^## (?<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?) - (?<date>\d{4}-\d{2}-\d{2})$",
+        RegexOptions.Compiled
+    )
+
+let validateReleaseMetadata () =
+    let heading =
+        File.ReadLines("src/ARCExpect/RELEASE_NOTES.md")
+        |> Seq.tryFind versionHeadingCandidate.IsMatch
+        |> Option.defaultWith (fun () ->
+            failwith "ARCExpect has no version heading in src/ARCExpect/RELEASE_NOTES.md.")
+
+    let matched = canonicalReleaseHeading.Match heading
+
+    if not matched.Success then
+        failwithf
+            "ARCExpect latest release heading must use '## <version> - YYYY-MM-DD'. Found: %s"
+            heading
+
+    let date = matched.Groups["date"].Value
+    let mutable parsedDate = DateTime.MinValue
+
+    if
+        not (
+            DateTime.TryParseExact(
+                date,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                &parsedDate
+            )
+        )
+    then
+        failwithf "ARCExpect latest release heading contains an invalid date: %s" date
+
     let releaseNotesVersion =
-        CoreProject.ReleaseNotes.Value.NugetVersion
+        matched.Groups["version"].Value
 
     if ARCExpectPackageVersion <> releaseNotesVersion then
         failwithf
             "ARCExpectPackageVersion '%s' does not match the latest release-notes version '%s'."
             ARCExpectPackageVersion
             releaseNotesVersion
+
+    printfn "ARCExpect release metadata: %s" ARCExpectPackageVersion
 
 let ValidationPackageModelNativeVersion =
     packageVersionProperty "ValidationPackageModelPackageVersion"
@@ -131,8 +166,6 @@ let gitHome = $"https://github.com/{gitOwner}"
 
 let projectRepo = $"https://github.com/{gitOwner}/{project}"
 
-let pkgDir = "pkg"
-
 let artifactsDir = "artifacts"
 let portableArtifactsDir = System.IO.Path.Combine(artifactsDir, "portable")
 let packageDir = System.IO.Path.Combine(artifactsDir, "packages")
@@ -141,15 +174,3 @@ let packageCacheDir = System.IO.Path.Combine(artifactsDir, "package-cache")
 
 /// docs are always targeting the version of the core project
 let stableDocsVersionTag = ARCExpectPackageVersion
-
-/// branch tag is always the version of the core project
-let branchTag = CoreProject.PackageVersionTag
-
-/// prerelease suffix used by prerelease buildtasks
-let mutable prereleaseSuffix = ""
-
-/// prerelease tag used by prerelease buildtasks
-let mutable prereleaseTag = ""
-
-/// mutable switch used to signal that we are building a prerelease version, used in prerelease buildtasks
-let mutable isPrerelease = false

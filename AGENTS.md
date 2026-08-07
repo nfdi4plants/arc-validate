@@ -54,8 +54,11 @@ Keep the roadmap issues separate:
 - `tests/Common/`: shared .NET test helpers.
 - `build/`: BlackFox/FAKE build project containing build, test, pack,
   documentation, and release targets.
-- `.github/workflows/`: cross-platform build/test, documentation, and container
-  publication workflows.
+- `.github/workflows/`: cross-platform build/test, documentation, container
+  publication, and manually dispatched ARCExpect trusted-publication workflows.
+- `.github/workflows/release-arcexpect.yml`: verifies ARCExpect, packs the
+  NuGet/npm/PyPI artifacts once, and publishes them through independent
+  registry jobs using the protected `release` environment.
 - `docs/`: MkDocs guide pages, fsdocs API-reference input, and executable
   validation-package samples under `docs/samples/<topic>/sample.{fsx,py}`.
 - `mkdocs.yml` and `overrides/`: Material guide configuration and theme
@@ -95,9 +98,6 @@ dotnet test tests/arc-validate.Tests/arc-validate.Tests.fsproj
 .\build.cmd WatchDocs
 .\build.cmd WatchApiDocs
 
-# Create local NuGet artifacts; these targets are interactive
-.\build.cmd Pack
-.\build.cmd PackPrerelease
 ```
 
 Use `./build.sh` instead of `.\build.cmd` on Linux or macOS. Prefer focused
@@ -124,9 +124,11 @@ environment. Do not add new tests that depend on live services.
   portable `<Compile>` lists duplicated, ordered, and synchronized in all
   three projects; do not factor them into an imported props file.
 - `Directory.Build.props` owns `ARCExpectPackageVersion` and the exact AVPR
-  package pins. The build verifies the ARCExpect value against the latest
-  release-notes entry and derives native manifest versions from these
-  properties; do not introduce another hand-maintained version constant.
+  package pins. ARCExpect's first versioned `RELEASE_NOTES.md` heading must be
+  `## <version> - YYYY-MM-DD`. `ValidateReleaseMetadata`, all build/test paths,
+  and `PackARCExpect` verify that heading against `ARCExpectPackageVersion`;
+  native manifest versions are derived from these properties. Do not introduce
+  another hand-maintained version constant.
 - The .NET NuGet package is `ARCExpect`; JavaScript and Python distributions
   use the package name `arcexpect`. Do not expose `Core`,
   `Portable`, `.NET`, `.Javascript`, or `.Python` in public namespaces.
@@ -137,19 +139,19 @@ environment. Do not add new tests that depend on live services.
   JavaScript, and Python and verify packed consumers. Keep the Fable compiler
   and Python `fable-library` pins coordinated.
 - Put generated/transpiled output under ignored `artifacts/`; never commit it.
-  New or modernized pack targets should emit to `artifacts/packages/`, matching
-  AVPR. The current `pkg/` output is legacy until those targets are migrated;
-  do not create additional artifact layouts.
+  Package targets emit only to `artifacts/packages/`, matching AVPR; do not
+  create additional artifact layouts.
 - ARCExpect packaging follows DataHubClient: `ARCExpect.fsproj` produces the
   NuGet package, while the JavaScript and Python projects are transpiled into
   separate `arcexpect` npm and wheel artifacts. Do not use the NuGet package as
   the Fable source-distribution mechanism.
 - Keep F# source order explicit in every `.fsproj`. Adding or moving a source
   file requires updating project order deliberately.
-- Do not invoke `Release`, `PreRelease`, `ReleaseNoDocs`,
-  `PreReleaseNoDocs`, tag-push, NuGet-push, documentation-push, or container
-  publication paths unless the user explicitly requests the external action
-  and provides the required authorization.
+- `release-arcexpect.yml` is the only ARCExpect publication path. It must stay
+  manually dispatchable without path filters, publish its verified artifacts
+  through the protected `release` environment, and remain safe to retry after
+  partial publication. Do not add local token-based or interactive publish
+  targets.
 
 ## Code and test conventions
 
@@ -360,6 +362,10 @@ target-specific filesystem behavior.
 - During preview-package integration, pin exact prerelease versions, verify
   they are indexed before restore, and do not republish packages that are still
   indexing.
+- Packed-consumer tests prefer exact local AVPR artifacts when
+  `AVPR_NATIVE_PACKAGE_DIR` is set or the sibling AVPR package directory
+  exists. Otherwise they restore the same exact pins from NuGet, npm, and PyPI
+  so GitHub release verification does not require another repository checkout.
 - AVPR package compatibility is covered by this repository's normal build,
   contract, packed-consumer, and release checks. Do not require AVPR CI to
   clone and rebuild this repository.
@@ -401,10 +407,18 @@ project has been absorbed into the CLI.
   container after Linux and Windows tests pass.
 - Documentation changes run verified polyglot samples and a strict site build.
   A `release` push or manual docs workflow dispatch can deploy GitHub Pages.
+- ARCExpect package publication is only manually dispatched through
+  `release-arcexpect.yml`. It has no path filter, preserves one pack artifact,
+  and keeps NuGet, npm, and PyPI jobs independently retriable. Trusted
+  publisher policies must name this direct workflow and environment `release`.
 - Preserve least-privilege workflow permissions and deliberate action versions.
   Never print tokens, NuGet keys, registry credentials, or other secrets.
 - Treat release-note and build-project edits as release-sensitive. Check the
   affected pack/version behavior before handing off.
+- ARCExpect publishing is an explicit `workflow_dispatch` of
+  `release-arcexpect.yml`; it is never selected by changed paths. Keep the
+  NuGet, npm, and PyPI trusted-publisher identity on that top-level workflow
+  and the GitHub `release` environment.
 - Before completing a change, report focused and solution-level checks run,
   cross-target checks run for portable code, and anything skipped because it
   requires unavailable network access or external services.

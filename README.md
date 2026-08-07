@@ -137,15 +137,18 @@ build.sh runtests
 build.cmd runtests
 ```
 
-### Create NuGet packages
+### Build and release ARCExpect packages
 
-```bash
-build.sh pack
-```
-
-To build and verify the three ARCExpect artifacts (`ARCExpect` for NuGet and
-`arcexpect` for npm/Python), run:
+To build and verify the three ARCExpect artifacts (`ARCExpect` for NuGet,
+`@nfdi4plants/arcexpect` for npm, and `arcexpect` for Python), run:
 
 ```bash
 build.cmd TestPortableARCExpect
 ```
+
+`PackARCExpect` creates the three artifacts without publishing them. Reviewed
+releases use the manually dispatched `Release ARCExpect` workflow against the
+`release` branch. It verifies the core and portable suites, packs once, and
+publishes independent NuGet, npm, and PyPI jobs through the protected `release`
+environment. See [the release guide](docs/development/releases.md) for
+versioning and the exact trusted-publisher configuration.

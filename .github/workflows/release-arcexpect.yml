@@ -1,0 +1,159 @@
+name: Release ARCExpect
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-arcexpect
+  cancel-in-progress: false
+
+jobs:
+  verify-and-pack:
+    name: Verify and pack ARCExpect
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up portable package toolchain
+        uses: ./.github/actions/setup-portable
+
+      - name: Run solution tests
+        env:
+          ARC_VALIDATE_GITHUB_API_TEST_TOKEN: ${{ github.token }}
+        run: ./build.sh RunTests
+
+      - name: Test packed ARCExpect packages
+        run: ./build.sh TestPortableARCExpect
+
+      - name: Upload verified packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcexpect-packages
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+          path: |
+            artifacts/packages/ARCExpect.*.nupkg
+            artifacts/packages/nfdi4plants-arcexpect-*.tgz
+            artifacts/packages/arcexpect-*.whl
+
+  publish-nuget:
+    name: Publish ARCExpect to NuGet
+    needs: verify-and-pack
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x.x
+
+      - name: Download verified packages
+        uses: actions/download-artifact@v4
+        with:
+          name: arcexpect-packages
+          path: artifacts/packages
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish ARCExpect to NuGet
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(artifacts/packages/ARCExpect.*.nupkg)
+          if [[ ${#packages[@]} -ne 1 ]]; then
+            echo "Expected exactly one ARCExpect NuGet package, found ${#packages[@]}." >&2
+            exit 1
+          fi
+          dotnet nuget push "${packages[0]}" \
+            --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+  publish-npm:
+    name: Publish ARCExpect to npm
+    needs: verify-and-pack
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Install npm with trusted-publishing support
+        run: npm install --global npm@11.5.1
+
+      - name: Download verified packages
+        uses: actions/download-artifact@v4
+        with:
+          name: arcexpect-packages
+          path: artifacts/packages
+
+      - name: Publish ARCExpect to npm
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(artifacts/packages/nfdi4plants-arcexpect-*.tgz)
+          if [[ ${#packages[@]} -ne 1 ]]; then
+            echo "Expected exactly one ARCExpect npm package, found ${#packages[@]}." >&2
+            exit 1
+          fi
+
+          manifest="$(tar -xOf "${packages[0]}" package/package.json)"
+          package_name="$(node -e 'let input=""; process.stdin.on("data", chunk => input += chunk).on("end", () => console.log(JSON.parse(input).name))' <<<"$manifest")"
+          package_version="$(node -e 'let input=""; process.stdin.on("data", chunk => input += chunk).on("end", () => console.log(JSON.parse(input).version))' <<<"$manifest")"
+
+          if npm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+            echo "${package_name}@${package_version} is already published; skipping."
+          else
+            npm publish "${packages[0]}" --access public
+          fi
+
+  publish-pypi:
+    name: Publish ARCExpect to PyPI
+    needs: verify-and-pack
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download verified packages
+        uses: actions/download-artifact@v4
+        with:
+          name: arcexpect-packages
+          path: artifacts/packages
+
+      - name: Stage ARCExpect wheel
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(artifacts/packages/arcexpect-*.whl)
+          if [[ ${#packages[@]} -ne 1 ]]; then
+            echo "Expected exactly one ARCExpect wheel, found ${#packages[@]}." >&2
+            exit 1
+          fi
+          mkdir -p artifacts/pypi
+          cp "${packages[0]}" artifacts/pypi/
+
+      - name: Publish ARCExpect to PyPI
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        with:
+          packages-dir: artifacts/pypi
+          skip-existing: true

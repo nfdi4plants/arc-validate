@@ -33,22 +33,17 @@ build.sh runtests
 build.cmd runtests
 ```
 
-### Create Nuget package
+### Build ARCExpect packages
 
 ```bash
-build.sh pack
+build.sh PackARCExpect
 ```
 
 ```bash
-build.cmd pack
+build.cmd PackARCExpect
 ```
 
-For prereleases use
-
-```bash
-build.sh packprerelease
-```
-
-```bash
-build.cmd packprerelease
-```
+The version, including any prerelease suffix, comes from
+`ARCExpectPackageVersion` in `Directory.Build.props`. Package publication uses
+the protected, manually dispatched GitHub Actions workflow documented in
+[the release guide](docs/development/releases.md).
