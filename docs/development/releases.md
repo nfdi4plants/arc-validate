@@ -51,10 +51,10 @@ npm checks the exact version before publishing, and PyPI skips existing files.
 Create a GitHub environment named `release`, protect it with required
 reviewers, and allow deployments from both `dev` and `release`. The same
 trusted workflow can then be manually dispatched for a reviewed preview or a
-production version. Store `NUGET_USER` there with the nuget.org profile that
-owns the trusted-publishing policy (currently `Mutagene`). It is not an email address,
-GitHub username, organization name, or API key. Do not create npm or PyPI token
-secrets.
+production version. Create the repository Actions variable `NUGET_USER` with
+the nuget.org profile that owns the trusted-publishing policy (currently
+`Mutagene`). It is not an email address, GitHub username, organization name, or
+API key. Do not create NuGet, npm, or PyPI token secrets.
 
 Configure the following publishers:
 

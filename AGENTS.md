@@ -413,6 +413,9 @@ project has been absorbed into the CLI.
   publisher policies must name this direct workflow and environment `release`.
 - Preserve least-privilege workflow permissions and deliberate action versions.
   Never print tokens, NuGet keys, registry credentials, or other secrets.
+- Keep the public nuget.org policy-owner profile in the `NUGET_USER`
+  repository Actions variable so the trusted-publishing workflow does not
+  depend on forwarded or environment secrets.
 - Treat release-note and build-project edits as release-sensitive. Check the
   affected pack/version behavior before handing off.
 - During a prerelease line, keep one rolling top release-notes entry and bump
