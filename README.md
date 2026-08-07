@@ -130,11 +130,11 @@ test setup uses the AVPR development service, running tests for the compiled `ar
 since testing the cli tool relies on it being compiled via `dotnet publish`, either use the build scripts or manually publish `arc-validate` to the `/publish` folder when using e.g. TestExplorers.
 
 ```bash
-build.sh runtests
+build.sh RunTests
 ```
 
 ```bash
-build.cmd runtests
+build.cmd RunTests
 ```
 
 ### Build and release ARCExpect packages

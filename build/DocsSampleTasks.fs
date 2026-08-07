@@ -304,7 +304,10 @@ let runDocsSamplesDotNet =
 
 let runDocsSamplesPython =
     BuildTask.create "RunDocsSamplesPython" [ runDocsSamplesDotNet ] {
-        let directory = Path.Combine(samplesScratchDirectory, "python")
+        let directory =
+            Path.Combine(samplesScratchDirectory, "python")
+            |> Path.GetFullPath
+
         let environmentDirectory = Path.Combine(directory, ".venv")
         recreateDirectory directory
 

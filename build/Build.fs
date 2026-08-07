@@ -9,7 +9,8 @@ open ARCExpectPortableTasks
 open DocsSampleTasks
 open DocumentationTasks
 
-// Force module initialization so every portable target is registered.
+// Force module initialization so every non-default target is registered.
+let _runTests = runTests
 let _testPortableARCExpect = testPortableARCExpect
 let _runDocsSamples = runDocsSamples
 let _buildDocs = buildDocs

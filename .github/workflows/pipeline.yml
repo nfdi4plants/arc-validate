@@ -31,7 +31,7 @@ jobs:
       env:
         ARC_VALIDATE_GITHUB_API_TEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       working-directory: ./
-      run: ./build.sh runtests
+      run: ./build.sh RunTests
 
   build-and-test-windows:
     
@@ -49,7 +49,7 @@ jobs:
       env:
         ARC_VALIDATE_GITHUB_API_TEST_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       working-directory: ./
-      run: ./build.cmd runtests
+      run: ./build.cmd RunTests
 
   build-and-push-image:
 # only publish docker images when tests succeed
