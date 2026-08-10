@@ -29,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Argu" Version="[6.2.5]" />
-    <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
+    <PackageReference Include="Spectre.Console" Version="[0.57.2]" />
     <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
     <PackageReference Include="AVPRClient" Version="$(AVPRClientPackageVersion)" />
     <PackageReference Include="AVPRClient.Interop" Version="$(AVPRClientInteropPackageVersion)" />
