@@ -1,9 +1,21 @@
 <Project>
 
+  <!--
+    MSBuild automatically imports only the nearest Directory.Build.props.
+    Because ARCExpect needs target-specific obj folders below, this local file
+    is the nearest one and must explicitly import the repository-root file.
+    That import is how all three ARCExpect projects receive the exact ARCExpect
+    and AVPR package-version properties. It does not add a package source.
+  -->
   <Import Project="$(MSBuildThisFileDirectory)../../Directory.Build.props" />
 
-  <!-- The three project files share a directory, so their NuGet graphs must
-       not overwrite one another between .NET builds and Fable transpilation. -->
+  <!--
+    The three project files share a directory but restore different target
+    graphs. Separate intermediate folders prevent their project.assets.json
+    and generated NuGet/MSBuild files from overwriting one another between the
+    .NET build and Fable JavaScript/Python transpilation. ARCExpect.fsproj keeps
+    the default obj/ folder; only the two Fable projects need a suffix.
+  -->
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ARCExpect.Javascript'">
     <BaseIntermediateOutputPath>obj\Javascript\</BaseIntermediateOutputPath>
     <MSBuildProjectExtensionsPath>obj\Javascript\</MSBuildProjectExtensionsPath>

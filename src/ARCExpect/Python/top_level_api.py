@@ -115,6 +115,7 @@ class Execute:
         Path(path).write_text(
             ValidationSummary.to_json(summary),
             encoding="utf-8",
+            newline="",
         )
 
     SummaryCreation = summary_creation
@@ -125,7 +126,7 @@ class Execute:
             summary,
             VerboseJUnit=verbose,
         )
-        Path(path).write_text(outputs.JUnitXml, encoding="utf-8")
+        Path(path).write_text(outputs.JUnitXml, encoding="utf-8", newline="")
 
     JUnitReportCreation = junit_report_creation
 
@@ -145,7 +146,7 @@ class Execute:
             Thresholds=thresholds,
             DefaultColor=default_color,
         )
-        Path(path).write_text(outputs.BadgeSvg, encoding="utf-8")
+        Path(path).write_text(outputs.BadgeSvg, encoding="utf-8", newline="")
 
     BadgeCreation = badge_creation
 
@@ -191,14 +192,17 @@ class Execute:
         (result_folder / outputs.SummaryFileName).write_text(
             outputs.SummaryJson,
             encoding="utf-8",
+            newline="",
         )
         (result_folder / outputs.JUnitFileName).write_text(
             outputs.JUnitXml,
             encoding="utf-8",
+            newline="",
         )
         (result_folder / outputs.BadgeFileName).write_text(
             outputs.BadgeSvg,
             encoding="utf-8",
+            newline="",
         )
         return summary
 

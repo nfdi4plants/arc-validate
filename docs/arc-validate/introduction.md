@@ -118,9 +118,9 @@ ARCExpect validates the package side against `ValidationPackageMetadata.Inputs`:
 - `inputBinding.prefix` defines the option spelling.
 - A boolean prefix is a flag: present means `true`; an absent required boolean
   means `false`; an absent nullable `boolean?` remains optional.
-- `separate: true` consumes the next process argument as the value.
-- `separate: false` expects the value joined to the prefix.
-- Inputs without a prefix are positional and ordered by `position`.
+- Non-boolean inputs consume the next process argument as their value.
+- Every input requires a unique, non-empty prefix; positional and joined-value
+  bindings are not supported.
 - A `?` CWL type is optional. Missing non-nullable, non-boolean inputs fail.
 - Unknown arguments, duplicates, malformed scalar values, duplicate bindings,
   and collisions with the four standard arguments fail with an actionable

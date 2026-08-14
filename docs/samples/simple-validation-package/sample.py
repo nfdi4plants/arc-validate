@@ -1,5 +1,6 @@
 PACKAGE_METADATA = """
 ---
+$schema: "https://avpr.nfdi4plants.org/schemas/v1/validation-package-frontmatter.schema.json"
 Name: simple-validation
 Summary: A minimal ARCExpect package
 Description: Shows YAML frontmatter, a critical test, and portable execution.
@@ -12,7 +13,7 @@ Publish: false
 
 # /// script
 # dependencies = [
-#   "arcexpect==7.0.0a3",
+#   "arcexpect==7.0.0a4",
 # ]
 # ///
 

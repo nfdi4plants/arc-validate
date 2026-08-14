@@ -21,12 +21,79 @@ public namespaces. Distribution names are `ARCExpect` on NuGet,
 `TestPortableARCExpect` runs the shared contract suite on each runtime and then
 installs each freshly packed artifact in an isolated consumer.
 
+## Testing against unpublished AVPR packages
+
+There is no hidden source-level link from ARCExpect or the CLI to the sibling
+AVPR repository. The projects deliberately retain package references so local
+tests exercise the same NuGet/npm/PyPI boundaries that released consumers use.
+The mechanism has three separate parts:
+
+1. The repository-root `Directory.Build.props` pins the exact AVPR client,
+   interop, model, and codecs versions. Bracketed NuGet versions such as
+   `[0.1.0-preview.4]` mean exactly that version, with no roll-forward.
+2. `src/ARCExpect/Directory.Build.props` explicitly imports the root property
+   file. MSBuild imports only the nearest `Directory.Build.props`, so this
+   explicit import is required alongside ARCExpect's target-specific `obj/`
+   folder settings.
+3. The build helpers choose where those exact artifacts come from. They first
+   use `AVPR_NATIVE_PACKAGE_DIR`, otherwise they detect
+   `../arc-validate-package-registry/artifacts/packages`, and otherwise fall
+   back to the public registries. For NuGet they generate an ignored temporary
+   `NuGet.Config`; packed JavaScript and Python consumer tests install the
+   matching `.tgz` and `.whl` files from the same directory directly.
+
+The local artifact directory therefore needs the exact files named by
+`Directory.Build.props`. For Step 3 that includes the Model and Codecs NuGet,
+npm, and wheel artifacts plus the AVPRClient and AVPRClient.Interop NuGet
+packages. Produce them in the AVPR checkout before testing this repository.
+
+With the standard sibling layout, the named package and portable-test targets
+discover the directory automatically:
+
+```powershell
+cd ..\arc-validate-package-registry
+.\build.cmd PackPortablePackages
+dotnet pack src\AVPRClient\AVPRClient.csproj -c Release -o artifacts\packages
+dotnet pack src\AVPRClient.Interop\AVPRClient.Interop.csproj -c Release -o artifacts\packages
+
+cd ..\arc-validate
+.\build.cmd PackARCExpect
+.\build.cmd TestPortableARCExpect
+```
+
+Run the two `dotnet pack` commands after `PackPortablePackages`: that named
+AVPR target deliberately cleans `artifacts/packages` before writing the Model
+and Codecs artifacts. The subsequent commands add the generated client and
+interop NuGet packages without cleaning the native artifacts that the
+JavaScript and Python consumer checks need.
+
+For a non-sibling checkout, point the build at the artifact directory:
+
+```powershell
+$env:AVPR_NATIVE_PACKAGE_DIR = 'D:\work\avpr\artifacts\packages'
+.\build.cmd TestPortableARCExpect
+```
+
+A plain IDE or `dotnet restore` invocation does not run the FAKE build helpers.
+Until the selected previews are published, add the same directory explicitly:
+
+```powershell
+dotnet restore arc-validate.slnx `
+  -p:RestoreAdditionalProjectSources='D:\work\avpr\artifacts\packages'
+```
+
+Once the exact versions are published, no local source or environment variable
+is required. The same project files restore them from the public registries.
+The `UseExplicitPackageVersions` target in `arc-validate.fsproj` is a separate
+piece of pack-time plumbing: it makes a packed CLI advertise the exact
+ARCExpect version from its in-repository `ProjectReference`; it does not locate
+AVPR packages.
+
 The npm artifact depends on `@nfdi4plants/validationpackage-model` and
 `@nfdi4plants/validationpackage-codecs`; the Python artifact depends on the
 corresponding unscoped PyPI distributions. Neither bundles Fable-generated
-copies. Before those dependencies are published, set `AVPR_NATIVE_PACKAGE_DIR`
-to the AVPR `artifacts/packages` directory when running the packed-consumer
-target.
+copies. The unpublished-package workflow above supplies those native
+dependencies to packed-consumer tests.
 
 The common API contains Pyxpecto package authoring and execution,
 framework-neutral case and run results, validation summaries, Thoth.Json

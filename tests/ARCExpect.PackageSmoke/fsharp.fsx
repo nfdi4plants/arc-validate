@@ -1,5 +1,6 @@
 let [<Literal>]PACKAGE_METADATA = """(*
 ---
+$schema: "https://avpr.nfdi4plants.org/schemas/v1/validation-package-frontmatter.schema.json"
 Name: packed-fsi
 Summary: summary
 Description: description
@@ -12,8 +13,6 @@ Inputs:
     type: string?
     inputBinding:
       prefix: --echo
-      position: 0
-      separate: true
 ---
 *)"""
 

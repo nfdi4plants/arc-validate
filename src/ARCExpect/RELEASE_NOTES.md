@@ -1,4 +1,4 @@
-## 7.0.0-preview.3 - 2026-08-07
+## 7.0.0-preview.4 - 2026-08-14
 
 - Consolidate portable result and output contracts behind one public ARCExpect
   package identity with separate .NET, JavaScript, and Python projects and
@@ -23,7 +23,10 @@
   emit aggregate suite counts, validate decoded summary counts, and correct
   default badge thresholds for failed, partial, and successful results.
 - Depend on the native ValidationPackage.Model and ValidationPackage.Codecs
-  preview.3 distributions instead of bundling generated dependency copies.
+  preview.4 distributions instead of bundling generated dependency copies.
+- Align package-argument parsing with preview.4 CWL bindings: every declaration
+  has a non-empty prefix, booleans remain flags, and other values consume the
+  following process argument.
 - Add verified F# and Python validation-package guides with reproducibly
   generated and formatted summary JSON, JUnit, and badge artifacts.
 - Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, Cytoscape.NET, and

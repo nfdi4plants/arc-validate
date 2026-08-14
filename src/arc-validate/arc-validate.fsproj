@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="RELEASE_NOTES.md" />
+    <Content Include="..\..\schemas\validation_plan.schema.json" Link="schemas\v1\validation_plan.schema.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Compile Include="PackageManagement\Defaults.fs" />
     <Compile Include="PackageManagement\AtomicFile.fs" />
     <Compile Include="PackageManagement\Domain.fs" />
@@ -14,14 +15,22 @@
     <Compile Include="PackageManagement\PackageCache.fs" />
     <Compile Include="PackageManagement\RegistryClient.fs" />
     <Compile Include="PackageManagement\Operations.fs" />
+    <Compile Include="Configuration\Domain.fs" />
+    <Compile Include="Configuration\VersionResolution.fs" />
+    <Compile Include="Configuration\ValidationConfigFile.fs" />
+    <Compile Include="Configuration\ExecutionPlan.fs" />
+    <Compile Include="Configuration\Resolver.fs" />
     <Compile Include="PackageRunner\ScriptExecution.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\PackageArgumentBoundary.fs" />
     <Compile Include="CLIArgs\PackageArgs.fs" />
     <Compile Include="CLIArgs\ValidateArgs.fs" />
+    <Compile Include="CLIArgs\ConfigArgs.fs" />
     <Compile Include="Commands\PackageCommand.fs" />
+    <Compile Include="Commands\ConfigCommand.fs" />
     <Compile Include="Commands\ARCValidateCommand.fs" />
     <Compile Include="APIs\PackageAPI.fs" />
+    <Compile Include="APIs\ConfigAPI.fs" />
     <Compile Include="APIs\ValidateAPI.fs" />
     <Compile Include="APIs\ARCValidateAPI.fs" />
     <Compile Include="CommandHandling.fs" />
@@ -31,13 +40,33 @@
     <PackageReference Include="Argu" Version="[6.2.5]" />
     <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
     <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
+    <!--
+      AVPR remains a package boundary even when both repositories are checked
+      out side by side. The root Directory.Build.props pins exact versions;
+      NuGet or the documented local-artifact source supplies those packages.
+      Do not replace these with sibling ProjectReferences: doing so would stop
+      testing the generated client/model artifacts that users actually restore.
+    -->
     <PackageReference Include="AVPRClient" Version="$(AVPRClientPackageVersion)" />
     <PackageReference Include="AVPRClient.Interop" Version="$(AVPRClientInteropPackageVersion)" />
+    <PackageReference Include="ValidationPackage.Codecs" Version="$(ValidationPackageCodecsPackageVersion)" />
     <PackageReference Include="ValidationPackage.Model" Version="$(ValidationPackageModelPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
+    <!--
+      ARCExpect is source-linked inside this repository for normal development.
+      PackageVersion/ExactVersion describe the dependency that a packed CLI
+      must advertise; they do not affect AVPR restore source selection.
+    -->
     <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[$(ARCExpectPackageVersion)]" ExactVersion="true" />
   </ItemGroup>
+  <!--
+    NuGet's pack targets normally infer ProjectReference versions from project
+    output metadata. Reassign the dependency metadata just before nuspec
+    generation so the CLI package records the exact ARCExpect preview selected
+    above. This target is packaging glue only and is unrelated to finding
+    unpublished AVPR packages.
+  -->
   <Target Name="UseExplicitPackageVersions" BeforeTargets="GenerateNuspec">
     <ItemGroup>
       <_ProjectReferenceWithExplicitPackageVersion Include="@(ProjectReference->'%(FullPath)')" Condition="'%(ProjectReference.PackageVersion)' != ''" />

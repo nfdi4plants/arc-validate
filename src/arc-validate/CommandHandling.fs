@@ -18,6 +18,10 @@ module CommandHandling =
             if verbose then printfn "Command: list"
             PackageAPI.List(verbose)
 
+    let handleConfigSubCommand (verbose: bool) (command: ConfigCommand) =
+        match command with
+        | Resolve args -> ConfigAPI.resolve args verbose
+
     let handleARCValidateCommand
         (verbose: bool)
         (packageArguments: string array)
@@ -31,5 +35,8 @@ module CommandHandling =
         | ARCValidateCommand.Package subcommand -> 
             if verbose then printfn "Subcommand: package"
             handlePackageSubCommand verbose (subcommand.GetSubCommand())
+
+        | ARCValidateCommand.Config subcommand ->
+            handleConfigSubCommand verbose (subcommand.GetSubCommand())
 
         | _ -> failwith $"unrecognized command '{command}"

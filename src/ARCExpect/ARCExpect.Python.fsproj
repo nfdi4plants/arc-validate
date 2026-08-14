@@ -28,6 +28,13 @@
     <PackageReference Include="Fable.Pyxpecto" Version="[2.0.0]" />
     <PackageReference Include="Fable.Python" Version="5.4.0" />
     <PackageReference Include="Thoth.Json.Core" Version="[0.9.0]" />
+    <!--
+      Fable compiles against the exact AVPR NuGet artifacts selected at the
+      repository root. PackARCExpect later rewrites/externalizes these imports
+      to the matching PyPI dependencies; it does not bundle generated AVPR
+      code. Local unpublished artifacts are located by the build workflow
+      described in README.md, not by a sibling ProjectReference here.
+    -->
     <PackageReference Include="ValidationPackage.Codecs" Version="$(ValidationPackageCodecsPackageVersion)" />
     <PackageReference Include="ValidationPackage.Model" Version="$(ValidationPackageModelPackageVersion)" />
   </ItemGroup>

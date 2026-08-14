@@ -90,9 +90,9 @@ tokens to the package as one argument list without invoking a shell.
 
 - A boolean prefix is a flag. Present means `true`; an absent required boolean
   means `false`; an absent nullable `boolean?` has no value.
-- `separate: true` consumes the next argument as the value.
-- `separate: false` expects a value joined directly to its prefix.
-- Inputs without a prefix are positional and ordered by `position`.
+- Non-boolean inputs consume the next argument as their value.
+- Every input requires a unique, non-empty prefix; positional and joined-value
+  bindings are not supported.
 - Supported scalar types are `boolean`, `int`, `long`, `float`, `double`, and
   `string`; numeric syntax is invariant across runtimes.
 - Unknown, duplicate, malformed, missing required, or reserved-name inputs fail

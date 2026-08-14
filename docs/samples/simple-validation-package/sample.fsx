@@ -1,5 +1,6 @@
 let [<Literal>]PACKAGE_METADATA = """(*
 ---
+$schema: "https://avpr.nfdi4plants.org/schemas/v1/validation-package-frontmatter.schema.json"
 Name: simple-validation
 Summary: A minimal ARCExpect package
 Description: Shows YAML frontmatter, a critical test, and portable execution.
@@ -10,7 +11,7 @@ Publish: false
 ---
 *)"""
 
-#r "nuget: ARCExpect, 7.0.0-preview.3"
+#r "nuget: ARCExpect, 7.0.0-preview.4"
 
 open ARCExpect
 open Fable.Pyxpecto

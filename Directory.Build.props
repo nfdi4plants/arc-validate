@@ -1,9 +1,25 @@
 <Project>
+  <!--
+    One version table owns every package boundary shared with AVPR. Square
+    brackets are NuGet's exact-version syntax; they prevent restore from
+    silently selecting another preview.
+
+    These properties select package versions, not package sources. Normal
+    `dotnet restore` uses configured NuGet sources, so an unpublished AVPR
+    build must additionally be supplied as a source, for example:
+
+      dotnet restore -p:RestoreAdditionalProjectSources=<AVPR>/artifacts/packages
+
+    The repository build targets automate that source selection. They use
+    AVPR_NATIVE_PACKAGE_DIR when set, otherwise the sibling
+    ../arc-validate-package-registry/artifacts/packages directory, and create
+    an ignored temporary NuGet.Config. See src/ARCExpect/README.md.
+  -->
   <PropertyGroup>
-    <ARCExpectPackageVersion Condition="'$(ARCExpectPackageVersion)' == ''">7.0.0-preview.3</ARCExpectPackageVersion>
-    <AVPRClientPackageVersion Condition="'$(AVPRClientPackageVersion)' == ''">[0.3.0-preview.3]</AVPRClientPackageVersion>
-    <AVPRClientInteropPackageVersion Condition="'$(AVPRClientInteropPackageVersion)' == ''">[0.1.0-preview.3]</AVPRClientInteropPackageVersion>
-    <ValidationPackageModelPackageVersion Condition="'$(ValidationPackageModelPackageVersion)' == ''">[0.1.0-preview.3]</ValidationPackageModelPackageVersion>
-    <ValidationPackageCodecsPackageVersion Condition="'$(ValidationPackageCodecsPackageVersion)' == ''">[0.1.0-preview.3]</ValidationPackageCodecsPackageVersion>
+    <ARCExpectPackageVersion Condition="'$(ARCExpectPackageVersion)' == ''">7.0.0-preview.4</ARCExpectPackageVersion>
+    <AVPRClientPackageVersion Condition="'$(AVPRClientPackageVersion)' == ''">[0.3.0-preview.4]</AVPRClientPackageVersion>
+    <AVPRClientInteropPackageVersion Condition="'$(AVPRClientInteropPackageVersion)' == ''">[0.1.0-preview.4]</AVPRClientInteropPackageVersion>
+    <ValidationPackageModelPackageVersion Condition="'$(ValidationPackageModelPackageVersion)' == ''">[0.1.0-preview.4]</ValidationPackageModelPackageVersion>
+    <ValidationPackageCodecsPackageVersion Condition="'$(ValidationPackageCodecsPackageVersion)' == ''">[0.1.0-preview.4]</ValidationPackageCodecsPackageVersion>
   </PropertyGroup>
 </Project>

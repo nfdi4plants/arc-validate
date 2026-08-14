@@ -54,7 +54,9 @@ nav:
       - Add a result payload: ARCExpect/payload.md
       - Command-line arguments: ARCExpect/command-line-arguments.md
       - API design: ARCExpect/design.md
-  - arc-validate CLI: arc-validate/introduction.md
+  - arc-validate CLI:
+      - Introduction: arc-validate/introduction.md
+      - Validation configuration: arc-validate/validation-configuration.md
   - Development:
       - Releasing ARCExpect: development/releases.md
   - API reference: reference.md

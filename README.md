@@ -159,3 +159,17 @@ releases use the manually dispatched `Release ARCExpect` workflow against the
 publishes independent NuGet, npm, and PyPI jobs through the protected `release`
 environment. See [the release guide](docs/development/releases.md) for
 versioning and the exact trusted-publisher configuration.
+
+### Testing with unpublished AVPR packages
+
+ARCExpect and the CLI intentionally consume exact AVPR package artifacts, not
+sibling source `ProjectReference`s. Named packaging and portable-test targets
+use `AVPR_NATIVE_PACKAGE_DIR` when set, otherwise they detect the sibling
+`../arc-validate-package-registry/artifacts/packages` directory. A plain IDE or
+`dotnet restore` call must add that directory with
+`RestoreAdditionalProjectSources` until the pinned previews are published.
+
+The [ARCExpect README](src/ARCExpect/README.md#testing-against-unpublished-avpr-packages)
+documents the MSBuild import chain, separate target restore graphs, artifact
+lookup order, commands, and the unrelated pack-time
+`UseExplicitPackageVersions` target in detail.

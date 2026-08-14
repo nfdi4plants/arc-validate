@@ -146,8 +146,6 @@ module private PackageArgumentParsing =
 
         let mutable ids = Set.empty
         let mutable prefixes = Set.empty
-        let mutable positions = Set.empty
-
         inputs
         |> Array.map (fun input ->
             if isNull (box input) then
@@ -169,22 +167,16 @@ module private PackageArgumentParsing =
 
             let prefix = input.InputBinding.Prefix
 
-            if not (isNull prefix) && prefix.Length > 0 then
-                if String.IsNullOrWhiteSpace prefix then
-                    fail $"Input '{input.Id}' has a whitespace-only command prefix."
+            if String.IsNullOrWhiteSpace prefix then
+                fail $"Input '{input.Id}' requires a non-empty command prefix."
 
-                if Set.contains prefix reservedPrefixes then
-                    fail $"Input '{input.Id}' uses reserved command prefix '{prefix}'."
+            if Set.contains prefix reservedPrefixes then
+                fail $"Input '{input.Id}' uses reserved command prefix '{prefix}'."
 
-                if Set.contains prefix prefixes then
-                    fail $"Command prefix '{prefix}' is declared more than once."
+            if Set.contains prefix prefixes then
+                fail $"Command prefix '{prefix}' is declared more than once."
 
-                prefixes <- Set.add prefix prefixes
-            else
-                if Set.contains input.InputBinding.Position positions then
-                    fail $"Positional command input position {input.InputBinding.Position} is declared more than once."
-
-                positions <- Set.add input.InputBinding.Position positions
+            prefixes <- Set.add prefix prefixes
 
             {
                 Id = input.Id
@@ -199,23 +191,8 @@ module private PackageArgumentParsing =
 
         let definitions = definitions metadata
 
-        let positionalDefinitions =
-            definitions
-            |> Array.filter (fun definition -> String.IsNullOrEmpty definition.Binding.Prefix)
-            |> Array.sortBy (fun definition -> definition.Binding.Position)
-
-        let prefixedDefinitions =
-            definitions
-            |> Array.filter (fun definition -> not (String.IsNullOrEmpty definition.Binding.Prefix))
-
-        let joinedDefinitions =
-            prefixedDefinitions
-            |> Array.filter (fun definition -> not definition.Binding.Separate)
-            |> Array.sortByDescending (fun definition -> definition.Binding.Prefix.Length)
-
         let mutable standardValues = Map.empty<string, string>
         let mutable inputValues = Map.empty<string, PackageInputValue>
-        let mutable positionalIndex = 0
         let mutable index = 0
 
         let addStandard key value =
@@ -245,38 +222,18 @@ module private PackageArgumentParsing =
                 addStandard key arguments[index + 1]
                 index <- index + 2
             | None ->
-                match prefixedDefinitions |> Array.tryFind (fun definition -> definition.Binding.Prefix = token) with
+                match definitions |> Array.tryFind (fun definition -> definition.Binding.Prefix = token) with
                 | Some definition when definition.InputType.PrimitiveType = CwlPrimitive.Boolean ->
                     addInput definition "true"
                     index <- index + 1
-                | Some definition when definition.Binding.Separate ->
+                | Some definition ->
                     if index + 1 >= arguments.Length then
                         fail $"Package input '{definition.Id}' requires a value after '{token}'."
 
                     addInput definition arguments[index + 1]
                     index <- index + 2
-                | Some definition ->
-                    fail $"Package input '{definition.Id}' requires its value to be joined to prefix '{token}'."
                 | None ->
-                    match
-                        joinedDefinitions
-                        |> Array.tryFind (fun definition ->
-                            token.Length > definition.Binding.Prefix.Length
-                            && token.StartsWith(definition.Binding.Prefix, StringComparison.Ordinal)
-                        )
-                    with
-                    | Some definition ->
-                        addInput
-                            definition
-                            (token.Substring(definition.Binding.Prefix.Length))
-                        index <- index + 1
-                    | None when positionalIndex < positionalDefinitions.Length ->
-                        let definition = positionalDefinitions[positionalIndex]
-                        addInput definition token
-                        positionalIndex <- positionalIndex + 1
-                        index <- index + 1
-                    | None ->
-                        fail $"Unknown validation-package argument '{token}'."
+                    fail $"Unknown validation-package argument '{token}'."
 
         for definition in definitions do
             if

@@ -6,6 +6,17 @@ open System.Text
 open System.Threading
 open System.Threading.Tasks
 open AVPRClient
+open AVPRClient.Interop
+open ValidationPackage.Model
+
+/// Supplies only the lightweight registry discovery operations needed for configuration preflight.
+type IRegistryDiscoveryClient =
+    abstract GetPackageIndexAsync:
+        cancellationToken: CancellationToken -> Task<ValidationPackageIdentity array>
+
+    abstract GetPackageMetadataAsync:
+        packageName: string * version: string * cancellationToken: CancellationToken ->
+            Task<ValidationPackageMetadata>
 
 type RegistryError =
     | NotFound of message: string
@@ -63,6 +74,10 @@ type RegistryClient(?BaseUri: Uri, ?HttpClient: HttpClient) =
                 return raise (RegistryRequestException(TransportError error.Message))
             | :? TaskCanceledException as error ->
                 return raise (RegistryRequestException(TransportError error.Message))
+            | :? ArgumentException as error ->
+                return raise (RegistryRequestException(InvalidResponse error.Message))
+            | :? InvalidOperationException as error ->
+                return raise (RegistryRequestException(InvalidResponse error.Message))
         }
 
     member _.BaseUri = baseUri
@@ -74,6 +89,30 @@ type RegistryClient(?BaseUri: Uri, ?HttpClient: HttpClient) =
             task {
                 let! packages = client.GetAllPackagesAsync(cancellationToken)
                 return packages |> Seq.toArray
+            })
+
+    member _.GetPackageIndexAsync(?cancellationToken: CancellationToken) =
+        let cancellationToken = defaultArg cancellationToken System.Threading.CancellationToken.None
+
+        translateRequest (fun () ->
+            task {
+                let! packages = client.GetPackageIndexAsync(cancellationToken)
+                return Mappings.ToModel(packages)
+            })
+
+    member _.GetPackageMetadataAsync(
+        packageName: string,
+        version: string,
+        ?cancellationToken: CancellationToken
+    ) =
+        let cancellationToken = defaultArg cancellationToken System.Threading.CancellationToken.None
+
+        translateRequest (fun () ->
+            task {
+                let! metadata =
+                    client.GetPackageMetadataAsync(packageName, version, cancellationToken)
+
+                return Mappings.ToModel(metadata)
             })
 
     member _.GetPackageByNameAsync(packageName: string, ?cancellationToken: CancellationToken) =
@@ -110,3 +149,10 @@ type RegistryClient(?BaseUri: Uri, ?HttpClient: HttpClient) =
     interface IDisposable with
         member _.Dispose() =
             if ownsHttpClient then httpClient.Dispose()
+
+    interface IRegistryDiscoveryClient with
+        member this.GetPackageIndexAsync(cancellationToken) =
+            this.GetPackageIndexAsync(cancellationToken)
+
+        member this.GetPackageMetadataAsync(packageName, version, cancellationToken) =
+            this.GetPackageMetadataAsync(packageName, version, cancellationToken)

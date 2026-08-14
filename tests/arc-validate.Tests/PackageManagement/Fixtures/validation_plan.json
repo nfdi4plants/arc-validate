@@ -1,0 +1,13 @@
+{
+  "$schema": "https://nfdi4plants.github.io/arc-validate/schemas/v1/validation_plan.schema.json",
+  "config_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "arc_specification": "3.0.0-draft.2",
+  "validation_packages": [
+    {
+      "name": "configurable-validation",
+      "requested_version": "1.2.3",
+      "roll_forward": "latest_patch",
+      "resolved_version": "1.2.7"
+    }
+  ]
+}

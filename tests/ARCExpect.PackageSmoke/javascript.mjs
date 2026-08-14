@@ -37,7 +37,7 @@ metadata.Inputs = [
   CommandInputParameter.create(
     "echo",
     CommandInputType.create(CwlPrimitive.String, true),
-    CommandInputBinding.create(undefined, "--echo", true)
+    CommandInputBinding.create(undefined, "--echo")
   )
 ];
 const packageArguments = PackageArguments.fromCommandLine(metadata);

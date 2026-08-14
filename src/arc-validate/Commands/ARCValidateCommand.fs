@@ -13,6 +13,7 @@ type ARCValidateCommand =
 
     // SubCommands
     | [<Unique; CliPrefix(CliPrefix.None); AltCommandLine("p")>] Package of ParseResults<PackageCommand>
+    | [<Unique; CliPrefix(CliPrefix.None)>] Config of ParseResults<ConfigCommand>
 
     interface IArgParserTemplate with
         member s.Usage =
@@ -20,6 +21,7 @@ type ARCValidateCommand =
             | Verbose         -> "Use verbose error messages (with full error stack)."
             | Validate _      -> "command for performing arc validation"
             | Package _       -> "subcommands for validation packages"
+            | Config _        -> "resolve and preflight validation configuration"
 
     static member createParser() =
 

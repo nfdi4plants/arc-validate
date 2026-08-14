@@ -61,15 +61,11 @@ let private allOutcomes =
         SuiteName = "all-outcomes"
     )
 
-let private commandInput id primitive isNullable position prefix separate =
+let private commandInput id primitive isNullable position prefix =
     CommandInputParameter.create(
         id,
         CommandInputType.create(primitive, IsNullable = isNullable),
-        CommandInputBinding.create(
-            Position = position,
-            Prefix = prefix,
-            Separate = separate
-        )
+        CommandInputBinding.create(Position = position, Prefix = prefix)
     )
 
 let private argumentMetadata inputs =
@@ -269,11 +265,11 @@ Publish: false
         testCase "package arguments parse standard and CWL inputs without evaluating values" <| fun () ->
             let metadata =
                 argumentMetadata [|
-                    commandInput "test" CwlPrimitive.Boolean true 0 "--test" true
-                    commandInput "count" CwlPrimitive.Int false 0 "--count" true
-                    commandInput "ratio" CwlPrimitive.Double false 0 "--ratio=" false
-                    commandInput "echo" CwlPrimitive.String true 0 "--echo" true
-                    commandInput "label" CwlPrimitive.String false 1 "" true
+                    commandInput "test" CwlPrimitive.Boolean true 0 "--test"
+                    commandInput "count" CwlPrimitive.Int false 0 "--count"
+                    commandInput "ratio" CwlPrimitive.Double false 0 "--ratio"
+                    commandInput "echo" CwlPrimitive.String true 0 "--echo"
+                    commandInput "label" CwlPrimitive.String false 1 "--label"
                 |]
 
             let hostileValue = "\"; $(touch injected) & <xml> `literal`"
@@ -293,9 +289,11 @@ Publish: false
                         "--test"
                         "--count"
                         "42"
-                        "--ratio=1.25e2"
+                        "--ratio"
+                        "1.25e2"
                         "--echo"
                         hostileValue
+                        "--label"
                         "positional label"
                     |]
                 )
@@ -306,15 +304,15 @@ Publish: false
             Expect.equal actual.SourceCommitHash (Some "abc123") "Source commit"
             Expect.equal (actual.TryGetBoolean "test") (Some true) "Boolean flag"
             Expect.equal (actual.GetInt "count") 42 "Integer input"
-            Expect.equal (actual.GetDouble "ratio") 125.0 "Joined double input"
+            Expect.equal (actual.GetDouble "ratio") 125.0 "Double input"
             Expect.equal (actual.TryGetString "echo") (Some hostileValue) "Hostile-looking text stays literal"
-            Expect.equal (actual.GetString "label") "positional label" "Positional input"
+            Expect.equal (actual.GetString "label") "positional label" "String input"
 
         testCase "package arguments apply CWL optionality and strict validation" <| fun () ->
             let metadata =
                 argumentMetadata [|
-                    commandInput "enabled" CwlPrimitive.Boolean false 0 "--enabled" true
-                    commandInput "optional" CwlPrimitive.String true 0 "--optional" true
+                    commandInput "enabled" CwlPrimitive.Boolean false 0 "--enabled"
+                    commandInput "optional" CwlPrimitive.String true 0 "--optional"
                 |]
 
             let actual = PackageArguments.parse(metadata, [| "-i"; "/arc"; "-o"; "/out" |])
@@ -337,7 +335,7 @@ Publish: false
 
             let invalidTypeMetadata =
                 argumentMetadata [|
-                    commandInput "count" CwlPrimitive.Int false 0 "--count" true
+                    commandInput "count" CwlPrimitive.Int false 0 "--count"
                 |]
 
             Expect.throws
@@ -354,7 +352,7 @@ Publish: false
                 (fun () ->
                     let decimalMetadata =
                         argumentMetadata [|
-                            commandInput "ratio" CwlPrimitive.Double false 0 "--ratio" true
+                            commandInput "ratio" CwlPrimitive.Double false 0 "--ratio"
                         |]
 
                     PackageArguments.parse(
@@ -367,7 +365,7 @@ Publish: false
 
             let reservedMetadata =
                 argumentMetadata [|
-                    commandInput "shadow" CwlPrimitive.String true 0 "-i" true
+                    commandInput "shadow" CwlPrimitive.String true 0 "-i"
                 |]
 
             Expect.throws

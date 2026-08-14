@@ -1,5 +1,6 @@
 PACKAGE_METADATA = """
 ---
+$schema: "https://avpr.nfdi4plants.org/schemas/v1/validation-package-frontmatter.schema.json"
 Name: configurable-validation
 Summary: A validation package with typed inputs
 Description: Reads standard and CWL-defined arguments through ARCExpect.
@@ -12,26 +13,20 @@ Inputs:
     type: boolean
     inputBinding:
       prefix: --strict
-      position: 0
-      separate: true
   - id: minimum-files
     type: int
     inputBinding:
       prefix: --minimum-files
-      position: 0
-      separate: true
   - id: label
     type: string?
     inputBinding:
       prefix: --label
-      position: 0
-      separate: true
 ---
 """
 
 # /// script
 # dependencies = [
-#   "arcexpect==7.0.0a3",
+#   "arcexpect==7.0.0a4",
 # ]
 # ///
 

@@ -22,6 +22,13 @@ let private buildSite version =
     printfn "building docs with ARCExpect version %s" version
     Environment.SetEnvironmentVariable("ARC_VALIDATE_DOCS_VERSION", version)
     runUv [ "run"; "--group"; "docs"; "mkdocs"; "build"; "--strict" ] "."
+    let schemaOutputDirectory = Path.Combine("site", "schemas", "v1")
+    Directory.CreateDirectory(schemaOutputDirectory) |> ignore
+    File.Copy(
+        Path.Combine("schemas", "validation_plan.schema.json"),
+        Path.Combine(schemaOutputDirectory, "validation_plan.schema.json"),
+        true
+    )
     runDotNet
         (sprintf
             "fsdocs build --eval --clean --input docs/fsdocs --output site/fsdocs --projects %s --properties Configuration=%s --parameters fsdocs-package-version %s root %s"
