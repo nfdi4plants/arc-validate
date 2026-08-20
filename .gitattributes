@@ -1,2 +1,3 @@
+*.sh text eol=lf
 schemas/*.json text eol=lf
 tests/arc-validate.Tests/PackageManagement/Fixtures/*.json text eol=lf

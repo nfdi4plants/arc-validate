@@ -6,6 +6,7 @@
     <PackageId>ARCExpect</PackageId>
     <AssemblyName>ARCExpect</AssemblyName>
     <RootNamespace>ARCExpect</RootNamespace>
+    <Version>$(ARCExpectPackageVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>

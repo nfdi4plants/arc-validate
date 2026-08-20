@@ -81,20 +81,16 @@ let build = BuildTask.create "Build" [ clean; validateReleaseMetadata ] {
 }
 
 
-let publish = BuildTask.create "Publish" [ clean; validateReleaseMetadata ] {
+let publish = BuildTask.create "Publish" [ build ] {
     CLIProject.ProjFile
     |> DotNet.publish (fun p ->
         let msBuildParams =
             {p.MSBuildParams with 
-                Properties = ([
-                    "AssemblyVersion", CLIProject.AssemblyVersion
-                    "InformationalVersion", CLIProject.AssemblyInformationalVersion
-                    "warnon", "3390"
-                ])
                 DisableInternalBinLog = true
             }
         {
             p with 
+                NoBuild = true
                 MSBuildParams = msBuildParams
                 OutputPath = Some "publish"
         }

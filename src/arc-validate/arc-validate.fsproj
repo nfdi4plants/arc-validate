@@ -59,7 +59,7 @@
       PackageVersion/ExactVersion describe the dependency that a packed CLI
       must advertise; they do not affect AVPR restore source selection.
     -->
-    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[$(ARCExpectPackageVersion)]" ExactVersion="true" />
+    <ProjectReference Include="..\ARCExpect\ARCExpect.fsproj" PackageVersion="[$(ARCExpectPackageVersion)]" ExactVersion="true" GlobalPropertiesToRemove="AssemblyVersion;InformationalVersion" />
   </ItemGroup>
   <!--
     NuGet's pack targets normally infer ProjectReference versions from project

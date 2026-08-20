@@ -21,3 +21,5 @@
   process argument-list tokens.
 - Keep container builds and ARCExpect release verification on the hermetic
   automated suite; live registry checks remain explicit integration targets.
+- Publish the CLI from the already versioned per-project build outputs so its
+  ARCExpect assembly reference and the copied dependency retain one identity.
