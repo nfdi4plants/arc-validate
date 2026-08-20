@@ -32,6 +32,8 @@
   exact-token argument parsing on .NET, JavaScript, and Python.
 - Keep the ARCExpect assembly identity aligned with its package version when it
   is built through the CLI project graph.
+- Use an absolute virtual-environment interpreter path for the packed Python
+  consumer so Linux loads the installed wheel.
 - Add verified F# and Python validation-package guides with reproducibly
   generated and formatted summary JSON, JUnit, and badge artifacts.
 - Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, Cytoscape.NET, and

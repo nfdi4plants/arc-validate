@@ -161,7 +161,9 @@ let testARCExpectPackage =
             ]
             javaScriptDirectory
 
-        let pythonDirectory = Path.Combine(packageSmokeDir, "python")
+        let pythonDirectory =
+            Path.Combine(packageSmokeDir, "python")
+            |> Path.GetFullPath
         let pythonEnvironment = Path.Combine(pythonDirectory, ".venv")
         recreateDirectory pythonDirectory
         File.Copy(
