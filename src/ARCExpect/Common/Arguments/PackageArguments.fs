@@ -33,12 +33,6 @@ module private PackageArgumentParsing =
             "--source-commit-hash", "source-commit-hash"
         |]
 
-    let private reservedPrefixes =
-        standardArguments
-        |> Array.map fst
-        |> Array.append [| "--" |]
-        |> Set.ofArray
-
     let private fail message = invalidArg "arguments" message
 
     let private isAsciiDigit value = value >= '0' && value <= '9'
@@ -144,40 +138,9 @@ module private PackageArgumentParsing =
         let inputs =
             if isNull metadata.Inputs then Array.empty else metadata.Inputs
 
-        let mutable ids = Set.empty
-        let mutable prefixes = Set.empty
         inputs
+        |> CommandInputParameter.validate
         |> Array.map (fun input ->
-            if isNull (box input) then
-                fail "Validation-package metadata contains a null command input."
-
-            if String.IsNullOrWhiteSpace input.Id then
-                fail "Every validation-package command input must have a non-empty id."
-
-            if Set.contains input.Id ids then
-                fail $"Validation-package command input id '{input.Id}' is declared more than once."
-
-            ids <- Set.add input.Id ids
-
-            if isNull (box input.Type) then
-                fail $"Input '{input.Id}' has no CWL type."
-
-            if isNull (box input.InputBinding) then
-                fail $"Input '{input.Id}' has no CWL inputBinding."
-
-            let prefix = input.InputBinding.Prefix
-
-            if String.IsNullOrWhiteSpace prefix then
-                fail $"Input '{input.Id}' requires a non-empty command prefix."
-
-            if Set.contains prefix reservedPrefixes then
-                fail $"Input '{input.Id}' uses reserved command prefix '{prefix}'."
-
-            if Set.contains prefix prefixes then
-                fail $"Command prefix '{prefix}' is declared more than once."
-
-            prefixes <- Set.add prefix prefixes
-
             {
                 Id = input.Id
                 InputType = input.Type
@@ -214,23 +177,23 @@ module private PackageArgumentParsing =
         while index < arguments.Length do
             let token = arguments[index]
 
-            match standardArguments |> Array.tryFind (fun (prefix, _) -> prefix = token) with
-            | Some (_, key) ->
+            match definitions |> Array.tryFind (fun definition -> definition.Binding.Prefix = token) with
+            | Some definition when definition.InputType.PrimitiveType = CwlPrimitive.Boolean ->
+                addInput definition "true"
+                index <- index + 1
+            | Some definition ->
                 if index + 1 >= arguments.Length then
-                    fail $"Standard package argument '{token}' requires a value."
+                    fail $"Package input '{definition.Id}' requires a value after '{token}'."
 
-                addStandard key arguments[index + 1]
+                addInput definition arguments[index + 1]
                 index <- index + 2
             | None ->
-                match definitions |> Array.tryFind (fun definition -> definition.Binding.Prefix = token) with
-                | Some definition when definition.InputType.PrimitiveType = CwlPrimitive.Boolean ->
-                    addInput definition "true"
-                    index <- index + 1
-                | Some definition ->
+                match standardArguments |> Array.tryFind (fun (prefix, _) -> prefix = token) with
+                | Some (_, key) ->
                     if index + 1 >= arguments.Length then
-                        fail $"Package input '{definition.Id}' requires a value after '{token}'."
+                        fail $"Standard package argument '{token}' requires a value."
 
-                    addInput definition arguments[index + 1]
+                    addStandard key arguments[index + 1]
                     index <- index + 2
                 | None ->
                     fail $"Unknown validation-package argument '{token}'."

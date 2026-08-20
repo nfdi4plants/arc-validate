@@ -2,6 +2,7 @@ namespace ARCValidate.PackageRunner
 
 open System
 open System.Diagnostics
+open System.Text
 open ARCValidate.PackageManagement
 
 type ProcessResult =
@@ -27,7 +28,9 @@ module private Tool =
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
-                RedirectStandardError = true
+                RedirectStandardError = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
             )
 
         arguments |> Array.iter startInfo.ArgumentList.Add

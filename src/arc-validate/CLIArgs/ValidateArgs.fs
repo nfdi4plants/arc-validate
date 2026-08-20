@@ -9,6 +9,8 @@ type ValidateArgs =
     | [<Unique>] Specification_Version of specification_version: string
     | [<Unique>] Source_Branch of branch: string
     | [<Unique>] Source_Commit_Hash of commit_hash: string
+    | [<Unique>] Validation_Config of path: string
+    | [<Unique>] Validation_Config_Sha256 of sha256: string
 
     interface IArgParserTemplate with
         member s.Usage =
@@ -20,3 +22,27 @@ type ValidateArgs =
             | Specification_Version _ -> "Optional. Only has an effect if no package is specified via '-p' Specify a version of the ARC specification to validate against. Default: 'latest'."
             | Source_Branch _ -> "Optional. Record the source branch in generated validation outputs."
             | Source_Commit_Hash _ -> "Optional. Record the source commit hash in generated validation outputs."
+            | Validation_Config _ -> "Optional. Read configured package inputs from this explicit validation_packages.yml path. Requires --package and --package-version."
+            | Validation_Config_Sha256 _ -> "Optional. Require the validation configuration bytes to match this lowercase SHA-256 digest. Requires --validation-config."
+
+[<RequireQualifiedAccess>]
+module ValidateArgs =
+
+    let validateCombination (args: ParseResults<ValidateArgs>) hasPackageBoundary =
+        let package = args.TryGetResult(ValidateArgs.Package)
+        let version = args.TryGetResult(ValidateArgs.Package_Version)
+        let config = args.TryGetResult(ValidateArgs.Validation_Config)
+        let digest = args.TryGetResult(ValidateArgs.Validation_Config_Sha256)
+
+        match config, digest, package, version, hasPackageBoundary with
+        | None, Some _, _, _, _ ->
+            Error "--validation-config-sha256 requires --validation-config."
+        | Some _, _, None, _, _ ->
+            Error "--validation-config requires --package or -p."
+        | Some _, _, _, None, _ ->
+            Error "--validation-config requires --package-version or -v."
+        | Some _, _, _, _, true ->
+            Error "--validation-config is mutually exclusive with package arguments after '--'."
+        | None, _, None, _, true ->
+            Error "Package arguments after '--' require validation with '--package' or '-p'."
+        | _ -> Ok()

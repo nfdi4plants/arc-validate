@@ -375,6 +375,84 @@ Publish: false
                 )
                 "CWL inputs must not shadow standard arguments"
 
+            let longAliasArguments =
+                PackageArguments.parse(
+                    argumentMetadata Array.empty,
+                    [|
+                        "--arc-directory"
+                        "/long-arc"
+                        "--out-directory"
+                        "/long-out"
+                    |]
+                )
+
+            Expect.equal longAliasArguments.ArcDirectory "/long-arc" "Undeclared ARC alias"
+            Expect.equal longAliasArguments.OutputDirectory "/long-out" "Undeclared output alias"
+
+            let parserAliasMetadata =
+                argumentMetadata [|
+                    commandInput "shadow" CwlPrimitive.String true 0 "--arc-directory"
+                |]
+
+            let parserAliasArguments =
+                PackageArguments.parse(
+                    parserAliasMetadata,
+                    [|
+                        "-i"
+                        "/arc"
+                        "-o"
+                        "/out"
+                        "--arc-directory"
+                        "package value"
+                    |]
+                )
+
+            Expect.equal
+                (parserAliasArguments.GetString "shadow")
+                "package value"
+                "The portable declaration contract takes precedence over optional long aliases"
+
+            let duplicateIdMetadata =
+                argumentMetadata [|
+                    commandInput "duplicate" CwlPrimitive.String true 0 "--first"
+                    commandInput "duplicate" CwlPrimitive.String true 0 "--second"
+                |]
+
+            Expect.throws
+                (fun () ->
+                    PackageArguments.parse(duplicateIdMetadata, [| "-i"; "/arc"; "-o"; "/out" |])
+                    |> ignore
+                )
+                "Central declaration validation must reject duplicate ids"
+
+            let duplicatePrefixMetadata =
+                argumentMetadata [|
+                    commandInput "first" CwlPrimitive.String true 0 "--duplicate"
+                    commandInput "second" CwlPrimitive.String true 0 "--duplicate"
+                |]
+
+            Expect.throws
+                (fun () ->
+                    PackageArguments.parse(duplicatePrefixMetadata, [| "-i"; "/arc"; "-o"; "/out" |])
+                    |> ignore
+                )
+                "Central declaration validation must reject duplicate prefixes"
+
+            let exactPrefixMetadata =
+                argumentMetadata [|
+                    commandInput "value" CwlPrimitive.String false 0 "--value"
+                |]
+
+            Expect.throws
+                (fun () ->
+                    PackageArguments.parse(
+                        exactPrefixMetadata,
+                        [| "-i"; "/arc"; "-o"; "/out"; "--value=joined" |]
+                    )
+                    |> ignore
+                )
+                "CWL prefixes must match complete argument tokens"
+
         testCaseAsync "top-level Execute runs Pyxpecto validation packages" <| async {
             let metadata =
                 ValidationPackage.Model.ValidationPackageMetadata.create(

@@ -40,3 +40,36 @@ the CI-facing artifact:
 The standalone [validation-plan JSON Schema](https://nfdi4plants.github.io/arc-validate/schemas/v1/validation_plan.schema.json)
 is the authoritative structural contract. Runtime readers dispatch only on its
 exact `$schema` URI and do not fetch schemas from the network.
+
+## Execute a resolved package selection
+
+Each child job uses the exact package identity and configuration digest recorded
+by the parent resolver:
+
+```bash
+arc-validate validate \
+  --arc-directory . \
+  --package configurable-validation \
+  --package-version 1.2.7 \
+  --validation-config .arc/validation_packages.yml \
+  --validation-config-sha256 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+```
+
+The child hashes the file's exact bytes (including a UTF-8 BOM), verifies the
+optional lowercase digest before using any values, and rechecks that `1.2.7`
+satisfies the source selection. It then loads only that exact installed cache
+entry and validates the configured values against that version's metadata. It
+does not query AVPR or ask whether a newer version has appeared since the plan
+was created.
+
+Direct interactive calls may omit `--validation-config-sha256`. Generated
+DataHUB jobs must pass it so parent resolution and child execution are bound to
+the same bytes. Config-driven mode requires `--package`, `--package-version`,
+and an explicit `--validation-config` path together, and cannot be combined
+with raw package arguments after `--`.
+
+Configured values become separate process arguments in declaration position
+and ordinal ID order. A true boolean emits only its prefix; false and null emit
+nothing; every other value emits a prefix token followed by one unchanged value
+token. Manual package arguments remain available when configured mode is not
+selected.

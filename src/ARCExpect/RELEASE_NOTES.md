@@ -27,6 +27,9 @@
 - Align package-argument parsing with preview.4 CWL bindings: every declaration
   has a non-empty prefix, booleans remain flags, and other values consume the
   following process argument.
+- Reuse the portable Model validator as the single declaration contract, give
+  declared prefixes precedence over optional long standard aliases, and retain
+  exact-token argument parsing on .NET, JavaScript, and Python.
 - Add verified F# and Python validation-package guides with reproducibly
   generated and formatted summary JSON, JUnit, and badge artifacts.
 - Remove the unused ARCGraph, OboGraph, OBO.NET, Graphoscope, Cytoscape.NET, and

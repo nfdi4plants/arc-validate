@@ -4,6 +4,7 @@ open ARCValidate
 open ARCValidate.CLIArguments
 open ARCExpect
 open ARCTokenization
+open ARCValidate.Configuration
 open ARCValidate.PackageManagement
 open ARCValidate.PackageRunner
 
@@ -45,13 +46,11 @@ module ValidateAPI =
         let sourceCommitHash =
             args.TryGetResult(Source_Commit_Hash)
 
-        let packageArguments =
-            PackageProcessArguments.create
-                root
-                outPath
-                sourceBranch
-                sourceCommitHash
-                forwardedPackageArguments
+        let validationConfig =
+            args.TryGetResult(ValidateArgs.Validation_Config)
+
+        let validationConfigSha256 =
+            args.TryGetResult(ValidateArgs.Validation_Config_Sha256)
 
         let mutable exitCode = ExitCode.Success
 
@@ -101,48 +100,82 @@ module ValidateAPI =
 
             let status = AnsiConsole.Status()
 
-            status.Start($"Performing validation against the {packageName} package", fun ctx ->
+            try
+                status.Start($"Performing validation against the {packageName} package", fun ctx ->
 
-                if verbose then
-                    AnsiConsole.MarkupLine("LOG: Running in:")
-                    AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
-                    AnsiConsole.MarkupLine("")
-                
-                match Common.GetSyncedConfigAndCache() with
-                | Error e -> 
-                    PackageAPI.printGetSyncedConfigAndCacheError e
-                    exitCode <- ExitCode.InternalError
+                    if verbose then
+                        AnsiConsole.MarkupLine("LOG: Running in:")
+                        AnsiConsole.Write(TextPath(Path.GetFullPath(root)))
+                        AnsiConsole.MarkupLine("")
 
-                | Ok (config, cache) -> 
-                    let package = 
-                        match version with 
-                        | Some semver ->  PackageCache.tryGetPackage packageName semver cache
-                        | None -> PackageCache.tryGetLatestPackage packageName cache
-
-                    match package with
-                    | Some validationPackage ->
-                        if verbose then
-                            AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally:[/]")
-                            AnsiConsole.MarkupLine($"LOG: {validationPackage.PrettyPrint()}")
-                            AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].")
-                            AnsiConsole.MarkupLine($"LOG: Output path is:")
-                            AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
-                            AnsiConsole.MarkupLine("")
-
-                        let result = 
-                            match validationPackage.Metadata.ProgrammingLanguage.ToLowerInvariant() with
-                            | "fsharp" -> FSharpScript.runPackageScriptWithArgs validationPackage packageArguments
-                            | "python" -> PythonScript.runPackageScriptWithArgs validationPackage packageArguments
-                            | _ -> failwithf $"programming '{validationPackage.Metadata.ProgrammingLanguage}' language used in validation package '{validationPackage.FileName}' is not supported"
-                        
-                        if result.OK then
-                            exitCode <- ExitCode.Success
-                        else
-                            exitCode <- ExitCode.InternalError
-
-                    | None -> 
-                        AnsiConsole.MarkupLine($"[red]Package {packageName} not installed. You can run run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package.[/]")
+                    match Common.GetSyncedConfigAndCache() with
+                    | Error e ->
+                        PackageAPI.printGetSyncedConfigAndCacheError e
                         exitCode <- ExitCode.InternalError
-            )
+
+                    | Ok (_, cache) ->
+                        let selected =
+                            match validationConfig, version with
+                            | Some configPath, Some exactVersion ->
+                                let prepared =
+                                    ChildExecution.prepare
+                                        configPath
+                                        validationConfigSha256
+                                        packageName
+                                        exactVersion
+                                        cache
+
+                                Some(prepared.Package, prepared.PackageArguments)
+                            | None, Some exactVersion ->
+                                PackageCache.tryGetPackage packageName exactVersion cache
+                                |> Option.map (fun package -> package, forwardedPackageArguments)
+                            | None, None ->
+                                PackageCache.tryGetLatestPackage packageName cache
+                                |> Option.map (fun package -> package, forwardedPackageArguments)
+                            | Some _, None ->
+                                raise (
+                                    ConfigurationException(
+                                        "--validation-config requires --package-version or -v"
+                                    )
+                                )
+
+                        match selected with
+                        | Some (validationPackage, selectedPackageArguments) ->
+                            if verbose then
+                                AnsiConsole.MarkupLine($"LOG: [green]validation package [bold underline]{packageName}[/] is installed locally:[/]")
+                                AnsiConsole.MarkupLine($"LOG: {validationPackage.PrettyPrint()}")
+                                AnsiConsole.MarkupLine($"LOG: running validation against [bold underline green]{packageName}[/].")
+                                AnsiConsole.MarkupLine($"LOG: Output path is:")
+                                AnsiConsole.Write(TextPath(Path.GetFullPath(outPath)))
+                                AnsiConsole.MarkupLine("")
+
+                            let packageArguments =
+                                PackageProcessArguments.create
+                                    root
+                                    outPath
+                                    sourceBranch
+                                    sourceCommitHash
+                                    selectedPackageArguments
+
+                            let result =
+                                match validationPackage.Metadata.ProgrammingLanguage.ToLowerInvariant() with
+                                | "fsharp" -> FSharpScript.runPackageScriptWithArgs validationPackage packageArguments
+                                | "python" -> PythonScript.runPackageScriptWithArgs validationPackage packageArguments
+                                | _ -> failwithf $"programming '{validationPackage.Metadata.ProgrammingLanguage}' language used in validation package '{validationPackage.FileName}' is not supported"
+
+                            if result.OK then
+                                exitCode <- ExitCode.Success
+                            else
+                                exitCode <- ExitCode.InternalError
+
+                        | None ->
+                            AnsiConsole.MarkupLine($"[red]Package {packageName} not installed. You can run run [green]arc-validate package install <your-desired-package-name>[/] to install a validation package.[/]")
+                            exitCode <- ExitCode.InternalError
+                )
+            with ConfigurationException message ->
+                AnsiConsole.MarkupLine(
+                    $"[red]Configuration error:[/] {Markup.Escape(message)}"
+                )
+                exitCode <- ExitCode.ConfigurationError
 
         exitCode

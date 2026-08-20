@@ -20,6 +20,7 @@
     <Compile Include="Configuration\ValidationConfigFile.fs" />
     <Compile Include="Configuration\ExecutionPlan.fs" />
     <Compile Include="Configuration\Resolver.fs" />
+    <Compile Include="Configuration\ChildExecution.fs" />
     <Compile Include="PackageRunner\ScriptExecution.fs" />
     <Compile Include="ExitCodes.fs" />
     <Compile Include="CLIArgs\PackageArgumentBoundary.fs" />

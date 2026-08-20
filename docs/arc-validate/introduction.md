@@ -33,6 +33,8 @@ USAGE: arc-validate validate [--help] [--arc-directory <path>]
                              [--specification-version <specification version>]
                              [--source-branch <branch>]
                              [--source-commit-hash <commit hash>]
+                             [--validation-config <path>]
+                             [--validation-config-sha256 <sha256>]
                              [-- <package arguments>]
 
 OPTIONS:
@@ -56,6 +58,13 @@ OPTIONS:
                           Optional source branch recorded in generated outputs.
     --source-commit-hash <commit hash>
                           Optional source commit recorded in generated outputs.
+    --validation-config <path>
+                          Read configured package inputs from this explicit
+                          validation_packages.yml path. Requires --package and
+                          --package-version.
+    --validation-config-sha256 <sha256>
+                          Require the configuration bytes to match this
+                          lowercase SHA-256 digest.
     --help, -h            display this list of options.
 ```
 
@@ -75,9 +84,12 @@ by arc-validate and are not forwarded to the package process.
 | `--out-directory`, `-o` | Always forwarded as `-o <path>` | The result base directory; defaults to the resolved ARC path. |
 | `--source-branch` | Forwarded when supplied | Optional source provenance. |
 | `--source-commit-hash` | Forwarded when supplied | Optional source provenance. |
+| `--validation-config` | Not forwarded | Selects config-driven execution from an explicit file. Requires package and exact package version selectors. |
+| `--validation-config-sha256` | Not forwarded | Verifies the exact configuration bytes before configured values are used. |
 
-The last four rows are the standard validation-package arguments. arc-validate
-starts package scripts with an argument list rather than a shell command:
+The ARC directory, output directory, source branch, and source commit rows are
+the standard validation-package arguments. arc-validate starts package scripts
+with an argument list rather than a shell command:
 
 ```text
 dotnet fsi <package.fsx> -i <arc> -o <output> [--source-branch <branch>] [--source-commit-hash <hash>]
@@ -130,6 +142,35 @@ ARCExpect supports the scalar CWL types `boolean`, `int`, `long`, `float`,
 `double`, and `string`. Numeric syntax is invariant across all three runtimes.
 Package metadata, rather than arc-validate, remains the single source of truth
 for package-specific options.
+
+### Configured package inputs
+
+Use the parent resolver's exact package identity and configuration digest to run
+a preflighted selection:
+
+```bash
+arc-validate validate \
+  --arc-directory . \
+  --package configurable-validation \
+  --package-version 1.2.7 \
+  --validation-config .arc/validation_packages.yml \
+  --validation-config-sha256 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+```
+
+Config-driven mode requires the package, package version, and explicit config
+path together. It is mutually exclusive with raw arguments after `--`. The
+digest is optional for direct interactive use but mandatory for generated
+DataHUB jobs.
+
+The child verifies the exact bytes before using values, rechecks the source
+selection's exact or rolling-version intent, and loads only the named version
+from the installed cache. It performs no registry request and deliberately does
+not re-resolve whether that version is still the latest. Configured values are
+validated against the cached package's declarations, ordered by binding
+position and ordinal ID, and passed as separate process arguments.
+
+See [Resolve validation configuration](validation-configuration.md) for the
+parent plan contract and full child-execution rules.
 
 ### The package command
 

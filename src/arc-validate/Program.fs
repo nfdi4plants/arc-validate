@@ -24,17 +24,18 @@ let main argv =
         let command = args.GetSubCommand()
 
         let packageBoundaryError =
-            if not splitArguments.HasBoundary then
-                None
-            else
-                match command with
-                | ARCValidateCommand.Validate validateArguments when
-                    validateArguments.TryGetResult(ValidateArgs.Package).IsSome
-                    -> None
-                | ARCValidateCommand.Validate _ ->
-                    Some "Package arguments after '--' require validation with '--package' or '-p'."
-                | _ ->
-                    Some "The '--' package-argument boundary is only valid for the validate command."
+            match command with
+            | ARCValidateCommand.Validate validateArguments ->
+                match
+                    ValidateArgs.validateCombination
+                        validateArguments
+                        splitArguments.HasBoundary
+                with
+                | Ok () -> None
+                | Error message -> Some message
+            | _ when splitArguments.HasBoundary ->
+                Some "The '--' package-argument boundary is only valid for the validate command."
+            | _ -> None
 
         match packageBoundaryError with
         | Some message ->

@@ -19,6 +19,7 @@
     <Compile Include="VersionResolutionTests.fs" />
     <Compile Include="ExecutionPlanTests.fs" />
     <Compile Include="ConfigurationResolverTests.fs" />
+    <Compile Include="ChildExecutionTests.fs" />
     <Compile Include="FSharpScriptExecutionTests.fs" />
     <Compile Include="PythonScriptExecution.fs" />
     <Compile Include="TopLevelAPITests.fs" />

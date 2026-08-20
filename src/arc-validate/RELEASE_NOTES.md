@@ -15,3 +15,9 @@
 - Ship the standalone validation-plan JSON Schema in CLI, publish, container,
   and documentation output and calculate its config digest over exact UTF-8
   bytes, including a leading BOM.
+- Execute parent-resolved config selections from an explicit file and exact
+  installed package version, verify optional SHA-256 binding, recheck version
+  intent without a registry request, and materialize validated values as safe
+  process argument-list tokens.
+- Keep container builds and ARCExpect release verification on the hermetic
+  automated suite; live registry checks remain explicit integration targets.

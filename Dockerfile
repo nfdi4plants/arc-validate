@@ -6,7 +6,7 @@ COPY ./ /opt/arc-validate
 WORKDIR /opt/arc-validate
 
 RUN chmod +x build.sh
-RUN ./build.sh runtests
+RUN ./build.sh RunAutomatedTests
 
 ENV PATH="${PATH}:/opt/arc-validate"
 ENV PATH="${PATH}:/opt/arc-validate/src/arc-validate/bin/Release/net10.0"
