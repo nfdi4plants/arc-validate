@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "fable": {
-      "version": "5.11.0",
+      "version": "5.17.0",
       "commands": [
         "fable"
       ]
@@ -15,7 +15,7 @@
       ]
     },
     "fsdocs-tool": {
-      "version": "22.0.0",
+      "version": "22.2.0",
       "commands": [
         "fsdocs"
       ]
