@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Argu" Version="[6.2.5]" />
-    <PackageReference Include="Spectre.Console" Version="[0.55.2]" />
+    <PackageReference Include="Spectre.Console" Version="[0.57.2]" />
     <PackageReference Include="Spectre.Console.CLI" Version="[0.55.0]" />
     <!--
       AVPR remains a package boundary even when both repositories are checked
