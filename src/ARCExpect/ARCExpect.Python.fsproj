@@ -26,7 +26,7 @@
   <ItemGroup>
     <PackageReference Include="Fable.Core" Version="5.2.0" />
     <PackageReference Include="Fable.Pyxpecto" Version="[2.0.0]" />
-    <PackageReference Include="Fable.Python" Version="5.4.0" />
+    <PackageReference Include="Fable.Python" Version="5.5.0" />
     <PackageReference Include="Thoth.Json.Core" Version="[0.9.0]" />
     <!--
       Fable compiles against the exact AVPR NuGet artifacts selected at the
