@@ -71,7 +71,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ARCTokenization" Version="[6.0.0]" />
+    <PackageReference Include="ARCTokenization" Version="[6.1.0]" />
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
   </ItemGroup>
 
